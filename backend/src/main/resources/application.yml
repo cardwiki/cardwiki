@@ -1,0 +1,50 @@
+logging:
+  file.name: ./log/backend.log
+  level:
+    root: INFO
+
+spring:
+  datasource:
+    url: jdbc:h2:file:./database/db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: admin
+    password: password
+  jpa:
+    # Set this property to true if you want to see the executed queries
+    show-sql: false
+    hibernate:
+      ddl-auto: update
+    # Allows to fetch lazy properties outside of the original transaction. Although this sounds helpful, the property
+    # is disabled since it breaks the principle of least astonishment and leads to bad performance. The learn more,
+    # follow this link: https://bit.ly/2LaX9ku
+    open-in-view: false
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+security:
+  auth:
+    header: Authorization
+    prefix: "Bearer "
+    login-uri: /api/v1/authentication
+    white-list:
+      # Browser requests
+      - /
+      - /favicon.ico
+      - /csrf
+      # Swagger
+      - /v2/api-docs
+      - /swagger-resources/**
+      - /webjars/**
+      - /swagger-ui.html
+      # H2
+      - /h2-console/**
+  jwt:
+    # Use http://www.allkeysgenerator.com/ to generate secrets
+    secret: ?E(H+MbQeThWmZq4t7w!z%C*F-J@NcRfUjXn2r5u8x/A?D(G+KbPdSgVkYp3s6v9
+    type: JWT
+    issuer: secure-backend
+    audience: secure-app
+    # 12 hours in milliseconds
+    expiration-time: 43200000

@@ -1,0 +1,117 @@
+<div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+  <strong>Error! </strong> {{ errorMessage }}
+  <button type="button" (click)="vanishError()" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+
+<div class="mt-4 container">
+
+  <div class="row p-2 mb-4">
+    <button *ngIf="isAdmin()" type="button" class="btn btn-secondary btn-sm mr-4" data-toggle="modal" data-target=".create-message-modal">Add message</button>
+
+    <div class="modal fade create-message-modal" tabindex="-1" role="dialog" aria-labelledby="Create message modal" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Create message</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form class="form" [formGroup]="messageForm" (ngSubmit)="addMessage()">
+
+              <div class="form-group">
+                <label for="inputTitle">Title</label>
+                <input type="text" name="title" formControlName="title" class="form-control" id="inputTitle"
+                       aria-describedby="titleHelp" placeholder="Enter title">
+                <div *ngIf="submitted && messageForm.controls.title.errors" class="error">
+                  <small class="form-text text-warning" *ngIf="messageForm.controls.title.errors.required">Your title is
+                    required!
+                  </small>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="inputSummary">Summary</label>
+                <textarea rows="3" name="summary" formControlName="summary" class="form-control" id="inputSummary"
+                       aria-describedby="summaryHelp" placeholder="Enter summary"></textarea>
+                <div *ngIf="submitted && messageForm.controls.summary.errors" class="error">
+                  <small class="form-text text-warning" *ngIf="messageForm.controls.summary.errors.required">Your summary is
+                    required!
+                  </small>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="inputText">Text</label>
+                <textarea rows="6" name="text" formControlName="text" class="form-control" id="inputText"
+                       aria-describedby="textHelp" placeholder="Enter text"></textarea>
+                <div *ngIf="submitted && messageForm.controls.text.errors" class="error">
+                  <small class="form-text text-warning" *ngIf="messageForm.controls.text.errors.required">Your text is
+                    required!
+                  </small>
+                </div>
+              </div>
+              
+              <button type="button" (click)="addMessage()" class="btn btn-success float-right">Add message</button>
+
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="row">
+
+    <div class="col-xl-3 col-lg-4 p-2" *ngFor="let message of getMessage()">
+
+      <div class="card">
+
+        <div class="card-body">
+          <h5 class="card-title">{{message.title}}</h5>
+          <h6 class="card-subtitle mb-2 text-muted">{{message.publishedAt | date}}</h6>
+          <p class="card-text">{{message.summary}}</p>
+          <button (click)="getMessageDetails(message.id)" type="button" class="btn btn-primary" data-toggle="modal"
+                  [attr.data-target]="'.message-modal-'+message.id">
+            Details
+          </button>
+        </div>
+
+        <div [ngClass]="['modal', 'fade', 'message-modal-'+message.id]" tabindex="-1" role="dialog"
+             aria-labelledby="Message details modal"
+             aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">{{message.title}}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <p class="lead"><span class="font-italic">{{message.publishedAt | date}}</span> {{message.summary}}</p>
+                <p class="mt-2"> {{message.text}} </p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
