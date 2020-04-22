@@ -1,0 +1,6 @@
+backend test:
+  image: maven:latest
+  stage: test
+  script:
+    - cd backend/
+    - mvn test
