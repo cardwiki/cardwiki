@@ -4,3 +4,15 @@ backend test:
   script:
     - cd backend/
     - mvn test
+
+frontend test:
+  image: node:12-alpine
+  stage: test
+  variables:
+    CHROME_BIN: /usr/bin/chromium-browser
+  before_script:
+    - apk add --no-cache chromium nss freetype freetype-dev harfbuzz ca-certificates ttf-freefont
+  script:
+    - cd frontend/
+    - npm install
+    - npm test
