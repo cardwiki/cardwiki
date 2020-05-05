@@ -28,9 +28,8 @@ public class Category {
     @JoinColumn(name="created_by", referencedColumnName="id", nullable = false, updatable = false)
     private ApplicationUser createdBy;
 
-
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "parent_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "parent_id", referencedColumnName = "id")
     private Category parent;
 
     @Transient
