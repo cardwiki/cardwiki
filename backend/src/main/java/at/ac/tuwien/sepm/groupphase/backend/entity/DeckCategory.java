@@ -6,6 +6,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
+@Table(name = "deck_category")
 public class DeckCategory {
     @EmbeddedId
     private DeckCategoryId id;
@@ -14,13 +15,13 @@ public class DeckCategory {
     @MapsId("deckId")
     private Deck deck;
 
-    @ManyToOne(optional = false)
-    @MapsId("categoryId")
-    private Category category;
+    //@ManyToOne(optional = false)
+    //@MapsId("categoryId")
+    //private Category category;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "created_by", nullable = false)
-    private ApplicationUser createdBy;
+    //@ManyToOne(optional = false)
+    //@JoinColumn(name = "created_by", nullable = false)
+    //private ApplicationUser createdBy;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
@@ -43,21 +44,21 @@ public class DeckCategory {
         this.deck = deck;
     }
 
-    public Category getCategory() {
-        return category;
-    }
+    //public Category getCategory() {
+    //    return category;
+    //}
 
-    public void setCategory(Category category) {
-        this.category = category;
-    }
+    //public void setCategory(Category category) {
+    //    this.category = category;
+    //}
 
-    public ApplicationUser getCreatedBy() {
-        return createdBy;
-    }
+    //public ApplicationUser getCreatedBy() {
+    //    return createdBy;
+    //}
 
-    public void setCreatedBy(ApplicationUser createdBy) {
-        this.createdBy = createdBy;
-    }
+    //public void setCreatedBy(ApplicationUser createdBy) {
+    //    this.createdBy = createdBy;
+    //}
 
     public Date getCreatedAt() {
         return createdAt;
@@ -71,7 +72,7 @@ public class DeckCategory {
     public String toString() {
         return "DeckCategory{" +
             "id=" + id +
-            ", createdBy=" + createdBy +
+            //", createdBy=" + createdBy +
             ", createdAt=" + createdAt +
             '}';
     }

@@ -16,9 +16,9 @@ public class Deck {
     @Column(nullable = false)
     private String name;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "created_by", nullable = false, updatable = false)
-    private ApplicationUser createdBy;
+    //@ManyToOne(fetch = FetchType.EAGER, optional = false)
+    //@JoinColumn(name = "created_by", nullable = false, updatable = false)
+    //private ApplicationUser createdBy;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
@@ -29,11 +29,11 @@ public class Deck {
     @Column(name = "updated_at", nullable = false)
     private Date updatedAt;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "deck")
-    private Set<Card> cards;
+    //@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "deck")
+    //private Set<Card> cards;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "deck")
-    private Set<Comment> comments;
+    //@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "deck")
+    //private Set<Comment> comments;
 
     public Long getId() {
         return id;
@@ -51,13 +51,13 @@ public class Deck {
         this.name = name;
     }
 
-    public ApplicationUser getCreatedBy() {
-        return createdBy;
-    }
+    //public ApplicationUser getCreatedBy() {
+    //    return createdBy;
+    //}
 
-    public void setCreatedBy(ApplicationUser createdBy) {
-        this.createdBy = createdBy;
-    }
+    //public void setCreatedBy(ApplicationUser createdBy) {
+    //    this.createdBy = createdBy;
+    //}
 
     public Date getCreatedAt() {
         return createdAt;
@@ -75,28 +75,28 @@ public class Deck {
         this.updatedAt = updatedAt;
     }
 
-    public Set<Card> getCards() {
-        return cards;
-    }
+    //public Set<Card> getCards() {
+    //    return cards;
+    //}
 
-    public void setCards(Set<Card> cards) {
-        this.cards = cards;
-    }
+    //public void setCards(Set<Card> cards) {
+    //    this.cards = cards;
+    //}
 
-    public Set<Comment> getComments() {
-        return comments;
-    }
+    //public Set<Comment> getComments() {
+    //    return comments;
+    //}
 
-    public void setComments(Set<Comment> comments) {
-        this.comments = comments;
-    }
+    //public void setComments(Set<Comment> comments) {
+    //    this.comments = comments;
+    //}
 
     @Override
     public String toString() {
         return "Deck{" +
             "id=" + id +
             ", name='" + name + '\'' +
-            ", createdBy=" + createdBy +
+            //", createdBy=" + createdBy +
             ", createdAt=" + createdAt +
             ", updatedAt=" + updatedAt +
             '}';
