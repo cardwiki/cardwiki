@@ -22,29 +22,13 @@ spring:
     console:
       enabled: true
       path: /h2-console
-
-security:
-  auth:
-    header: Authorization
-    prefix: "Bearer "
-    login-uri: /api/v1/authentication
-    white-list:
-      # Browser requests
-      - /
-      - /favicon.ico
-      - /csrf
-      # Swagger
-      - /v2/api-docs
-      - /swagger-resources/**
-      - /webjars/**
-      - /swagger-ui.html
-      # H2
-      - /h2-console/**
-  jwt:
-    # Use http://www.allkeysgenerator.com/ to generate secrets
-    secret: ?E(H+MbQeThWmZq4t7w!z%C*F-J@NcRfUjXn2r5u8x/A?D(G+KbPdSgVkYp3s6v9
-    type: JWT
-    issuer: secure-backend
-    audience: secure-app
-    # 12 hours in milliseconds
-    expiration-time: 43200000
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: removed
+            client-secret: removed
+          google:
+            client_id: "removed"
+            client_secret: "removed"
