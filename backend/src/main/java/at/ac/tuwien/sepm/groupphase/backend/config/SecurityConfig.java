@@ -55,13 +55,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and()
             .csrf().disable()
-            .authorizeRequests()
-            .anyRequest().authenticated()
+            .authorizeRequests().antMatchers("*").permitAll();
+       /*     .anyRequest().authenticated()
             .and()
             .addFilter(new JwtAuthenticationFilter(authenticationManager(), securityProperties, jwtTokenizer))
             .addFilter(new JwtAuthorizationFilter(authenticationManager(), securityProperties))
             .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS); */
     }
 
     @Override

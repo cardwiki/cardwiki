@@ -9,8 +9,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class UserRepository {
 
-    private final ApplicationUser user = new ApplicationUser(false);
-    private final ApplicationUser admin = new ApplicationUser(true);
+    private final ApplicationUser user = new ApplicationUser(1L,false);
+    private final ApplicationUser admin = new ApplicationUser(1L,true);
 
  /*   @Autowired
     public UserRepository(PasswordEncoder passwordEncoder) {

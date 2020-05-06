@@ -1,6 +1,8 @@
 package at.ac.tuwien.sepm.groupphase.backend.entity;
 
+
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
@@ -42,12 +44,23 @@ public class Category {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Date createdAt;
 
-    @CreationTimestamp
+    @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_at", nullable = false)
     private Date updatedAt;
 
+    @PrePersist
+    private void setCreator() {
+        if (createdBy == null) {
+            createdBy = new ApplicationUser(1L);
+        }
+    }
+
     public Category() {
+    }
+
+    public Category(Long id) {
+        this.id = id;
     }
 
     public Category(String name, Category parent) {

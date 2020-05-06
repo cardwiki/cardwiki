@@ -44,7 +44,7 @@ export class CategoryFormComponent implements OnInit {
     }
 
     if (this.mode === 'Update') {
-      this.category = new Category(this.result.name, this.parentId, 1, this.category.id);
+      this.category = new Category(this.result.name, new Category(null, null,  this.parentId),  this.category.id);
       this.categoryService.editCategory(this.category).subscribe(
         (categoryResult) => {
           console.log(categoryResult);
@@ -63,7 +63,7 @@ export class CategoryFormComponent implements OnInit {
         }
       );
     } else {
-      this.category = new Category(this.result.name, this.parentId, 1);
+      this.category = new Category(this.result.name, new Category(null, null, this.parentId), null);
       this.categoryService.createCategory(this.category).subscribe(
         (categoryResult) => {
           console.log(categoryResult);

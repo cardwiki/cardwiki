@@ -15,16 +15,16 @@ public class CategoryInquiryDto {
         message="Invalid String: First character not alphanumeric or contains forbidden characters.")
     private String name;
 
-    private Long parentId;
+    private Category parent;
 
     public String getName() { return name; }
 
     public void setName(String name) { this.name = name; }
 
 
-    public Long getParentId() { return parentId;  }
+    public Category getParent() { return parent;  }
 
-    public void setParentId(Long parentId) { this.parentId = parentId; }
+    public void setParent(Category parent) { this.parent = parent; }
 
     @Override
     public boolean equals(Object o) {
@@ -32,17 +32,17 @@ public class CategoryInquiryDto {
         if (!(o instanceof CategoryInquiryDto)) return false;
         CategoryInquiryDto that = (CategoryInquiryDto) o;
         return getName().equals(that.getName()) &&
-            Objects.equals(getParentId(), that.getParentId());
+            Objects.equals(getParent(), that.getParent());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getName(), getParentId());
+        return Objects.hash(getName(), getParent());
     }
 
     public static final class CategoryInquiryDtoBuilder {
         private String name;
-        private Long parentId;
+        private Category parent;
 
         private CategoryInquiryDtoBuilder() {
         }
@@ -57,14 +57,14 @@ public class CategoryInquiryDto {
         }
 
         public CategoryInquiryDto.CategoryInquiryDtoBuilder withParent(Category parent) {
-            this.parentId = parent.getId();
+            this.parent = parent;
             return this;
         }
 
         public CategoryInquiryDto build() {
             CategoryInquiryDto categoryInquiryDto = new CategoryInquiryDto();
             categoryInquiryDto.setName(name);
-            categoryInquiryDto.setParentId(parentId);
+            categoryInquiryDto.setParent(parent);
             return categoryInquiryDto;
         }
     }

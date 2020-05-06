@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
+import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CategoryRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.CategoryService;
 import org.slf4j.Logger;
@@ -35,6 +36,9 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category createCategory(Category category) {
         LOGGER.info("Create category {}", category);
+        if (!categoryRepository.existsById(category.getParent().getId())) {
+            throw new NotFoundException("Selected parent category not found.");
+        }
         return categoryRepository.save(category);
     }
 }

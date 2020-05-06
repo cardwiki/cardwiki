@@ -1,5 +1,7 @@
 package at.ac.tuwien.sepm.groupphase.backend.endpoint.dto;
 
+import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
+
 import javax.validation.constraints.*;
 import java.util.Objects;
 
@@ -37,7 +39,7 @@ public class CategoryUpdateDto extends CategoryInquiryDto {
     public static final class CategoryUpdateDtoBuilder {
         private Long id;
         private String name;
-        private Long parentId;
+        private Category parent;
 
         private CategoryUpdateDtoBuilder() {
         }
@@ -56,8 +58,8 @@ public class CategoryUpdateDto extends CategoryInquiryDto {
             return this;
         }
 
-        public CategoryUpdateDto.CategoryUpdateDtoBuilder withParentId(Long parentId) {
-            this.parentId = parentId;
+        public CategoryUpdateDto.CategoryUpdateDtoBuilder withParentId(Category parent) {
+            this.parent = parent;
             return this;
         }
 
@@ -65,7 +67,7 @@ public class CategoryUpdateDto extends CategoryInquiryDto {
             CategoryUpdateDto categoryUpdateDto = new CategoryUpdateDto();
             categoryUpdateDto.setId(id);
             categoryUpdateDto.setName(name);
-            categoryUpdateDto.setParentId(parentId);
+            categoryUpdateDto.setParent(parent);
             return categoryUpdateDto;
         }
     }

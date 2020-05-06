@@ -15,7 +15,12 @@ public class ApplicationUser {
     public ApplicationUser() {
     }
 
-    public ApplicationUser(Boolean admin) {
+    public ApplicationUser(Long id) {
+        this.id = id;
+    }
+
+    public ApplicationUser(Long id, Boolean admin) {
+        this.id = id;
         this.admin = admin;
     }
 
