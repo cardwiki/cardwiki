@@ -3,7 +3,9 @@ package at.ac.tuwien.sepm.groupphase.backend.entity;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -13,10 +15,11 @@ public class Deck {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Size(min = 1, max = 255)
     @Column(nullable = false)
     private String name;
 
-    //@ManyToOne(fetch = FetchType.EAGER, optional = false)
+    //@ManyToOne(fetch = FetchType.LAZY, optional = false)
     //@JoinColumn(name = "created_by", nullable = false, updatable = false)
     //private ApplicationUser createdBy;
 
@@ -30,10 +33,13 @@ public class Deck {
     private Date updatedAt;
 
     //@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "deck")
-    //private Set<Card> cards;
+    //private Set<Card> cards = new HashSet<>();
 
     //@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "deck")
-    //private Set<Comment> comments;
+    //private Set<Comment> comments = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "deck")
+    private Set<DeckCategory> categories = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -90,6 +96,14 @@ public class Deck {
     //public void setComments(Set<Comment> comments) {
     //    this.comments = comments;
     //}
+
+    public Set<DeckCategory> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(Set<DeckCategory> categories) {
+        this.categories = categories;
+    }
 
     @Override
     public String toString() {
