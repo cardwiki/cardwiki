@@ -1,22 +1,26 @@
 package at.ac.tuwien.sepm.groupphase.backend.endpoint;
 
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategoryInquiryDto;
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DetailedCategoryDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.SimpleCategoryDto;
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.SimpleMessageDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.CategoryMapper;
+import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
 import at.ac.tuwien.sepm.groupphase.backend.service.CategoryService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Authorization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 
 @RestController
-@RequestMapping(value = "/api/v1/categories")
+@RequestMapping(value = "api/v1/categories")
 public class CategoryEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -30,9 +34,17 @@ public class CategoryEndpoint {
     }
 
     @GetMapping
-    @ApiOperation(value = "Get list of categories without details", authorizations = {@Authorization(value = "apiKey")})
-    public List<SimpleCategoryDto> findAll() {
+   // @ApiOperation(value = "Get list of categories without details", authorizations = {@Authorization(value = "apiKey")})
+    public List<SimpleCategoryDto> getCategories() {
         LOGGER.info("GET /api/v1/categories");
         return categoryMapper.categoryToSimpleCategoryDto(categoryService.findAll());
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public DetailedCategoryDto createCategory(@Valid @RequestBody CategoryInquiryDto categoryDto) {
+        LOGGER.info("Post /api/v1/categories");
+       return categoryMapper.categoryToDetailedCategoryDto(
+           categoryService.createCategory(categoryMapper.categoryInquiryDtoToCategory(categoryDto)));
     }
 }

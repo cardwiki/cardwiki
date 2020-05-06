@@ -27,7 +27,7 @@
                 placeholder="Enter category name"
                 maxLength="200"
               >
-              <div *ngIf="submitted && categoryForm.controls.name.errors" class="error">
+              <div *ngIf="categoryForm.controls.name.errors" class="error">
                 <small class="form-text text-warning">{{checkNameErrors()}}
                 </small>
               </div>
@@ -46,14 +46,14 @@
                 list="categories"
                 autocomplete="off"
               >
-              <div *ngIf="submitted && categoryForm.controls.parentCategory.errors" class="error">
-                <small class="form-text text-warning" *ngIf="categoryForm.controls.parentCategory.errors.maxLength">
-                  Maximum length exceeded.
+              <div *ngIf="categoryForm.controls.parentCategory.errors" class="error">
+                <small class="form-text text-warning">
+                  {{checkCategoryErrors()}}
                 </small>
               </div>
             </div>
               <datalist id="categories">
-                <option *ngFor="let category of this.categories"  [value]="category">
+                <option *ngFor="let cat of this.categories" [value]="cat.name">
               </datalist>
 
             <button type="submit" class="btn btn-success float-right">{{mode}}</button>

@@ -27,8 +27,14 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    public Category findOneById(Long id) {
+        LOGGER.debug("Find category with id {}.", id);
+        return categoryRepository.getOne(id);
+    }
+
+    @Override
     public Category createCategory(Category category) {
-        LOGGER.debug("Create category {}", category);
+        LOGGER.info("Create category {}", category);
         return categoryRepository.save(category);
     }
 }

@@ -13,6 +13,14 @@ public interface CategoryService  {
      */
     List<Category> findAll();
 
+    /**
+     * Find a category entry.
+     *
+     * @param id of the entry to find
+     * @return category entry found
+     */
+    Category findOneById(Long id);
+
 
     /**
      * Creates a category.

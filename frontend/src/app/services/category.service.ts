@@ -9,7 +9,7 @@ import {Category} from '../dtos/category';
 })
 export class CategoryService {
 
-  private categoryBaseUri: string = this.globals.backendUri + '/category';
+  private categoryBaseUri: string = this.globals.backendUri + '/categories';
 
   constructor(private httpClient: HttpClient, private globals: Globals) {
   }
@@ -17,7 +17,7 @@ export class CategoryService {
   /**
    * Loads all categories from the backend
    */
-  getCategory(): Observable<Category[]> {
+  getCategories(): Observable<Category[]> {
     return this.httpClient.get<Category[]>(this.categoryBaseUri);
   }
 

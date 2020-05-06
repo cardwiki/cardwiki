@@ -31,10 +31,10 @@ public class SimpleCategoryDto {
 
     @Override
     public String toString() {
-        return "SimpleCategoryDto {" +
+        return "SimpleCategoryDto{" +
             "id=" + id +
-            ", name=" + name +
-            "}";
+            ", name='" + name + '\'' +
+            '}';
     }
 
     public static final class SimpleCategoryDtoBuilder {

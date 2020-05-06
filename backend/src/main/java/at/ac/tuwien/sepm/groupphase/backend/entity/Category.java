@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepm.groupphase.backend.entity;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -19,13 +20,13 @@ public class Category {
 
 
     @Column(nullable = false, unique = true)
-    @Max(200) @NotNull
+    @Length(max = 200) @NotNull
     @Pattern(regexp="^[a-zA-Z0-9]+[a-zA-Z0-9 \\\\/\\\\-\\\\.\\\\,]+$",
         message="Invalid String: First character not alphanumeric or contains forbidden characters.")
     private String name;
 
     @ManyToOne()
-    @JoinColumn(name="created_by", referencedColumnName="id", nullable = false, updatable = false)
+    @JoinColumn(name="created_by", referencedColumnName="id", updatable = false)
     private ApplicationUser createdBy;
 
     @ManyToOne(cascade = CascadeType.ALL)
@@ -139,6 +140,14 @@ public class Category {
 
     @Override
     public String toString() {
-        return "Category: { id: " + id + ", name: " + name + ", parent: " + parent + " }";
+        return "Category{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", createdBy=" + createdBy +
+            ", parent=" + parent +
+            ", children=" + children +
+            ", createdAt=" + createdAt +
+            ", updatedAt=" + updatedAt +
+            '}';
     }
 }
