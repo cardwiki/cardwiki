@@ -1,11 +1,13 @@
 package at.ac.tuwien.sepm.groupphase.backend.service;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.client.HttpClientErrorException;
 
-public interface UserService extends UserDetailsService {
+public interface UserService {
 
     /**
      * Find a user in the context of Spring Security based on the email address
@@ -13,18 +15,24 @@ public interface UserService extends UserDetailsService {
      * For more information have a look at this tutorial:
      * https://www.baeldung.com/spring-security-authentication-with-a-database
      *
-     * @param email the email address
-     * @return a Spring Security user
+     * @param username the username
+     * @return the user entity
      * @throws UsernameNotFoundException is thrown if the specified user does not exists
      */
-    @Override
-    UserDetails loadUserByUsername(String email) throws UsernameNotFoundException;
+    ApplicationUser loadUserByUsername(String username) throws UsernameNotFoundException;
 
     /**
-     * Find a application user based on the email address
-     *
-     * @param email the email address
-     * @return a application user
+     * Loads an user for an OAuth ID.
+     * @param oauthId
+     * @return the user entity
      */
-    ApplicationUser findApplicationUserByEmail(String email);
+    ApplicationUser loadUserByOauthId(String oauthId) throws NotFoundException;
+
+    /**
+     * Register a new user.
+     * @param oauthId
+     * @param username
+     * @return the new user entity
+     */
+    ApplicationUser registerUser(String oauthId, String username);
 }

@@ -32,3 +32,4 @@ spring:
           google:
             client_id: "removed"
             client_secret: "removed"
+          # TODO: add gitlab
