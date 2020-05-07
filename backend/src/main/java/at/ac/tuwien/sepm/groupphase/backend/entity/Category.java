@@ -55,6 +55,13 @@ public class Category {
     @Column(name = "updated_at", nullable = false)
     private Date updatedAt;
 
+    @PrePersist
+    private void addCreatedByDummy() {
+        if (createdBy == null) {
+            createdBy = new ApplicationUser(1L);
+        }
+    }
+
     public void addSubcategory(Category subcategory) {
         children.add(subcategory);
     }
@@ -148,21 +155,18 @@ public class Category {
         this.updatedAt = updatedAt;
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Category)) return false;
         Category category = (Category) o;
-        return getId().equals(category.getId()) &&
-            getName().equals(category.getName()) &&
-            getCreatedBy().equals(category.getCreatedBy()) &&
-            Objects.equals(getParent(), category.getParent());
+        return getName().equals(category.getName()) &&
+            getCreatedAt().equals(category.getCreatedAt());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getCreatedBy(), getParent());
+        return Objects.hash(getName(), getCreatedAt());
     }
 
     @Override
