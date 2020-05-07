@@ -30,6 +30,19 @@ spring:
             client-id: removed
             client-secret: removed
           google:
-            client_id: "removed"
-            client_secret: "removed"
-          # TODO: add gitlab
+            client-id: removed
+            client-secret: removed
+          gitlab:
+            client-name: GitLab
+            scope: openid
+            client-id: removed
+            client-secret: removed
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+        provider:
+          gitlab:
+            authorization-uri: https://gitlab.com/oauth/authorize
+            token-uri: https://gitlab.com/oauth/token
+            user-info-uri: https://gitlab.com/oauth/userinfo
+            user-name-attribute: sub
+            jwk-set-uri: https://gitlab.com/oauth/discovery/keys
