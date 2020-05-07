@@ -4,3 +4,8 @@ backend test:
   script:
     - cd backend/
     - mvn test
+    - awk -F,
+      '{ instructions += $4 + $5; covered += $5 } END
+       { print covered, "/", instructions, " instructions covered";
+       printf "%.2f%% covered", 100*covered/instructions }'
+      target/site/jacoco/jacoco.csv
