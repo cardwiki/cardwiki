@@ -14,11 +14,13 @@ If the database is not clean, the test data won't be inserted
 
 The backend implements login via [OpenID Connect](https://openid.net/connect/).
 
-Clients only need to know two endpoints:
+Clients only need to know these endpoints:
 
 * `/oauth2/authorization` returns the available authentication providers as a map `{id: displayName}`
 * `/oauth2/authorization/<id>` redirects to a specific authentication provider
   On success the client gets a cookie.
   Clients can determine where they are redirected by setting the `Referer` Header.
+
+`/api/v1/whoami` returns information about the currently logged in user.
 
 To log out clients can simply delete the cookie.
