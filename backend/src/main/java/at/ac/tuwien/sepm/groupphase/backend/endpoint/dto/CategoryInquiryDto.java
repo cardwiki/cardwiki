@@ -11,7 +11,7 @@ public class CategoryInquiryDto {
 
     @NotNull(message = "Name must not be null.")
     @Length(max = 200, message = "Name exceeds size limit.")
-    @Pattern(regexp="^[a-zA-Z0-9]+[a-zA-Z0-9 \\\\/\\\\-\\\\.\\\\,]+$",
+    @Pattern(regexp="^[a-zA-Z0-9]+[a-zA-Z0-9 \\/\\-\\.\\,]+$",
         message="Invalid String: First character not alphanumeric or contains forbidden characters.")
     private String name;
 

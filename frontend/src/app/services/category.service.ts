@@ -31,6 +31,15 @@ export class CategoryService {
   }
 
   /**
+   * Loads a specific category from the backend
+   * @param id of category to load
+   */
+  getCategory(category: Category): Observable<Category> {
+    console.log('Load category details for category with name ' + category.name);
+    return this.httpClient.get<Category>(this.categoryBaseUri + '/find');
+  }
+
+  /**
    * Persists category to the backend
    * @param category to persist
    */

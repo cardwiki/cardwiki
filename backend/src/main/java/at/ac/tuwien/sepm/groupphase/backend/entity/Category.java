@@ -27,7 +27,7 @@ public class Category {
 
     @Column(nullable = false, unique = true)
     @Length(max = 200) @NotNull
-    @Pattern(regexp="^[a-zA-Z0-9]+[a-zA-Z0-9 \\\\/\\\\-\\\\.\\\\,]+$",
+    @Pattern(regexp="^[a-zA-Z0-9]+[a-zA-Z0-9 \\/\\-\\.\\,]+$",
         message="Invalid String: First character not alphanumeric or contains forbidden characters.")
     private String name;
 
@@ -36,13 +36,13 @@ public class Category {
     private ApplicationUser createdBy;
 
     @JsonIgnore
-    @Fetch(FetchMode.JOIN)
-    @ManyToOne(cascade = CascadeType.REFRESH)
+    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
     @JoinColumn(name = "parent_id", referencedColumnName = "id")
     private Category parent;
 
     @JsonBackReference
-    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Fetch(FetchMode.SUBSELECT)
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
     private Set<Category> children = new HashSet<>();
 
     @CreationTimestamp

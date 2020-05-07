@@ -1,14 +1,15 @@
 import { Component, Input, OnInit } from '@angular/core';
-import {AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators} from '@angular/forms';
 import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router';
 import { Category } from '../../../dtos/category';
 import { CategoryService } from '../../../services/category.service';
+import * as $ from 'jquery';
 
 @Component({
   selector: 'app-category-form',
   templateUrl: './category-form.component.html',
-  styleUrls: ['./category-form.component.css']
+  styleUrls: ['./category-form.component.scss']
 })
 export class CategoryFormComponent implements OnInit {
 
@@ -16,8 +17,10 @@ export class CategoryFormComponent implements OnInit {
   @Input() category: Category;
   categoryForm: FormGroup;
   submitted: boolean = false;
+  dropdown: boolean = false;
   error: boolean = false;
   errorMessage: string = '';
+  showModal: boolean = false;
 
   categories: Category[];
   result: { name: string, parentCategory: string };
@@ -33,9 +36,12 @@ export class CategoryFormComponent implements OnInit {
   }
 
   submitCategoryForm() {
+    $('#modal').hide();
+    $('.modal-backdrop').remove();
     console.log('submitted form values:', this.categoryForm.value);
     this.result = this.categoryForm.value;
 
+    console.log(this.showModal);
     for (let i = 0; i < this.categories.length; i++) {
       if (this.categories[i].name === this.result.parentCategory) {
         this.parentId = this.categories[i].id;
@@ -112,7 +118,7 @@ export class CategoryFormComponent implements OnInit {
 
   checkCommonErrors(errors) {
     if (errors.pattern) {
-      return 'String contains at least one illegal character';
+      return 'First character not alphanumeric or String contains at least one illegal character';
     }
     if (errors.maxlength) {
       return 'Maximum length exceeded.';
@@ -132,14 +138,52 @@ export class CategoryFormComponent implements OnInit {
     return null;
   }
 
+  createSubcategory() {
+    this.categoryService.getCategory(new Category(this.result.name)).subscribe(
+      (category) => {
+        console.log('Getting category with name: ', this.result.name);
+        this.category = category; },
+      error => {
+        console.log('Could not get category with name: ', this.result.name);
+        console.log(error);
+        this.error = true;
+        if (typeof error.error === 'object') {
+          this.errorMessage = error.error.error;
+        } else {
+          this.errorMessage = error.error;
+        }
+      }
+    );
+    this.vanishResult();
+    this.categoryForm.value.parentCategory = this.category;
+  }
   /**
    * Error flag will be deactivated, which clears the error message
    */
-  vanishError() {
+  vanishResult() {
     this.error = false;
+    this.submitted = false;
+    this.categoryForm.reset();
+    this.categoryForm.value.name = this.category.name;
+    if (this.category.parent && this.category.parent.name) {
+        this.categoryForm.value.parentCategory = this.category.parent.name;
+    }
+  }
+
+  onChange() {
+    this.dropdown = false;
+    console.log(this.dropdown);
+  }
+
+  onSelect() {
+    // this.dropdown = false;
+    console.log(this.dropdown);
   }
 
   ngOnInit(): void {
+    if (!this.category) {
+      this.category = new Category(null);
+    }
     this.categoryService.getCategories().subscribe(
       (categories) => {
         console.log('Getting categories.');
