@@ -1,7 +1,11 @@
 package at.ac.tuwien.sepm.groupphase.backend.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.Length;
 
@@ -27,16 +31,18 @@ public class Category {
         message="Invalid String: First character not alphanumeric or contains forbidden characters.")
     private String name;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name="created_by", referencedColumnName="id", updatable = false)
     private ApplicationUser createdBy;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @JsonIgnore
+    @Fetch(FetchMode.JOIN)
+    @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name = "parent_id", referencedColumnName = "id")
     private Category parent;
 
-    @Transient
-    @OneToMany(mappedBy = "parent", fetch = FetchType.EAGER)
+    @JsonBackReference
+    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Category> children = new HashSet<>();
 
     @CreationTimestamp
@@ -49,11 +55,12 @@ public class Category {
     @Column(name = "updated_at", nullable = false)
     private Date updatedAt;
 
-    @PrePersist
-    private void setCreator() {
-        if (createdBy == null) {
-            createdBy = new ApplicationUser(1L);
-        }
+    public void addSubcategory(Category subcategory) {
+        children.add(subcategory);
+    }
+
+    public void removeSubcategory(Category subcategory) {
+        children.remove(subcategory);
     }
 
     public Category() {
@@ -108,7 +115,13 @@ public class Category {
     }
 
     public void setParent(Category parent) {
+        if(Objects.equals(parent, this.parent)) return;
+
+        Category oldParent = this.parent;
         this.parent = parent;
+
+        if (oldParent != null) oldParent.removeSubcategory(this);
+        if (parent != null) parent.addSubcategory(this);
     }
 
     public Set<Category> getChildren() {
@@ -135,6 +148,7 @@ public class Category {
         this.updatedAt = updatedAt;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -142,13 +156,13 @@ public class Category {
         Category category = (Category) o;
         return getId().equals(category.getId()) &&
             getName().equals(category.getName()) &&
-            getParent().equals(category.getParent()) &&
-            Objects.equals(getChildren(), category.getChildren());
+            getCreatedBy().equals(category.getCreatedBy()) &&
+            Objects.equals(getParent(), category.getParent());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getParent(), getChildren());
+        return Objects.hash(getId(), getName(), getCreatedBy(), getParent());
     }
 
     @Override
@@ -158,7 +172,6 @@ public class Category {
             ", name='" + name + '\'' +
             ", createdBy=" + createdBy +
             ", parent=" + parent +
-            ", children=" + children +
             ", createdAt=" + createdAt +
             ", updatedAt=" + updatedAt +
             '}';

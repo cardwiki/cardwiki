@@ -6,12 +6,14 @@ import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.SimpleCategoryDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.CategoryMapper;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
 import at.ac.tuwien.sepm.groupphase.backend.service.CategoryService;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Authorization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -43,8 +45,14 @@ public class CategoryEndpoint {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public DetailedCategoryDto createCategory(@Valid @RequestBody CategoryInquiryDto categoryDto) {
-        LOGGER.info("Post /api/v1/categories");
+        LOGGER.info("POST /api/v1/categories");
        return categoryMapper.categoryToDetailedCategoryDto(
            categoryService.createCategory(categoryMapper.categoryInquiryDtoToCategory(categoryDto)));
+    }
+
+    @GetMapping(value = "/{id}")
+    public DetailedCategoryDto getCategory(@PathVariable Long id) {
+        LOGGER.info("GET /api/v1/categories/{}", id);
+        return categoryMapper.categoryToDetailedCategoryDto(categoryService.findOneById(id));
     }
 }
