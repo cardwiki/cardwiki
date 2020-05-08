@@ -9,27 +9,26 @@
     <button class="btn-primary" (click)="vanishResult()">
       Show
     </button> <!-- TODO: create details page and link to it -->
-    <button #href *ngIf="mode == 'Create'" class="btn-primary" type="createNew" (click)="createSubcategory()">
-      Create Subcategory
-    </button>
-    <button class="btn-primary" type="createNew" (click)="vanishResult()">
-      {{mode}} another category
-    </button>
+    <span *ngIf="mode == 'Create'">
+      <button class="btn-primary" id="createSub" (click)="createSubcategory()">
+        Create Subcategory
+      </button>
+      <button class="btn-primary" id="createNew" (click)="vanishResult();">
+        {{mode}} another category
+      </button>
+    </span>
   </div>
 </div>
 
 <div *ngIf="!submitted" class="pt-5">
   <div class="col-md-6 mx-auto">
     <span class="anchor" id="formLogin"></span>
-
     <div class="card rounded-0">
       <div class="card-header">
         <h3 class="mb-0">{{mode}} category</h3>
       </div>
-
       <div class="card-body">
-        <form class="form" [formGroup]="categoryForm" (submit)="submitCategoryForm();" autocomplete="on">
-
+        <form class="form" [formGroup]="categoryForm" (submit)="submitCategoryForm();">
           <div class="form-group">
             <label for="categoryName">Name</label>
             <input
@@ -41,14 +40,14 @@
               aria-describedby="categoryNameHelp"
               placeholder="Enter category name"
               maxLength="200"
+              autocomplete="off"
             >
             <div *ngIf="categoryForm.controls.name.errors" class="error">
-              <small class="form-text text-warning">{{checkNameErrors()}}
-              </small>
+              <small class="form-text text-warning">{{checkNameErrors()}}</small>
             </div>
           </div>
 
-          <div class="form-group" (change)="onChange()" (select)="onSelect()">
+          <div class="form-group">
             <label for="parentCategory">Parent category</label>
             <input
               type="search"
@@ -68,11 +67,11 @@
             </div>
           </div>
           <datalist id="categories">
-            <option *ngFor="let cat of this.categories | slice:0:8 " [value]="cat.name">
+            <option *ngFor="let cat of this.categories" [value]="cat.name">
           </datalist>
 
           <div id="modal" class="modal fade" role="dialog">
-            <div *ngIf="this.categoryForm.touched && this.categoryForm.dirty && !this.categoryForm.errors" class="modal-dialog">
+            <div *ngIf="this.categoryForm.touched && this.categoryForm.dirty && this.categoryForm.valid" class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
                   <span class="modal-title"><h4>Submit category?</h4></span>
@@ -90,9 +89,9 @@
                   <button type="submit" class="btn btn-success float-left">Submit</button>
                   <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 </div>
-          </div>
+              </div>
             </div>
-            <div *ngIf="!this.categoryForm.touched || !this.categoryForm.dirty || this.categoryForm.errors" class="modal-dialog">
+            <div *ngIf="!this.categoryForm.touched || !this.categoryForm.dirty || !this.categoryForm.valid" class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
                   <span class="modal-title"><h4>Error(s)!</h4></span>
@@ -108,8 +107,15 @@
               </div>
             </div>
           </div>
-            <button type="button" data-toggle="modal" data-target="#modal" class="btn btn-success float-right">{{mode}}</button>
-          <button type="button" class="btn-toolbar" (click)="this.categoryForm.reset()">Reset</button>
+          <button type="button" data-toggle="modal" data-target="#modal" class="btn btn-success float-right">
+            {{mode}}
+          </button>
+          <button type="button" class="btn-secondary" (click)="this.categoryForm.reset(); this.setDefaults()">
+            Reset
+          </button>
+          <button type="button" class="btn-secondary" id="refresh" (click)="this.onRefresh()">
+            Refresh Categories
+          </button>
         </form>
       </div>
     </div>

@@ -49,7 +49,7 @@ public class CategoryServiceImpl implements CategoryService {
             throw new NotFoundException("Selected parent category not found.");
         }
         Category result = categoryRepository.save(category);
-        result.setParent(findOneById(parent.getId()));
+        if (parent != null) result.setParent(findOneById(parent.getId()));
         return result;
     }
 }
