@@ -1,91 +1,92 @@
 package at.ac.tuwien.sepm.groupphase.backend.config;
 
-import at.ac.tuwien.sepm.groupphase.backend.config.properties.SecurityProperties;
-import at.ac.tuwien.sepm.groupphase.backend.security.JwtAuthenticationFilter;
-import at.ac.tuwien.sepm.groupphase.backend.security.JwtAuthorizationFilter;
-import at.ac.tuwien.sepm.groupphase.backend.security.JwtTokenizer;
-import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
+import at.ac.tuwien.sepm.groupphase.backend.service.impl.CustomOAuth2UserService;
+import at.ac.tuwien.sepm.groupphase.backend.service.impl.CustomOidcUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.OrRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
+@Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(securedEnabled = true)
+@EnableGlobalMethodSecurity(securedEnabled=true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final UserService userService;
-    private final PasswordEncoder passwordEncoder;
-    private final RequestMatcher whiteListedRequests;
-    private final SecurityProperties securityProperties;
-    private final JwtTokenizer jwtTokenizer;
+    @Autowired
+    private CustomOAuth2UserService customOAuth2UserService;
 
     @Autowired
-    public SecurityConfig(UserService userService,
-                          PasswordEncoder passwordEncoder,
-                          SecurityProperties securityProperties, JwtTokenizer jwtTokenizer) {
-        this.userService = userService;
-        this.securityProperties = securityProperties;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtTokenizer = jwtTokenizer;
-
-        this.whiteListedRequests = new OrRequestMatcher(securityProperties.getWhiteList().stream()
-            .map(AntPathRequestMatcher::new)
-            .collect(Collectors.toList()));
-    }
+    private CustomOidcUserService customOidcUserService;
 
     @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    public void configure(HttpSecurity http) throws Exception {
         http.cors().and()
             .csrf().disable()
-            .authorizeRequests().antMatchers("*").permitAll();
-       /*     .anyRequest().authenticated()
-            .and()
-            .addFilter(new JwtAuthenticationFilter(authenticationManager(), securityProperties, jwtTokenizer))
-            .addFilter(new JwtAuthorizationFilter(authenticationManager(), securityProperties))
-            .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS); */
+            .exceptionHandling().defaultAuthenticationEntryPointFor(new Http403ForbiddenEntryPoint(), new AntPathRequestMatcher("/**")).and()
+            .oauth2Login()
+                .userInfoEndpoint()
+                    .userService(customOAuth2UserService)
+                    .oidcUserService(customOidcUserService).and()
+                .successHandler(new RefererRedirectionAuthenticationSuccessHandler());
     }
 
-    @Override
-    public void configure(WebSecurity web) {
-        web.ignoring().requestMatchers(whiteListedRequests);
+    public class RefererRedirectionAuthenticationSuccessHandler
+        extends SimpleUrlAuthenticationSuccessHandler
+        implements AuthenticationSuccessHandler {
+
+        public RefererRedirectionAuthenticationSuccessHandler() {
+            super();
+            setUseReferer(true);
+        }
     }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userService).passwordEncoder(passwordEncoder);
-    }
+    private final List<String> frontendOrigins = Collections.unmodifiableList(Arrays.asList("http://localhost:4200"));
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        final List<String> permitAll = Collections.unmodifiableList(Collections.singletonList("*"));
-        final List<String> permitMethods = List.of(HttpMethod.GET.name(), HttpMethod.POST.name(), HttpMethod.PUT.name(),
-            HttpMethod.PATCH.name(), HttpMethod.DELETE.name(), HttpMethod.OPTIONS.name(), HttpMethod.HEAD.name(),
-            HttpMethod.TRACE.name());
-        final CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedHeaders(permitAll);
-        configuration.setAllowedOrigins(permitAll);
-        configuration.setAllowedMethods(permitMethods);
-        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
+        return new CorsConfigurationSource() {
+            @Override
+            public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+                final CorsConfiguration config = new CorsConfiguration();
+                config.setAllowedMethods(Arrays.asList("*"));
+                config.addAllowedHeader("*");
+
+                // We allow credentials only for whitelisted frontends.
+                if (frontendOrigins.contains(request.getHeader("Origin"))){
+                    config.setAllowedOrigins(frontendOrigins);
+                    config.setAllowCredentials(true);
+                } else {
+                    config.addAllowedOrigin("*");
+                }
+                return config;
+            }
+        };
+    }
+
+    @Bean
+    public CorsFilter logoutCorsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.setAllowedOrigins(frontendOrigins);
+        config.addAllowedMethod("POST");
+        source.registerCorsConfiguration("/logout", config);
+        return new CorsFilter(source);
     }
 }

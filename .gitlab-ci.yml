@@ -4,15 +4,8 @@ backend test:
   script:
     - cd backend/
     - mvn test
-
-frontend test:
-  image: node:12-alpine
-  stage: test
-  variables:
-    CHROME_BIN: /usr/bin/chromium-browser
-  before_script:
-    - apk add --no-cache chromium nss freetype freetype-dev harfbuzz ca-certificates ttf-freefont
-  script:
-    - cd frontend/
-    - npm install
-    - npm test
+    - awk -F,
+      '{ instructions += $4 + $5; covered += $5 } END
+       { print covered, "/", instructions, " instructions covered";
+       printf "%.2f%% covered", 100*covered/instructions }'
+      target/site/jacoco/jacoco.csv
