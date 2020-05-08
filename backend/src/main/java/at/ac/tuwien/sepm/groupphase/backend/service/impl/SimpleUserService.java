@@ -27,7 +27,7 @@ public class SimpleUserService implements UserService {
 
     @Override
     public ApplicationUser loadUserByUsername(String username) throws UsernameNotFoundException {
-        LOGGER.info("Load all user by username");
+        LOGGER.debug("Load all user by username");
         try {
             return userRepository.findByUsername(username);
         } catch (NotFoundException e) {

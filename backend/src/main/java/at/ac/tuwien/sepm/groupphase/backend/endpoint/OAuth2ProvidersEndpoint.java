@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.endpoint;
 
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ResolvableType;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -19,9 +20,7 @@ public class OAuth2ProvidersEndpoint {
     private ClientRegistrationRepository clientRegistrationRepository;
 
     @GetMapping
-    /**
-     * Returns the available Authentication Providers as a map: {id: displayName}.
-     */
+    @ApiOperation(value = "Returns the available Authentication Providers as a map: {id: displayName}.")
     public Map<String, String> index() {
         Iterable<ClientRegistration> clientRegistrations = null;
         ResolvableType type = ResolvableType.forInstance(clientRegistrationRepository)
