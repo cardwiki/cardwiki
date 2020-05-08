@@ -5,6 +5,7 @@ import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DetailedCategoryDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.SimpleCategoryDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.CategoryMapper;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
+import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.service.CategoryService;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import io.swagger.annotations.ApiOperation;
@@ -15,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.lang.invoke.MethodHandles;
@@ -46,8 +49,12 @@ public class CategoryEndpoint {
     @ResponseStatus(HttpStatus.CREATED)
     public DetailedCategoryDto createCategory(@Valid @RequestBody CategoryInquiryDto categoryDto) {
         LOGGER.info("POST /api/v1/categories");
-       return categoryMapper.categoryToDetailedCategoryDto(
-           categoryService.createCategory(categoryMapper.categoryInquiryDtoToCategory(categoryDto)));
+        try {
+            return categoryMapper.categoryToDetailedCategoryDto(
+                categoryService.createCategory(categoryMapper.categoryInquiryDtoToCategory(categoryDto)));
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Parent.", e);
+        }
     }
 
     @GetMapping(value = "/{id}")

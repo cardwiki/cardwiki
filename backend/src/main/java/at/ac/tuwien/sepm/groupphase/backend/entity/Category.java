@@ -26,7 +26,6 @@ public class Category {
 
 
     @Column(nullable = false, unique = true)
-    @Length(max = 200) @NotNull
     @Pattern(regexp="^[a-zA-Z0-9]+[a-zA-Z0-9 \\/\\-\\.\\,]+$",
         message="Invalid String: First character not alphanumeric or contains forbidden characters.")
     private String name;
@@ -54,13 +53,6 @@ public class Category {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_at", nullable = false)
     private Date updatedAt;
-
-    @PrePersist
-    private void addCreatedByDummy() {
-        if (createdBy == null) {
-            createdBy = new ApplicationUser(1L);
-        }
-    }
 
     public void addSubcategory(Category subcategory) {
         children.add(subcategory);
