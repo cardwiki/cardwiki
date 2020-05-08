@@ -12,6 +12,8 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -29,7 +31,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http.cors()
-            .and().oauth2Login()
+            .and().csrf().disable()
+            .oauth2Login()
                 .userInfoEndpoint().userService(customOAuth2UserService)
                 .and().successHandler(new RefererRedirectionAuthenticationSuccessHandler());
     }
@@ -59,10 +62,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     config.setAllowedOrigins(frontendOrigins);
                     config.setAllowCredentials(true);
                 } else {
-                    config.setAllowedOrigins(Arrays.asList("*"));
+                    config.addAllowedOrigin("*");
                 }
                 return config;
             }
         };
+    }
+
+    @Bean
+    public CorsFilter logoutCorsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.setAllowedOrigins(frontendOrigins);
+        config.addAllowedMethod("POST");
+        source.registerCorsConfiguration("/logout", config);
+        return new CorsFilter(source);
     }
 }

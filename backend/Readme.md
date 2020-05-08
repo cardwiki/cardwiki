@@ -23,4 +23,4 @@ Clients only need to know these endpoints:
 
 `/api/v1/whoami` returns information about the currently logged in user.
 
-To log out clients can simply delete the cookie.
+To log out send `POST /logout`.
