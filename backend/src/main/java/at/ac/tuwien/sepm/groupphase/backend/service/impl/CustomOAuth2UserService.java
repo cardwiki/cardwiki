@@ -22,15 +22,18 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private UserService userService;
 
     @Override
+    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+        OAuth2User user = super.loadUser(userRequest);
+        String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
+        // We need to construct our own OAuth2User because the user returned by super is immutable.
+        return new DefaultOAuth2User(setupRoles(user), user.getAttributes(), userNameAttributeName);
+    }
+
     /**
      * This method integrates Spring Security's OAuth2 with our persistence layer.
      */
-    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        OAuth2User user = super.loadUser(userRequest);
-        // We need to construct our own OAuth2User because the user returned by super is immutable.
-        String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
-        Map<String, Object> attributes = user.getAttributes();
-        List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS");
+    public Collection<GrantedAuthority> setupRoles(OAuth2User user){
+        Collection<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS");
 
         try {
             ApplicationUser u = userService.loadUserByOauthId(user.getName());
@@ -41,6 +44,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         } catch (NotFoundException e){
         }
 
-        return new DefaultOAuth2User(authorities, attributes, userNameAttributeName);
+        return authorities;
     }
 }

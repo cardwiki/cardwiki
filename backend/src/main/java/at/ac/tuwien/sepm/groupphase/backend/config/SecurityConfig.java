@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepm.groupphase.backend.config;
 
 import at.ac.tuwien.sepm.groupphase.backend.service.impl.CustomOAuth2UserService;
+import at.ac.tuwien.sepm.groupphase.backend.service.impl.CustomOidcUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,13 +31,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private CustomOAuth2UserService customOAuth2UserService;
 
+    @Autowired
+    private CustomOidcUserService customOidcUserService;
+
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http.cors().and()
             .csrf().disable()
             .exceptionHandling().defaultAuthenticationEntryPointFor(new Http403ForbiddenEntryPoint(), new AntPathRequestMatcher("/**")).and()
             .oauth2Login()
-                .userInfoEndpoint().userService(customOAuth2UserService).and()
+                .userInfoEndpoint()
+                    .userService(customOAuth2UserService)
+                    .oidcUserService(customOidcUserService).and()
                 .successHandler(new RefererRedirectionAuthenticationSuccessHandler());
     }
 
