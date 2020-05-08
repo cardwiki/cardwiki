@@ -19,11 +19,10 @@ public class WhoAmIEndpoint {
      * Returns information about the currently logged in user.
      */
     public Map<String,Object> index(Authentication auth) {
-        if (auth == null)
-            throw new NotFoundException("please sign in");
         Map<String,Object> map = new HashMap<>();
-        map.put("id", auth.getName());
-        map.put("authorities", auth.getAuthorities().stream().map(o -> ((GrantedAuthority) o).getAuthority()));
+        map.put("id", auth == null ? null : auth.getName());
+        map.put("hasAccount", auth == null ? false : auth.getAuthorities().contains("ROLE_USER"));
+        map.put("isAdmin", auth == null ? false : auth.getAuthorities().contains("ROLE_ADMIN"));
         return map;
     }
 }
