@@ -59,6 +59,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                 final CorsConfiguration config = new CorsConfiguration();
                 config.setAllowedMethods(Arrays.asList("*"));
+                config.addAllowedHeader("*");
 
                 // We allow credentials only for whitelisted frontends.
                 if (frontendOrigins.contains(request.getHeader("Origin"))){
