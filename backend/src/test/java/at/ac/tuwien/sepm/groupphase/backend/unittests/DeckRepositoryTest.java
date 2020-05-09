@@ -1,6 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.unittests;
 
-import at.ac.tuwien.sepm.groupphase.backend.basetest.TestData;
+import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
 @ActiveProfiles("test")
-public class DeckRepositoryTest implements TestData {
+public class DeckRepositoryTest extends TestDataGenerator {
     @Autowired
     private DeckRepository deckRepository;
 
