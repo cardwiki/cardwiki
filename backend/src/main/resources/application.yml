@@ -22,29 +22,27 @@ spring:
     console:
       enabled: true
       path: /h2-console
-
-security:
-  auth:
-    header: Authorization
-    prefix: "Bearer "
-    login-uri: /api/v1/authentication
-    white-list:
-      # Browser requests
-      - /
-      - /favicon.ico
-      - /csrf
-      # Swagger
-      - /v2/api-docs
-      - /swagger-resources/**
-      - /webjars/**
-      - /swagger-ui.html
-      # H2
-      - /h2-console/**
-  jwt:
-    # Use http://www.allkeysgenerator.com/ to generate secrets
-    secret: ?E(H+MbQeThWmZq4t7w!z%C*F-J@NcRfUjXn2r5u8x/A?D(G+KbPdSgVkYp3s6v9
-    type: JWT
-    issuer: secure-backend
-    audience: secure-app
-    # 12 hours in milliseconds
-    expiration-time: 43200000
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: removed
+            client-secret: removed
+          google:
+            client-id: removed
+            client-secret: removed
+          gitlab:
+            client-name: GitLab
+            scope: openid
+            client-id: removed
+            client-secret: removed
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+        provider:
+          gitlab:
+            authorization-uri: https://gitlab.com/oauth/authorize
+            token-uri: https://gitlab.com/oauth/token
+            user-info-uri: https://gitlab.com/oauth/userinfo
+            user-name-attribute: sub
+            jwk-set-uri: https://gitlab.com/oauth/discovery/keys
