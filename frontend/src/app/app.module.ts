@@ -12,6 +12,7 @@ import {LoginComponent} from './components/login/login.component';
 import {MessageComponent} from './components/message/message.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {httpInterceptorProviders} from './interceptors';
+import { DeckViewComponent } from './components/deck/deck-view/deck-view.component';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import {httpInterceptorProviders} from './interceptors';
     HomeComponent,
     LoginComponent,
     MessageComponent,
+    DeckViewComponent,
   ],
   imports: [
     BrowserModule,
