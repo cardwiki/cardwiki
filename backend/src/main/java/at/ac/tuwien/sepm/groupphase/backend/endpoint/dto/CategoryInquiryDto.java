@@ -21,7 +21,6 @@ public class CategoryInquiryDto {
 
     public void setName(String name) { this.name = name; }
 
-
     public Category getParent() { return parent;  }
 
     public void setParent(Category parent) { this.parent = parent; }

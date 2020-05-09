@@ -10,15 +10,15 @@ import java.util.Set;
 
 public class DetailedCategoryDto extends SimpleCategoryDto {
 
-    private ApplicationUser createdBy;
+ //   private ApplicationUser createdBy;
     private Category parent;
     private Set<Category> children;
     private Date createdAt;
     private Date updatedAt;
 
-    public ApplicationUser getCreatedBy() { return createdBy; }
+//    public ApplicationUser getCreatedBy() { return createdBy; }
 
-    public void setCreatedBy(ApplicationUser createdBy) { this.createdBy = createdBy; }
+//    public void setCreatedBy(ApplicationUser createdBy) { this.createdBy = createdBy; }
 
     public Category getParent() { return parent; }
 
@@ -42,19 +42,18 @@ public class DetailedCategoryDto extends SimpleCategoryDto {
         if (!(o instanceof DetailedCategoryDto)) return false;
         if (!super.equals(o)) return false;
         DetailedCategoryDto that = (DetailedCategoryDto) o;
-        return getCreatedBy().equals(that.getCreatedBy()) &&
-            getCreatedAt().equals(that.getCreatedAt());
+        return Objects.equals(getCreatedAt(), that.getCreatedAt());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), getCreatedBy(), getCreatedAt());
+        return Objects.hash(super.hashCode(), getCreatedAt());
     }
 
     @Override
     public String toString() {
         return "DetailedCategoryDto{" +
-            "createdBy=" + createdBy +
+ //           "createdBy=" + createdBy +
             ", parent=" + parent +
             ", children=" + children +
             ", createdAt=" + createdAt +
@@ -65,7 +64,7 @@ public class DetailedCategoryDto extends SimpleCategoryDto {
     public static final class DetailedCategoryDtoBuilder {
         private Long id;
         private String name;
-        private ApplicationUser createdBy;
+  //      private ApplicationUser createdBy;
         private Category parent;
         private Set<Category> children;
         private Date createdAt;
@@ -87,10 +86,10 @@ public class DetailedCategoryDto extends SimpleCategoryDto {
             this.name = name;
             return this;
         }
-        public DetailedCategoryDto.DetailedCategoryDtoBuilder withCreatedBy(ApplicationUser createdBy) {
+  /*      public DetailedCategoryDto.DetailedCategoryDtoBuilder withCreatedBy(ApplicationUser createdBy) {
             this.createdBy = createdBy;
             return this;
-        }
+        } */
 
         public DetailedCategoryDto.DetailedCategoryDtoBuilder withParent(Category parent) {
             this.parent = parent;
@@ -116,7 +115,7 @@ public class DetailedCategoryDto extends SimpleCategoryDto {
             DetailedCategoryDto detailedCategoryDto = new DetailedCategoryDto();
             detailedCategoryDto.setId(id);
             detailedCategoryDto.setName(name);
-            detailedCategoryDto.setCreatedBy(createdBy);
+ //           detailedCategoryDto.setCreatedBy(createdBy);
             detailedCategoryDto.setParent(parent);
             detailedCategoryDto.setChildren(children);
             detailedCategoryDto.setCreatedAt(createdAt);

@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepm.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategoryInquiryDto;
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategoryUpdateDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DetailedCategoryDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.SimpleCategoryDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.CategoryMapper;
@@ -47,11 +48,11 @@ public class CategoryEndpoint {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public DetailedCategoryDto createCategory(@Valid @RequestBody CategoryInquiryDto categoryDto) {
+    public DetailedCategoryDto createCategory(@Valid @RequestBody CategoryInquiryDto categoryInquiryDto) {
         LOGGER.info("POST /api/v1/categories");
         try {
             return categoryMapper.categoryToDetailedCategoryDto(
-                categoryService.createCategory(categoryMapper.categoryInquiryDtoToCategory(categoryDto)));
+                categoryService.createCategory(categoryMapper.categoryInquiryDtoToCategory(categoryInquiryDto)));
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Parent.", e);
         }

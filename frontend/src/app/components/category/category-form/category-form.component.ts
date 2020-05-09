@@ -19,7 +19,6 @@ export class CategoryFormComponent implements OnInit {
   submitted: boolean;
   error: boolean;
   errorMessage: string = '';
-  showModal: boolean = false;
 
   categories: Category[];
   result: Category = new Category(null);
@@ -28,10 +27,10 @@ export class CategoryFormComponent implements OnInit {
   constructor(private formBuilder: FormBuilder, private authService: AuthService,
               private router: Router, private categoryService: CategoryService) {
     this.categoryForm = this.formBuilder.group({
-      name: ['', [Validators.required, Validators.pattern('^[a-zA-Z0-9]+[a-zA-Z0-9 \\/\\-\\.\\,]+$'), Validators.maxLength(200)]],
+      name: ['', [Validators.required, Validators.pattern('^[a-zA-Z0-9]+[a-zA-Z0-9 \/\-\.\,]+$'), Validators.maxLength(200)]],
       parentCategory: ['',
         { validators: [Validators.maxLength(200),
-        Validators.pattern('^[a-zA-Z0-9]+[a-zA-Z0-9 \\/\\-\\.\\,]+$'),
+        Validators.pattern('^[a-zA-Z0-9]+[a-zA-Z0-9 \/\-\.\,]+$'),
         this.validateCategoryName.bind(this)], updateOn: 'change' }]
     });
   }

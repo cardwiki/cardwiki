@@ -67,7 +67,7 @@
             </div>
           </div>
           <datalist id="categories">
-            <option *ngFor="let cat of this.categories" [value]="cat.name">
+            <option *ngFor="let cat of this.categories" value="{{cat.name}}">
           </datalist>
 
           <div id="modal" class="modal fade" role="dialog">
@@ -80,10 +80,10 @@
                 <div class="modal-body">
                   <p>Name: </p>
                   <p class="fieldContents">{{this.categoryForm.value.name}}</p>
-                  <p *ngIf="this.categoryForm.value.parentCategory">
+                  <p *ngIf="this.categoryForm.value['parentCategory']">
                     Parent category:
                   </p>
-                  <p class="fieldContents">{{this.categoryForm.value.parentCategory}}</p>
+                  <p class="fieldContents">{{this.categoryForm.value['parentCategory']}}</p>
                 </div>
                 <div class="modal-footer">
                   <button type="submit" class="btn btn-success float-left">Submit</button>

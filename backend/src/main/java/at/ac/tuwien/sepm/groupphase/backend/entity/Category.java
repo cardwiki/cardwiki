@@ -31,7 +31,7 @@ public class Category {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name="created_by", referencedColumnName="id", updatable = false)
+    @JoinColumn(name="created_by", referencedColumnName="oauthId", updatable = false)
     private ApplicationUser createdBy;
 
     @JsonIgnore
