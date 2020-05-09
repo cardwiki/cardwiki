@@ -4,6 +4,7 @@ package at.ac.tuwien.sepm.groupphase.backend.endpoint.dto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
 import org.hibernate.validator.constraints.Length;
 
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.*;
 import java.util.Objects;
 

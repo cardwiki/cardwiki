@@ -1,23 +1,16 @@
 package at.ac.tuwien.sepm.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategoryInquiryDto;
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategoryUpdateDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DetailedCategoryDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.SimpleCategoryDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.CategoryMapper;
-import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
 import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.service.CategoryService;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.Authorization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;

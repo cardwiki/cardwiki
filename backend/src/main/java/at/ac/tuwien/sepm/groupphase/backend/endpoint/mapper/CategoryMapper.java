@@ -1,7 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper;
 
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategoryInquiryDto;
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategoryUpdateDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DetailedCategoryDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.SimpleCategoryDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Category;

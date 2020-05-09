@@ -25,8 +25,6 @@ public class Category {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    @Pattern(regexp="^[a-zA-Z0-9]+[a-zA-Z0-9 \\/\\-\\.\\,]+$",
-        message="Invalid String: First character not alphanumeric or contains forbidden characters.")
     private String name;
 
     @ManyToOne
