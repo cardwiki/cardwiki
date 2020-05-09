@@ -1,14 +1,17 @@
 package at.ac.tuwien.sepm.groupphase.backend.endpoint.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 public class DeckDto {
     private Long id;
     private String name;
-    private Long createdBy;
+    private String createdBy;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    //private List<SimpleCategoryDto> categories;
 
     public Long getId() {
         return id;
@@ -26,11 +29,11 @@ public class DeckDto {
         this.name = name;
     }
 
-    public Long getCreatedBy() {
+    public String getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(Long createdBy) {
+    public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
     }
 
@@ -50,6 +53,14 @@ public class DeckDto {
         this.updatedAt = updatedAt;
     }
 
+    //public List<SimpleCategoryDto> getCategories() {
+    //    return categories;
+    //}
+
+    //public void setCategories(List<SimpleCategoryDto> categories) {
+    //    this.categories = categories;
+    //}
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -59,12 +70,13 @@ public class DeckDto {
             Objects.equals(name, that.name) &&
             Objects.equals(createdBy, that.createdBy) &&
             Objects.equals(createdAt, that.createdAt) &&
-            Objects.equals(updatedAt, that.updatedAt);
+            Objects.equals(updatedAt, that.updatedAt); //&&
+            //Objects.equals(categories, that.categories);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, createdBy, createdAt, updatedAt);
+        return Objects.hash(id, name, createdBy, createdAt, updatedAt/*, categories*/);
     }
 
     @Override
@@ -72,16 +84,17 @@ public class DeckDto {
         return "DeckDto{" +
             "id=" + id +
             ", name='" + name + '\'' +
-            ", createdBy=" + createdBy +
+            ", createdBy='" + createdBy + '\'' +
             ", createdAt=" + createdAt +
             ", updatedAt=" + updatedAt +
+            //", categories=" + categories +
             '}';
     }
 
     public static final class DeckDtoBuilder {
         private Long id;
         private String name;
-        private Long createdBy;
+        private String createdBy;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
 
@@ -99,7 +112,7 @@ public class DeckDto {
             return this;
         }
 
-        public DeckDtoBuilder withCreatedBy(Long createdBy) {
+        public DeckDtoBuilder withCreatedBy(String createdBy) {
             this.createdBy = createdBy;
             return this;
         }

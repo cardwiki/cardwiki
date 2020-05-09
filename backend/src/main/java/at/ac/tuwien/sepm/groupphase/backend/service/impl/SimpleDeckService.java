@@ -6,9 +6,11 @@ import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,5 +28,17 @@ public class SimpleDeckService implements DeckService {
         Optional<Deck> deck = deckRepository.findById(id);
         if (deck.isPresent()) return deck.get();
         else throw new NotFoundException(String.format("Could not find card deck with id %s", id));
+    }
+
+    @Override
+    public List<Deck> searchByName(String name, Pageable pageable) {
+        LOGGER.debug("Search card decks for name {} {}", name, pageable);
+        return deckRepository.findByNameContainingIgnoreCase(name, pageable);
+    }
+
+    @Override
+    public Deck create(Deck deck) {
+        LOGGER.debug("Create new deck {}", deck);
+        return deckRepository.save(deck);
     }
 }
