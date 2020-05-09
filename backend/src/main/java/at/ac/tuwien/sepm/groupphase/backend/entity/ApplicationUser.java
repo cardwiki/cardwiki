@@ -1,9 +1,9 @@
 package at.ac.tuwien.sepm.groupphase.backend.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -22,6 +22,9 @@ public class ApplicationUser {
     @Column(nullable = false)
     private boolean enabled;
 
+    @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY)
+    private Set<Card> cards = new HashSet<>();
+
     public ApplicationUser() {
     }
 
@@ -30,6 +33,11 @@ public class ApplicationUser {
         this.username = username;
         this.admin = admin;
         this.enabled = enabled;
+    }
+
+    public void dismissCard(Card card) {
+        if (!cards.remove(card))
+            throw new NoSuchElementException("Tried to dismiss card which is not yet associated with user");
     }
 
     public String getUsername() {
@@ -58,5 +66,27 @@ public class ApplicationUser {
 
     public boolean isEnabled(){
         return enabled;
+    }
+
+    public void setOauthId(String oauthId) {
+        this.oauthId = oauthId;
+    }
+
+    public Set<Card> getCards() {
+        return cards;
+    }
+
+    public void setCards(Set<Card> cards) {
+        this.cards = cards;
+    }
+
+    @Override
+    public String toString() {
+        return "ApplicationUser{" +
+            "oauthId='" + oauthId + '\'' +
+            ", username='" + username + '\'' +
+            ", admin=" + admin +
+            ", enabled=" + enabled +
+            '}';
     }
 }

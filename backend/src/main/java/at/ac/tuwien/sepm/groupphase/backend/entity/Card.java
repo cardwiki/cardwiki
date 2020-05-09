@@ -13,6 +13,10 @@ public class Card {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="deck_id", nullable=false)
+    private Deck deck;
+
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "latest_revision", referencedColumnName = "id")
     private Revision latestRevision;
@@ -24,6 +28,18 @@ public class Card {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false, updatable = false)
     private Date createdAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="created_by") // TODO: Consider adding DELETED_USER and make it not nullable
+    private ApplicationUser createdBy;
+
+    @PreRemove
+    private void dismissContainers() {
+        deck.dismissCard(this);
+        deck = null;
+        createdBy.dismissCard(this);
+        createdBy = null;
+    }
 
     @PrePersist
     @PreUpdate
@@ -46,6 +62,14 @@ public class Card {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Deck getDeck() {
+        return deck;
+    }
+
+    public void setDeck(Deck deck) {
+        this.deck = deck;
     }
 
     public Revision getLatestRevision() {
@@ -72,10 +96,19 @@ public class Card {
         this.createdAt = createdAt;
     }
 
+    public ApplicationUser getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(ApplicationUser createdBy) {
+        this.createdBy = createdBy;
+    }
+
     @Override
     public String toString() {
         return "Card{" +
             "id=" + id +
+            ", createdBy=" + createdBy +
             ", latestRevision=" + latestRevision +
             ", revisions=" + revisions +
             '}';
