@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepm.groupphase.backend.endpoint.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 public class DeckDto {
@@ -9,6 +10,8 @@ public class DeckDto {
     private String createdBy;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    //private List<SimpleCategoryDto> categories;
 
     public Long getId() {
         return id;
@@ -50,6 +53,14 @@ public class DeckDto {
         this.updatedAt = updatedAt;
     }
 
+    //public List<SimpleCategoryDto> getCategories() {
+    //    return categories;
+    //}
+
+    //public void setCategories(List<SimpleCategoryDto> categories) {
+    //    this.categories = categories;
+    //}
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -59,12 +70,13 @@ public class DeckDto {
             Objects.equals(name, that.name) &&
             Objects.equals(createdBy, that.createdBy) &&
             Objects.equals(createdAt, that.createdAt) &&
-            Objects.equals(updatedAt, that.updatedAt);
+            Objects.equals(updatedAt, that.updatedAt); //&&
+            //Objects.equals(categories, that.categories);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, createdBy, createdAt, updatedAt);
+        return Objects.hash(id, name, createdBy, createdAt, updatedAt/*, categories*/);
     }
 
     @Override
@@ -75,6 +87,7 @@ public class DeckDto {
             ", createdBy='" + createdBy + '\'' +
             ", createdAt=" + createdAt +
             ", updatedAt=" + updatedAt +
+            //", categories=" + categories +
             '}';
     }
 
