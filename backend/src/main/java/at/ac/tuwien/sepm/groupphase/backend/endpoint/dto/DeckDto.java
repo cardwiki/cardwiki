@@ -6,7 +6,7 @@ import java.util.Objects;
 public class DeckDto {
     private Long id;
     private String name;
-    private Long createdBy;
+    private String createdBy;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -26,11 +26,11 @@ public class DeckDto {
         this.name = name;
     }
 
-    public Long getCreatedBy() {
+    public String getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(Long createdBy) {
+    public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
     }
 
@@ -72,7 +72,7 @@ public class DeckDto {
         return "DeckDto{" +
             "id=" + id +
             ", name='" + name + '\'' +
-            ", createdBy=" + createdBy +
+            ", createdBy='" + createdBy + '\'' +
             ", createdAt=" + createdAt +
             ", updatedAt=" + updatedAt +
             '}';
@@ -81,7 +81,7 @@ public class DeckDto {
     public static final class DeckDtoBuilder {
         private Long id;
         private String name;
-        private Long createdBy;
+        private String createdBy;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
 
@@ -99,7 +99,7 @@ public class DeckDto {
             return this;
         }
 
-        public DeckDtoBuilder withCreatedBy(Long createdBy) {
+        public DeckDtoBuilder withCreatedBy(String createdBy) {
             this.createdBy = createdBy;
             return this;
         }
