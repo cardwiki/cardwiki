@@ -2,7 +2,6 @@ package at.ac.tuwien.sepm.groupphase.backend.basetest;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
 import at.ac.tuwien.sepm.groupphase.backend.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -47,11 +46,11 @@ public interface TestData {
     String FRONT_TEXT = "Test Front";
     String BACK_TEXT = "Test Back";
 
-    default ApplicationUser givenApplicationUser() {
-        ApplicationUser applicationUser = new ApplicationUser();
-        applicationUser.setUsername(USER_NAME);
-        applicationUser.setOauthId(OAUTH_ID);
-        return getApplicationUserRepository().saveAndFlush(applicationUser);
+    default User givenApplicationUser() {
+        User user = new User();
+        user.setUsername(USER_NAME);
+        user.setOAuthId(OAUTH_ID);
+        return getApplicationUserRepository().saveAndFlush(user);
     }
 
     default Deck givenDeck() {
@@ -61,13 +60,13 @@ public interface TestData {
     }
 
     default Card givenCard() {
-        ApplicationUser applicationUser = givenApplicationUser();
+        User user = givenApplicationUser();
         Deck deck = givenDeck();
         Card card = new Card();
         card.setDeck(deck);
         deck.getCards().add(card);
-        card.setCreatedBy(applicationUser);
-        applicationUser.getCards().add(card);
+        card.setCreatedBy(user);
+        user.getCards().add(card);
 
         return getCardRepository().saveAndFlush(card);
     }

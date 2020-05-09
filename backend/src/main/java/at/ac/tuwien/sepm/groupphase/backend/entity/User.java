@@ -7,11 +7,10 @@ import java.util.Set;
 
 @Entity
 @Table(name = "users")
-public class ApplicationUser {
+public class User {
 
     @Id
-    @Column(nullable = false, unique = true)
-    private String oauthId;
+    private String oAuthId;
 
     @Column(nullable = false, unique = true)
     private String username;
@@ -25,11 +24,11 @@ public class ApplicationUser {
     @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY)
     private Set<Card> cards = new HashSet<>();
 
-    public ApplicationUser() {
+    public User() {
     }
 
-    public ApplicationUser(String oauthId, String username, boolean admin, boolean enabled) {
-        this.oauthId = oauthId;
+    public User(String oAuthId, String username, boolean admin, boolean enabled) {
+        this.oAuthId = oAuthId;
         this.username = username;
         this.admin = admin;
         this.enabled = enabled;
@@ -52,8 +51,8 @@ public class ApplicationUser {
         return admin;
     }
 
-    public String getOauthId() {
-        return oauthId;
+    public String setOAuthId() {
+        return oAuthId;
     }
 
     public void setAdmin(boolean admin) {
@@ -68,8 +67,8 @@ public class ApplicationUser {
         return enabled;
     }
 
-    public void setOauthId(String oauthId) {
-        this.oauthId = oauthId;
+    public void setOAuthId(String oauthId) {
+        this.oAuthId = oauthId;
     }
 
     public Set<Card> getCards() {
@@ -83,7 +82,7 @@ public class ApplicationUser {
     @Override
     public String toString() {
         return "ApplicationUser{" +
-            "oauthId='" + oauthId + '\'' +
+            "oAuthId='" + oAuthId + '\'' +
             ", username='" + username + '\'' +
             ", admin=" + admin +
             ", enabled=" + enabled +

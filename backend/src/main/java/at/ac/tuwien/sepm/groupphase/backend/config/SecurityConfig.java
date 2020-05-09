@@ -56,7 +56,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         }
     }
 
-    private final List<String> frontendOrigins = Collections.unmodifiableList(Arrays.asList("http://localhost:4200"));
+    private final List<String> trustedOrigins = Collections.unmodifiableList(
+        Arrays.asList("http://localhost:4200", "http://localhost:8080"));
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -68,8 +69,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 config.addAllowedHeader("*");
 
                 // We allow credentials only for whitelisted frontends.
-                if (frontendOrigins.contains(request.getHeader("Origin"))){
-                    config.setAllowedOrigins(frontendOrigins);
+                if (trustedOrigins.contains(request.getHeader("Origin"))){
+                    config.setAllowedOrigins(trustedOrigins);
                     config.setAllowCredentials(true);
                 } else {
                     config.addAllowedOrigin("*");
@@ -84,7 +85,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(frontendOrigins);
+        config.setAllowedOrigins(trustedOrigins);
         config.addAllowedMethod("POST");
         source.registerCorsConfiguration("/logout", config);
         return new CorsFilter(source);

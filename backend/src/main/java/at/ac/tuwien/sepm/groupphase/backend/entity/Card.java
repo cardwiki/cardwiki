@@ -31,7 +31,7 @@ public class Card {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="created_by") // TODO: Consider adding DELETED_USER and make it not nullable
-    private ApplicationUser createdBy;
+    private User createdBy;
 
     @PreRemove
     private void dismissContainers() {
@@ -96,11 +96,11 @@ public class Card {
         this.createdAt = createdAt;
     }
 
-    public ApplicationUser getCreatedBy() {
+    public User getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(ApplicationUser createdBy) {
+    public void setCreatedBy(User createdBy) {
         this.createdBy = createdBy;
     }
 
