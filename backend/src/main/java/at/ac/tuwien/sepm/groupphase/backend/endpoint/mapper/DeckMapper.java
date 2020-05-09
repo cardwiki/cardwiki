@@ -12,7 +12,7 @@ public abstract class DeckMapper {
 
     public abstract Deck deckInputDtoToDeck(DeckInputDto deckInputDto);
 
-    public Long test(DeckCategoryId deckCategoryId) {
+    public Long deckCategoryIdtoLong(DeckCategoryId deckCategoryId) {
         return deckCategoryId.getCategoryId();
     }
 }
