@@ -60,23 +60,23 @@ public interface TestData {
     }
 
     default Card givenCard() {
-        User user = givenApplicationUser();
         Deck deck = givenDeck();
         Card card = new Card();
         card.setDeck(deck);
         deck.getCards().add(card);
-        card.setCreatedBy(user);
-        user.getCards().add(card);
 
         return getCardRepository().saveAndFlush(card);
     }
 
     default Revision givenRevision() {
+        User user = givenApplicationUser();
         Card card = givenCard();
         Revision revision = new Revision();
         revision.setMessage(REVISION_MESSAGE);
         revision.setCard(card);
         card.setLatestRevision(revision);
+        revision.setCreatedBy(user);
+        user.getRevisions().add(revision);
 
         return getRevisionRepository().saveAndFlush(revision);
     }

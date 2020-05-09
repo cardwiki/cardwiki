@@ -45,12 +45,12 @@ public class CardDataGenerator {
 
             card.setDeck(deck);
             deck.getCards().add(card);
-            card.setCreatedBy(user);
-            user.getCards().add(card);
 
             card.setLatestRevision(revision);
             revision.setCard(card);
             revision.setMessage("Test Revision " + i);
+            revision.setCreatedBy(user);
+            user.getRevisions().add(revision);
 
             card = cardRepository.save(card);
 
@@ -70,6 +70,8 @@ public class CardDataGenerator {
                 revision.setCard(card);
                 revision.setMessage("Deleted " + i);
                 card.setLatestRevision(revision);
+                revision.setCreatedBy(user);
+                user.getRevisions().add(revision);
 
                 cardRepository.save(card);
             }

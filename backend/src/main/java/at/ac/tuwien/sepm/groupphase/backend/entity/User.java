@@ -22,7 +22,7 @@ public class User {
     private boolean enabled;
 
     @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY)
-    private Set<Card> cards = new HashSet<>();
+    private Set<Revision> revisions = new HashSet<>();
 
     public User() {
     }
@@ -34,9 +34,9 @@ public class User {
         this.enabled = enabled;
     }
 
-    public void dismissCard(Card card) {
-        if (!cards.remove(card))
-            throw new NoSuchElementException("Tried to dismiss card which is not yet associated with user");
+    public void dismissRevision(Revision revision) {
+        if (!revisions.remove(revision))
+            throw new NoSuchElementException("Tried to dismiss revision which is not yet associated with user");
     }
 
     public String getUsername() {
@@ -71,12 +71,12 @@ public class User {
         this.oAuthId = oauthId;
     }
 
-    public Set<Card> getCards() {
-        return cards;
+    public Set<Revision> getRevisions() {
+        return revisions;
     }
 
-    public void setCards(Set<Card> cards) {
-        this.cards = cards;
+    public void setRevisions(Set<Revision> revisions) {
+        this.revisions = revisions;
     }
 
     @Override
