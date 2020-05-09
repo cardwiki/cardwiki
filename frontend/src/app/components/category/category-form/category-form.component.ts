@@ -27,11 +27,13 @@ export class CategoryFormComponent implements OnInit {
   constructor(private formBuilder: FormBuilder, private authService: AuthService,
               private router: Router, private categoryService: CategoryService) {
     this.categoryForm = this.formBuilder.group({
-      name: ['', [Validators.required, Validators.pattern('^[a-zA-Z0-9]+[a-zA-Z0-9 \/\-\.\,]+$'), Validators.maxLength(200)]],
+      name: ['', [Validators.required, Validators.pattern('^[a-zA-Z0-9]+[a-zA-Z0-9 \\/\\-\\.\\,]+$'), Validators.maxLength(200)]],
       parentCategory: ['',
-        { validators: [Validators.maxLength(200),
-        Validators.pattern('^[a-zA-Z0-9]+[a-zA-Z0-9 \/\-\.\,]+$'),
-        this.validateCategoryName.bind(this)], updateOn: 'change' }]
+        {
+          validators: [Validators.maxLength(200),
+            Validators.pattern('^[a-zA-Z0-9]+[a-zA-Z0-9 \\/\\-\\.\\,]+$'),
+            this.validateCategoryName.bind(this)], updateOn: 'change'
+        }]
     });
   }
 
@@ -71,25 +73,26 @@ export class CategoryFormComponent implements OnInit {
       const parent = this.parentId ? new Category(null, null, this.parentId) : null;
       this.categoryService.createCategory(new Category(this.categoryForm.value.name, parent, null))
         .subscribe((categoryResult) => {
-          console.log(categoryResult);
-          this.result = categoryResult;
-          this.submitted = true;
+            console.log(categoryResult);
+            this.result = categoryResult;
+            this.submitted = true;
             this.fetchCategories();
-        },
-        (error) => {
-          console.log('Creating category failed:');
-          console.log(error);
-          this.error = true;
-          if (typeof error.error === 'object') {
-            this.errorMessage = error.error.error;
-          } else {
-            this.errorMessage = error.error;
+          },
+          (error) => {
+            console.log('Creating category failed:');
+            console.log(error);
+            this.error = true;
+            if (typeof error.error === 'object') {
+              this.errorMessage = error.error.error;
+            } else {
+              this.errorMessage = error.error;
+            }
+            this.submitted = true;
           }
-          this.submitted = true;
-        }
-      );
+        );
     }
   }
+
 
   checkNameErrors() {
     if (this.categoryForm.controls.name.errors) {
