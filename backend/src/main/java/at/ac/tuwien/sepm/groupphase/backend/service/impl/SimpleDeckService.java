@@ -7,6 +7,7 @@ import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
@@ -18,6 +19,7 @@ public class SimpleDeckService implements DeckService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final DeckRepository deckRepository;
 
+    @Autowired
     public SimpleDeckService(DeckRepository deckRepository) {
         this.deckRepository = deckRepository;
     }
@@ -40,5 +42,15 @@ public class SimpleDeckService implements DeckService {
     public Deck create(Deck deck) {
         LOGGER.debug("Create new deck {}", deck);
         return deckRepository.save(deck);
+    }
+
+    @Override
+    public Deck update(Deck deck) {
+        LOGGER.debug("Update deck with id: {}", deck.getId());
+        if (deckRepository.findById(deck.getId()).isPresent()) {
+            return deckRepository.save(deck);
+        } else {
+            throw new NotFoundException(String.format("Could not find deck with id %s", deck.getId()));
+        }
     }
 }
