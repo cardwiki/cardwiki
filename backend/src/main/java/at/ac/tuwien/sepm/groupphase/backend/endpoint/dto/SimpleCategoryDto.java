@@ -36,33 +36,4 @@ public class SimpleCategoryDto {
             ", name='" + name + '\'' +
             '}';
     }
-
-    public static final class SimpleCategoryDtoBuilder {
-        private Long id;
-        private String name;
-
-        private SimpleCategoryDtoBuilder() {
-        }
-
-        public static SimpleCategoryDto.SimpleCategoryDtoBuilder aSimpleCategoryDto() {
-            return new SimpleCategoryDto.SimpleCategoryDtoBuilder();
-        }
-
-        public SimpleCategoryDto.SimpleCategoryDtoBuilder withId(Long id) {
-            this.id = id;
-            return this;
-        }
-
-        public SimpleCategoryDto.SimpleCategoryDtoBuilder withName(String name) {
-            this.name = name;
-            return this;
-        }
-
-        public SimpleCategoryDto build() {
-            SimpleCategoryDto simpleCategoryDto = new SimpleCategoryDto();
-            simpleCategoryDto.setId(id);
-            simpleCategoryDto.setName(name);
-            return simpleCategoryDto;
-        }
-    }
 }
