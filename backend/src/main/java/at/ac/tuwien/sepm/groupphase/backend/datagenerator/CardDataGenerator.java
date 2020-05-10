@@ -1,9 +1,9 @@
 package at.ac.tuwien.sepm.groupphase.backend.datagenerator;
 
-import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
-import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
-import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionEdit;
+import at.ac.tuwien.sepm.groupphase.backend.entity.*;
+import at.ac.tuwien.sepm.groupphase.backend.repository.ApplicationUserRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
+import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
@@ -19,23 +19,38 @@ public class CardDataGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final int NUMBER_OF_CARDS_TO_GENERATE = 3;
 
+    private final ApplicationUserRepository applicationUserRepository;
     private final CardRepository cardRepository;
+    private final DeckRepository deckRepository;
 
-    public CardDataGenerator(CardRepository cardRepository) {
+    public CardDataGenerator(CardRepository cardRepository, DeckRepository deckRepository, ApplicationUserRepository applicationUserRepository) {
         this.cardRepository = cardRepository;
+        this.deckRepository = deckRepository;
+        this.applicationUserRepository = applicationUserRepository;
     }
 
     @PostConstruct
     private void generateCards() {
+        User user = new User("Fake Id", "Test User", false, false);
+        applicationUserRepository.saveAndFlush(user);
+        Deck deck = new Deck();
+        deck.setName("Test Deck");
+        deckRepository.saveAndFlush(deck);
+
         long countCards = cardRepository.count();
         for (int i = (int)countCards; i < NUMBER_OF_CARDS_TO_GENERATE; i++) {
             LOGGER.info("Creating card {}", i);
             Card card = new Card();
             Revision revision = new Revision();
 
+            card.setDeck(deck);
+            deck.getCards().add(card);
+
             card.setLatestRevision(revision);
             revision.setCard(card);
             revision.setMessage("Test Revision " + i);
+            revision.setCreatedBy(user);
+            user.getRevisions().add(revision);
 
             card = cardRepository.save(card);
 
@@ -55,8 +70,10 @@ public class CardDataGenerator {
                 revision.setCard(card);
                 revision.setMessage("Deleted " + i);
                 card.setLatestRevision(revision);
+                revision.setCreatedBy(user);
+                user.getRevisions().add(revision);
 
-                card = cardRepository.save(card);
+                cardRepository.save(card);
             }
         }
     }

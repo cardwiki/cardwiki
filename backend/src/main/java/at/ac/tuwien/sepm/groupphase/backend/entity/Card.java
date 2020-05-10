@@ -13,6 +13,10 @@ public class Card {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="deck_id", nullable=false)
+    private Deck deck;
+
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "latest_revision", referencedColumnName = "id")
     private Revision latestRevision;
@@ -24,6 +28,12 @@ public class Card {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false, updatable = false)
     private Date createdAt;
+
+    @PreRemove
+    private void dismissContainers() {
+        deck.dismissCard(this);
+        deck = null;
+    }
 
     @PrePersist
     @PreUpdate
@@ -46,6 +56,14 @@ public class Card {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Deck getDeck() {
+        return deck;
+    }
+
+    public void setDeck(Deck deck) {
+        this.deck = deck;
     }
 
     public Revision getLatestRevision() {
