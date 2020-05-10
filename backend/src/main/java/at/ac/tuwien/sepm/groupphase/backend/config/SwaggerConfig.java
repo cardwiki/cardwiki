@@ -8,7 +8,6 @@ import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.ApiKey;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
@@ -36,12 +35,6 @@ public class SwaggerConfig {
                 null,
                 null,
                 Collections.emptyList()
-            ))
-            .securitySchemes(Collections.singletonList(apiKey()));
-    }
-
-    private ApiKey apiKey() {
-        //`apiKey` is the name of the APIKey, `Authorization` is the key in the request header
-        return new ApiKey("apiKey", "Authorization", "header");
+            ));
     }
 }

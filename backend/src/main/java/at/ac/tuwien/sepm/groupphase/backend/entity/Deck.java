@@ -1,12 +1,11 @@
 package at.ac.tuwien.sepm.groupphase.backend.entity;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "decks")
@@ -28,18 +27,25 @@ public class Deck {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Date createdAt;
 
+    @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_at", nullable = false)
     private Date updatedAt;
 
-    //@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "deck")
-    //private Set<Card> cards = new HashSet<>();
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "deck")
+    private Set<Card> cards = new HashSet<>();
 
     //@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "deck")
     //private Set<Comment> comments = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "deck")
     private Set<DeckCategory> categories = new HashSet<>();
+
+
+    public void dismissCard(Card card) {
+        if (!cards.remove(card))
+            throw new NoSuchElementException("Tried to dismiss card which is not yet associated with deck");
+    }
 
     public Long getId() {
         return id;
@@ -96,6 +102,15 @@ public class Deck {
     //public void setComments(Set<Comment> comments) {
     //    this.comments = comments;
     //}
+
+
+    public Set<Card> getCards() {
+        return cards;
+    }
+
+    public void setCards(Set<Card> cards) {
+        this.cards = cards;
+    }
 
     public Set<DeckCategory> getCategories() {
         return categories;

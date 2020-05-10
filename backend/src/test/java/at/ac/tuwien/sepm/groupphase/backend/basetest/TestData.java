@@ -1,10 +1,19 @@
 package at.ac.tuwien.sepm.groupphase.backend.basetest;
 
+import at.ac.tuwien.sepm.groupphase.backend.entity.*;
+import at.ac.tuwien.sepm.groupphase.backend.repository.*;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public interface TestData {
+
+    ApplicationUserRepository getApplicationUserRepository();
+    DeckRepository getDeckRepository();
+    CardRepository getCardRepository();
+    RevisionRepository getRevisionRepository();
+    RevisionEditRepository getRevisionEditRepository();
 
     Long ID = 1L;
     String TEST_NEWS_TITLE = "Title";
@@ -30,4 +39,56 @@ public interface TestData {
         }
     };
 
+    String OAUTH_ID = "Fake Id";
+    String USER_NAME = "Test User";
+    String DECK_NAME = "Test Deck";
+    String REVISION_MESSAGE = "Test Revision";
+    String FRONT_TEXT = "Test Front";
+    String BACK_TEXT = "Test Back";
+
+    default User givenApplicationUser() {
+        User user = new User();
+        user.setUsername(USER_NAME);
+        user.setOAuthId(OAUTH_ID);
+        return getApplicationUserRepository().saveAndFlush(user);
+    }
+
+    default Deck givenDeck() {
+        Deck deck = new Deck();
+        deck.setName(DECK_NAME);
+        return getDeckRepository().saveAndFlush(deck);
+    }
+
+    default Card givenCard() {
+        User user = givenApplicationUser();
+        Deck deck = givenDeck();
+        Card card = new Card();
+        card.setDeck(deck);
+        deck.getCards().add(card);
+        card.setCreatedBy(user);
+        user.getCards().add(card);
+
+        return getCardRepository().saveAndFlush(card);
+    }
+
+    default Revision givenRevision() {
+        Card card = givenCard();
+        Revision revision = new Revision();
+        revision.setMessage(REVISION_MESSAGE);
+        revision.setCard(card);
+        card.setLatestRevision(revision);
+
+        return getRevisionRepository().saveAndFlush(revision);
+    }
+
+    default RevisionEdit givenRevisionEdit() {
+        Revision revision = givenRevision();
+        RevisionEdit revisionEdit = new RevisionEdit();
+        revisionEdit.setTextFront(FRONT_TEXT);
+        revisionEdit.setTextBack(BACK_TEXT);
+        revisionEdit.setRevision(revision);
+        revision.setRevisionEdit(revisionEdit);
+
+        return getRevisionEditRepository().saveAndFlush(revisionEdit);
+    }
 }

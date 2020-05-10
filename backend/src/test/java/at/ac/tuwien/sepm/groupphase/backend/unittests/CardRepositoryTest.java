@@ -1,7 +1,8 @@
 package at.ac.tuwien.sepm.groupphase.backend.unittests;
 
-import at.ac.tuwien.sepm.groupphase.backend.basetest.TestData;
+import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
+import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
 import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionEdit;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -19,24 +21,38 @@ import static org.junit.jupiter.api.Assertions.*;
 // the entire application context
 @DataJpaTest
 @ActiveProfiles("test")
-public class CardRepositoryTest implements TestData {
+public class CardRepositoryTest extends TestDataGenerator {
 
     @Autowired
     private CardRepository cardRepository;
 
     @Test
-    public void givenNothing_whenSaveCard_thenExistsById() {
+    public void givenNothing_whenSaveCard_thenThrowDataIntegrityViolationException() {
         Card card = new Card();
+        assertThrows(DataIntegrityViolationException.class, () -> cardRepository.save(card));
+    }
+
+    @Test
+    public void givenDeck_whenSaveCard_thenExistsById() {
+        Deck deck = givenDeck();
+
+        Card card = new Card();
+        card.setDeck(deck);
+        deck.getCards().add(card);
         cardRepository.save(card);
 
         assertTrue(cardRepository.existsById(card.getId()));
     }
 
     @Test
-    public void givenNothing_whenSaveCardWithRevision_thenFindCardByIdHasLatestRevisionAndRevisionsIsNotEmpty() {
+    public void givenDeck_whenSaveCardWithRevision_thenFindCardByIdHasLatestRevisionAndRevisionsIsNotEmpty() {
+        Deck deck = givenDeck();
+
         Card card = new Card();
+        card.setDeck(deck);
+        deck.getCards().add(card);
         Revision revision = new Revision();
-        revision.setMessage("Test Revision");
+        revision.setMessage(REVISION_MESSAGE);
         card.setLatestRevision(revision);
         revision.setCard(card);
         cardRepository.save(card);
@@ -47,12 +63,11 @@ public class CardRepositoryTest implements TestData {
 
     @Test
     public void givenCard_whenAddRevision_thenFindCardByIdHasRevision() {
-        Card card = new Card();
-        cardRepository.save(card);
+        Card card = givenCard();
 
         // When
         Revision revision = new Revision();
-        revision.setMessage("Test Revision");
+        revision.setMessage(REVISION_MESSAGE);
         card.setLatestRevision(revision);
         revision.setCard(card);
         cardRepository.saveAndFlush(card);
@@ -64,8 +79,7 @@ public class CardRepositoryTest implements TestData {
 
     @Test
     public void givenCard_whenDeleteById_thenExistsByIdIsFalse() {
-        Card card = new Card();
-        cardRepository.save(card);
+        Card card = givenCard();
 
         cardRepository.deleteById(card.getId());
 
@@ -73,20 +87,20 @@ public class CardRepositoryTest implements TestData {
     }
 
     @Test
-    public void givenCardAndRevisionEdit_whenDeleteById_thenNotExistsById() {
-        Card card = new Card();
-        Revision revision = new Revision();
-        revision.setMessage("Test Revision");
-        revision.setCard(card);
-        card.setLatestRevision(revision);
-        cardRepository.save(card);
+    public void givenCard_whenDeleteById_thenDeckDoesNotContainCard() {
+        Card card = givenCard();
+        Deck deck = card.getDeck();
 
-        RevisionEdit edit = new RevisionEdit();
-        edit.setTextFront("Test Front");
-        edit.setTextBack("Test Back");
-        edit.setRevision(revision);
-        revision.setRevisionEdit(edit);
-        cardRepository.save(card);
+        assertTrue(deck.getCards().contains(card));
+        cardRepository.deleteById(card.getId());
+
+        assertFalse(deck.getCards().contains(card));
+    }
+
+    @Test
+    public void givenCardAndRevisionEdit_whenDeleteById_thenNotExistsById() {
+        RevisionEdit edit = givenRevisionEdit();
+        Card card = edit.getRevision().getCard();
 
         // When
         cardRepository.deleteById(card.getId());
@@ -96,19 +110,9 @@ public class CardRepositoryTest implements TestData {
 
     @Test
     public void givenCardAndRevisionEdit_whenDeleteRevision_thenRevisionsIsEmpty() {
-        Card card = new Card();
-        Revision revision = new Revision();
-        revision.setMessage("Test Revision");
-        revision.setCard(card);
-        card.setLatestRevision(revision);
-        cardRepository.save(card);
-
-        RevisionEdit edit = new RevisionEdit();
-        edit.setTextFront("Test Front");
-        edit.setTextBack("Test Back");
-        edit.setRevision(revision);
-        revision.setRevisionEdit(edit);
-        card = cardRepository.save(card);
+        RevisionEdit edit = givenRevisionEdit();
+        Revision revision = edit.getRevision();
+        Card card = revision.getCard();
 
         // When
         card.setLatestRevision(null);
