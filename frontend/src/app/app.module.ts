@@ -12,6 +12,9 @@ import {LoginComponent} from './components/login/login.component';
 import {MessageComponent} from './components/message/message.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {httpInterceptorProviders} from './interceptors';
+import { CategoryCreateComponent } from './components/category/category-create/category-create.component';
+import { CategoryFormComponent } from './components/category/category-form/category-form.component';
+import { CategoryUpdateComponent } from './components/category/category-update/category-update.component';
 
 @NgModule({
   declarations: [
@@ -21,6 +24,9 @@ import {httpInterceptorProviders} from './interceptors';
     HomeComponent,
     LoginComponent,
     MessageComponent,
+    CategoryCreateComponent,
+    CategoryFormComponent,
+    CategoryUpdateComponent,
   ],
   imports: [
     BrowserModule,
