@@ -29,22 +29,20 @@ public class SimpleCardService implements CardService {
 
     @Override
     @Transactional
-    public Card addCardToDeck(Long deckId, RevisionEdit revisionEdit, Authentication authentication) {
+    public Card addCardToDeck(Long deckId, RevisionEdit revisionEdit, String oAuthId) {
         LOGGER.debug("Add Card to Deck: {} {}", revisionEdit, deckId);
-        User user = userService.loadUserByOauthId(authentication.getName());
+        User user = userService.loadUserByOauthId(oAuthId);
         Deck deck = deckService.findOne(deckId);
 
         // Save Card with initial revision
         Card card = new Card();
         card.setDeck(deck);
-        deck.getCards().add(card);
 
         Revision revision = new Revision();
         revision.setMessage("Created");
         card.setLatestRevision(revision);
         revision.setCard(card);
         revision.setCreatedBy(user);
-        user.getRevisions().add(revision);
 
         card = cardRepository.saveAndFlush(card);
 

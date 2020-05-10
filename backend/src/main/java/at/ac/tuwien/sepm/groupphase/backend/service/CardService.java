@@ -11,9 +11,9 @@ public interface CardService {
      *
      * @param revisionEdit data of the new card
      * @param deckId id of the deck where it will be added
-     * @param authentication currently logged in user
+     * @param oAuthId oauthid of the currently logged in user
      * @return created card
      */
-    Card addCardToDeck(Long deckId, RevisionEdit revisionEdit, Authentication authentication);
+    Card addCardToDeck(Long deckId, RevisionEdit revisionEdit, String oAuthId);
 
 }

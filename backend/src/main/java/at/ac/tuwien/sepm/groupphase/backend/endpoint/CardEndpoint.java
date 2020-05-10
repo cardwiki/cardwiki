@@ -38,6 +38,6 @@ public class CardEndpoint {
     public CardDetailsDto create(@Valid  @RequestBody RevisionEditInquiryDto revisionEditInquiryDto, Authentication authentication, @PathVariable Long deckId) {
         LOGGER.info("POST /api/v1/decks/{}/cards body: {}", deckId, revisionEditInquiryDto);
         RevisionEdit revisionEdit = cardMapper.revisionEditInquiryDtoToRevisionEdit(revisionEditInquiryDto);
-        return cardMapper.cardToCardDetailsDto(cardService.addCardToDeck(deckId, revisionEdit, authentication));
+        return cardMapper.cardToCardDetailsDto(cardService.addCardToDeck(deckId, revisionEdit, authentication.getName()));
     }
 }
