@@ -1,8 +1,8 @@
 package at.ac.tuwien.sepm.groupphase.backend.endpoint;
 
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategoryDetailedDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategoryInquiryDto;
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DetailedCategoryDto;
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.SimpleCategoryDto;
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategorySimpleDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.CategoryMapper;
 import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.service.CategoryService;
@@ -34,17 +34,17 @@ public class CategoryEndpoint {
 
     @GetMapping
    // @ApiOperation(value = "Get list of categories without details", authorizations = {@Authorization(value = "apiKey")})
-    public List<SimpleCategoryDto> getCategories() {
+    public List<CategorySimpleDto> getCategories() {
         LOGGER.info("GET /api/v1/categories");
-        return categoryMapper.categoryToSimpleCategoryDto(categoryService.findAll());
+        return categoryMapper.categoryToCategorySimpleDto(categoryService.findAll());
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public DetailedCategoryDto createCategory(@Valid @RequestBody CategoryInquiryDto categoryInquiryDto) {
+    public CategoryDetailedDto createCategory(@Valid @RequestBody CategoryInquiryDto categoryInquiryDto) {
         LOGGER.info("POST /api/v1/categories");
         try {
-            return categoryMapper.categoryToDetailedCategoryDto(
+            return categoryMapper.categoryToCategoryDetailedDto(
                 categoryService.createCategory(categoryMapper.categoryInquiryDtoToCategory(categoryInquiryDto)));
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Parent.", e);
@@ -52,8 +52,8 @@ public class CategoryEndpoint {
     }
 
     @GetMapping(value = "/{id}")
-    public DetailedCategoryDto getCategory(@PathVariable Long id) {
+    public CategoryDetailedDto getCategory(@PathVariable Long id) {
         LOGGER.info("GET /api/v1/categories/{}", id);
-        return categoryMapper.categoryToDetailedCategoryDto(categoryService.findOneById(id));
+        return categoryMapper.categoryToCategoryDetailedDto(categoryService.findOneById(id));
     }
 }

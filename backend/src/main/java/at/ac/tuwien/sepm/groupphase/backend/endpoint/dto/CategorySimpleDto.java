@@ -2,7 +2,7 @@ package at.ac.tuwien.sepm.groupphase.backend.endpoint.dto;
 
 import java.util.Objects;
 
-public class SimpleCategoryDto {
+public class CategorySimpleDto {
 
     private Long id;
     private String name;
@@ -18,8 +18,8 @@ public class SimpleCategoryDto {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof SimpleCategoryDto)) return false;
-        SimpleCategoryDto that = (SimpleCategoryDto) o;
+        if (!(o instanceof CategorySimpleDto)) return false;
+        CategorySimpleDto that = (CategorySimpleDto) o;
         return getId().equals(that.getId()) &&
             getName().equals(that.getName());
     }

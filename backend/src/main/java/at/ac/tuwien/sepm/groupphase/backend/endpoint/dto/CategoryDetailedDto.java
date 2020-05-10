@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
 
-public class DetailedCategoryDto extends SimpleCategoryDto {
+public class CategoryDetailedDto extends CategorySimpleDto {
 
     private User createdBy;
     private Category parent;
@@ -39,9 +39,9 @@ public class DetailedCategoryDto extends SimpleCategoryDto {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof DetailedCategoryDto)) return false;
+        if (!(o instanceof CategoryDetailedDto)) return false;
         if (!super.equals(o)) return false;
-        DetailedCategoryDto that = (DetailedCategoryDto) o;
+        CategoryDetailedDto that = (CategoryDetailedDto) o;
         return Objects.equals(getCreatedAt(), that.getCreatedAt());
     }
 
