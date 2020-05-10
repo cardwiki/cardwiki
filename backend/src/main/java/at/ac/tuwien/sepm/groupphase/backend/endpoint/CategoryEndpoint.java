@@ -6,6 +6,7 @@ import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategorySimpleDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.CategoryMapper;
 import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.service.CategoryService;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class CategoryEndpoint {
     }
 
     @GetMapping
-   // @ApiOperation(value = "Get list of categories without details", authorizations = {@Authorization(value = "apiKey")})
+    @ApiOperation(value = "Get list of categories without details")
     public List<CategorySimpleDto> getCategories() {
         LOGGER.info("GET /api/v1/categories");
         return categoryMapper.categoryToCategorySimpleDto(categoryService.findAll());
@@ -41,6 +42,7 @@ public class CategoryEndpoint {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation(value = "Create new Category")
     public CategoryDetailedDto createCategory(@Valid @RequestBody CategoryInquiryDto categoryInquiryDto) {
         LOGGER.info("POST /api/v1/categories");
         try {
@@ -52,6 +54,7 @@ public class CategoryEndpoint {
     }
 
     @GetMapping(value = "/{id}")
+    @ApiOperation(value = "Get detailed information about a specific user")
     public CategoryDetailedDto getCategory(@PathVariable Long id) {
         LOGGER.info("GET /api/v1/categories/{}", id);
         return categoryMapper.categoryToCategoryDetailedDto(categoryService.findOneById(id));
