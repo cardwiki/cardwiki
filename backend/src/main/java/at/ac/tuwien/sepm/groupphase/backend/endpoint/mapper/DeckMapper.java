@@ -7,12 +7,12 @@ import at.ac.tuwien.sepm.groupphase.backend.entity.DeckCategoryId;
 import org.mapstruct.Mapper;
 
 @Mapper
-public abstract class DeckMapper {
-    public abstract DeckDto deckToDeckDto(Deck deck);
+public interface DeckMapper {
+    DeckDto deckToDeckDto(Deck deck);
 
-    public abstract Deck deckInputDtoToDeck(DeckInputDto deckInputDto);
+    Deck deckInputDtoToDeck(DeckInputDto deckInputDto);
 
-    public Long deckCategoryIdtoLong(DeckCategoryId deckCategoryId) {
+    default Long deckCategoryIdtoLong(DeckCategoryId deckCategoryId) {
         return deckCategoryId.getCategoryId();
     }
 }
