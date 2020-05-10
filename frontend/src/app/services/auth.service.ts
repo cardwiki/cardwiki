@@ -11,69 +11,58 @@ import {Globals} from '../global/globals';
 })
 export class AuthService {
 
-  private authBaseUri: string = this.globals.backendUri + '/authentication';
+  private baseUri: string = this.globals.backendUri + '/auth';
 
   constructor(private httpClient: HttpClient, private globals: Globals) {
   }
 
-  /**
-   * Login in the user. If it was successful, a valid JWT token will be stored
-   * @param authRequest User data
-   */
-  loginUser(authRequest: AuthRequest): Observable<string> {
-    return this.httpClient.post(this.authBaseUri, authRequest, {responseType: 'text'})
-      .pipe(
-        tap((authResponse: string) => this.setToken(authResponse))
-      );
+  getAuthProviders(){
+    return this.httpClient.get(this.baseUri + '/providers');
   }
 
+  whoAmI(){
+    return this.httpClient.get(this.baseUri + '/whoami')
+    .pipe(tap(res => {
+       localStorage.setItem('loggedIn', res.hasAccount);
+    }));
+  }
+
+  getProviderUrl(provider){
+    return this.baseUri + '/providers/' + provider;
+  }
+
+  register(id, username){
+    return this.httpClient.post(this.globals.backendUri + '/users', {id: id, username: username, description: ''})
+      .pipe(tap(res => {
+        localStorage.setItem('loggedIn', res.hasAccount);
+      }));
+  }
 
   /**
    * Check if a valid JWT token is saved in the localStorage
    */
   isLoggedIn() {
-    return !!this.getToken() && (this.getTokenExpirationDate(this.getToken()).valueOf() > new Date().valueOf());
+      return localStorage.getItem('loggedIn') == 'true';
   }
 
   logoutUser() {
-    console.log('Logout');
-    localStorage.removeItem('authToken');
-  }
-
-  getToken() {
-    return localStorage.getItem('authToken');
+    localStorage.removeItem('loggedIn');
+    return this.httpClient.post(this.baseUri + '/logout', {});
   }
 
   /**
    * Returns the user role based on the current token
    */
   getUserRole() {
-    if (this.getToken() != null) {
-      const decoded: any = jwt_decode(this.getToken());
-      const authInfo: string[] = decoded.rol;
-      if (authInfo.includes('ROLE_ADMIN')) {
-        return 'ADMIN';
-      } else if (authInfo.includes('ROLE_USER')) {
-        return 'USER';
-      }
-    }
+    //if (this.getToken() != null) {
+    //  const decoded: any = jwt_decode(this.getToken());
+    //  const authInfo: string[] = decoded.rol;
+    //  if (authInfo.includes('ROLE_ADMIN')) {
+    //    return 'ADMIN';
+    //  } else if (authInfo.includes('ROLE_USER')) {
+    //    return 'USER';
+    //  }
+    //}
     return 'UNDEFINED';
   }
-
-  private setToken(authResponse: string) {
-    localStorage.setItem('authToken', authResponse);
-  }
-
-  private getTokenExpirationDate(token: string): Date {
-
-    const decoded: any = jwt_decode(token);
-    if (decoded.exp === undefined) {
-      return null;
-    }
-
-    const date = new Date(0);
-    date.setUTCSeconds(decoded.exp);
-    return date;
-  }
-
 }
