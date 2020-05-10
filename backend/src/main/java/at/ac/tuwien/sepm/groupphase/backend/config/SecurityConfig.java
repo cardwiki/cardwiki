@@ -39,7 +39,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.cors().and()
             .csrf().disable()
             .exceptionHandling().defaultAuthenticationEntryPointFor(new Http403ForbiddenEntryPoint(), new AntPathRequestMatcher("/**")).and()
+            .logout().logoutUrl("/api/v1/auth/logout").and()
             .oauth2Login()
+                .authorizationEndpoint().baseUri("/api/v1/auth/providers").and()
                 .userInfoEndpoint()
                     .userService(customOAuth2UserService)
                     .oidcUserService(customOidcUserService).and()
@@ -52,7 +54,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         public RefererRedirectionAuthenticationSuccessHandler() {
             super();
-            setUseReferer(true);
+            // TODO: don't hardcode frontend
+            // we cannot use setUseReferer(true) because it drops the path
+            setDefaultTargetUrl("http://localhost:4200/login?success");
         }
     }
 
@@ -78,16 +82,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 return config;
             }
         };
-    }
-
-    @Bean
-    public CorsFilter logoutCorsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.setAllowedOrigins(trustedOrigins);
-        config.addAllowedMethod("POST");
-        source.registerCorsConfiguration("/logout", config);
-        return new CorsFilter(source);
     }
 }
