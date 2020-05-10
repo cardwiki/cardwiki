@@ -14,6 +14,28 @@ export class CategoryService {
   constructor(private httpClient: HttpClient, private globals: Globals) {
   }
 
+  handleError(error): string {
+      if (error.status === 500 || error.status === 0) {
+        if (error.message.includes('ConstraintViolationException')) {
+          return 'Invalid input. Category may already exist.';
+        }
+        return 'Something went wrong while processing your request.'  ;
+      }
+      if (error.status === 401 || error.status === 403) {
+        return 'Not authorized: ' + error.status;
+      }
+      if (error.status === 503) {
+        return 'Service unavailable: ' + error.status;
+      }
+      const message = error.error.split('[')[1].split(']')[0];
+      const messages = message.split(',');
+      let result = '';
+      for (let i = 0; i < messages.length; i++) {
+        result += messages[i].substr(messages[i].indexOf(' '));
+      }
+      return result;
+    }
+
   /**
    * Loads all categories from the backend
    */

@@ -36,7 +36,11 @@ public class CategoryServiceImpl implements CategoryService {
     public Category findOneById(Long id) {
         LOGGER.debug("Find category with id {}.", id);
         Category result = categoryRepository.findCategoryById(id);
-        Hibernate.initialize(result.getChildren());
+        if (result != null) {
+            Hibernate.initialize(result.getChildren());
+        } else {
+            throw new NotFoundException("Category not found.");
+        }
         return result;
     }
 
@@ -46,10 +50,17 @@ public class CategoryServiceImpl implements CategoryService {
         LOGGER.debug("Create category {}", category);
         Category parent = category.getParent();
         if (parent != null && !categoryRepository.existsById(parent.getId())) {
-            throw new NotFoundException("Selected parent category not found.");
+            throw new NotFoundException("Selected parent category does not exist in Database.");
         }
         Category result = categoryRepository.save(category);
-        if (parent != null) result.setParent(findOneById(parent.getId()));
+        if (parent != null) {
+            try {
+                parent = findOneById(parent.getId());
+            } catch(NotFoundException e) {
+                throw e;
+            }
+            result.setParent(parent);
+        }
         return result;
     }
 }

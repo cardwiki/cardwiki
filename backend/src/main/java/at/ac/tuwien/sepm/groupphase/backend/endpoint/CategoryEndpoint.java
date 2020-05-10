@@ -49,14 +49,18 @@ public class CategoryEndpoint {
             return categoryMapper.categoryToCategoryDetailedDto(
                 categoryService.createCategory(categoryMapper.categoryInquiryDtoToCategory(categoryInquiryDto)));
         } catch (NotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Parent.", e);
-        }   
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid parent category.", e);
+        }
     }
 
     @GetMapping(value = "/{id}")
     @ApiOperation(value = "Get detailed information about a specific category")
     public CategoryDetailedDto getCategory(@PathVariable Long id) {
         LOGGER.info("GET /api/v1/categories/{}", id);
-        return categoryMapper.categoryToCategoryDetailedDto(categoryService.findOneById(id));
+        try {
+            return categoryMapper.categoryToCategoryDetailedDto(categoryService.findOneById(id));
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category not found.");
+        }
     }
 }
