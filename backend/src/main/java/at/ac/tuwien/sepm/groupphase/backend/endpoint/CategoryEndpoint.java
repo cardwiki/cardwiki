@@ -50,11 +50,11 @@ public class CategoryEndpoint {
                 categoryService.createCategory(categoryMapper.categoryInquiryDtoToCategory(categoryInquiryDto)));
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Parent.", e);
-        }
+        }   
     }
 
     @GetMapping(value = "/{id}")
-    @ApiOperation(value = "Get detailed information about a specific user")
+    @ApiOperation(value = "Get detailed information about a specific category")
     public CategoryDetailedDto getCategory(@PathVariable Long id) {
         LOGGER.info("GET /api/v1/categories/{}", id);
         return categoryMapper.categoryToCategoryDetailedDto(categoryService.findOneById(id));
