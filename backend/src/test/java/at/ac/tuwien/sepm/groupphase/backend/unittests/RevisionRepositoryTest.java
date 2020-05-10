@@ -1,6 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.unittests;
 
-import at.ac.tuwien.sepm.groupphase.backend.basetest.TestData;
+import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
@@ -13,7 +13,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.NoSuchElementException;
+import javax.validation.ConstraintViolationException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 // the entire application context
 @DataJpaTest
 @ActiveProfiles("test")
-public class RevisionRepositoryTest implements TestData {
+public class RevisionRepositoryTest extends TestDataGenerator {
 
     @Autowired
     private CardRepository cardRepository;
@@ -33,18 +33,17 @@ public class RevisionRepositoryTest implements TestData {
     @Test
     public void givenNothing_whenSaveRevisionWithCardIsNull_throwsDataIntegrityViolationException() {
         Revision revision = new Revision();
-        revision.setMessage("Test Revision");
+        revision.setMessage(REVISION_MESSAGE);
 
         assertThrows(DataIntegrityViolationException.class, () -> revisionRepository.save(revision));
     }
 
     @Test
     public void givenCard_whenSaveRevision_thenFindByIdReturnsRevision() {
-        Card card = new Card();
-        cardRepository.save(card);
+        Card card = givenCard();
 
         Revision revision = new Revision();
-        revision.setMessage("Test Revision");
+        revision.setMessage(REVISION_MESSAGE);
         card.setLatestRevision(revision);
         revision.setCard(card);
 
@@ -53,14 +52,20 @@ public class RevisionRepositoryTest implements TestData {
     }
 
     @Test
-    public void givenRevision_whenDeleteById_thenExistsIsFalse() {
-        Card card = new Card();
-        cardRepository.save(card);
+    public void givenCard_whenSaveRevisionWithTooLongMessage_thenThrow() {
+        Card card = givenCard();
+
         Revision revision = new Revision();
-        revision.setMessage("Test Revision");
+        revision.setMessage("x".repeat(Revision.MAX_MESSAGE_SIZE + 1));
+        card.setLatestRevision(revision);
         revision.setCard(card);
-        card.getRevisions().add(revision);
-        revisionRepository.saveAndFlush(revision);
+
+        assertThrows(ConstraintViolationException.class, () -> revisionRepository.save(revision));
+    }
+
+    @Test
+    public void givenRevision_whenDeleteById_thenExistsIsFalse() {
+        Revision revision = givenRevision();
 
         revisionRepository.deleteById(revision.getId());
 
@@ -71,14 +76,17 @@ public class RevisionRepositoryTest implements TestData {
     }
 
     @Test
+    public void givenRevision_whenSetCardNull_thenThrowData() {
+        Revision revision = givenRevision();
+        revision.setCard(null);
+
+        assertThrows(DataIntegrityViolationException.class, () -> revisionRepository.saveAndFlush(revision));
+    }
+
+    @Test
     public void givenLatestRevision_whenDeleteById_thenLatestRevisionIsNull() {
-        Card card = new Card();
-        Revision revision = new Revision();
-        revision.setMessage("Test Revision");
-        revision.setCard(card);
-        cardRepository.save(card);
-        card.setLatestRevision(revision);
-        card = cardRepository.saveAndFlush(card);
+        Revision revision = givenRevision();
+        Card card = revision.getCard();
 
         // When
         revisionRepository.deleteById(card.getLatestRevision().getId());

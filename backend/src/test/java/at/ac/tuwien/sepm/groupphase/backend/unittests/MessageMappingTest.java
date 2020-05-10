@@ -1,6 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.unittests;
 
-import at.ac.tuwien.sepm.groupphase.backend.basetest.TestData;
+import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DetailedMessageDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.SimpleMessageDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.MessageMapper;
@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @ActiveProfiles("test")
-public class MessageMappingTest implements TestData {
+public class MessageMappingTest extends TestDataGenerator {
 
     private final Message message = Message.MessageBuilder.aMessage()
         .withId(ID)

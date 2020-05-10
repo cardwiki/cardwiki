@@ -1,6 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.unittests;
 
-import at.ac.tuwien.sepm.groupphase.backend.basetest.TestData;
+import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
 import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionEdit;
@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 // the entire application context
 @DataJpaTest
 @ActiveProfiles("test")
-public class RevisionEditRepositoryTest implements TestData {
+public class RevisionEditRepositoryTest extends TestDataGenerator {
 
     @Autowired
     private CardRepository cardRepository;
@@ -37,10 +37,10 @@ public class RevisionEditRepositoryTest implements TestData {
     public void givenNothing_whenSaveRevisionEdit_throwsInvalidDataAccessApiUsageException() {
         Revision revision = new Revision();
         revision.setId(12L);
-        revision.setMessage("Test");
+        revision.setMessage(REVISION_MESSAGE);
         RevisionEdit edit = new RevisionEdit();
-        edit.setTextFront("Front");
-        edit.setTextBack("Back");
+        edit.setTextFront(FRONT_TEXT);
+        edit.setTextBack(BACK_TEXT);
         edit.setRevision(revision);
         revision.setRevisionEdit(edit);
 
@@ -49,20 +49,13 @@ public class RevisionEditRepositoryTest implements TestData {
 
     @Test
     public void givenCardAndRevision_whenSaveRevisionEdit_thenFindByIdReturnsRevisionEdit() {
-        // Given
-        Card card = new Card();
-        Revision revision = new Revision();
-
-        card.setLatestRevision(revision);
-        revision.setCard(card);
-        revision.setMessage("Test Revision");
-
-        cardRepository.save(card);
+        Revision revision = givenRevision();
+        Card card = revision.getCard();
 
         // When
         RevisionEdit edit = new RevisionEdit();
-        edit.setTextFront("Front Text");
-        edit.setTextBack("Back Text");
+        edit.setTextFront(FRONT_TEXT);
+        edit.setTextBack(BACK_TEXT);
 
         revision.setRevisionEdit(edit);
         edit.setRevision(revision);
@@ -76,32 +69,14 @@ public class RevisionEditRepositoryTest implements TestData {
 
     @Test
     public void givenRevisionEdit_whenDeleteRevisionById_thenExistsByIdReturnsFalse() {
-        // Given
-        Card card = new Card();
-        cardRepository.saveAndFlush(card);
-
-        Revision revision = new Revision();
-        card.setLatestRevision(revision);
-        revision.setCard(card);
-        revision.setMessage("Test Revision");
-
-        RevisionEdit edit = new RevisionEdit();
-        edit.setTextFront("Front Text");
-        edit.setTextBack("Back Text");
-
-        card.setLatestRevision(revision);
-        revision.setCard(card);
-        revision.setRevisionEdit(edit);
-        edit.setRevision(revision);
-
-        revision = revisionRepository.saveAndFlush(revision);
-        edit = revision.getRevisionEdit();
+        RevisionEdit revisionEdit = givenRevisionEdit();
+        Revision revision = revisionEdit.getRevision();
 
         // When
         revisionRepository.deleteById(revision.getId());
         revisionRepository.flush();
 
         // Then
-        assertFalse(revisionEditRepository.existsById(edit.getId()));
+        assertFalse(revisionEditRepository.existsById(revisionEdit.getId()));
     }
 }
