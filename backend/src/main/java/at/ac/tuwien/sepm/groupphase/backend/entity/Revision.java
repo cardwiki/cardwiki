@@ -18,6 +18,10 @@ public class Revision {
     @JoinColumn(name="card_id", nullable=false)
     private Card card;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="created_by") // TODO: Consider adding DELETED_USER and make it not nullable
+    private User createdBy;
+
     @OneToOne(mappedBy = "revision", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private RevisionEdit revisionEdit;
 
@@ -30,10 +34,12 @@ public class Revision {
     private Date createdAt = new Date(); // Created at object creation to guarantee consistent business key (date, message) for equals and hashcode
 
     @PreRemove
-    private void dismissCard() {
+    private void dismissContainers() {
         // Necessary to sync card in same session if revision is directly deleted
         card.dismissRevision(this);
         card = null;
+        createdBy.dismissRevision(this);
+        createdBy = null;
     }
 
     public Long getId() {
@@ -76,6 +82,14 @@ public class Revision {
         this.createdAt = createdAt;
     }
 
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -94,6 +108,7 @@ public class Revision {
     public String toString() {
         return "Revision{" +
             "id=" + id +
+            ", createdBy=" + createdBy +
             ", card=" + (card != null ? card.getId() : null) +
             ", message='" + message + "'" +
             ", revisionEdit=" + revisionEdit.getId() +

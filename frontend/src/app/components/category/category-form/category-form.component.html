@@ -1,0 +1,123 @@
+<div *ngIf="error" class="alert alert-warning alert-dismissible fade show" (click)=vanishResult() role="alert">
+  <strong>Could not edit Category!</strong> {{ errorMessage }}
+  <button class="btn-primary" (click)="vanishResult()">Dismiss</button>
+</div>
+
+<div *ngIf="!error && submitted" class="alert alert-success alert-dismissible fade show" role="alert">
+  <strong>Success!</strong> Category <strong>{{result.name}}</strong> {{mode}}d!
+  <div>
+    <button class="btn-primary" (click)="vanishResult()">
+      Show
+    </button> <!-- TODO: create details page and link to it -->
+    <span *ngIf="mode == 'Create'">
+      <button class="btn-primary" id="createSub" (click)="createSubcategory()">
+        Create Subcategory
+      </button>
+      <button class="btn-primary" id="createNew" (click)="vanishResult();">
+        {{mode}} another category
+      </button>
+    </span>
+  </div>
+</div>
+
+<div *ngIf="!submitted" class="pt-5">
+  <div class="col-md-6 mx-auto">
+    <span class="anchor" id="formLogin"></span>
+    <div class="card rounded-0">
+      <div class="card-header">
+        <h3 class="mb-0">{{mode}} category</h3>
+      </div>
+      <div class="card-body">
+        <form class="form" [formGroup]="categoryForm" (submit)="submitCategoryForm();">
+          <div class="form-group">
+            <label for="categoryName">Name</label>
+            <input
+              type="text"
+              name="name"
+              formControlName="name"
+              class="form-control"
+              id="categoryName"
+              aria-describedby="categoryNameHelp"
+              placeholder="Enter category name"
+              maxLength="200"
+              autocomplete="off"
+            >
+            <div *ngIf="categoryForm.controls.name.errors" class="error">
+              <small class="form-text text-warning">{{checkNameErrors()}}</small>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="parentCategory">Parent category</label>
+            <input
+              type="search"
+              name="parentCategory"
+              formControlName="parentCategory"
+              class="form-control"
+              id="parentCategory"
+              placeholder="Parent Category"
+              maxLength="200"
+              list="categories"
+              autocomplete="off"
+            >
+            <div *ngIf="categoryForm.controls.parentCategory.errors" class="error">
+              <small class="form-text text-warning">
+                {{checkCategoryErrors()}}
+              </small>
+            </div>
+          </div>
+          <datalist id="categories">
+            <option *ngFor="let cat of this.categories" value="{{cat.name}}">
+          </datalist>
+
+          <div id="modal" class="modal fade" role="dialog">
+            <div *ngIf="this.categoryForm.touched && this.categoryForm.dirty && this.categoryForm.valid" class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <span class="modal-title"><h4>Submit category?</h4></span>
+                  <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                  <p>Name: </p>
+                  <p class="fieldContents">{{this.categoryForm.value.name}}</p>
+                  <p *ngIf="this.categoryForm.value['parentCategory']">
+                    Parent category:
+                  </p>
+                  <p class="fieldContents">{{this.categoryForm.value['parentCategory']}}</p>
+                </div>
+                <div class="modal-footer">
+                  <button type="submit" class="btn btn-success float-left">Submit</button>
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="!this.categoryForm.touched || !this.categoryForm.dirty || !this.categoryForm.valid" class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <span class="modal-title"><h4>Error(s)!</h4></span>
+                  <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                  <p *ngIf="!this.categoryForm.touched || !this.categoryForm.dirty">Please input data first.</p>
+                  <p *ngIf="!this.categoryForm.valid">Form contains invalid field data.</p>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Dismiss</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button type="button" data-toggle="modal" data-target="#modal" class="btn btn-success float-right">
+            {{mode}}
+          </button>
+          <button type="button" class="btn-secondary" (click)="this.categoryForm.reset(); this.setDefaults()">
+            Reset
+          </button>
+          <button type="button" class="btn-secondary" id="refresh" (click)="this.onRefresh()">
+            Refresh Categories
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

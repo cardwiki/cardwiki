@@ -13,6 +13,9 @@ import {MessageComponent} from './components/message/message.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {httpInterceptorProviders} from './interceptors';
 import { DeckViewComponent } from './components/deck/deck-view/deck-view.component';
+import { CategoryCreateComponent } from './components/category/category-create/category-create.component';
+import { CategoryFormComponent } from './components/category/category-form/category-form.component';
+import { CategoryUpdateComponent } from './components/category/category-update/category-update.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +26,9 @@ import { DeckViewComponent } from './components/deck/deck-view/deck-view.compone
     LoginComponent,
     MessageComponent,
     DeckViewComponent,
+    CategoryCreateComponent,
+    CategoryFormComponent,
+    CategoryUpdateComponent
   ],
   imports: [
     BrowserModule,

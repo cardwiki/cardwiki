@@ -18,6 +18,7 @@ import java.util.*;
 
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
+
     @Autowired
     private UserService userService;
 
