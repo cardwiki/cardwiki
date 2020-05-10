@@ -3,6 +3,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Router,ActivatedRoute } from '@angular/router';
 import {AuthService} from '../../services/auth.service';
 import {AuthRequest} from '../../dtos/auth-request';
+import { OAuthProviders } from 'src/app/dtos/oauthProviders';
 
 @Component({
   selector: 'app-login',
@@ -16,27 +17,28 @@ export class LoginComponent implements OnInit {
   // Error flag
   error: boolean = false;
   errorMessage: string = '';
-
-  authProviders = [];
+  authProviders: OAuthProviders;
 
   constructor(private formBuilder: FormBuilder, private authService: AuthService, private router: Router, private route: ActivatedRoute) {
-    authService.getAuthProviders().subscribe(providers => this.authProviders = providers);
+  }
+
+  ngOnInit(): void {
+    this.authService.getAuthProviders().subscribe(providers => this.authProviders = providers);
     this.route.queryParams.subscribe(params => {
       if ('success' in params){
-        authService.whoAmI().subscribe(info => {
-            console.log('sofar');
+        this.authService.whoAmI().subscribe(info => {
           // TODO: cache info in localStorage
-          if (info.id != null){
-            if (info.hasAccount){
+          if (info.id === null)
+            return;
+          if (info.hasAccount) {
+            this.router.navigate(['/']);
+          } else {
+            // TODO: use proper dialog
+            let username = prompt('choose your username');
+            this.authService.register(info.id, username).subscribe(status => {
+              // TODO: handle errors
               this.router.navigate(['/']);
-            } else {
-              // TODO: use proper dialog
-              let username = prompt('choose your username');
-              authService.register(info.id, username).subscribe(status => {
-                // TODO: handle errors
-                this.router.navigate(['/']);
-              });
-            }
+            });
           }
         });
       }
@@ -72,9 +74,6 @@ export class LoginComponent implements OnInit {
    */
   vanishError() {
     this.error = false;
-  }
-
-  ngOnInit() {
   }
 
 }

@@ -5,6 +5,9 @@ import {HttpClient} from '@angular/common/http';
 import {tap} from 'rxjs/operators';
 import * as jwt_decode from 'jwt-decode';
 import {Globals} from '../global/globals';
+import { OAuthProviders } from '../dtos/oauthProviders';
+import { WhoAmI } from '../dtos/whoAmI';
+import { UserRegistration } from '../dtos/userRegistration';
 
 @Injectable({
   providedIn: 'root'
@@ -16,14 +19,14 @@ export class AuthService {
   constructor(private httpClient: HttpClient, private globals: Globals) {
   }
 
-  getAuthProviders(){
-    return this.httpClient.get(this.baseUri + '/providers');
+  getAuthProviders() {
+    return this.httpClient.get<OAuthProviders>(this.baseUri + '/providers');
   }
 
-  whoAmI(){
-    return this.httpClient.get(this.baseUri + '/whoami')
+  whoAmI() {
+    return this.httpClient.get<WhoAmI>(this.baseUri + '/whoami')
     .pipe(tap(res => {
-       localStorage.setItem('loggedIn', res.hasAccount);
+       localStorage.setItem('loggedIn', String(res.hasAccount));
     }));
   }
 
@@ -32,9 +35,10 @@ export class AuthService {
   }
 
   register(id, username){
-    return this.httpClient.post(this.globals.backendUri + '/users', {id: id, username: username, description: ''})
+    return this.httpClient.post<UserRegistration>(this.globals.backendUri + '/users', {id: id, username: username, description: ''})
       .pipe(tap(res => {
-        localStorage.setItem('loggedIn', res.hasAccount);
+        // localStorage.setItem('loggedIn', String(res.hasAccount));
+        localStorage.setItem('loggedIn', 'true')
       }));
   }
 
@@ -42,12 +46,12 @@ export class AuthService {
    * Check if a valid JWT token is saved in the localStorage
    */
   isLoggedIn() {
-      return localStorage.getItem('loggedIn') == 'true';
+      return localStorage.getItem('loggedIn') === 'true';
   }
 
   logoutUser() {
     localStorage.removeItem('loggedIn');
-    return this.httpClient.post(this.baseUri + '/logout', {});
+    return this.httpClient.post<void>(this.baseUri + '/logout', {});
   }
 
   /**
