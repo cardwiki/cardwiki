@@ -1,6 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.endpoint.dto;
 
-import at.ac.tuwien.sepm.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
 
 import java.time.LocalDateTime;
@@ -10,15 +10,15 @@ import java.util.Set;
 
 public class DetailedCategoryDto extends SimpleCategoryDto {
 
-    private ApplicationUser createdBy;
+    private User createdBy;
     private Category parent;
     private Set<Category> children;
     private Date createdAt;
     private Date updatedAt;
 
-    public ApplicationUser getCreatedBy() { return createdBy; }
+    public User getCreatedBy() { return createdBy; }
 
-    public void setCreatedBy(ApplicationUser createdBy) { this.createdBy = createdBy; }
+    public void setCreatedBy(User createdBy) { this.createdBy = createdBy; }
 
     public Category getParent() { return parent; }
 

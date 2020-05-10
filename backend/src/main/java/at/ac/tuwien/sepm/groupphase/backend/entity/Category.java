@@ -28,8 +28,8 @@ public class Category {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name="created_by", referencedColumnName="oauthId", updatable = false)
-    private ApplicationUser createdBy;
+    @JoinColumn(name="created_by", referencedColumnName="oAuthId", updatable = false)
+    private User createdBy;
 
     @JsonIgnore
     @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
@@ -71,7 +71,7 @@ public class Category {
         this.parent = parent;
     }
 
-    public Category(Long id, String name, ApplicationUser createdBy, Category parent, Set<Category> children,
+    public Category(Long id, String name, User createdBy, Category parent, Set<Category> children,
                     Date createdAt, Date updatedAt) {
         this.id = id;
         this.name = name;
@@ -98,11 +98,11 @@ public class Category {
         this.name = name;
     }
 
-    public ApplicationUser getCreatedBy() {
+    public User getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(ApplicationUser createdBy) {
+    public void setCreatedBy(User createdBy) {
         this.createdBy = createdBy;
     }
 
