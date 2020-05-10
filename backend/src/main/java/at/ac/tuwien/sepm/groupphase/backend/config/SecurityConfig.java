@@ -83,15 +83,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             }
         };
     }
-
-    @Bean
-    public CorsFilter logoutCorsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.setAllowedOrigins(trustedOrigins);
-        config.addAllowedMethod("POST");
-        source.registerCorsConfiguration("/logout", config);
-        return new CorsFilter(source);
-    }
 }
