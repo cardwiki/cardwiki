@@ -1,0 +1,16 @@
+<h1>Edit Card {{cardId}}</h1>
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <app-card-form [card]="card" (cardSubmit)="cardSubmit()"></app-card-form>
+    </div>
+    <div class="col">
+      <h3>Preview</h3>
+      <h4>Front Side</h4>
+      <app-card-view [card]="card" side="front"></app-card-view>
+      <hr>
+      <h4>Back Side</h4>
+      <app-card-view [card]="card" side="back"></app-card-view>
+    </div>
+  </div>
+</div>
