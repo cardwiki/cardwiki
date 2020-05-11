@@ -15,8 +15,6 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -38,6 +36,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(HttpSecurity http) throws Exception {
         http.cors().and()
             .csrf().disable()
+            .headers().frameOptions().sameOrigin().and() // for h2-console
             .exceptionHandling().defaultAuthenticationEntryPointFor(new Http403ForbiddenEntryPoint(), new AntPathRequestMatcher("/**")).and()
             .logout().logoutUrl("/api/v1/auth/logout").and()
             .oauth2Login()
@@ -61,7 +60,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     private final List<String> trustedOrigins = Collections.unmodifiableList(
-        Arrays.asList("http://localhost:4200", "http://localhost:8080"));
+        Arrays.asList(
+            "http://localhost:4200", // our frontend
+            "http://localhost:8080"  // our backend (for swagger-ui)
+        ));
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
