@@ -15,13 +15,10 @@ import {httpInterceptorProviders} from './interceptors';
 import { CategoryCreateComponent } from './components/category/category-create/category-create.component';
 import { CategoryFormComponent } from './components/category/category-form/category-form.component';
 import { CategoryUpdateComponent } from './components/category/category-update/category-update.component';
-<<<<<<< Updated upstream
-=======
 import { CardCreateComponent } from './components/card/card-create/card-create.component';
 import { CardFormComponent } from './components/card/card-form/card-form.component';
 import { CardViewComponent } from './components/card/card-view/card-view.component';
 import { CardEditComponent } from './components/card/card-edit/card-edit.component';
->>>>>>> Stashed changes
 
 @NgModule({
   declarations: [
@@ -34,13 +31,10 @@ import { CardEditComponent } from './components/card/card-edit/card-edit.compone
     CategoryCreateComponent,
     CategoryFormComponent,
     CategoryUpdateComponent,
-<<<<<<< Updated upstream
-=======
     CardCreateComponent,
     CardFormComponent,
     CardViewComponent,
     CardEditComponent,
->>>>>>> Stashed changes
   ],
   imports: [
     BrowserModule,
