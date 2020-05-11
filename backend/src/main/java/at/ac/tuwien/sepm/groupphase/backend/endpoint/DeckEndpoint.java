@@ -39,10 +39,10 @@ public class DeckEndpoint {
     @ApiOperation(value = "Create a new card deck", authorizations = @Authorization("ROLE_USER"))
     public DeckDto create(@Valid @RequestBody DeckInputDto deckInputDto, Authentication authentication) {
         LOGGER.info("POST /api/v1/decks body: {}", deckInputDto);
-        deckInputDto.setCreatedBy(authentication.getName());
         return deckMapper.deckToDeckDto(
             deckService.create(
-                deckMapper.deckInputDtoToDeck(deckInputDto)
+                deckMapper.deckInputDtoToDeck(deckInputDto),
+                authentication.getName()
             )
         );
     }
