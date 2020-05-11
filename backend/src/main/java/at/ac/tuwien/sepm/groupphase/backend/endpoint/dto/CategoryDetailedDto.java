@@ -13,8 +13,8 @@ public class CategoryDetailedDto extends CategorySimpleDto {
     private User createdBy;
     private Category parent;
     private Set<Category> children;
-    private Date createdAt;
-    private Date updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public User getCreatedBy() { return createdBy; }
 
@@ -28,13 +28,13 @@ public class CategoryDetailedDto extends CategorySimpleDto {
 
     public void setChildren(Set<Category> children) { this.children = children; }
 
-    public Date getCreatedAt() { return createdAt; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
 
-    public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
-    public Date getUpdatedAt() { return updatedAt; }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
 
-    public void setUpdatedAt(Date updatedAt) { this.updatedAt = updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 
     @Override
     public boolean equals(Object o) {
