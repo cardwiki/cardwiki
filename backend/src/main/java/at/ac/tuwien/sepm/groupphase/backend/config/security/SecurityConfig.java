@@ -1,7 +1,5 @@
-package at.ac.tuwien.sepm.groupphase.backend.config;
+package at.ac.tuwien.sepm.groupphase.backend.config.security;
 
-import at.ac.tuwien.sepm.groupphase.backend.service.impl.CustomOAuth2UserService;
-import at.ac.tuwien.sepm.groupphase.backend.service.impl.CustomOidcUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

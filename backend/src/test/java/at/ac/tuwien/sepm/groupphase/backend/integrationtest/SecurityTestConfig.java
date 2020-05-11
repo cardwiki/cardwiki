@@ -1,6 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.integrationtest;
 
-import at.ac.tuwien.sepm.groupphase.backend.config.SecurityConfig;
+import at.ac.tuwien.sepm.groupphase.backend.config.security.SecurityConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
