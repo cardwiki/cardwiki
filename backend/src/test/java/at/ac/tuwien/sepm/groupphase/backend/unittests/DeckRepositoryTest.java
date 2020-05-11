@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -38,5 +39,25 @@ public class DeckRepositoryTest extends TestDataGenerator {
                 deckRepository.findByNameContainingIgnoreCase(DECK_NAME.substring(1,3), paging).size()
             )
         );
+    }
+
+    @Test
+    public void givenNothing_whenSaveDeck_thenThrowDataIntegrityViolation() {
+        Deck deck = new Deck();
+        assertThrows(DataIntegrityViolationException.class, () -> deckRepository.save(deck));
+    }
+
+    @Test
+    public void givenUser_whenSaveDeck_thenThrowDataIntegrityViolation() {
+        Deck deck = new Deck();
+        deck.setCreatedBy(givenApplicationUser());
+        assertThrows(DataIntegrityViolationException.class, () -> deckRepository.save(deck));
+    }
+
+    @Test
+    public void givenName_whenSaveDeck_thenThrowDataIntegrityViolation() {
+        Deck deck = new Deck();
+        deck.setName("Test Name");
+        assertThrows(DataIntegrityViolationException.class, () -> deckRepository.save(deck));
     }
 }
