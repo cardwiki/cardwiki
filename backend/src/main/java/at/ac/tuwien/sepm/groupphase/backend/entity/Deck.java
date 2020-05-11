@@ -18,9 +18,9 @@ public class Deck {
     @Column(nullable = false)
     private String name;
 
-    //@ManyToOne(fetch = FetchType.LAZY, optional = false)
-    //@JoinColumn(name = "created_by", nullable = false, updatable = false)
-    //private ApplicationUser createdBy;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "created_by", nullable = false, updatable = false)
+    private User createdBy;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
@@ -63,13 +63,13 @@ public class Deck {
         this.name = name;
     }
 
-    //public ApplicationUser getCreatedBy() {
-    //    return createdBy;
-    //}
+    public User getCreatedBy() {
+        return createdBy;
+    }
 
-    //public void setCreatedBy(ApplicationUser createdBy) {
-    //    this.createdBy = createdBy;
-    //}
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
+    }
 
     public Date getCreatedAt() {
         return createdAt;
@@ -86,14 +86,6 @@ public class Deck {
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
-
-    //public Set<Card> getCards() {
-    //    return cards;
-    //}
-
-    //public void setCards(Set<Card> cards) {
-    //    this.cards = cards;
-    //}
 
     //public Set<Comment> getComments() {
     //    return comments;
@@ -125,7 +117,7 @@ public class Deck {
         return "Deck{" +
             "id=" + id +
             ", name='" + name + '\'' +
-            //", createdBy=" + createdBy +
+            ", createdBy=" + createdBy +
             ", createdAt=" + createdAt +
             ", updatedAt=" + updatedAt +
             '}';
