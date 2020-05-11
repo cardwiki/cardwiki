@@ -2,7 +2,7 @@ package at.ac.tuwien.sepm.groupphase.backend.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
@@ -29,9 +29,8 @@ public class Revision {
     @Column(nullable = false, length = MAX_MESSAGE_SIZE, updatable = false)
     private String message;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false, updatable = false)
-    private Date createdAt = new Date(); // Created at object creation to guarantee consistent business key (date, message) for equals and hashcode
+    private LocalDateTime createdAt = LocalDateTime.now(); // Created at object creation to guarantee consistent business key (date, message) for equals and hashcode
 
     @PreRemove
     private void dismissContainers() {
@@ -74,11 +73,11 @@ public class Revision {
         this.message = message;
     }
 
-    public Date getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 

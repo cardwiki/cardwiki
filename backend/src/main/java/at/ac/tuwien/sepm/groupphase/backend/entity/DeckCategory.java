@@ -3,7 +3,7 @@ package at.ac.tuwien.sepm.groupphase.backend.entity;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "deck_category")
@@ -24,9 +24,8 @@ public class DeckCategory {
     //private ApplicationUser createdBy;
 
     @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false, updatable = false)
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     public DeckCategoryId getId() {
         return id;
@@ -60,11 +59,11 @@ public class DeckCategory {
     //    this.createdBy = createdBy;
     //}
 
-    public Date getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
