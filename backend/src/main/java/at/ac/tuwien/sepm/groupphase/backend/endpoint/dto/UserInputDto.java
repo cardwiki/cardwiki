@@ -14,6 +14,16 @@ public class UserInputDto {
 
     private boolean isAdmin;
 
+    public UserInputDto(){
+    }
+
+    public UserInputDto(String oAuthId, @NotNull String username, @NotNull String description, boolean isAdmin) {
+        this.oAuthId = oAuthId;
+        this.username = username;
+        this.description = description;
+        this.isAdmin = isAdmin;
+    }
+
     public String getOAuthId() {
         return oAuthId;
     }
