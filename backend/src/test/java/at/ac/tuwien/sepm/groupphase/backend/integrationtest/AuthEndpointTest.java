@@ -28,8 +28,7 @@ public class AuthEndpointTest {
 
     @Test
     public void getProviders() throws Exception {
-        assert mvc != null;
-        assert mvc.perform(get("/api/v1/auth/providers")) != null;
-            //.andExpect(status().is(200));
+        mvc.perform(get("/api/v1/auth/providers"))
+            .andExpect(status().is(200));
     }
 }

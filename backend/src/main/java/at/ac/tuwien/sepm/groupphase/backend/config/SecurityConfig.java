@@ -33,21 +33,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private CustomOidcUserService customOidcUserService;
 
     @Override
-    public void configure(HttpSecurity http) throws Exception {
-        http.cors().and()
-            .csrf().disable()
-            .headers().frameOptions().sameOrigin().and() // for h2-console
-            .exceptionHandling().defaultAuthenticationEntryPointFor(new Http403ForbiddenEntryPoint(), new AntPathRequestMatcher("/**")).and()
-            .logout().logoutUrl("/api/v1/auth/logout").and()
-            .oauth2Login()
-                .authorizationEndpoint().baseUri("/api/v1/auth/providers").and()
-                .userInfoEndpoint()
-                    .userService(customOAuth2UserService)
-                    .oidcUserService(customOidcUserService).and()
-                .successHandler(new RefererRedirectionAuthenticationSuccessHandler());
+    public void configure(HttpSecurity httpSecurity) throws Exception {
+        staticConfigure(httpSecurity);
+        httpSecurity.oauth2Login().userInfoEndpoint()
+            .userService(customOAuth2UserService)
+            .oidcUserService(customOidcUserService);
     }
 
-    public class RefererRedirectionAuthenticationSuccessHandler
+    public static void staticConfigure(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity.cors();
+        httpSecurity.csrf().disable();
+        httpSecurity.headers().frameOptions().sameOrigin(); // for h2-console
+        httpSecurity.exceptionHandling().defaultAuthenticationEntryPointFor(new Http403ForbiddenEntryPoint(), new AntPathRequestMatcher("/**"));
+        httpSecurity.logout().logoutUrl("/api/v1/auth/logout");
+        httpSecurity.oauth2Login()
+            .authorizationEndpoint().baseUri("/api/v1/auth/providers").and()
+            .successHandler(new RefererRedirectionAuthenticationSuccessHandler());
+    }
+
+    public static class RefererRedirectionAuthenticationSuccessHandler
         extends SimpleUrlAuthenticationSuccessHandler
         implements AuthenticationSuccessHandler {
 
