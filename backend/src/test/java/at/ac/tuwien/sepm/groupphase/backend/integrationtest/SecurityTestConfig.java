@@ -39,22 +39,9 @@ public class SecurityTestConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         SecurityConfig.staticConfigure(http);
-        http
-            .authorizeRequests(authorizeRequests ->
-                authorizeRequests
-                    .anyRequest().authenticated()
-            )
-            .oauth2Login(oauth2Login ->
-                oauth2Login
-                    .tokenEndpoint(tokenEndpoint ->
-                        tokenEndpoint
-                            .accessTokenResponseClient(this.mockAccessTokenResponseClient())
-                    )
-                    .userInfoEndpoint(userInfoEndpoint ->
-                        userInfoEndpoint
-                            .userService(this.mockUserService())
-                    )
-            );
+        http.oauth2Login()
+            .tokenEndpoint().accessTokenResponseClient(this.mockAccessTokenResponseClient()).and()
+            .userInfoEndpoint().userService(this.mockUserService());
     }
 
     private OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> mockAccessTokenResponseClient() {
