@@ -53,7 +53,7 @@ export class CategoryService {
    * @param id of category to load
    */
   getCategoryById(id: number): Observable<Category> {
-    console.log('Load category details for ' + id);
+    console.log('Load details for category with id ' + id);
     return this.httpClient.get<Category>(this.categoryBaseUri + '/' + id);
   }
 
@@ -70,8 +70,8 @@ export class CategoryService {
    * Edits category in the backend
    * @param category Dto containing the data to update category with
    */
-  editCategory(category: Category): Observable<Category> {
+  editCategory(category: Category, id: number): Observable<Category> {
     console.log('Edit category with id ' + category.id);
-    return this.httpClient.patch<Category>(this.categoryBaseUri, category);
+    return this.httpClient.put<Category>(this.categoryBaseUri + '/' + id, category);
   }
 }

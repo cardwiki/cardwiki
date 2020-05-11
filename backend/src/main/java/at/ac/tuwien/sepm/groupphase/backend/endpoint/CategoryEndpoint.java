@@ -7,19 +7,14 @@ import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.CategoryMapper;
 import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.service.CategoryService;
 import io.swagger.annotations.ApiOperation;
-<<<<<<< HEAD
-=======
 import io.swagger.annotations.Authorization;
->>>>>>> 15-us07-creation-of-categories
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-<<<<<<< HEAD
-=======
+
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
->>>>>>> 15-us07-creation-of-categories
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -74,5 +69,15 @@ public class CategoryEndpoint {
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category not found.");
         }
+    }
+
+    @PutMapping(value = "/{id}")
+    @ApiOperation(value = "Update category with specific id")
+    public CategoryDetailedDto updateCategory(@PathVariable Long id,
+                                            @Valid @RequestBody CategoryInquiryDto categoryInquiryDto) {
+        LOGGER.info("PUT /api/v1/categories{}", id);
+        return categoryMapper.categoryToCategoryDetailedDto(
+            categoryService.updateCategory(id, categoryMapper.categoryInquiryDtoToCategory(categoryInquiryDto))
+            );
     }
 }

@@ -30,4 +30,13 @@ public interface CategoryService  {
      * @return the category which has been created
      */
     Category createCategory(Category category, String oAuthId);
+
+    /**
+     * Updates a category.
+     *
+     * @param id of the category to be updated.
+     * @param category containing the data to update the category with
+     * @return details of the category which has been updated
+     */
+    Category updateCategory(Long id, Category category);
 }
