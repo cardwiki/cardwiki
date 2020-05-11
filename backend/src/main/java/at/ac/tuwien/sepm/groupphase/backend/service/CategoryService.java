@@ -26,6 +26,7 @@ public interface CategoryService  {
      * Creates a category.
      *
      * @param category to be created
+     * @param oAuthId of the user who triggered the request
      * @return the category which has been created
      */
     Category createCategory(Category category, String oAuthId);

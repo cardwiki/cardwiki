@@ -14,6 +14,11 @@ export class CategoryService {
   constructor(private httpClient: HttpClient, private globals: Globals) {
   }
 
+  /**
+   * Handles errors returned by the endpoint
+   * @param error returned
+   * @return string containing the error message
+   */
   handleError(error): string {
       if (error.status === 500 || error.status === 0) {
         if (error.message.includes('ConstraintViolationException')) {
@@ -52,14 +57,6 @@ export class CategoryService {
     return this.httpClient.get<Category>(this.categoryBaseUri + '/' + id);
   }
 
-  /**
-   * Loads a specific category from the backend
-   * @param id of category to load
-   */
-  getCategory(category: Category): Observable<Category> {
-    console.log('Load category details for category with name ' + category.name);
-    return this.httpClient.get<Category>(this.categoryBaseUri + '/find');
-  }
 
   /**
    * Persists category to the backend
@@ -72,7 +69,7 @@ export class CategoryService {
 
   /**
    * Edits category in the backend
-   * @param data to update category with
+   * @param category Dto containing the data to update category with
    */
   editCategory(category: Category): Observable<Category> {
     console.log('Edit category with id ' + category.id);

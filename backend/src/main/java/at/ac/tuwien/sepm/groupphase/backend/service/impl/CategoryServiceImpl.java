@@ -53,6 +53,7 @@ public class CategoryServiceImpl implements CategoryService {
     public Category createCategory(Category category, String oAuthId) {
         LOGGER.debug("Create category {}", category);
         User user = userService.loadUserByOauthId(oAuthId);
+        category.setCreatedBy(user);
         Category parent = category.getParent();
         if (parent != null && !categoryRepository.existsById(parent.getId())) {
             throw new NotFoundException("Selected parent category does not exist in Database.");
