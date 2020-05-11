@@ -11,8 +11,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.Date;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
@@ -23,25 +21,21 @@ public class DeckRepositoryTest extends TestDataGenerator {
     private DeckRepository deckRepository;
 
     @Test
-    public void givenDecks_whenFindByName_thenFindDecksContainingName() {
-        Deck deck1 = new Deck();
-        Deck deck2 = new Deck();
-        deck1.setName("testNameOne");
-        deck2.setName("different");
+    public void givenDeck_whenFindByName_thenFindDeckContainingName() {
+        Deck deck = givenDeck();
+        PageRequest paging = PageRequest.of(0, 10);
 
-        deck1.setCreatedAt(new Date());
-        deck2.setCreatedAt(new Date());
-        deck1.setUpdatedAt(new Date());
-        deck2.setUpdatedAt(new Date());
-
-        deckRepository.save(deck1);
-        deckRepository.save(deck2);
+        deckRepository.save(deck);
 
         assertAll(
             () -> assertEquals(1,
-                deckRepository.findByNameContainingIgnoreCase("NAME", PageRequest.of(0, 10)).size()),
+                deckRepository.findByNameContainingIgnoreCase(DECK_NAME, paging).size()
+            ),
             () -> assertTrue(
-                deckRepository.findByNameContainingIgnoreCase("404", PageRequest.of(0, 10)).isEmpty()
+                deckRepository.findByNameContainingIgnoreCase("404", paging).isEmpty()
+            ),
+            () -> assertEquals(1,
+                deckRepository.findByNameContainingIgnoreCase(DECK_NAME.substring(1,3), paging).size()
             )
         );
     }
