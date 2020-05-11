@@ -1,9 +1,11 @@
 package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
+import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CategoryRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.CategoryService;
+import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,11 +20,13 @@ import java.util.List;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final UserService userService;
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     @Autowired
-    public CategoryServiceImpl(CategoryRepository categoryRepository) {
+    public CategoryServiceImpl(CategoryRepository categoryRepository, UserService userService) {
         this.categoryRepository = categoryRepository;
+        this.userService = userService;
     }
 
     @Override
@@ -46,8 +50,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public Category createCategory(Category category) {
+    public Category createCategory(Category category, String oAuthId) {
         LOGGER.debug("Create category {}", category);
+        User user = userService.loadUserByOauthId(oAuthId);
         Category parent = category.getParent();
         if (parent != null && !categoryRepository.existsById(parent.getId())) {
             throw new NotFoundException("Selected parent category does not exist in Database.");

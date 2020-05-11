@@ -7,10 +7,13 @@ import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.CategoryMapper;
 import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.service.CategoryService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Authorization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -41,13 +44,16 @@ public class CategoryEndpoint {
     }
 
     @PostMapping
+    @Secured("ROLE_USER")
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation(value = "Create new Category")
-    public CategoryDetailedDto createCategory(@Valid @RequestBody CategoryInquiryDto categoryInquiryDto) {
+    @ApiOperation(value = "Create new Category", authorizations = {@Authorization(value = "ROLE_USER")})
+    public CategoryDetailedDto createCategory(@Valid @RequestBody CategoryInquiryDto categoryInquiryDto,
+                                              Authentication authentication) {
         LOGGER.info("POST /api/v1/categories");
         try {
             return categoryMapper.categoryToCategoryDetailedDto(
-                categoryService.createCategory(categoryMapper.categoryInquiryDtoToCategory(categoryInquiryDto)));
+                categoryService.createCategory(categoryMapper.categoryInquiryDtoToCategory(categoryInquiryDto),
+                    authentication.getName()));
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid parent category.", e);
         }

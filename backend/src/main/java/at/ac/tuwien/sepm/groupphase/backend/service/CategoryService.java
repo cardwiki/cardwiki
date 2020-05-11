@@ -28,6 +28,6 @@ public interface CategoryService  {
      * @param category to be created
      * @return the category which has been created
      */
-    Category createCategory(Category category);
+    Category createCategory(Category category, String oAuthId);
 
 }
