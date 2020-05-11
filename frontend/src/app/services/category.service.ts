@@ -15,6 +15,33 @@ export class CategoryService {
   }
 
   /**
+   * Handles errors returned by the endpoint
+   * @param error returned
+   * @return string containing the error message
+   */
+  handleError(error): string {
+      if (error.status === 500 || error.status === 0) {
+        if (error.message.includes('ConstraintViolationException')) {
+          return 'Invalid input. Category may already exist.';
+        }
+        return 'Something went wrong while processing your request.'  ;
+      }
+      if (error.status === 401 || error.status === 403) {
+        return 'Not authorized: ' + error.status;
+      }
+      if (error.status === 503) {
+        return 'Service unavailable: ' + error.status;
+      }
+      const message = error.error.split('[')[1].split(']')[0];
+      const messages = message.split(',');
+      let result = '';
+      for (let i = 0; i < messages.length; i++) {
+        result += messages[i].substr(messages[i].indexOf(' '));
+      }
+      return result;
+    }
+
+  /**
    * Loads all categories from the backend
    */
   getCategories(): Observable<Category[]> {
@@ -31,15 +58,6 @@ export class CategoryService {
   }
 
   /**
-   * Loads a specific category from the backend
-   * @param id of category to load
-   */
-  getCategory(category: Category): Observable<Category> {
-    console.log('Load category details for category with name ' + category.name);
-    return this.httpClient.get<Category>(this.categoryBaseUri + '/find');
-  }
-
-  /**
    * Persists category to the backend
    * @param category to persist
    */
@@ -50,7 +68,7 @@ export class CategoryService {
 
   /**
    * Edits category in the backend
-   * @param data to update category with
+   * @param category Dto containing the data to update category with
    */
   editCategory(category: Category): Observable<Category> {
     console.log('Edit category with id ' + category.id);

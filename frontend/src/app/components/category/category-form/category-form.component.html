@@ -1,5 +1,5 @@
 <div *ngIf="error" class="alert alert-warning alert-dismissible fade show" (click)=vanishResult() role="alert">
-  <strong>Could not edit Category!</strong> {{ errorMessage }}
+  <strong>Error!</strong> {{ errorMessage }}
   <button class="btn-primary" (click)="vanishResult()">Dismiss</button>
 </div>
 
@@ -13,7 +13,7 @@
       <button class="btn-primary" id="createSub" (click)="createSubcategory()">
         Create Subcategory
       </button>
-      <button class="btn-primary" id="createNew" (click)="vanishResult();">
+      <button class="btn-primary" id="createNew" (click)="category.parent.name = null; vanishResult();">
         {{mode}} another category
       </button>
     </span>

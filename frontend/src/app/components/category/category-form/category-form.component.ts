@@ -27,7 +27,8 @@ export class CategoryFormComponent implements OnInit {
   constructor(private formBuilder: FormBuilder, private authService: AuthService,
               private router: Router, private categoryService: CategoryService) {
     this.categoryForm = this.formBuilder.group({
-      name: ['', [Validators.required, Validators.pattern('^[a-zA-Z0-9]+[a-zA-Z0-9 \\/\\-\\.\\,]+$'), Validators.maxLength(200)]],
+
+      name: ['', [Validators.required, Validators.maxLength(200)]],
       parentCategory: ['',
         {
           validators: [Validators.maxLength(200),
@@ -37,6 +38,9 @@ export class CategoryFormComponent implements OnInit {
     });
   }
 
+  /**
+   * Submits form data to createCategory() or editCategory() function
+   */
   submitCategoryForm() {
     $('#modal').hide();
     $('.modal-backdrop').remove();
@@ -60,12 +64,8 @@ export class CategoryFormComponent implements OnInit {
         (error) => {
           console.log('Updating category failed:');
           console.log(error);
+          this.errorMessage = this.categoryService.handleError(error);
           this.error = true;
-          if (typeof error.error === 'object') {
-            this.errorMessage = error.error.error;
-          } else {
-            this.errorMessage = error.error;
-          }
           this.submitted = true;
         }
       );
@@ -79,21 +79,18 @@ export class CategoryFormComponent implements OnInit {
             this.fetchCategories();
           },
           (error) => {
-            console.log('Creating category failed:');
-            console.log(error);
+            console.log('Creating category failed:', error);
+            this.errorMessage = this.categoryService.handleError(error);
             this.error = true;
-            if (typeof error.error === 'object') {
-              this.errorMessage = error.error.error;
-            } else {
-              this.errorMessage = error.error;
-            }
             this.submitted = true;
           }
         );
     }
   }
 
-
+  /**
+   * Validates the value of the form field 'name'
+   */
   checkNameErrors() {
     if (this.categoryForm.controls.name.errors) {
       const errors = this.categoryForm.controls.name.errors;
@@ -105,6 +102,10 @@ export class CategoryFormComponent implements OnInit {
     }
     return null;
   }
+
+  /**
+   * Validates the value of the form field 'parentCategory'
+   */
 
   checkCategoryErrors() {
     if (this.categoryForm.controls.parentCategory.errors) {
@@ -121,15 +122,15 @@ export class CategoryFormComponent implements OnInit {
   }
 
   checkCommonErrors(errors) {
-    if (errors.pattern) {
-      return 'First character not alphanumeric or String contains at least one illegal character';
-    }
     if (errors.maxlength) {
       return 'Maximum length exceeded.';
     }
     return null;
   }
 
+  /**
+   * Checks if the selected category exists in the category list
+   */
   validateCategoryName() {
     if (this.categories && this.categoryForm && this.categoryForm.controls) {
       const value = this.categoryForm.controls.parentCategory.value;
@@ -151,7 +152,7 @@ export class CategoryFormComponent implements OnInit {
   }
 
   /**
-   * Error flag will be deactivated, which clears the error message
+   * Hides the result screen
    */
   vanishResult() {
     this.error = false;
@@ -176,15 +177,11 @@ export class CategoryFormComponent implements OnInit {
         console.log('Getting categories.');
         this.categories = categories;
       },
-      error => {
+      (error) => {
         console.log('Could not get categories:');
         console.log(error);
         this.error = true;
-        if (typeof error.error === 'object') {
-          this.errorMessage = error.error.error;
-        } else {
-          this.errorMessage = error.error;
-        }
+        this.errorMessage = this.categoryService.handleError(error);
       }
     );
   }
@@ -197,5 +194,4 @@ export class CategoryFormComponent implements OnInit {
       }
     }
   }
-
 }

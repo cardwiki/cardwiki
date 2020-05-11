@@ -14,6 +14,7 @@ public interface TestData {
     CardRepository getCardRepository();
     RevisionRepository getRevisionRepository();
     RevisionEditRepository getRevisionEditRepository();
+    CategoryRepository getCategoryRepository();
 
     Long ID = 1L;
     String TEST_NEWS_TITLE = "Title";
@@ -45,6 +46,8 @@ public interface TestData {
     String REVISION_MESSAGE = "Test Revision";
     String FRONT_TEXT = "Test Front";
     String BACK_TEXT = "Test Back";
+    String CATEGORY_NAME = "Test Category";
+    String PARENT_CATEGORY_NAME = "Test Parent Category";
 
     default User givenApplicationUser() {
         User user = new User();
@@ -90,5 +93,18 @@ public interface TestData {
         revision.setRevisionEdit(revisionEdit);
 
         return getRevisionEditRepository().saveAndFlush(revisionEdit);
+    }
+
+    default Category givenCategory() {
+        Category category = new Category();
+        Category parent = new Category();
+        User user = givenApplicationUser();
+        category.setCreatedBy(user);
+        category.setName(CATEGORY_NAME);
+        parent.setName(PARENT_CATEGORY_NAME);
+        category.setParent(parent);
+
+        getCategoryRepository().saveAndFlush(parent);
+        return  getCategoryRepository().saveAndFlush(category);
     }
 }

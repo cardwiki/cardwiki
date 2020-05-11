@@ -7,10 +7,19 @@ import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.CategoryMapper;
 import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.service.CategoryService;
 import io.swagger.annotations.ApiOperation;
+<<<<<<< HEAD
+=======
+import io.swagger.annotations.Authorization;
+>>>>>>> 15-us07-creation-of-categories
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+<<<<<<< HEAD
+=======
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
+>>>>>>> 15-us07-creation-of-categories
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -41,22 +50,29 @@ public class CategoryEndpoint {
     }
 
     @PostMapping
+    @Secured("ROLE_USER")
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation(value = "Create new Category")
-    public CategoryDetailedDto createCategory(@Valid @RequestBody CategoryInquiryDto categoryInquiryDto) {
+    @ApiOperation(value = "Create new Category", authorizations = {@Authorization(value = "ROLE_USER")})
+    public CategoryDetailedDto createCategory(@Valid @RequestBody CategoryInquiryDto categoryInquiryDto,
+                                              Authentication authentication) {
         LOGGER.info("POST /api/v1/categories");
         try {
             return categoryMapper.categoryToCategoryDetailedDto(
-                categoryService.createCategory(categoryMapper.categoryInquiryDtoToCategory(categoryInquiryDto)));
+                categoryService.createCategory(categoryMapper.categoryInquiryDtoToCategory(categoryInquiryDto),
+                    authentication.getName()));
         } catch (NotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Parent.", e);
-        }   
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid parent category.", e);
+        }
     }
 
     @GetMapping(value = "/{id}")
     @ApiOperation(value = "Get detailed information about a specific category")
     public CategoryDetailedDto getCategory(@PathVariable Long id) {
         LOGGER.info("GET /api/v1/categories/{}", id);
-        return categoryMapper.categoryToCategoryDetailedDto(categoryService.findOneById(id));
+        try {
+            return categoryMapper.categoryToCategoryDetailedDto(categoryService.findOneById(id));
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category not found.");
+        }
     }
 }
