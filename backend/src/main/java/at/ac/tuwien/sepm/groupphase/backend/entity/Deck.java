@@ -37,8 +37,8 @@ public class Deck {
     //@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "deck")
     //private Set<Comment> comments = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "deck")
-    private Set<DeckCategory> categories = new HashSet<>();
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "decks")
+    private Set<Category> categories = new HashSet<>();
 
 
     public void dismissCard(Card card) {
@@ -103,11 +103,11 @@ public class Deck {
         this.cards = cards;
     }
 
-    public Set<DeckCategory> getCategories() {
+    public Set<Category> getCategories() {
         return categories;
     }
 
-    public void setCategories(Set<DeckCategory> categories) {
+    public void setCategories(Set<Category> categories) {
         this.categories = categories;
     }
 

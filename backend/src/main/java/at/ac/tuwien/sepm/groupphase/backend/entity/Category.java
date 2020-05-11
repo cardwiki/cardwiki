@@ -47,6 +47,14 @@ public class Category {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "category_deck",
+        joinColumns = @JoinColumn(name = "category_id"),
+        inverseJoinColumns = @JoinColumn(name = "deck_id")
+    )
+    private Set<Deck> decks = new HashSet<>();
+
     public void addSubcategory(Category subcategory) {
         children.add(subcategory);
     }
