@@ -9,7 +9,7 @@ import java.util.Objects;
 
 public class CategoryInquiryDto {
 
-    @NotNull(message = "Name must not be null.")
+    @NotEmpty(message = "Name must not be null nor empty.")
     @Length(max = 200, message = "Name exceeds size limit.")
     private String name;
 

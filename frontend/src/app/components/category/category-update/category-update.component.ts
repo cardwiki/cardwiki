@@ -22,16 +22,17 @@ export class CategoryUpdateComponent implements OnInit {
     this.categoryService.getCategoryById(id)
       .subscribe((category) => {
           this.category = category;
+          this.category.id = id;
         },
         (error) => {
           if (error.status === 400 || error.status === 404) {
             this.error = true;
             this.errorMessage = 'Page not found.';
           } else {
-            console.log(this.error);
+            console.log(error);
             this.error = true;
-        //    this.errorMessage = this.categoryService.handleError(error);
-            this.errorMessage = 'default error message';
+            this.errorMessage = this.categoryService.handleError(error);
+     //       this.errorMessage = 'default error message';
           }
         });
   }

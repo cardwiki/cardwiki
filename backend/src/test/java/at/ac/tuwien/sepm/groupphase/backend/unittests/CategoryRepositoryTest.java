@@ -43,7 +43,7 @@ public class CategoryRepositoryTest extends TestDataGenerator {
         assertAll(
             () -> assertNotNull(category.getParent()),
             () -> assertNotNull(category.getParent().getId()),
-            () -> assertNotNull(categoryRepository.findCategoryById(category.getParent().getId()))
+            () -> assertNotNull(categoryRepository.getOne(category.getParent().getId()))
         );
     }
 

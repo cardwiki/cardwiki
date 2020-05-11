@@ -9,6 +9,7 @@ import at.ac.tuwien.sepm.groupphase.backend.repository.impl.CategoryRepositoryIm
 import at.ac.tuwien.sepm.groupphase.backend.service.CategoryService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 
+import org.aspectj.weaver.ast.Not;
 import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +43,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public Category findOneById(Long id) {
         LOGGER.debug("Find category with id {}.", id);
-        Category result = categoryRepository.findCategoryById(id);
+        Category result = categoryRepository.getOne(id);
         if (result != null) {
             Hibernate.initialize(result.getChildren());
         } else {
@@ -78,12 +79,18 @@ public class CategoryServiceImpl implements CategoryService {
     public Category updateCategory(Long id, Category category) {
         LOGGER.debug("Update category with id {}", id);
         if (!categoryRepository.existsById(id)) throw new NotFoundException("Category not found.");
-        if (category.getId() == id) throw new IllegalArgumentException("Category cannot be its own parent.");
- /*       if (categoryRepository.childExistsWithId(id)) {
+        if (category.getParent() != null && category.getParent().getId() == id) {
+            throw new IllegalArgumentException("Category cannot be its own parent.");
+        }
+        if (categoryRepository.childExistsWithId(id)) {
            throw new IllegalArgumentException("Circular Child-Parent relation.");
-        }*/
+        }
         categoryRepository.updateCategory(id, category);
 
-        return findOneById(id);
+        try {
+            return findOneById(id);
+        } catch (NotFoundException e) {
+            throw e;
+        }
     }
 }

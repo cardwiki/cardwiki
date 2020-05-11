@@ -21,10 +21,13 @@ export class CategoryService {
    */
   handleError(error): string {
       if (error.status === 500 || error.status === 0) {
-        if (error.message.includes('ConstraintViolationException')) {
+        if (error.error && error.error.message.includes('ConstraintViolationException')) {
           return 'Invalid input. Category may already exist.';
         }
         return 'Something went wrong while processing your request.'  ;
+      }
+      if (error.status === 400) {
+        return error.error.message;
       }
       if (error.status === 401 || error.status === 403) {
         return 'Not authorized: ' + error.status;
@@ -71,7 +74,7 @@ export class CategoryService {
    * @param category Dto containing the data to update category with
    */
   editCategory(category: Category, id: number): Observable<Category> {
-    console.log('Edit category with id ' + category.id);
+    console.log('Edit category with id ' + id);
     return this.httpClient.put<Category>(this.categoryBaseUri + '/' + id, category);
   }
 }

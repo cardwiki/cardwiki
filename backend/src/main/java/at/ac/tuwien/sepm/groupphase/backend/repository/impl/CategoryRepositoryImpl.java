@@ -17,20 +17,30 @@ public class CategoryRepositoryImpl implements CategoryRepositoryCustom {
     EntityManager entityManager;
 
     @Override
+    @Transactional
     public boolean childExistsWithId(Long id) {
-        String sql = "WITH LINK(ID, PARENT_ID, LEVEL) AS (" +
-            "SELECT ID, PARENT_ID, 0 FROM CATEGORY WHERE ID=" + id +
+          String sql = " WITH LINK(id, parent_id, level) AS (" +
+            "SELECT id, parent_id, 0 FROM Category WHERE id=:id" +
             " UNION ALL" +
-            " SELECT CATEGORY.ID, PARENT_ID, LEVEL + 1 FROM LINK" +
-            " INNER JOIN CATEGORY ON LINK.ID=CATEGORY.PARENT_ID)" +
-            " SELECT * FROM LINK WHERE ID=" + id;
+            " SELECT id, parent_id, LEVEL + 1 FROM LINK" +
+            " INNER JOIN Category ON link.id=Category.parent_id)" +
+            " SELECT * FROM link WHERE id=:id)";
 
-        List<Object> result = this.entityManager.createQuery(sql).getResultList();
-        return result.size() == 1;
+    /*    List<Object> result = entityManager.createQuery(sql)
+            .setParameter("id", id)
+            .getResultList(); */
+
+        Long currentChild;
+        Category result = entityManager.find(Category.class, id);
+        while (result.getParent() != null) {
+            currentChild = result.getParent().getId();
+            result = entityManager.find(Category.class, currentChild);
+            if (currentChild == id) return true;
+        }
+        return false;
     }
 
     @Override
-    @Transactional
     public void updateCategory(Long id, Category category) {
         String name = category.getName();
         Long parentId = category.getParent().getId();
