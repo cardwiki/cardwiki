@@ -76,7 +76,7 @@ public class CategoryEndpoint {
     @ApiOperation(value = "Update category with specific id")
     public CategoryDetailedDto updateCategory(@PathVariable Long id,
                                                 @RequestBody @Valid CategoryInquiryDto categoryInquiryDto) {
-        LOGGER.info("PUT /api/v1/categories{}", id);
+        LOGGER.info("PUT /api/v1/categories/{}", id);
         try {
             return categoryMapper.categoryToCategoryDetailedDto(
                 categoryService.updateCategory(id, categoryMapper.categoryInquiryDtoToCategory(categoryInquiryDto))

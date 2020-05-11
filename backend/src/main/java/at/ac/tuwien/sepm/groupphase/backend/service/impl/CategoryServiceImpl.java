@@ -62,15 +62,15 @@ public class CategoryServiceImpl implements CategoryService {
         if (parent != null && !categoryRepository.existsById(parent.getId())) {
             throw new NotFoundException("Selected parent category does not exist in Database.");
         }
-        Category result = categoryRepository.save(category);
         if (parent != null) {
             try {
                 parent = findOneById(parent.getId());
             } catch(NotFoundException e) {
                 throw e;
             }
-            result.setParent(parent);
         }
+        Category result = categoryRepository.save(category);
+        result.setParent(parent);
         return result;
     }
 

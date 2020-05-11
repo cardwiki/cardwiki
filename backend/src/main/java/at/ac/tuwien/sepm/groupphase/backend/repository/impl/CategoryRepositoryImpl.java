@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import java.util.List;
+
 
 @Repository
 public class CategoryRepositoryImpl implements CategoryRepositoryCustom {
@@ -17,18 +17,17 @@ public class CategoryRepositoryImpl implements CategoryRepositoryCustom {
     EntityManager entityManager;
 
     @Override
-    @Transactional
     public boolean childExistsWithId(Long id) {
-          String sql = " WITH LINK(id, parent_id, level) AS (" +
+  /*        String sql = "WITH LINK(id, parent_id, level) AS (" +
             "SELECT id, parent_id, 0 FROM Category WHERE id=:id" +
             " UNION ALL" +
             " SELECT id, parent_id, LEVEL + 1 FROM LINK" +
             " INNER JOIN Category ON link.id=Category.parent_id)" +
-            " SELECT * FROM link WHERE id=:id)";
+            " SELECT * FROM link WHERE id=:id";
 
-    /*    List<Object> result = entityManager.createQuery(sql)
+           List<Object> result = entityManager.createQuery(sql)
             .setParameter("id", id)
-            .getResultList(); */
+            .getResultList();
 
         Long currentChild;
         Category result = entityManager.find(Category.class, id);
@@ -36,19 +35,19 @@ public class CategoryRepositoryImpl implements CategoryRepositoryCustom {
             currentChild = result.getParent().getId();
             result = entityManager.find(Category.class, currentChild);
             if (currentChild == id) return true;
-        }
+        } */
         return false;
     }
 
     @Override
     public void updateCategory(Long id, Category category) {
         String name = category.getName();
-        Long parentId = category.getParent().getId();
+        Long parentId = category.getParent() != null ? category.getParent().getId() : null;
         String sql = "UPDATE Category c SET c.name=:name, c.parent.id=:parentId WHERE c.id=:id";
-        Query query = entityManager.createQuery(sql);
-        query.setParameter("name", name);
-        query.setParameter("parentId", parentId);
-        query.setParameter("id", id);
-        query.executeUpdate();
+        entityManager.createQuery(sql)
+            .setParameter("name", name)
+            .setParameter("parentId", parentId)
+            .setParameter("id", id)
+            .executeUpdate();
     }
 }
