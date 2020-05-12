@@ -84,4 +84,29 @@ public class CardEndpointTest extends TestDataGenerator {
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(400));
     }
+
+    @Test
+    public void createCardWithBlankTextThrowsBadRequest() throws Exception {
+        RevisionEditInquiryDto dto = new RevisionEditInquiryDto();
+        dto.setTextFront("  ");
+        dto.setTextBack("  ");
+
+        mvc.perform(post("/api/v1/decks/{deckId}/cards", 123)
+            .with(oauth2Login())
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(dto)))
+            .andExpect(status().is(400));
+    }
+
+    @Test
+    public void createCardForAnonymousThrowsForbidden() throws Exception {
+        RevisionEditInquiryDto dto = new RevisionEditInquiryDto();
+        dto.setTextFront(FRONT_TEXT);
+        dto.setTextBack(BACK_TEXT);
+
+        mvc.perform(post("/api/v1/decks/{deckId}/cards", 123)
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(dto)))
+            .andExpect(status().is(403));
+    }
 }
