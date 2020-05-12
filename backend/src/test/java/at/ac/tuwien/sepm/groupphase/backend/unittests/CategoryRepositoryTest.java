@@ -26,7 +26,7 @@ public class CategoryRepositoryTest extends TestDataGenerator {
 
 
     @Test
-    public void givenNothing_whenSaveCategory_thenExistsByIdAndHasNameAndParent() {
+    public void givenNothing_whenSaveCategoryWithParent_thenExistsByIdAndHasNameAndParent() {
         Category category = givenCategory();
         categoryRepository.saveAndFlush(category);
         assertAll(
