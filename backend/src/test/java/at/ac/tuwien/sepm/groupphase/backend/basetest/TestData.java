@@ -94,4 +94,86 @@ public interface TestData {
 
         return getRevisionEditRepository().saveAndFlush(revisionEdit);
     }
+
+    Long DECK_ID = 0L;
+    Long CARD_ID = 1L;
+    Long REVISION_ID = 2L;
+    Long REVISION_EDIT_ID = 3L;
+    LocalDateTime CREATED_AT = LocalDateTime.now();
+    LocalDateTime UPDATED_AT = LocalDateTime.now();
+
+    default User getUnconnectedSampleUser() {
+        User user = new User();
+        user.setOAuthId(OAUTH_ID);
+        user.setUsername(USER_NAME);
+        user.setAdmin(false);
+        user.setEnabled(true);
+        return user;
+    }
+
+    default Deck getUnconnectedSampleDeck() {
+        Deck deck = new Deck();
+        deck.setId(DECK_ID);
+        deck.setName(DECK_NAME);
+        deck.setCreatedAt(CREATED_AT);
+        deck.setUpdatedAt(UPDATED_AT);
+        return deck;
+    }
+
+    default Card getUnconnectedSampleCard() {
+        Card card = new Card();
+        card.setId(CARD_ID);
+        card.setCreatedAt(CREATED_AT);
+        return card;
+    }
+
+    default Revision getUnconnectedSampleRevision() {
+        Revision revision = new Revision();
+        revision.setId(REVISION_ID);
+        revision.setMessage(REVISION_MESSAGE);
+        revision.setCreatedAt(CREATED_AT);
+        return revision;
+    }
+
+    default RevisionEdit getUnconnectedSampleRevisionEdit() {
+        RevisionEdit revisionEdit = new RevisionEdit();
+        revisionEdit.setId(REVISION_EDIT_ID);
+        revisionEdit.setTextFront(FRONT_TEXT);
+        revisionEdit.setTextBack(BACK_TEXT);
+        return revisionEdit;
+    }
+
+    default User getSampleUser() {
+        return getUnconnectedSampleUser();
+    }
+
+    default Deck getSampleDeck() {
+        Deck deck = getUnconnectedSampleDeck();
+        deck.setCreatedBy(getSampleUser());
+        return deck;
+    }
+
+    default Card getSampleCard() {
+        Card card = getUnconnectedSampleCard();
+        card.setDeck(getSampleDeck());
+        card.getDeck().getCards().add(card);
+        return card;
+    }
+
+    default Revision getSampleRevision() {
+        Revision revision = getUnconnectedSampleRevision();
+        revision.setCreatedBy(getSampleUser());
+        revision.getCreatedBy().getRevisions().add(revision);
+        revision.setCard(getSampleCard());
+        revision.getCard().getRevisions().add(revision);
+        revision.getCard().setLatestRevision(revision);
+        return revision;
+    }
+
+    default RevisionEdit getSampleRevisionEdit() {
+        RevisionEdit revisionEdit = getUnconnectedSampleRevisionEdit();
+        revisionEdit.setRevision(getSampleRevision());
+        revisionEdit.getRevision().setRevisionEdit(revisionEdit);
+        return revisionEdit;
+    }
 }
