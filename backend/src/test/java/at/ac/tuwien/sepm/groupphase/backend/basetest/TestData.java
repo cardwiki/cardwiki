@@ -45,6 +45,7 @@ public interface TestData {
     String REVISION_MESSAGE = "Test Revision";
     String FRONT_TEXT = "Test Front";
     String BACK_TEXT = "Test Back";
+    String UTF_16_SAMPLE_TEXT = "ユ简크로أفضل البحوثΣὲ γνДесแผ∮E⋅∞∑çéèñé";
 
     default User givenApplicationUser() {
         User user = new User();

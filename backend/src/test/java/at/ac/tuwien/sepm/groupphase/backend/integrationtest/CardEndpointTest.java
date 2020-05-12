@@ -58,6 +58,25 @@ public class CardEndpointTest extends TestDataGenerator {
     }
 
     @Test
+    public void createCardWithSpecialUtf16CharsReturnsSameText() throws Exception {
+        Deck deck = givenDeck();
+        User user = givenApplicationUser();
+        RevisionEditInquiryDto dto = new RevisionEditInquiryDto();
+        dto.setTextFront(UTF_16_SAMPLE_TEXT);
+        dto.setTextBack(UTF_16_SAMPLE_TEXT);
+
+        Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.of(user));
+
+        mvc.perform(post("/api/v1/decks/{deckId}/cards", deck.getId())
+            .with(userLogin())
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(dto)))
+            .andExpect(status().is(201))
+            .andExpect(jsonPath("$.textFront").value(UTF_16_SAMPLE_TEXT))
+            .andExpect(jsonPath("$.textBack").value(UTF_16_SAMPLE_TEXT));
+    }
+
+    @Test
     public void createCardWithInvalidDeckIdThrowsNotFoundException() throws Exception {
         User user = givenApplicationUser();
         RevisionEditInquiryDto dto = new RevisionEditInquiryDto();
