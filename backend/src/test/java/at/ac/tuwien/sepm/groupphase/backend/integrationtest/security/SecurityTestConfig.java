@@ -1,4 +1,4 @@
-package at.ac.tuwien.sepm.groupphase.backend.integrationtest;
+package at.ac.tuwien.sepm.groupphase.backend.integrationtest.security;
 
 import at.ac.tuwien.sepm.groupphase.backend.config.security.SecurityConfig;
 import org.springframework.context.annotation.Bean;
