@@ -13,6 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -38,8 +39,8 @@ public class CategoryMappingTest extends TestDataGenerator {
         category.setId(1L);
         category.setName("Test Category");
         category.setParent(parent);
-        category.setCreatedAt(new Date());
-        category.setUpdatedAt(new Date());
+        category.setCreatedAt(LocalDateTime.now());
+        category.setUpdatedAt(LocalDateTime.now());
         category.setCreatedBy(user);
 
         CategoryDetailedDto categoryDetailedDto = categoryMapper.categoryToCategoryDetailedDto(category);

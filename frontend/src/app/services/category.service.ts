@@ -21,7 +21,7 @@ export class CategoryService {
    */
   handleError(error): string {
       if (error.status === 500 || error.status === 0) {
-        if (error.error && error.error.message.includes('ConstraintViolationException')) {
+        if (error.error &&  error. error.message && error.error.message.includes('ConstraintViolationException')) {
           return 'Invalid input. Category may already exist.';
         }
         return 'Something went wrong while processing your request.'  ;
