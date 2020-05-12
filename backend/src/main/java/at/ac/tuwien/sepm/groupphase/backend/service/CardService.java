@@ -2,18 +2,21 @@ package at.ac.tuwien.sepm.groupphase.backend.service;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
 import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionEdit;
-import org.springframework.security.core.Authentication;
+import at.ac.tuwien.sepm.groupphase.backend.exception.DeckNotFoundException;
+import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
 
 public interface CardService {
 
     /**
-     * Add a new card to an existing deck
+     * Add a new card to an existing deck.
+     * Current user must be registered.
      *
-     * @param revisionEdit data of the new card
      * @param deckId id of the deck where it will be added
-     * @param oAuthId oauthid of the currently logged in user
+     * @param revisionEdit data of the new card
      * @return created card
+     * @throws DeckNotFoundException if no deck with this id exists
+     * @throws UserNotFoundException if no authenticated user could be found
      */
-    Card addCardToDeck(Long deckId, RevisionEdit revisionEdit, String oAuthId);
+    Card addCardToDeck(Long deckId, RevisionEdit revisionEdit);
 
 }

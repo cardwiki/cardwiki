@@ -1,7 +1,7 @@
 package at.ac.tuwien.sepm.groupphase.backend.config.security;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
-import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
+import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -42,7 +42,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             if (u.isAdmin())
                 authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-        } catch (NotFoundException e){
+        } catch (UserNotFoundException ignored){
         }
 
         return authorities;

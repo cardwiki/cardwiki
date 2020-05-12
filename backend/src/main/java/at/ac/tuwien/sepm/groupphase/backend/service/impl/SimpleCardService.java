@@ -29,9 +29,9 @@ public class SimpleCardService implements CardService {
 
     @Override
     @Transactional
-    public Card addCardToDeck(Long deckId, RevisionEdit revisionEdit, String oAuthId) {
-        LOGGER.debug("Add Card to Deck: {} {} {}", revisionEdit, deckId, oAuthId);
-        User user = userService.loadUserByOauthId(oAuthId);
+    public Card addCardToDeck(Long deckId, RevisionEdit revisionEdit) {
+        LOGGER.debug("Add Card to Deck: {} {}", revisionEdit, deckId);
+        User user = userService.loadCurrentUser();
         Deck deck = deckService.findOne(deckId);
 
         // Save Card with initial revision
