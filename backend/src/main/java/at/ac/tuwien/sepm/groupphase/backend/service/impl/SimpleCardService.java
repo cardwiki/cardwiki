@@ -36,7 +36,7 @@ public class SimpleCardService implements CardService {
     @Override
     @Transactional
     public Card addCardToDeck(Long deckId, RevisionEdit revisionEdit, String oAuthId) {
-        LOGGER.debug("Add Card to Deck: {} {}", revisionEdit, deckId);
+        LOGGER.debug("Add Card to Deck: {} {} {}", revisionEdit, deckId, oAuthId);
         User user = userService.loadUserByOauthId(oAuthId);
         Deck deck = deckService.findOne(deckId);
 

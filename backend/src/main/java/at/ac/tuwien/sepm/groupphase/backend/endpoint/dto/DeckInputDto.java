@@ -1,13 +1,11 @@
 package at.ac.tuwien.sepm.groupphase.backend.endpoint.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
+import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
-@JsonIgnoreProperties(value = { "createdBy" })
 public class DeckInputDto {
+    @NotBlank
     private String name;
-    private String createdBy;
 
     public String getName() {
         return name;
@@ -17,33 +15,23 @@ public class DeckInputDto {
         this.name = name;
     }
 
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String name) {
-        this.name = name;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof DeckInputDto)) return false;
         DeckInputDto that = (DeckInputDto) o;
-        return Objects.equals(name, that.name) &&
-            Objects.equals(createdBy, that.createdBy);
+        return Objects.equals(name, that.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, createdBy);
+        return Objects.hash(name);
     }
 
     @Override
     public String toString() {
         return "DeckInputDto{" +
             "name='" + name + '\'' +
-            ", createdBy='" + createdBy + '\'' +
             '}';
     }
 }

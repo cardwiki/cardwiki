@@ -5,6 +5,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
@@ -18,19 +19,17 @@ public class Deck {
     @Column(nullable = false)
     private String name;
 
-    //@ManyToOne(fetch = FetchType.LAZY, optional = false)
-    //@JoinColumn(name = "created_by", nullable = false, updatable = false)
-    //private ApplicationUser createdBy;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "created_by", nullable = false, updatable = false)
+    private User createdBy;
 
     @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false, updatable = false)
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_at", nullable = false)
-    private Date updatedAt;
+    private LocalDateTime updatedAt;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "deck")
     private Set<Card> cards = new HashSet<>();
@@ -38,8 +37,8 @@ public class Deck {
     //@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "deck")
     //private Set<Comment> comments = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "deck")
-    private Set<DeckCategory> categories = new HashSet<>();
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "decks")
+    private Set<Category> categories = new HashSet<>();
 
 
     public void dismissCard(Card card) {
@@ -63,37 +62,29 @@ public class Deck {
         this.name = name;
     }
 
-    //public ApplicationUser getCreatedBy() {
-    //    return createdBy;
-    //}
+    public User getCreatedBy() {
+        return createdBy;
+    }
 
-    //public void setCreatedBy(ApplicationUser createdBy) {
-    //    this.createdBy = createdBy;
-    //}
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
+    }
 
-    public Date getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Date getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Date updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
-
-    //public Set<Card> getCards() {
-    //    return cards;
-    //}
-
-    //public void setCards(Set<Card> cards) {
-    //    this.cards = cards;
-    //}
 
     //public Set<Comment> getComments() {
     //    return comments;
@@ -112,11 +103,11 @@ public class Deck {
         this.cards = cards;
     }
 
-    public Set<DeckCategory> getCategories() {
+    public Set<Category> getCategories() {
         return categories;
     }
 
-    public void setCategories(Set<DeckCategory> categories) {
+    public void setCategories(Set<Category> categories) {
         this.categories = categories;
     }
 
@@ -125,7 +116,7 @@ public class Deck {
         return "Deck{" +
             "id=" + id +
             ", name='" + name + '\'' +
-            //", createdBy=" + createdBy +
+            ", createdBy=" + createdBy +
             ", createdAt=" + createdAt +
             ", updatedAt=" + updatedAt +
             '}';

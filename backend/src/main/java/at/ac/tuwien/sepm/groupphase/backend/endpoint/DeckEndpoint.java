@@ -5,6 +5,7 @@ import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckInputDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.DeckMapper;
 import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Authorization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,13 +36,13 @@ public class DeckEndpoint {
     @Secured("ROLE_USER")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    @ApiOperation(value = "Create a new card deck")
-    public DeckDto create(@Valid @RequestBody DeckInputDto deckInputDto, Authentication authorization) {
+    @ApiOperation(value = "Create a new card deck", authorizations = @Authorization("ROLE_USER"))
+    public DeckDto create(@Valid @RequestBody DeckInputDto deckInputDto, Authentication authentication) {
         LOGGER.info("POST /api/v1/decks body: {}", deckInputDto);
-        deckInputDto.setCreatedBy(authorization.getName());
         return deckMapper.deckToDeckDto(
             deckService.create(
-                deckMapper.deckInputDtoToDeck(deckInputDto)
+                deckMapper.deckInputDtoToDeck(deckInputDto),
+                authentication.getName()
             )
         );
     }
