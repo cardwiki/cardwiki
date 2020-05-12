@@ -57,8 +57,10 @@ public interface TestData {
     }
 
     default Deck givenDeck() {
+        User user = givenApplicationUser();
         Deck deck = new Deck();
         deck.setName(DECK_NAME);
+        deck.setCreatedBy(user);
         return getDeckRepository().saveAndFlush(deck);
     }
 

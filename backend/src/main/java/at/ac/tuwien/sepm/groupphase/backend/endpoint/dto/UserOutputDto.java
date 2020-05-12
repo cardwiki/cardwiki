@@ -16,6 +16,18 @@ public class UserOutputDto {
 
     private boolean isAdmin;
 
+    public UserOutputDto(){
+    }
+
+    public UserOutputDto(String oAuthId, String username, String description, LocalDateTime createdAt, LocalDateTime updatedAt, boolean isAdmin) {
+        this.oAuthId = oAuthId;
+        this.username = username;
+        this.description = description;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.isAdmin = isAdmin;
+    }
+
     public String setOAuthId() {
         return oAuthId;
     }

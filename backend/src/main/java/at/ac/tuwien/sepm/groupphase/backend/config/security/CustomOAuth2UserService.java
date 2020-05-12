@@ -1,4 +1,4 @@
-package at.ac.tuwien.sepm.groupphase.backend.service.impl;
+package at.ac.tuwien.sepm.groupphase.backend.config.security;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;

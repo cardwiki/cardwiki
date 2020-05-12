@@ -1,4 +1,4 @@
-package at.ac.tuwien.sepm.groupphase.backend.service.impl;
+package at.ac.tuwien.sepm.groupphase.backend.config.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;

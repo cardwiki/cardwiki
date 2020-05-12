@@ -35,6 +35,7 @@ public class CardDataGenerator {
         applicationUserRepository.saveAndFlush(user);
         Deck deck = new Deck();
         deck.setName("Test Deck");
+        deck.setCreatedBy(user);
         deckRepository.saveAndFlush(deck);
 
         long countCards = cardRepository.count();
