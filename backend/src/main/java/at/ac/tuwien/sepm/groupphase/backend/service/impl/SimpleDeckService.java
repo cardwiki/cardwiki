@@ -4,11 +4,13 @@ import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
+import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
@@ -18,10 +20,12 @@ import java.util.Optional;
 public class SimpleDeckService implements DeckService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final DeckRepository deckRepository;
+    private final UserService userService;
 
-    @Autowired
-    public SimpleDeckService(DeckRepository deckRepository) {
+
+    public SimpleDeckService(DeckRepository deckRepository, UserService userService) {
         this.deckRepository = deckRepository;
+        this.userService = userService;
     }
 
     @Override
@@ -38,9 +42,11 @@ public class SimpleDeckService implements DeckService {
         return deckRepository.findByNameContainingIgnoreCase(name, pageable);
     }
 
+    @Transactional
     @Override
-    public Deck create(Deck deck) {
+    public Deck create(Deck deck, String oAuthId) {
         LOGGER.debug("Create new deck {}", deck);
+        deck.setCreatedBy(userService.loadUserByOauthId(oAuthId));
         return deckRepository.save(deck);
     }
 

@@ -12,41 +12,14 @@
 
       <div class="card rounded-0">
         <div class="card-header">
-          <h3 class="mb-0">Login</h3>
+          <h3 class="mb-0">Login with OAuth 2.0</h3>
         </div>
 
         <div class="card-body">
-          <form class="form" [formGroup]="loginForm" (ngSubmit)="loginUser()">
-
-            <div class="form-group">
-              <label for="inputUsername">Username</label>
-              <input type="text" name="username" formControlName="username" class="form-control" id="inputUsername"
-                     aria-describedby="usernameHelp" placeholder="Enter username">
-              <div *ngIf="submitted && loginForm.controls.username.errors" class="error">
-                <small class="form-text text-warning" *ngIf="loginForm.controls.username.errors.required">Your username is
-                  required!
-                </small>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="password">Password</label>
-              <input type="password" name="password" formControlName="password" class="form-control" id="password"
-                     placeholder="Password">
-              <div *ngIf="submitted && loginForm.controls.password.errors" class="error">
-                <small class="form-text text-warning" *ngIf="loginForm.controls.password.errors.required">Your password
-                  is
-                  required!
-                </small>
-                <small class="form-text text-warning" *ngIf="loginForm.controls.password.errors.minlength">Your password
-                  must be at least 8 characters long!
-                </small>
-              </div>
-            </div>
-
-            <button type="button" (click)="loginUser()" class="btn btn-success float-right">Login</button>
-
-          </form>
+			
+			<ul>
+				<li *ngFor="let provider of authProviders"><a href="{{authService.getProviderUrl(provider.id)}}">{{provider.name}}</a></li>
+			</ul>
         </div>
 
       </div>

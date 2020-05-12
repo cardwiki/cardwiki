@@ -1,7 +1,5 @@
-package at.ac.tuwien.sepm.groupphase.backend.config;
+package at.ac.tuwien.sepm.groupphase.backend.config.security;
 
-import at.ac.tuwien.sepm.groupphase.backend.service.impl.CustomOAuth2UserService;
-import at.ac.tuwien.sepm.groupphase.backend.service.impl.CustomOidcUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,8 +13,6 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -35,29 +31,41 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private CustomOidcUserService customOidcUserService;
 
     @Override
-    public void configure(HttpSecurity http) throws Exception {
-        http.cors().and()
-            .csrf().disable()
-            .exceptionHandling().defaultAuthenticationEntryPointFor(new Http403ForbiddenEntryPoint(), new AntPathRequestMatcher("/**")).and()
-            .oauth2Login()
-                .userInfoEndpoint()
-                    .userService(customOAuth2UserService)
-                    .oidcUserService(customOidcUserService).and()
-                .successHandler(new RefererRedirectionAuthenticationSuccessHandler());
+    public void configure(HttpSecurity httpSecurity) throws Exception {
+        staticConfigure(httpSecurity);
+        httpSecurity.oauth2Login().userInfoEndpoint()
+            .userService(customOAuth2UserService)
+            .oidcUserService(customOidcUserService);
     }
 
-    public class RefererRedirectionAuthenticationSuccessHandler
+    public static void staticConfigure(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity.cors();
+        httpSecurity.csrf().disable();
+        httpSecurity.headers().frameOptions().sameOrigin(); // for h2-console
+        httpSecurity.exceptionHandling().defaultAuthenticationEntryPointFor(new Http403ForbiddenEntryPoint(), new AntPathRequestMatcher("/**"));
+        httpSecurity.logout().logoutUrl("/api/v1/auth/logout");
+        httpSecurity.oauth2Login()
+            .authorizationEndpoint().baseUri("/api/v1/auth/providers").and()
+            .successHandler(new RefererRedirectionAuthenticationSuccessHandler());
+    }
+
+    public static class RefererRedirectionAuthenticationSuccessHandler
         extends SimpleUrlAuthenticationSuccessHandler
         implements AuthenticationSuccessHandler {
 
         public RefererRedirectionAuthenticationSuccessHandler() {
             super();
-            setUseReferer(true);
+            // TODO: don't hardcode frontend
+            // we cannot use setUseReferer(true) because it drops the path
+            setDefaultTargetUrl("http://localhost:4200/login?success");
         }
     }
 
     private final List<String> trustedOrigins = Collections.unmodifiableList(
-        Arrays.asList("http://localhost:4200", "http://localhost:8080"));
+        Arrays.asList(
+            "http://localhost:4200", // our frontend
+            "http://localhost:8080"  // our backend (for swagger-ui)
+        ));
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -78,16 +86,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 return config;
             }
         };
-    }
-
-    @Bean
-    public CorsFilter logoutCorsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.setAllowedOrigins(trustedOrigins);
-        config.addAllowedMethod("POST");
-        source.registerCorsConfiguration("/logout", config);
-        return new CorsFilter(source);
     }
 }

@@ -7,6 +7,7 @@ import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -34,6 +35,7 @@ public class UserEndpoint {
         return userMapper.userToUserOutputDto(userService.createUser(userMapper.userInputDtoToUser(userInputDto)));
     }
 
+    @Secured("ROLE_USER")
     @GetMapping
     @ApiOperation(value = "List all users")
     public List<UserOutputDto> get() {

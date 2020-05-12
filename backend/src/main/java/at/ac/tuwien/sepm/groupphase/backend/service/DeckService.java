@@ -28,9 +28,10 @@ public interface DeckService {
      * Create a new card deck.
      *
      * @param deck to create.
+     * @param OAuthId the OAuthID of the user creating the card
      * @return the new card deck.
      */
-    Deck create(Deck deck);
+    Deck create(Deck deck, String OAuthId);
 
     /**
      * Update a Deck
