@@ -1,5 +1,8 @@
 package at.ac.tuwien.sepm.groupphase.backend.config.security;
 
+import at.ac.tuwien.sepm.groupphase.backend.entity.User;
+import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
+import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,6 +10,10 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -16,6 +23,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -30,12 +38,33 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private CustomOidcUserService customOidcUserService;
 
+    @Autowired
+    private UserService userService;
+
     @Override
     public void configure(HttpSecurity httpSecurity) throws Exception {
         staticConfigure(httpSecurity);
         httpSecurity.oauth2Login().userInfoEndpoint()
             .userService(customOAuth2UserService)
             .oidcUserService(customOidcUserService);
+    }
+
+    /**
+     * This method integrates Spring Security's OAuth2 with our persistence layer.
+     */
+    public Collection<GrantedAuthority> setupRoles(OAuth2User user){
+        Collection<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS");
+
+        try {
+            User u = userService.loadUserByOauthId(user.getName());
+            authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+
+            if (u.isAdmin())
+                authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        } catch (NotFoundException e){
+        }
+
+        return authorities;
     }
 
     public static void staticConfigure(HttpSecurity httpSecurity) throws Exception {
