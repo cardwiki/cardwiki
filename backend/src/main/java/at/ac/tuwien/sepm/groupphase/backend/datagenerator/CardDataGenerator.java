@@ -35,6 +35,7 @@ public class CardDataGenerator {
         applicationUserRepository.saveAndFlush(user);
         Deck deck = new Deck();
         deck.setName("Test Deck");
+        deck.setCreatedBy(user);
         deckRepository.saveAndFlush(deck);
 
         long countCards = cardRepository.count();
@@ -45,12 +46,12 @@ public class CardDataGenerator {
 
             card.setDeck(deck);
             deck.getCards().add(card);
-            card.setCreatedBy(user);
-            user.getCards().add(card);
 
             card.setLatestRevision(revision);
             revision.setCard(card);
             revision.setMessage("Test Revision " + i);
+            revision.setCreatedBy(user);
+            user.getRevisions().add(revision);
 
             card = cardRepository.save(card);
 
@@ -70,6 +71,8 @@ public class CardDataGenerator {
                 revision.setCard(card);
                 revision.setMessage("Deleted " + i);
                 card.setLatestRevision(revision);
+                revision.setCreatedBy(user);
+                user.getRevisions().add(revision);
 
                 cardRepository.save(card);
             }

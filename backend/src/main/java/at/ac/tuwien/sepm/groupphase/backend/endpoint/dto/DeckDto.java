@@ -13,4 +13,5 @@ public class DeckDto {
     private String createdBy;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private List<CategorySimpleDto> categories;
 }

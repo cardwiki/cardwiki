@@ -3,6 +3,7 @@ package at.ac.tuwien.sepm.groupphase.backend.entity;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
@@ -25,20 +26,13 @@ public class Card {
     private Set<Revision> revisions = new HashSet<>();
 
     @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false, updatable = false)
-    private Date createdAt;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="created_by") // TODO: Consider adding DELETED_USER and make it not nullable
-    private User createdBy;
+    private LocalDateTime createdAt;
 
     @PreRemove
     private void dismissContainers() {
         deck.dismissCard(this);
         deck = null;
-        createdBy.dismissCard(this);
-        createdBy = null;
     }
 
     @PrePersist
@@ -88,27 +82,18 @@ public class Card {
         this.revisions = revisions;
     }
 
-    public Date getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
-    }
-
-    public User getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(User createdBy) {
-        this.createdBy = createdBy;
     }
 
     @Override
     public String toString() {
         return "Card{" +
             "id=" + id +
-            ", createdBy=" + createdBy +
             ", latestRevision=" + latestRevision +
             ", revisions=" + revisions +
             '}';

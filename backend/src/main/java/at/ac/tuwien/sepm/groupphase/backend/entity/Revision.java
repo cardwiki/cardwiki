@@ -2,7 +2,7 @@ package at.ac.tuwien.sepm.groupphase.backend.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
@@ -18,6 +18,10 @@ public class Revision {
     @JoinColumn(name="card_id", nullable=false)
     private Card card;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="created_by") // TODO: Consider adding DELETED_USER and make it not nullable
+    private User createdBy;
+
     @OneToOne(mappedBy = "revision", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private RevisionEdit revisionEdit;
 
@@ -25,15 +29,16 @@ public class Revision {
     @Column(nullable = false, length = MAX_MESSAGE_SIZE, updatable = false)
     private String message;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false, updatable = false)
-    private Date createdAt = new Date(); // Created at object creation to guarantee consistent business key (date, message) for equals and hashcode
+    private LocalDateTime createdAt = LocalDateTime.now(); // Created at object creation to guarantee consistent business key (date, message) for equals and hashcode
 
     @PreRemove
-    private void dismissCard() {
+    private void dismissContainers() {
         // Necessary to sync card in same session if revision is directly deleted
         card.dismissRevision(this);
         card = null;
+        createdBy.dismissRevision(this);
+        createdBy = null;
     }
 
     public Long getId() {
@@ -68,12 +73,20 @@ public class Revision {
         this.message = message;
     }
 
-    public Date getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
     }
 
     @Override
@@ -94,6 +107,7 @@ public class Revision {
     public String toString() {
         return "Revision{" +
             "id=" + id +
+            ", createdBy=" + createdBy +
             ", card=" + (card != null ? card.getId() : null) +
             ", message='" + message + "'" +
             ", revisionEdit=" + revisionEdit.getId() +
