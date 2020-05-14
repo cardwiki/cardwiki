@@ -1,0 +1,32 @@
+<div *ngIf="error" class="alert alert-warning alert-dismissible fade show" (click)=vanishError() role="alert">
+  <strong>Error!</strong> {{ errorMessage }}
+  <button class="btn-primary" (click)="vanishError()">Dismiss</button>
+</div>
+
+
+
+<div *ngIf="!error && specs && !loading" class="md-6 mx-auto">
+  <div class="align-self-center bg-light">
+    <div class="card-header">
+      <h2>Categories:</h2>
+      <label>search:
+        <input
+          type="text"
+          [formControl]="searchField"
+          name="search"
+        >
+      </label>
+    </div>
+    <div class="card-body">
+      <div *ngFor="let item of filteredList || list |
+         slice: (specs.page - 1) * specs.pageSize : (specs.page - 1) * specs.pageSize + specs.pageSize trackBy: trackChange">
+        <div><a class="page-link" href="categories/{{item.id}}">{{item.name}}</a></div>
+      </div>
+    </div>
+    <ngb-pagination
+      [(page)] = specs.page
+      [pageSize] = specs.pageSize
+      [collectionSize]="list.length"
+    ></ngb-pagination>
+  </div>
+</div>

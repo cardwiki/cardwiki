@@ -6,12 +6,8 @@ import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategorySimpleDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -23,7 +19,7 @@ public interface CategoryMapper {
     CategorySimpleDto categoryToCategorySimpleDto(Category category);
 
     @IterableMapping(qualifiedByName = "simpleCategory")
-     List<CategorySimpleDto> categoryToCategorySimpleDto(List<Category> categories);
+    List<CategorySimpleDto> categoryToCategorySimpleDto(List<Category> categories);
 
     @Mapping(source = "category.createdBy.username", target = "createdBy")
     @Mapping(source = "children", target = "children", qualifiedByName = "childrenToSimpleChildren")

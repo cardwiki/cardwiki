@@ -6,16 +6,18 @@ import {AuthGuard} from './guards/auth.guard';
 import {MessageComponent} from './components/message/message.component';
 import {CategoryCreateComponent} from './components/category/category-create/category-create.component';
 import {CategoryUpdateComponent} from './components/category/category-update/category-update.component';
-import { CardCreateComponent } from './components/card/card-create/card-create.component';
+import {CardCreateComponent} from './components/card/card-create/card-create.component';
+import {ListCategoriesComponent} from './components/category/list-categories/list-categories.component';
 
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
   {path: 'login', component: LoginComponent},
   {path: 'message', canActivate: [AuthGuard], component: MessageComponent},
-  { path: 'category/new', component: CategoryCreateComponent },
-  { path: 'category/:id/edit', component: CategoryUpdateComponent },
+  {path: 'category/new', component: CategoryCreateComponent},
+  {path: 'category/:id/edit', component: CategoryUpdateComponent},
   {path: 'decks/:id/cards/new', component: CardCreateComponent},
+  {path: 'category/list', component: ListCategoriesComponent}
 ];
 
 @NgModule({

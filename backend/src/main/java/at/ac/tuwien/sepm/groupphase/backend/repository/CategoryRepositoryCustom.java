@@ -9,4 +9,5 @@ public interface CategoryRepositoryCustom {
     boolean parentExistsWithId(Long id, Long parentId);
 
     void updateCategory(Long id, Category category);
+
 }

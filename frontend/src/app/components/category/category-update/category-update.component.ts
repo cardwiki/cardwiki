@@ -32,7 +32,6 @@ export class CategoryUpdateComponent implements OnInit {
             console.log(error);
             this.error = true;
             this.errorMessage = this.categoryService.handleError(error);
-     //       this.errorMessage = 'default error message';
           }
         });
   }

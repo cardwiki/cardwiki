@@ -1,0 +1,7 @@
+<app-list *ngIf="!this.error" [list]="categories" [specs]="specs"></app-list>
+
+<div *ngIf="this.error" class="alert alert-warning alert-dismissible fade show" role="alert">
+  <strong>Error!</strong> {{ errorMessage }}
+  <button class="btn-primary" (click)="vanishError()">Dismiss</button>
+</div>
+

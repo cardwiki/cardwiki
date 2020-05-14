@@ -1,11 +1,7 @@
 package at.ac.tuwien.sepm.groupphase.backend.entity;
 
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
@@ -29,11 +25,10 @@ public class Category {
     @JoinColumn(name="created_by", referencedColumnName="oAuthId", updatable = false)
     private User createdBy;
 
-    @JsonIgnore
     @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
     private Category parent;
 
-    @JsonIgnore
+    @JsonBackReference
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Category> children = new HashSet<>();
 
@@ -143,7 +138,15 @@ public class Category {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdatedAt() {
+     public Set<Deck> getDecks() {
+         return decks;
+     }
+
+     public void setDecks(Set<Deck> decks) {
+         this.decks = decks;
+     }
+
+     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 

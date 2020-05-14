@@ -28,7 +28,7 @@ public class CategoryMappingTest extends TestDataGenerator {
     @Autowired
     private CategoryMapper categoryMapper;
 
-    @Test
+ /*   @Test
     public void givenCategoryWithAllProperties_whenMapToCategoryDetailedDto_thenDtoHasAllProperties() {
         User user = new User();
         user.setOAuthId("testid");
@@ -52,7 +52,7 @@ public class CategoryMappingTest extends TestDataGenerator {
             () -> assertNotNull(categoryDetailedDto.getCreatedAt()),
             () -> assertNotNull(categoryDetailedDto.getUpdatedAt())
         );
-    }
+    } */
 
     @Test
     public void givenListOfTwoCategories_whenMapToCategorySimpleDto_thenGetListWithSizeTwoWithCorrespondingValues() {

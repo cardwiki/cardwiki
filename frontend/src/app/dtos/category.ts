@@ -1,3 +1,5 @@
+import {DeckSimple} from './deckSimple';
+
 export class Category {
   constructor(
     public name: string,
@@ -5,6 +7,7 @@ export class Category {
     public id: number = null,
     public createdBy: string = null,
     public createdAt: string = null,
-    public updatedAt: string = null) {
+    public updatedAt: string = null,
+    public decks: DeckSimple = null) {
   }
 }

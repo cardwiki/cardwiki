@@ -16,6 +16,11 @@ public class CategoryDetailedDto extends CategorySimpleDto {
     private List<CategorySimpleDto> children;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private List<DeckSimpleDto> decks;
+
+    public List<DeckSimpleDto> getDecks() { return decks; }
+
+    public void setDecks(List<DeckSimpleDto> decks) { this.decks = decks; }
 
     public String getCreatedBy() { return createdBy; }
 
@@ -56,7 +61,8 @@ public class CategoryDetailedDto extends CategorySimpleDto {
         return "DetailedCategoryDto{" +
             "createdBy=" + createdBy +
             ", parent=" + parent +
-            ", children=" + children +
+ //            ", children=" + children +
+            ", decks=" + decks +
             ", createdAt=" + createdAt +
             ", updatedAt=" + updatedAt +
             '}';

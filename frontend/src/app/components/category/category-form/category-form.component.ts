@@ -9,7 +9,7 @@ import * as $ from 'jquery';
 @Component({
   selector: 'app-category-form',
   templateUrl: './category-form.component.html',
-  styleUrls: ['./category-form.component.scss']
+  styleUrls: ['./category-form.component.css']
 })
 export class CategoryFormComponent implements OnInit {
 
@@ -29,12 +29,10 @@ export class CategoryFormComponent implements OnInit {
     this.categoryForm = this.formBuilder.group({
 
       name: ['', [Validators.required, Validators.maxLength(200)]],
-      parentCategory: ['',
-        {
-          validators: [Validators.maxLength(200),
-            Validators.pattern('^[a-zA-Z0-9]+[a-zA-Z0-9 \\/\\-\\.\\,]+$'),
-            this.validateCategoryName.bind(this)], updateOn: 'change'
-        }]
+        parentCategory: ['',
+          {
+            validators: [Validators.maxLength(200), this.validateCategoryName.bind(this)], updateOn: 'change'
+          }]
     });
   }
 

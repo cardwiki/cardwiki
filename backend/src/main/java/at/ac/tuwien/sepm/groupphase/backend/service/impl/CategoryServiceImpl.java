@@ -4,12 +4,9 @@ import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CategoryRepository;
-import at.ac.tuwien.sepm.groupphase.backend.repository.CategoryRepositoryCustom;
-import at.ac.tuwien.sepm.groupphase.backend.repository.impl.CategoryRepositoryImpl;
 import at.ac.tuwien.sepm.groupphase.backend.service.CategoryService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 
-import org.aspectj.weaver.ast.Not;
 import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,8 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.invoke.MethodHandles;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -44,14 +42,19 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public Category findOneById(Long id) {
         LOGGER.debug("Find category with id {}.", id);
-        Category result = categoryRepository.getOne(id);
+        Category result = categoryRepository.findCategoryById(id);
         if (result != null) {
-            Hibernate.initialize(result.getChildren());
-            Hibernate.initialize(result.getParent());
+            if (result.getParent() != null) {
+                result.setParent(categoryRepository.findCategoryById(result.getParent().getId()));
+                Hibernate.initialize(result.getParent());
+            }
+            if (result.getChildren() != null) {
+                result.setChildren(new HashSet<>(categoryRepository.findChildren(id)));
+                Hibernate.initialize(result.getChildren());
+            }
         } else {
             throw new NotFoundException("Category not found.");
         }
-        LOGGER.info(result.getChildren().toString());
         return result;
     }
 
@@ -92,13 +95,11 @@ public class CategoryServiceImpl implements CategoryService {
         Category result;
         try {
             result = findOneById(id);
-            LOGGER.info("result: " + result.toString());
         } catch (NotFoundException e)  {
             throw e;
         }
 
         Hibernate.initialize(result.getChildren());
-        LOGGER.info("result: " + result.toString());
         return result;
     }
 }

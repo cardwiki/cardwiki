@@ -5,6 +5,7 @@ import at.ac.tuwien.sepm.groupphase.backend.repository.CategoryRepositoryCustom;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
