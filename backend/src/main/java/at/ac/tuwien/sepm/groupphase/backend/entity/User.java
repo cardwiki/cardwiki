@@ -51,7 +51,7 @@ public class User {
         return admin;
     }
 
-    public String setOAuthId() {
+    public String getOAuthId() {
         return oAuthId;
     }
 

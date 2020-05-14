@@ -9,7 +9,6 @@ import {HeaderComponent} from './components/header/header.component';
 import {FooterComponent} from './components/footer/footer.component';
 import {HomeComponent} from './components/home/home.component';
 import {LoginComponent} from './components/login/login.component';
-import {MessageComponent} from './components/message/message.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {httpInterceptorProviders} from './interceptors';
 import { CategoryCreateComponent } from './components/category/category-create/category-create.component';
@@ -26,7 +25,6 @@ import { CardViewComponent } from './components/card/card-view/card-view.compone
     FooterComponent,
     HomeComponent,
     LoginComponent,
-    MessageComponent,
     CategoryCreateComponent,
     CategoryFormComponent,
     CategoryUpdateComponent,

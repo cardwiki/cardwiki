@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public abstract class TestDataGenerator implements TestData {
     @Autowired
-    private ApplicationUserRepository applicationUserRepository;
+    private UserRepository userRepository;
     @Autowired
     private DeckRepository deckRepository;
     @Autowired
@@ -19,8 +19,8 @@ public abstract class TestDataGenerator implements TestData {
     private RevisionEditRepository revisionEditRepository;
 
     @Override
-    public ApplicationUserRepository getApplicationUserRepository() {
-        return applicationUserRepository;
+    public UserRepository getUserRepository() {
+        return userRepository;
     }
 
     @Override
