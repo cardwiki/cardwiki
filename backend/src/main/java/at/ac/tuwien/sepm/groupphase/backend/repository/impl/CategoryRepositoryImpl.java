@@ -18,13 +18,6 @@ public class CategoryRepositoryImpl implements CategoryRepositoryCustom {
 
     @Override
     public boolean parentExistsWithId(Long id, Long parentId) {
-   /*     Category result = new Category(parentId);
-        do {
-            Long currentChild;
-            result = entityManager.find(Category.class, currentChild = result.getId());
-            if (currentChild.equals(id)) return true;
-        } while ((result = result.getParent()) != null);
-        return false; */
     Category result = entityManager.find(Category.class, parentId);
     while ((result = result.getParent()) != null) {
         if (result.getId().equals(id)) return true;
