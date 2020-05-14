@@ -4,17 +4,13 @@ import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.RevisionEditInquiryDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
-import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.Optional;
 
 import static at.ac.tuwien.sepm.groupphase.backend.integrationtest.security.MockedLogins.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -58,10 +54,8 @@ public class CardEndpointTest extends TestDataGenerator {
         dto.setTextFront(UTF_16_SAMPLE_TEXT);
         dto.setTextBack(UTF_16_SAMPLE_TEXT);
 
-        Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.of(user));
-
         mvc.perform(post("/api/v1/decks/{deckId}/cards", deck.getId())
-            .with(userLogin())
+            .with(mockLogin(USER_ROLES, user.getOAuthId()))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(201))
