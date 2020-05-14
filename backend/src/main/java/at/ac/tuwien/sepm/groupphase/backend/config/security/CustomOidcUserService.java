@@ -12,13 +12,13 @@ import org.springframework.stereotype.Service;
 public class CustomOidcUserService extends OidcUserService {
 
     @Autowired
-    CustomOAuth2UserService customOAuth2UserService;
+    private SecurityConfig config;
 
     @Override
     public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
         OidcUser user = super.loadUser(userRequest);
         String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
         // We need to construct our own OidcUser because the user returned by super is immutable.
-        return new DefaultOidcUser(customOAuth2UserService.setupRoles(user), user.getIdToken(), user.getUserInfo(), userNameAttributeName);
+        return new DefaultOidcUser(config.setupRoles(user), user.getIdToken(), user.getUserInfo(), userNameAttributeName);
     }
 }

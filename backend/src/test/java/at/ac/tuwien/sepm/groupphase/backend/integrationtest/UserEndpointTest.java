@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static at.ac.tuwien.sepm.groupphase.backend.integrationtest.security.MockedLogins.userLogin;
+import static at.ac.tuwien.sepm.groupphase.backend.integrationtest.security.MockedLogins.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -26,7 +26,7 @@ public class UserEndpointTest {
     @Test
     public void createUser() throws Exception {
         mvc.perform(post("/api/v1/users")
-            .with(userLogin())
+            .with(mockLogin(USER_ROLES, "123"))
             .contentType("application/json").content(objectMapper.writeValueAsString(new UserInputDto("123", "test", "example", false))))
             .andExpect(status().is(201))
             .andExpect(jsonPath("$.username").value("test"));

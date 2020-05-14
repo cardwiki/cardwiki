@@ -17,8 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Optional;
 
-import static at.ac.tuwien.sepm.groupphase.backend.integrationtest.security.MockedLogins.userLogin;
-import static at.ac.tuwien.sepm.groupphase.backend.integrationtest.security.MockedLogins.anonymousLogin;
+import static at.ac.tuwien.sepm.groupphase.backend.integrationtest.security.MockedLogins.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -47,7 +46,7 @@ public class CardEndpointTest extends TestDataGenerator {
         Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.of(user));
 
         mvc.perform(post("/api/v1/decks/{deckId}/cards", deck.getId())
-            .with(userLogin())
+            .with(mockLogin(USER_ROLES, "foo"))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(201))
@@ -67,7 +66,7 @@ public class CardEndpointTest extends TestDataGenerator {
         Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.of(user));
 
         mvc.perform(post("/api/v1/decks/{deckId}/cards", 123)
-            .with(userLogin())
+            .with(mockLogin(USER_ROLES, "foo"))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(404));
@@ -80,7 +79,7 @@ public class CardEndpointTest extends TestDataGenerator {
         dto.setTextBack(null);
 
         mvc.perform(post("/api/v1/decks/{deckId}/cards", 123)
-            .with(userLogin())
+            .with(mockLogin(USER_ROLES, "foo"))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(400));
@@ -93,7 +92,7 @@ public class CardEndpointTest extends TestDataGenerator {
         dto.setTextBack("  ");
 
         mvc.perform(post("/api/v1/decks/{deckId}/cards", 123)
-            .with(userLogin())
+            .with(mockLogin(USER_ROLES, "foo"))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(400));
@@ -106,7 +105,7 @@ public class CardEndpointTest extends TestDataGenerator {
         dto.setTextBack(BACK_TEXT);
 
         mvc.perform(post("/api/v1/decks/{deckId}/cards", 123)
-            .with(anonymousLogin())
+            .with(mockLogin(ANONYMOUS_ROLES, "foo"))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(403));
