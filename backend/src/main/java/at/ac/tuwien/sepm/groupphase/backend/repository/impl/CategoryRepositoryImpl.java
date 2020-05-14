@@ -17,26 +17,19 @@ public class CategoryRepositoryImpl implements CategoryRepositoryCustom {
     EntityManager entityManager;
 
     @Override
-    public boolean childExistsWithId(Long id) {
-  /*        String sql = "WITH LINK(id, parent_id, level) AS (" +
-            "SELECT id, parent_id, 0 FROM Category WHERE id=:id" +
-            " UNION ALL" +
-            " SELECT id, parent_id, LEVEL + 1 FROM LINK" +
-            " INNER JOIN Category ON link.id=Category.parent_id)" +
-            " SELECT * FROM link WHERE id=:id";
-
-           List<Object> result = entityManager.createQuery(sql)
-            .setParameter("id", id)
-            .getResultList();
-
-        Long currentChild;
-        Category result = entityManager.find(Category.class, id);
-        while (result.getParent() != null) {
-            currentChild = result.getParent().getId();
-            result = entityManager.find(Category.class, currentChild);
-            if (currentChild == id) return true;
-        } */
-        return false;
+    public boolean parentExistsWithId(Long id, Long parentId) {
+   /*     Category result = new Category(parentId);
+        do {
+            Long currentChild;
+            result = entityManager.find(Category.class, currentChild = result.getId());
+            if (currentChild.equals(id)) return true;
+        } while ((result = result.getParent()) != null);
+        return false; */
+    Category result = entityManager.find(Category.class, parentId);
+    while ((result = result.getParent()) != null) {
+        if (result.getId().equals(id)) return true;
+    }
+    return false;
     }
 
     @Override

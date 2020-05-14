@@ -5,28 +5,29 @@ import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
 public class CategoryDetailedDto extends CategorySimpleDto {
 
-    private User createdBy;
-    private Category parent;
-    private Set<Category> children;
+    private String createdBy;
+    private CategorySimpleDto parent;
+    private List<CategorySimpleDto> children;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public User getCreatedBy() { return createdBy; }
+    public String getCreatedBy() { return createdBy; }
 
-    public void setCreatedBy(User createdBy) { this.createdBy = createdBy; }
+    public void setCreatedBy(String createdBy) { this.createdBy = createdBy; }
 
-    public Category getParent() { return parent; }
+    public CategorySimpleDto getParent() { return parent; }
 
-    public void setParent(Category parent) { this.parent = parent; }
+    public void setParent(CategorySimpleDto parent) { this.parent = parent; }
 
-    public Set<Category> getChildren() { return children; }
+    public List<CategorySimpleDto> getChildren() { return children; }
 
-    public void setChildren(Set<Category> children) { this.children = children; }
+    public void setChildren(List<CategorySimpleDto> children) { this.children = children; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
 
@@ -42,7 +43,7 @@ public class CategoryDetailedDto extends CategorySimpleDto {
         if (!(o instanceof CategoryDetailedDto)) return false;
         if (!super.equals(o)) return false;
         CategoryDetailedDto that = (CategoryDetailedDto) o;
-        return Objects.equals(getCreatedAt(), that.getCreatedAt());
+        return getCreatedAt().equals(that.getCreatedAt());
     }
 
     @Override

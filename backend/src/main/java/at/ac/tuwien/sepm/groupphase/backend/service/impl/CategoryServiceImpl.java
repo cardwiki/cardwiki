@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -46,9 +47,11 @@ public class CategoryServiceImpl implements CategoryService {
         Category result = categoryRepository.getOne(id);
         if (result != null) {
             Hibernate.initialize(result.getChildren());
+            Hibernate.initialize(result.getParent());
         } else {
             throw new NotFoundException("Category not found.");
         }
+        LOGGER.info(result.getChildren().toString());
         return result;
     }
 
@@ -79,18 +82,23 @@ public class CategoryServiceImpl implements CategoryService {
     public Category updateCategory(Long id, Category category) {
         LOGGER.debug("Update category with id {}", id);
         if (!categoryRepository.existsById(id)) throw new NotFoundException("Category not found.");
-        if (category.getParent() != null && category.getParent().getId() == id) {
+        if (category.getParent() != null && category.getParent().getId().equals(id)) {
             throw new IllegalArgumentException("Category cannot be its own parent.");
         }
-        if (categoryRepository.childExistsWithId(id)) {
+        if (category.getParent() != null && categoryRepository.parentExistsWithId(id, category.getParent().getId())) {
            throw new IllegalArgumentException("Circular Child-Parent relation.");
         }
         categoryRepository.updateCategory(id, category);
-
+        Category result;
         try {
-            return findOneById(id);
-        } catch (NotFoundException e) {
+            result = findOneById(id);
+            LOGGER.info("result: " + result.toString());
+        } catch (NotFoundException e)  {
             throw e;
         }
+
+        Hibernate.initialize(result.getChildren());
+        LOGGER.info("result: " + result.toString());
+        return result;
     }
 }

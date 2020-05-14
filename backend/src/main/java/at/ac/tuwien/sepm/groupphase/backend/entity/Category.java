@@ -30,13 +30,11 @@ public class Category {
     private User createdBy;
 
     @JsonIgnore
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinColumn(name = "parent_id", referencedColumnName = "id")
+    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
     private Category parent;
 
-    @JsonBackReference
-    @Fetch(FetchMode.SUBSELECT)
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    @JsonIgnore
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Category> children = new HashSet<>();
 
     @CreationTimestamp
@@ -68,6 +66,11 @@ public class Category {
 
     public Category(Long id) {
         this.id = id;
+    }
+
+    public Category(Long id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
     public Category(String name, Category parent) {
@@ -168,7 +171,6 @@ public class Category {
             "id=" + id +
             ", name='" + name + '\'' +
             ", createdBy=" + createdBy +
-            ", parent=" + parent +
             ", createdAt=" + createdAt +
             ", updatedAt=" + updatedAt +
             '}';

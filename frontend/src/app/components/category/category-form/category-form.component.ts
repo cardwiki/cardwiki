@@ -54,6 +54,7 @@ export class CategoryFormComponent implements OnInit {
     }
 
     if (this.mode === 'Update') {
+      console.log(this.category);
       const parent = this.parentId ? new Category(null, null, this.parentId) : null;
       const payload = new Category(this.categoryForm.value.name, parent);
       this.categoryService.editCategory(payload, this.category.id).subscribe(
@@ -72,7 +73,7 @@ export class CategoryFormComponent implements OnInit {
       );
     } else {
       const parent = this.parentId ? new Category(null, null, this.parentId) : null;
-      this.categoryService.createCategory(new Category(this.categoryForm.value.name, parent, null))
+      this.categoryService.createCategory(new Category(this.categoryForm.value.name, parent))
         .subscribe((categoryResult) => {
             console.log(categoryResult);
             this.result = categoryResult;
@@ -190,7 +191,7 @@ export class CategoryFormComponent implements OnInit {
   setDefaults(): void {
     if (this.categoryForm) {
       this.categoryForm.controls['name'].setValue(this.category.name);
-      if (this.category.parent && this.category.parent.name) {
+      if (this.category.parent) {
         this.categoryForm.controls['parentCategory'].setValue(this.category.parent.name);
       }
     }
