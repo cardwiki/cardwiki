@@ -34,11 +34,6 @@ public interface TestData {
         }
     };
     String DEFAULT_USER = "admin@email.com";
-    List<String> USER_ROLES = new ArrayList<>() {
-        {
-            add("ROLE_USER");
-        }
-    };
 
     String OAUTH_ID = "Fake Id";
     String USER_NAME = "Test User";
