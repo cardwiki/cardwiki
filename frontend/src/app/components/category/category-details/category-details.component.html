@@ -1,22 +1,20 @@
 
 <div *ngIf="error">{{errorMessage}}</div>
-<div class="container-md mt-3">
-  <div *ngIf="category" class="row mt-4">
-    <p>View Category</p>
+<div class="container-md-5 mt-4 pt-4 pb-4 pl-4 pr-4" id="blubb">
+  <div class="col-md-9 mx-auto">
+    <div class="row">
+    <div *ngIf="category">
+      <p>View Category</p>
     </div>
   </div>
-
-<div class="container-md">
-  <div class="card rounded-0">
-    <div class="col">
-      <div *ngIf="category.name" class="card-body">
-      <a *ngIf="category.parent" href="categories/{{category.parent.id}}" class="row pl-2">
+  <div *ngIf="category.name">
+      <a *ngIf="category.parent" href="categories/{{category.parent.id}}" class="row">
         {{category.parent.name}} ┐
       </a>
-      <div class="row pl-4">
+      <div class="row">
         <h1>{{category.name}}</h1>
       </div>
-      <div *ngIf="category.children" class="row ml-1 pl-5 pt-4">
+      <div *ngIf="category.children" class="row pt-3">
         <app-list
           [list]="category.children"
           [specs]="{ listSize: category.children.length, pageSize: 7, page: 1 }"
@@ -25,8 +23,8 @@
         >
         </app-list>
       </div>
-      <div *ngIf="category.decks" class="row ml-1 pl-5">
-        <div class="float-left">
+      <div *ngIf="category.decks" class="row pt-3">
+        <div>
           <app-list
             [list]="category.decks"
             [specs]="{ listSize: category.decks.length, pageSize: 7, page: 1 }"

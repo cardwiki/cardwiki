@@ -11,6 +11,7 @@ import { Category } from '../../../dtos/category';
 export class CategoryUpdateComponent implements OnInit {
   editCategoryMode: string = 'Update';
   category: Category = null;
+  messages: { header: string, success: string, error: string };
   error: boolean = false;
   errorMessage: string;
 
@@ -37,6 +38,7 @@ export class CategoryUpdateComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.messages = { header: 'Update category', success: 'Category successfully updated', error: 'Error updating category'};
   }
 
 }

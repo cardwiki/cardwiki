@@ -11,11 +11,6 @@ import {ActivatedRoute} from '@angular/router';
 export class CategoryListComponent implements OnInit {
   categories: Category[];
   specs: { listSize: number, pageSize: number, page: number }
-  messages = {
-    header: 'Categories',
-    success: 'Success',
-    error: 'Error',
-  }
   path: string = 'categories';
   error: boolean = false;
   errorMessage: string;

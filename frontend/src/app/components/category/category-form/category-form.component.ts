@@ -15,6 +15,7 @@ export class CategoryFormComponent implements OnInit {
 
   @Input() mode: String;
   @Input() category: Category = new Category(null, new Category(null));
+  @Input() messages: { header: string, success: string, error: string };
   categoryForm: FormGroup;
   submitted: boolean;
   error: boolean;

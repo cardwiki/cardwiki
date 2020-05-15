@@ -30,6 +30,7 @@ export class ListComponent implements OnInit {
           this.filteredList.push(item);
         }
       });
+      this.specs = { listSize: this.filteredList.length, pageSize: this.specs.pageSize, page: 1 } ;
     });
   }
 

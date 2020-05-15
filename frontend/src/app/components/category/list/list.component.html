@@ -5,13 +5,12 @@
 
 
 
-<div *ngIf="!error && specs && !loading" class="container-md-6">
-  <div class="row">
-    <div class="column mt-2 mb-2">
-      <div class="row">
-        <h5>{{messages.header}}:</h5>
+  <div *ngIf="!error && specs && !loading" class="row ml-0">
+    <div class="column">
+      <div class="row ml-0">
+        <h5>{{messages? messages.header:''}}</h5>
       </div>
-      <div *ngIf="list.length > 0" class="table pl-4 pt-2">
+      <div *ngIf="list.length > 0">
         <div class="col">
           <div class="row mb-3">
             <div class="list">
@@ -20,6 +19,7 @@
                 type="text"
                 [formControl]="searchField"
                 name="search"
+                autocomplete="off"
               >
               </label>
               <ul>
@@ -32,14 +32,16 @@
               </ul>
             </div>
           </div>
-          <ngb-pagination class="row"
+          <ngb-pagination
+            class="row"
             [(page)] = specs.page
             [pageSize] = specs.pageSize
             [collectionSize]="list.length"
+            size="sm"
           ></ngb-pagination>
         </div>
       </div>
         <div *ngIf="list.length === 0" class="row pl-4">None found.</div>
     </div>
   </div>
-</div>
+

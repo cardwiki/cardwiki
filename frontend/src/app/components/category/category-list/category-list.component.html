@@ -1,16 +1,21 @@
-<div class="container-md">
-  <div class="card-danger rounded-0 bg-light">
-    <div class="col-md-4 mx-auto">
+<div class="container-md-5 mt-4 pt-4 pb-4 pl-4 pr-4">
+  <div class="col-md-6 mx-auto">
+    <span class="anchor" id="formLogin"></span>
+    <div class="card rounded pl-5 pt-2">
+    <div class="row">
+        <h2>Categories:</h2>
+      </div>
       <app-list
+        class="row"
         *ngIf="!this.error"
         [list]="categories"
         [specs]="specs" [path]="path"
-        [messages]="messages"
       >
       </app-list>
-    </div>
+</div>
   </div>
 </div>
+
 
 <div *ngIf="this.error" class="alert alert-warning alert-dismissible fade show" role="alert">
   <strong>Error!</strong> {{ errorMessage }}

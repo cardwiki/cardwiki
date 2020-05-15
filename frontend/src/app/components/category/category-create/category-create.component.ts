@@ -7,9 +7,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class CategoryCreateComponent implements OnInit {
   editCategoryMode: string = 'Create';
+  messages: { header: string, success: string, error: string };
   constructor() { }
 
   ngOnInit(): void {
+    this.messages = { header: 'Create category', success: 'Category successfully created', error: 'Error creating category' };
   }
 
 }
