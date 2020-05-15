@@ -18,8 +18,9 @@ import { CategoryUpdateComponent } from './components/category/category-update/c
 import { CardCreateComponent } from './components/card/card-create/card-create.component';
 import { CardFormComponent } from './components/card/card-form/card-form.component';
 import { CardViewComponent } from './components/card/card-view/card-view.component';
-import { ListCategoriesComponent } from './components/category/list-categories/list-categories.component';
+import { CategoryListComponent } from './components/category/category-list/category-list.component';
 import { ListComponent } from './components/category/list/list.component';
+import { CategoryDetailsComponent } from './components/category/category-details/category-details.component';
 
 @NgModule({
   declarations: [
@@ -35,8 +36,9 @@ import { ListComponent } from './components/category/list/list.component';
     CardCreateComponent,
     CardFormComponent,
     CardViewComponent,
-    ListCategoriesComponent,
+    CategoryListComponent,
     ListComponent,
+    CategoryDetailsComponent,
   ],
   imports: [
     BrowserModule,

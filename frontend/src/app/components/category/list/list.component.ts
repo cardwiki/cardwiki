@@ -8,8 +8,10 @@ import {FormControl} from '@angular/forms';
 })
 export class ListComponent implements OnInit {
 
-  @Input() list: {name, id}[];
+  @Input() list: { name, id }[];
   @Input() specs: { listSize: number, pageSize: number, page: number };
+  @Input() path: string;
+  @Input() messages: { header: string, success: string, error: string };
   filteredList: object[];
   loading: boolean = true;
   error: boolean = false;

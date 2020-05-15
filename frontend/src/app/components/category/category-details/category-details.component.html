@@ -1,0 +1,41 @@
+
+<div *ngIf="error">{{errorMessage}}</div>
+<div class="container-md mt-3">
+  <div *ngIf="category" class="row mt-4">
+    <p>View Category</p>
+    </div>
+  </div>
+
+<div class="container-md">
+  <div class="card rounded-0">
+    <div class="col">
+      <div *ngIf="category.name" class="card-body">
+      <a *ngIf="category.parent" href="categories/{{category.parent.id}}" class="row pl-2">
+        {{category.parent.name}} ┐
+      </a>
+      <div class="row pl-4">
+        <h1>{{category.name}}</h1>
+      </div>
+      <div *ngIf="category.children" class="row ml-1 pl-5 pt-4">
+        <app-list
+          [list]="category.children"
+          [specs]="{ listSize: category.children.length, pageSize: 7, page: 1 }"
+          [path]="'categories'"
+          [messages]="{ header: 'Subcategories', success: 'Success', error: 'Error' }"
+        >
+        </app-list>
+      </div>
+      <div *ngIf="category.decks" class="row ml-1 pl-5">
+        <div class="float-left">
+          <app-list
+            [list]="category.decks"
+            [specs]="{ listSize: category.decks.length, pageSize: 7, page: 1 }"
+            [path]="'decks'"
+            [messages]="{ header: 'Decks', success: 'Success', error: 'Error' }"
+          >
+          </app-list>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

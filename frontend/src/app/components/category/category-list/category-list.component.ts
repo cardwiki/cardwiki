@@ -4,13 +4,19 @@ import {CategoryService} from '../../../services/category.service';
 import {ActivatedRoute} from '@angular/router';
 
 @Component({
-  selector: 'app-list-categories',
-  templateUrl: './list-categories.component.html',
-  styleUrls: ['./list-categories.component.css']
+  selector: 'app-category-list',
+  templateUrl: './category-list.component.html',
+  styleUrls: ['./category-list.component.css']
 })
-export class ListCategoriesComponent implements OnInit {
+export class CategoryListComponent implements OnInit {
   categories: Category[];
   specs: { listSize: number, pageSize: number, page: number }
+  messages = {
+    header: 'Categories',
+    success: 'Success',
+    error: 'Error',
+  }
+  path: string = 'categories';
   error: boolean = false;
   errorMessage: string;
 

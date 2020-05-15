@@ -14,6 +14,21 @@ export class CategoryService {
   constructor(private httpClient: HttpClient, private globals: Globals) {
   }
 
+ async doSearch(id: number): Promise<any> {
+    return new Promise((resolve, reject) => {
+     this.getCategoryById(id).subscribe((category) => {
+       console.log(category);
+           return resolve(category);
+         },
+         (error) => {
+           if (error.status === 400 || error.status === 404) {
+             reject('Page not found.');
+           }
+           reject(this.handleError(error));
+         });
+   });
+  }
+
   /**
    * Handles errors returned by the endpoint
    * @param error returned

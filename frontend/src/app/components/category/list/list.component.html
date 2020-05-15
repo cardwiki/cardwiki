@@ -1,32 +1,45 @@
 <div *ngIf="error" class="alert alert-warning alert-dismissible fade show" (click)=vanishError() role="alert">
-  <strong>Error!</strong> {{ errorMessage }}
+  <strong>{{messages.error}}: </strong>{{ errorMessage }}
   <button class="btn-primary" (click)="vanishError()">Dismiss</button>
 </div>
 
 
 
-<div *ngIf="!error && specs && !loading" class="md-6 mx-auto">
-  <div class="align-self-center bg-light">
-    <div class="card-header">
-      <h2>Categories:</h2>
-      <label>search:
-        <input
-          type="text"
-          [formControl]="searchField"
-          name="search"
-        >
-      </label>
-    </div>
-    <div class="card-body">
-      <div *ngFor="let item of filteredList || list |
-         slice: (specs.page - 1) * specs.pageSize : (specs.page - 1) * specs.pageSize + specs.pageSize trackBy: trackChange">
-        <div><a class="page-link" href="categories/{{item.id}}">{{item.name}}</a></div>
+<div *ngIf="!error && specs && !loading" class="container-md-6">
+  <div class="row">
+    <div class="column mt-2 mb-2">
+      <div class="row">
+        <h5>{{messages.header}}:</h5>
       </div>
+      <div *ngIf="list.length > 0" class="table pl-4 pt-2">
+        <div class="col">
+          <div class="row mb-3">
+            <div class="list">
+              <label>search:
+              <input
+                type="text"
+                [formControl]="searchField"
+                name="search"
+              >
+              </label>
+              <ul>
+                <li *ngFor="let item of filteredList || list |
+                  slice: (specs.page - 1) * specs.pageSize : (specs.page - 1) * specs.pageSize + specs.pageSize
+                  trackBy: trackChange"
+                >
+                  <a href="{{path}}/{{item.id}}">{{item.name}}</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <ngb-pagination class="row"
+            [(page)] = specs.page
+            [pageSize] = specs.pageSize
+            [collectionSize]="list.length"
+          ></ngb-pagination>
+        </div>
+      </div>
+        <div *ngIf="list.length === 0" class="row pl-4">None found.</div>
     </div>
-    <ngb-pagination
-      [(page)] = specs.page
-      [pageSize] = specs.pageSize
-      [collectionSize]="list.length"
-    ></ngb-pagination>
   </div>
 </div>

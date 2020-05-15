@@ -8,6 +8,7 @@ export class Category {
     public createdBy: string = null,
     public createdAt: string = null,
     public updatedAt: string = null,
-    public decks: DeckSimple = null) {
+    public children: Category[] = [],
+    public decks: DeckSimple[] = null) {
   }
 }
