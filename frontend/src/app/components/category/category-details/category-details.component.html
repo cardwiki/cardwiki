@@ -12,7 +12,10 @@
         {{category.parent.name}} ┐
       </a>
       <div class="row">
-        <span><h1>{{category.name}}</h1><button class="btn-link">edit</button></span>
+        <h1>{{category.name}}</h1>
+        <div class="d-flex flex-column">
+          <a href="/categories/{{category.id}}/edit"><button class="btn-link ml-3 mt-2">edit</button></a>
+        </div>
       </div>
       <div *ngIf="category.children" class="row pt-3">
         <app-list

@@ -15,17 +15,25 @@ export class CategoryDetailsComponent implements OnInit {
   errorMessage: string;
 
   constructor(private route: ActivatedRoute, private categoryService: CategoryService) {
-    this.route.params.subscribe(async (params) => await this.doSearch(params['id']));
+    this.route.params.subscribe(async (params) => this.doSearch(params['id']));
   }
 
-  async doSearch(id: number) {
-    try {
-      this.category = await this.categoryService.doSearch(id);
-      console.log(this.category);
-    } catch (error) {
-      this.error = true;
-      this.errorMessage = error;
-    }
+  doSearch(id: number) {
+    this.categoryService.getCategoryById(id)
+      .subscribe((category) => {
+          this.category = category;
+          this.category.id = id;
+        },
+        (error) => {
+          if (error.status === 400 || error.status === 404) {
+            this.error = true;
+            this.errorMessage = 'Page not found.';
+          } else {
+            console.log(error);
+            this.error = true;
+            this.errorMessage = this.categoryService.handleError(error);
+          }
+        });
   }
 
   ngOnInit(): void {
