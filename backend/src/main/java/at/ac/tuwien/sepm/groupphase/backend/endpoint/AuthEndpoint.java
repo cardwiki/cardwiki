@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ResolvableType;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,8 +47,8 @@ public class AuthEndpoint {
         WhoAmIDto dto = new WhoAmIDto();
         if (auth != null) {
             dto.setId(auth.getName());
-            dto.setHasAccount(auth.getAuthorities().contains("ROLE_USER"));
-            dto.setAdmin(auth.getAuthorities().contains("ROLE_ADMIN"));
+            dto.setHasAccount(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER")));
+            dto.setAdmin(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")));
         }
         return dto;
     }
