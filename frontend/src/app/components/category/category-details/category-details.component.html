@@ -1,9 +1,9 @@
 
 <div *ngIf="error">{{errorMessage}}</div>
-<div class="container-md-5 mt-4 pt-4 pb-4 pl-4 pr-4" id="blubb">
+<div *ngIf="category && !error" class="container-md-5 mt-4 pt-4 pb-4 pl-4 pr-4" id="blubb">
   <div class="col-md-9 mx-auto">
     <div class="row">
-    <div *ngIf="category">
+    <div>
       <p>View Category</p>
     </div>
   </div>
@@ -12,7 +12,7 @@
         {{category.parent.name}} ┐
       </a>
       <div class="row">
-        <h1>{{category.name}}</h1>
+        <span><h1>{{category.name}}</h1><button class="btn-link">edit</button></span>
       </div>
       <div *ngIf="category.children" class="row pt-3">
         <app-list

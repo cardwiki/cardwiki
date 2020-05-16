@@ -15,6 +15,6 @@ public class CategoryInquiryDto {
     private String name;
 
     @ParentIdValid
-    private Category parent;
+    private CategorySimpleDto parent;
 
 }

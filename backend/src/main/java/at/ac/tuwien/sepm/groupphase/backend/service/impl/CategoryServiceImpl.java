@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.lang.invoke.MethodHandles;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -42,20 +43,20 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public Category findOneById(Long id) {
         LOGGER.debug("Find category with id {}.", id);
-        Category result = categoryRepository.findCategoryById(id);
-        if (result != null) {
-            if (result.getParent() != null) {
-                result.setParent(categoryRepository.findCategoryById(result.getParent().getId()));
-                Hibernate.initialize(result.getParent());
+        Optional<Category> result = categoryRepository.findCategoryById(id);
+        Category category;
+        if (result.isPresent()) {
+            category = result.get();
+            if (category.getParent() != null) {
+                category.setParent(categoryRepository.findCategoryById(category.getParent().getId()).get());
             }
-            if (result.getChildren() != null) {
-                result.setChildren(new HashSet<>(categoryRepository.findChildren(id)));
-                Hibernate.initialize(result.getChildren());
+            if (category.getChildren() != null) {
+                category.setChildren(new HashSet<>(categoryRepository.findChildren(id)));
             }
         } else {
             throw new NotFoundException("Category not found.");
         }
-        return result;
+        return category;
     }
 
     @Override
@@ -68,16 +69,7 @@ public class CategoryServiceImpl implements CategoryService {
         if (parent != null && !categoryRepository.existsById(parent.getId())) {
             throw new NotFoundException("Selected parent category does not exist in Database.");
         }
-        if (parent != null) {
-            try {
-                parent = findOneById(parent.getId());
-            } catch(NotFoundException e) {
-                throw e;
-            }
-        }
-        Category result = categoryRepository.save(category);
-        result.setParent(parent);
-        return result;
+        return categoryRepository.save(category);
     }
 
     @Override
@@ -91,15 +83,7 @@ public class CategoryServiceImpl implements CategoryService {
         if (category.getParent() != null && categoryRepository.parentExistsWithId(id, category.getParent().getId())) {
            throw new IllegalArgumentException("Circular Child-Parent relation.");
         }
-        categoryRepository.updateCategory(id, category);
-        Category result;
-        try {
-            result = findOneById(id);
-        } catch (NotFoundException e)  {
-            throw e;
-        }
-
-        Hibernate.initialize(result.getChildren());
-        return result;
+        category.setId(id);
+        return categoryRepository.save(category);
     }
 }

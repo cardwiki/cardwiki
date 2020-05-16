@@ -67,7 +67,7 @@ public class CategoryEndpoint {
         try {
             return categoryMapper.categoryToCategoryDetailedDto(categoryService.findOneById(id));
         } catch (NotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category not found.");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found.");
         }
     }
 
@@ -81,7 +81,7 @@ public class CategoryEndpoint {
                 categoryService.updateCategory(
                     id, categoryMapper.categoryInquiryDtoToCategory(categoryInquiryDto)));
         } catch (NotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category not found.");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found.");
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }

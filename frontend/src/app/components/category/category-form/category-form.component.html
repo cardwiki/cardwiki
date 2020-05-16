@@ -4,7 +4,7 @@
 </div>
 
 <div *ngIf="!error && submitted" class="alert alert-success alert-dismissible fade show" role="alert">
-  <strong>Success!</strong>{{messages.success}}: <strong>{{result.name}}</strong>
+  <strong>{{messages.success}}: {{result.name}}</strong>
   <div>
     <a href="categories/{{result.id}}">
     <button class="btn-primary">

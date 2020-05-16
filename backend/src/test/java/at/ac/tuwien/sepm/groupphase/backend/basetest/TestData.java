@@ -3,10 +3,6 @@ package at.ac.tuwien.sepm.groupphase.backend.basetest;
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
 import at.ac.tuwien.sepm.groupphase.backend.repository.*;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 public interface TestData {
 
     UserRepository getUserRepository();
@@ -80,9 +76,9 @@ public interface TestData {
         category.setCreatedBy(user);
         category.setName(CATEGORY_NAME);
         parent.setName(PARENT_CATEGORY_NAME);
-        category.setParent(parent);
 
-        getCategoryRepository().saveAndFlush(parent);
+        parent = getCategoryRepository().saveAndFlush(parent);
+        category.setParent(parent);
         return  getCategoryRepository().saveAndFlush(category);
     }
 }

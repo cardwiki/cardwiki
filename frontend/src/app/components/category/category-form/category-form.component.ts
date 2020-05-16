@@ -51,10 +51,9 @@ export class CategoryFormComponent implements OnInit {
         break;
       }
     }
-
+    const parent = this.parentId ? new Category(this.categoryForm.value.parentCategory, null, this.parentId) : null;
     if (this.mode === 'Update') {
       console.log(this.category);
-      const parent = this.parentId ? new Category(null, null, this.parentId) : null;
       const payload = new Category(this.categoryForm.value.name, parent);
       this.categoryService.editCategory(payload, this.category.id).subscribe(
         (categoryResult) => {
@@ -71,7 +70,6 @@ export class CategoryFormComponent implements OnInit {
         }
       );
     } else {
-      const parent = this.parentId ? new Category(null, null, this.parentId) : null;
       this.categoryService.createCategory(new Category(this.categoryForm.value.name, parent))
         .subscribe((categoryResult) => {
             console.log(categoryResult);

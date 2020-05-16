@@ -2,6 +2,7 @@ package at.ac.tuwien.sepm.groupphase.backend.unittests;
 
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategoryDetailedDto;
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategoryInquiryDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategorySimpleDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.CategoryMapper;
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
@@ -11,11 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,33 +29,28 @@ public class CategoryMappingTest extends TestDataGenerator {
     @Autowired
     private CategoryMapper categoryMapper;
 
- /*   @Test
+   @Test
+   @Transactional
     public void givenCategoryWithAllProperties_whenMapToCategoryDetailedDto_thenDtoHasAllProperties() {
-        User user = new User();
-        user.setOAuthId("testid");
-        user.setUsername("Test User");
-        Category parent = new Category();
-        parent.setName("Test Parent");
-        Category category = new Category();
-        category.setId(1L);
-        category.setName("Test Category");
-        category.setParent(parent);
-        category.setCreatedAt(LocalDateTime.now());
-        category.setUpdatedAt(LocalDateTime.now());
-        category.setCreatedBy(user);
+        Category category = givenCategory();
+        category.getChildren().add(new Category(3L, "Child category"));
 
-        CategoryDetailedDto categoryDetailedDto = categoryMapper.categoryToCategoryDetailedDto(category);
+       CategoryDetailedDto categoryDetailedDto = categoryMapper.categoryToCategoryDetailedDto(category);
         assertAll(
-            () -> assertEquals(categoryDetailedDto.getId(), 1L),
-            () -> assertEquals(categoryDetailedDto.getName(), "Test Category"),
-            () -> assertEquals(categoryDetailedDto.getParent(), "Test Parent"),
-            () -> assertEquals(categoryDetailedDto.getCreatedBy(), "Test User"),
+            () -> assertEquals(categoryDetailedDto.getId(), category.getId()),
+            () -> assertEquals(categoryDetailedDto.getName(), category.getName()),
+            () -> assertEquals(categoryDetailedDto.getParent().getName(), category.getParent().getName()),
+            () -> assertEquals(categoryDetailedDto.getParent().getId(), category.getParent().getId()),
+            () -> assertEquals(categoryDetailedDto.getCreatedBy(), category.getCreatedBy().getUsername()),
             () -> assertNotNull(categoryDetailedDto.getCreatedAt()),
-            () -> assertNotNull(categoryDetailedDto.getUpdatedAt())
+            () -> assertNotNull(categoryDetailedDto.getUpdatedAt()),
+            () -> assertEquals(categoryDetailedDto.getChildren().size(), 1),
+            () -> assertEquals(categoryDetailedDto.getChildren().get(0).getName(), "Child category")
         );
-    } */
+    }
 
     @Test
+    @Transactional
     public void givenListOfTwoCategories_whenMapToCategorySimpleDto_thenGetListWithSizeTwoWithCorrespondingValues() {
         List<Category> categories = new ArrayList<>();
         Category category1 = givenCategory();
@@ -69,6 +65,25 @@ public class CategoryMappingTest extends TestDataGenerator {
             () -> assertEquals(2, categories.size()),
             () -> assertEquals("Test Category", categoryDtos.get(0).getName()),
             () -> assertEquals("Second User", categoryDtos.get(1).getName())
+        );
+    }
+
+    @Test
+    @Transactional
+    public void givenValidCategoryInquiryDto_whenMapToCategory_thenGetCategoryEntityWithCorrespondingValues() {
+        CategoryInquiryDto categoryInquiryDto = new CategoryInquiryDto();
+        categoryInquiryDto.setName("test");
+        CategorySimpleDto parent = new CategorySimpleDto();
+        parent.setName("test parent");
+        parent.setId(1L);
+        categoryInquiryDto.setParent(parent);
+
+        Category category = categoryMapper.categoryInquiryDtoToCategory(categoryInquiryDto);
+
+        assertAll(
+            () -> assertEquals(categoryInquiryDto.getName(), category.getName()),
+            () -> assertEquals(categoryInquiryDto.getParent().getName(), category.getParent().getName()),
+            () -> assertEquals(categoryInquiryDto.getParent().getId(), category.getParent().getId())
         );
     }
 }

@@ -8,14 +8,26 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long>, CategoryRepositoryCustom {
 
+    /**
+     * finds a category without loading parent or children
+     *
+     * @param id of the category to find
+     * @return category found
+     */
     @EntityGraph(attributePaths ={"decks", "createdBy"})
-    Category findCategoryById(Long id);
+    Optional<Category> findCategoryById(Long id);
 
-    @EntityGraph(attributePaths = "decks")
+    /**
+     * finds all children of a given parent
+     *
+     * @param parentId of the categories to find
+     * @return children of category with id parentId
+     */
     @Query("SELECT c FROM Category c WHERE c.parent.id=:parentId")
     List<Category> findChildren(@Param("parentId") Long parentId);
 }

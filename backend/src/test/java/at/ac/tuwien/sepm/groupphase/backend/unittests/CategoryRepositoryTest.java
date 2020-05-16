@@ -26,34 +26,59 @@ public class CategoryRepositoryTest extends TestDataGenerator {
 
 
     @Test
-    public void givenNothing_whenSaveCategoryWithParent_thenExistsByIdAndHasNameAndParent() {
+    public void givenNothing_whenSaveCategoryWithParent_thenExistsByIdAndHasParent() {
         Category category = givenCategory();
-        categoryRepository.saveAndFlush(category);
+
         assertAll(
             () -> assertTrue(categoryRepository.existsById(category.getId())),
             () -> assertNotNull(categoryRepository.getOne(category.getId()).getName()),
-            () -> assertNotNull(categoryRepository.getOne(category.getId()).getParent())
+            () -> assertNotNull(categoryRepository.getOne(category.getId()).getParent()),
+            () -> assertTrue(categoryRepository.existsById(category.getParent().getId()))
         );
     }
 
     @Test
-    public void givenCategoryWithParent_whenGetCategoryByIdWithParentId_thenIdIsNotNull() {
+    public void givenCategoryWithParent_whenFindCategoryById_thenReturnsCategoryWithParent() {
         Category category = givenCategory();
-        categoryRepository.saveAndFlush(category);
+
         assertAll(
-            () -> assertNotNull(category.getParent()),
-            () -> assertNotNull(category.getParent().getId()),
-            () -> assertNotNull(categoryRepository.getOne(category.getParent().getId()))
+            () -> assertEquals(categoryRepository.getOne(category.getId()), category),
+            () -> assertEquals(categoryRepository.getOne(category.getParent().getId()), category.getParent())
         );
     }
 
     @Test
-    public void givenCategoryWithoutName_whenSaveCategory_thenThrowsDataAccessException() {
+    public void givenCategoryWithoutName_whenSaveCategory_thenThrowsDataIntegrityViolationException() {
         Category category = new Category();
 
         assertAll(
             () -> assertNull(category.getName()),
             () -> assertThrows(DataIntegrityViolationException.class, () -> categoryRepository.save(category))
         );
+    }
+
+    @Test
+    public void givenTwoCategories_whenFindAll_thenReturnsListWithLengthTwoWhichContainsBothElements() {
+        Category category1 = givenCategory();
+        Category category2 = category1.getParent();
+
+        assertAll(
+            () -> assertEquals(categoryRepository.findAll().size(), 2),
+            () -> assertTrue(categoryRepository.findAll().contains(category1)),
+            () -> assertTrue(categoryRepository.findAll().contains(category2))
+        );
+    }
+
+    @Test
+    public void givenNothing_whenFindCategoryById_thenResultIsNull() {
+        assertTrue(categoryRepository.findById(1L).isEmpty());
+    }
+
+    @Test
+    public void givenCategory_whenCreateCategoryWithSameName_thenThrowsDataIntegrityViolationException() {
+        Category category1 = givenCategory();
+        Category category2 = new Category(2L, "Test Category");
+
+        assertThrows(DataIntegrityViolationException.class, () -> categoryRepository.save(category2));
     }
 }
