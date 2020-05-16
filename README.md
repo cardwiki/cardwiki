@@ -3,6 +3,10 @@
 ![](https://reset.inso.tuwien.ac.at/repo/2020ss-SEPM-group/ss20_sepm_qse_02/badges/development/pipeline.svg)
 ![](https://reset.inso.tuwien.ac.at/repo/2020ss-SEPM-group/ss20_sepm_qse_02/badges/development/coverage.svg)
 
+## Setup
+
+Running the backend in IntelliJ requires the [Lombok Plugin](https://projectlombok.org/setup/intellij).
+
 ## Howto user story
 
 1. create a GitLab issue `US01: Login` and assign yourself to it

@@ -4,14 +4,13 @@ import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.RevisionEditInquiryDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
-import at.ac.tuwien.sepm.groupphase.backend.repository.UserRepository;
+import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -32,9 +31,6 @@ public class CardEndpointTest extends TestDataGenerator {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
-    private UserRepository userRepository;
-
     @Test
     public void createCardReturnsCardDetails() throws Exception {
         Deck deck = givenDeck();
@@ -43,10 +39,8 @@ public class CardEndpointTest extends TestDataGenerator {
         dto.setTextFront(FRONT_TEXT);
         dto.setTextBack(BACK_TEXT);
 
-        Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.of(user));
-
         mvc.perform(post("/api/v1/decks/{deckId}/cards", deck.getId())
-            .with(mockLogin(USER_ROLES, "foo"))
+            .with(mockLogin(USER_ROLES, user.getOAuthId()))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(201))
@@ -63,10 +57,8 @@ public class CardEndpointTest extends TestDataGenerator {
         dto.setTextFront(FRONT_TEXT);
         dto.setTextBack(BACK_TEXT);
 
-        Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.of(user));
-
         mvc.perform(post("/api/v1/decks/{deckId}/cards", 123)
-            .with(mockLogin(USER_ROLES, "foo"))
+            .with(mockLogin(USER_ROLES, user.getOAuthId()))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(404));
