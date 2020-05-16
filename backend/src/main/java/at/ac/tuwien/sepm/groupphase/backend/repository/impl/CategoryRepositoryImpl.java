@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-
 @Repository
 public class CategoryRepositoryImpl implements CategoryRepositoryCustom {
 
@@ -16,10 +15,10 @@ public class CategoryRepositoryImpl implements CategoryRepositoryCustom {
 
     @Override
     public boolean parentExistsWithId(Long id, Long parentId) {
-    Category result = entityManager.find(Category.class, parentId);
-    while ((result = result.getParent()) != null) {
-        if (result.getId().equals(id)) return true;
-    }
-    return false;
+        Category result = entityManager.find(Category.class, parentId);
+        while ((result = result.getParent()) != null) {
+            if (result.getId().equals(id)) return true;
+        }
+        return false;
     }
 }
