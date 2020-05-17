@@ -8,13 +8,13 @@
     </div>
   </div>
   <div *ngIf="category.name">
-      <a *ngIf="category.parent" href="categories/{{category.parent.id}}" class="row">
+      <a *ngIf="category.parent" routerLink="/categories/{{category.parent.id}}" class="row">
         {{category.parent.name}} ┐
       </a>
       <div class="row">
         <h1>{{category.name}}</h1>
         <div>
-          <a href="/categories/{{category.id}}/edit"><button class="btn-link ml-3 mt-2">edit</button></a>
+          <a routerLink="/categories/{{category.id}}/edit"><button class="btn-link ml-3 mt-2">edit</button></a>
         </div>
         <div>
           <a routerLink="/categories/new" [queryParams]="{ parent: this.category.name }">

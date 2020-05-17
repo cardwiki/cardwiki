@@ -27,7 +27,7 @@
                   slice: (specs.page - 1) * specs.pageSize : (specs.page - 1) * specs.pageSize + specs.pageSize
                   trackBy: trackChange"
                 >
-                  <a href="{{path}}/{{item.id}}">{{item.name}}</a>
+                  <a routerLink="/categories/{{item.id}}">{{item.name}}</a>
                 </li>
               </ul>
             </div>
