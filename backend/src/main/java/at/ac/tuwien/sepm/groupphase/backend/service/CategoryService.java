@@ -9,7 +9,7 @@ public interface CategoryService  {
     /**
      * Find all category entries.
      *
-     * @return list of all category entries
+     * @return list of all category entries sorted by name
      */
     List<Category> findAll();
 

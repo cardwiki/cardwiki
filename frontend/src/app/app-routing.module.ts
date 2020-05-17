@@ -13,9 +13,9 @@ import {CategoryDetailsComponent} from './components/category/category-details/c
 const routes: Routes = [
   {path: '', component: HomeComponent},
   {path: 'login', component: LoginComponent},
-  {path: 'categories/new', component: CategoryCreateComponent},
-  {path: 'categories/:id/edit', component: CategoryUpdateComponent},
-  {path: 'decks/:id/cards/new', component: CardCreateComponent},
+  {path: 'categories/new', canActivate: [AuthGuard], component: CategoryCreateComponent},
+  {path: 'categories/:id/edit', canActivate: [AuthGuard], component: CategoryUpdateComponent},
+  {path: 'decks/:id/cards/new', canActivate: [AuthGuard], component: CardCreateComponent},
   {path: 'categories', component: CategoryListComponent},
   {path: 'categories/:id', component: CategoryDetailsComponent}
 ];

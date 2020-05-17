@@ -4,6 +4,7 @@ import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategoryDetailedDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategoryInquiryDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategorySimpleDto;
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckSimpleDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.CategoryMapper;
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
 import org.junit.jupiter.api.Test;
@@ -14,8 +15,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,8 +31,18 @@ public class CategoryMappingTest extends TestDataGenerator {
    @Test
    @Transactional
     public void givenCategoryWithAllProperties_whenMapToCategoryDetailedDto_thenDtoHasAllProperties() {
-        Category category = givenCategory();
-        category.getChildren().add(new Category(3L, "Child category"));
+       Category category = givenCategory();
+       category.getChildren().add(new Category(3L, "Child category"));
+       Deck deck = new Deck();
+       deck.setId(1L);
+       deck.setName("test deck");
+       category.getDecks().add(deck);
+
+       DeckSimpleDto deckSimpleDto = new DeckSimpleDto();
+       deckSimpleDto.setId(deck.getId());
+       deckSimpleDto.setName(deck.getName());
+       List<DeckSimpleDto> decks = new ArrayList<>();
+       decks.add(deckSimpleDto);
 
        CategoryDetailedDto categoryDetailedDto = categoryMapper.categoryToCategoryDetailedDto(category);
         assertAll(
@@ -45,7 +54,8 @@ public class CategoryMappingTest extends TestDataGenerator {
             () -> assertNotNull(categoryDetailedDto.getCreatedAt()),
             () -> assertNotNull(categoryDetailedDto.getUpdatedAt()),
             () -> assertEquals(categoryDetailedDto.getChildren().size(), 1),
-            () -> assertEquals(categoryDetailedDto.getChildren().get(0).getName(), "Child category")
+            () -> assertEquals(categoryDetailedDto.getChildren().get(0).getName(), "Child category"),
+            () -> assertEquals(categoryDetailedDto.getDecks(), decks)
         );
     }
 

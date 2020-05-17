@@ -71,6 +71,7 @@ public class CategoryEndpoint {
         }
     }
 
+    @Secured("ROLE_USER")
     @PutMapping(value = "/{id}")
     @ApiOperation(value = "Update category with specific id", authorizations = {@Authorization(value = "ROLE_USER")})
     public CategoryDetailedDto updateCategory(@PathVariable Long id,

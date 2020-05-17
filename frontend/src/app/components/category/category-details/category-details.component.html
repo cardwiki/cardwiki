@@ -13,8 +13,13 @@
       </a>
       <div class="row">
         <h1>{{category.name}}</h1>
-        <div class="d-flex flex-column">
+        <div>
           <a href="/categories/{{category.id}}/edit"><button class="btn-link ml-3 mt-2">edit</button></a>
+        </div>
+        <div>
+          <a routerLink="/categories/new" [queryParams]="{ parent: this.category.name }">
+            <button class="btn-link ml-3 mt-2">create subcategory</button>
+          </a>
         </div>
       </div>
       <div *ngIf="category.children" class="row pt-3">

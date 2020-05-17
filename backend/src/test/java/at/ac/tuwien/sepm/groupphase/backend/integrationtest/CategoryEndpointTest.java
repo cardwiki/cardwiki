@@ -92,13 +92,14 @@ public class CategoryEndpointTest extends TestDataGenerator {
     @Test
     @Transactional
     public void getCategoriesReturnsFullListOfCategories() throws Exception {
-        getCategoryRepository().saveAndFlush(new Category("test1", null));
         getCategoryRepository().saveAndFlush(new Category("test2", null));
+        getCategoryRepository().saveAndFlush(new Category("test1", null));
 
         mvc.perform(get("/api/v1/categories"))
             .andExpect(status().is(200))
             .andExpect(jsonPath("$", hasSize(2)))
-            .andExpect(jsonPath("$[*].name").value(containsInAnyOrder("test1", "test2")));
+            .andExpect(jsonPath("$[0].name").value("test1"))
+            .andExpect(jsonPath("$[1].name").value("test2"));
     }
 
     @Test

@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import {Router} from '@angular/router';
+import {Category} from '../../../dtos/category';
 
 @Component({
   selector: 'app-category-create',
@@ -8,7 +10,14 @@ import { Component, OnInit } from '@angular/core';
 export class CategoryCreateComponent implements OnInit {
   editCategoryMode: string = 'Create';
   messages: { header: string, success: string, error: string };
-  constructor() { }
+  default: Category = new Category('');
+
+  constructor(router: Router) {
+    router.events.subscribe(e => {
+      const navigation = router.getCurrentNavigation();
+      this.default.parent = new Category(navigation.extractedUrl.queryParams.parent);
+    });
+  }
 
   ngOnInit(): void {
     this.messages = { header: 'Create category', success: 'Category successfully created', error: 'Error creating category' };

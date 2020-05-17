@@ -11,6 +11,7 @@ import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +37,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<Category> findAll() {
         LOGGER.debug("Find categories.");
-        return categoryRepository.findAll();
+        return categoryRepository.findAll(Sort.by(Sort.Order.asc("name").ignoreCase()));
     }
 
     @Override
