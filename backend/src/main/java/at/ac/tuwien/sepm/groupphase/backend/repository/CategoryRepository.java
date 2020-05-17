@@ -28,6 +28,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long>, Categ
      * @param parentId of the categories to find
      * @return children of category with id parentId
      */
-    @Query("SELECT c FROM Category c WHERE c.parent.id=:parentId")
+    @Query("SELECT c FROM Category c WHERE c.parent.id=:parentId ORDER BY LOWER(c.name) ASC")
     List<Category> findChildren(@Param("parentId") Long parentId);
 }

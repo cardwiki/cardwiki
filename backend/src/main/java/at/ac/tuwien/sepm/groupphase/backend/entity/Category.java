@@ -28,6 +28,7 @@ public class Category {
     @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
     private Category parent;
 
+    @OrderBy("LOWER(name) ASC")
     @JsonBackReference
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Category> children = new HashSet<>();
@@ -40,6 +41,7 @@ public class Category {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    @OrderBy("LOWER(name) ASC")
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "category_deck",

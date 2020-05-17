@@ -15,9 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.invoke.MethodHandles;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 @Service
@@ -51,7 +49,7 @@ public class CategoryServiceImpl implements CategoryService {
                 category.setParent(categoryRepository.findCategoryById(category.getParent().getId()).get());
             }
             if (category.getChildren() != null) {
-                category.setChildren(new HashSet<>(categoryRepository.findChildren(id)));
+                category.setChildren(new LinkedHashSet<>(categoryRepository.findChildren(id)));
             }
         } else {
             throw new NotFoundException("Category not found.");
