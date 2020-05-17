@@ -26,7 +26,7 @@ export class ListComponent implements OnInit {
     this.searchField.valueChanges.subscribe((value) => {
       this.filteredList = [];
       this.list.forEach((item) => {
-        if (item.name.includes(value)) {
+        if (item.name.toLowerCase().includes(value.toLowerCase())) {
           this.filteredList.push(item);
         }
       });
