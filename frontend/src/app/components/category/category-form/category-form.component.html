@@ -6,7 +6,7 @@
 <div *ngIf="!error && submitted" class="alert alert-success alert-dismissible fade show" role="alert">
   <strong>{{messages.success}}: {{result.name}}</strong>
   <div>
-    <a href="categories/{{result.id}}">
+    <a routerLink="/categories/{{result.id}}">
     <button class="btn-primary">
       Show
     </button>
