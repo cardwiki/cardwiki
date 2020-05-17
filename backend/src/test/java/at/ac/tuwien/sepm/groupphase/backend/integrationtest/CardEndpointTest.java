@@ -4,21 +4,19 @@ import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.RevisionEditInquiryDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
-import at.ac.tuwien.sepm.groupphase.backend.repository.UserRepository;
+import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Optional;
 
-import static at.ac.tuwien.sepm.groupphase.backend.integrationtest.security.MockedLogins.userLogin;
-import static at.ac.tuwien.sepm.groupphase.backend.integrationtest.security.MockedLogins.anonymousLogin;
+import static at.ac.tuwien.sepm.groupphase.backend.integrationtest.security.MockedLogins.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -33,9 +31,6 @@ public class CardEndpointTest extends TestDataGenerator {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
-    private UserRepository userRepository;
-
     @Test
     public void createCardReturnsCardDetails() throws Exception {
         Deck deck = givenDeck();
@@ -44,10 +39,8 @@ public class CardEndpointTest extends TestDataGenerator {
         dto.setTextFront(FRONT_TEXT);
         dto.setTextBack(BACK_TEXT);
 
-        Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.of(user));
-
         mvc.perform(post("/api/v1/decks/{deckId}/cards", deck.getId())
-            .with(userLogin())
+            .with(mockLogin(USER_ROLES, user.getOAuthId()))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(201))
@@ -64,10 +57,8 @@ public class CardEndpointTest extends TestDataGenerator {
         dto.setTextFront(FRONT_TEXT);
         dto.setTextBack(BACK_TEXT);
 
-        Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.of(user));
-
         mvc.perform(post("/api/v1/decks/{deckId}/cards", 123)
-            .with(userLogin())
+            .with(mockLogin(USER_ROLES, user.getOAuthId()))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(404));
@@ -80,7 +71,7 @@ public class CardEndpointTest extends TestDataGenerator {
         dto.setTextBack(null);
 
         mvc.perform(post("/api/v1/decks/{deckId}/cards", 123)
-            .with(userLogin())
+            .with(mockLogin(USER_ROLES, "foo"))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(400));
@@ -93,7 +84,7 @@ public class CardEndpointTest extends TestDataGenerator {
         dto.setTextBack("  ");
 
         mvc.perform(post("/api/v1/decks/{deckId}/cards", 123)
-            .with(userLogin())
+            .with(mockLogin(USER_ROLES, "foo"))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(400));
@@ -106,7 +97,7 @@ public class CardEndpointTest extends TestDataGenerator {
         dto.setTextBack(BACK_TEXT);
 
         mvc.perform(post("/api/v1/decks/{deckId}/cards", 123)
-            .with(anonymousLogin())
+            .with(mockLogin(ANONYMOUS_ROLES, "foo"))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(403));
