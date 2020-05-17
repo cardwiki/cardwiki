@@ -1,8 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.validation;
 
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategorySimpleDto;
-import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
-
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
