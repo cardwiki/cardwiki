@@ -31,6 +31,7 @@ public class CardEndpoint {
         this.cardMapper = cardMapper;
     }
 
+    @Secured("ROLE_USER")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     @ApiOperation(value = "Create a new card")
@@ -47,6 +48,7 @@ public class CardEndpoint {
         return cardMapper.cardToCardSimpleDto(cardService.findOne(deckId, cardId));
     }
 
+    @Secured("ROLE_USER")
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping(value = "/{cardId}")
     @ApiOperation(value = "Edit a specific card in a deck")
