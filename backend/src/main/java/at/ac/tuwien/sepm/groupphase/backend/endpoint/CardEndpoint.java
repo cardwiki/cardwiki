@@ -42,9 +42,9 @@ public class CardEndpoint {
 
     @GetMapping(value = "/{cardId}")
     @ApiOperation(value = "Get information about a specific card in deck")
-    public CardDetailsDto findOne(@PathVariable Long deckId, @PathVariable Long cardId) {
+    public CardSimpleDto findOne(@PathVariable Long deckId, @PathVariable Long cardId) {
         LOGGER.info("GET /api/v1/decks/{}/cards/{}", deckId, cardId);
-        return cardMapper.cardToCardDetailsDto(cardService.findOne(deckId, cardId));
+        return cardMapper.cardToCardSimpleDto(cardService.findOne(deckId, cardId));
     }
 
     @ResponseStatus(HttpStatus.OK)
