@@ -27,7 +27,7 @@ public class UserEndpointTest {
     public void createUser() throws Exception {
         mvc.perform(post("/api/v1/users")
             .with(mockLogin(USER_ROLES, "123"))
-            .contentType("application/json").content(objectMapper.writeValueAsString(new UserInputDto("123", "test", "example", false))))
+            .contentType("application/json").content(objectMapper.writeValueAsString(new UserInputDto("test", "example", false))))
             .andExpect(status().is(201))
             .andExpect(jsonPath("$.username").value("test"));
         // TODO: test more thoroughly

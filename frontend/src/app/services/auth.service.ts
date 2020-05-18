@@ -34,7 +34,7 @@ export class AuthService {
   }
 
   register(id, username){
-    return this.httpClient.post<UserRegistration>(this.globals.backendUri + '/users', {id: id, username: username, description: ''})
+    return this.httpClient.post<UserRegistration>(this.globals.backendUri + '/users', {username: username, description: ''})
       .pipe(tap(res => {
         // localStorage.setItem('loggedIn', String(res.hasAccount));
         localStorage.setItem('loggedIn', 'true');
