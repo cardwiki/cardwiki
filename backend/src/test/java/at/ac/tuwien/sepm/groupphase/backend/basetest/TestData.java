@@ -1,9 +1,14 @@
 package at.ac.tuwien.sepm.groupphase.backend.basetest;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
 import at.ac.tuwien.sepm.groupphase.backend.repository.*;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 
 public interface TestData {
 
@@ -167,5 +172,24 @@ public interface TestData {
         revisionEdit.setRevision(getSampleRevision());
         revisionEdit.getRevision().setRevisionEdit(revisionEdit);
         return revisionEdit;
+    }
+
+    default Matcher<String> validIsoDateTime() {
+        return new TypeSafeMatcher<String>() {
+            @Override
+            protected boolean matchesSafely(String s) {
+                try {
+                    DateTimeFormatter.ISO_DATE_TIME.parse(s);
+                    return true;
+                } catch (DateTimeParseException e) {
+                    return false;
+                }
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("string matches ISO datetime format");
+            }
+        };
     }
 }

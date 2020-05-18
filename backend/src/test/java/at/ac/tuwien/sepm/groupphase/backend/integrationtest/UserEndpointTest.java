@@ -1,8 +1,8 @@
 package at.ac.tuwien.sepm.groupphase.backend.integrationtest;
 
+import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.UserInputDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-public class UserEndpointTest {
+public class UserEndpointTest extends TestDataGenerator {
     @Autowired
     private MockMvc mvc;
 
@@ -32,8 +32,8 @@ public class UserEndpointTest {
             .andExpect(status().is(201))
             .andExpect(jsonPath("$.username").value("test"))
             .andExpect(jsonPath("$.description").value("example"))
-            .andExpect(jsonPath("$.createdAt").value(IsNull.notNullValue()))
-            .andExpect(jsonPath("$.updatedAt").value(IsNull.notNullValue()));
+            .andExpect(jsonPath("$.createdAt", validIsoDateTime()))
+            .andExpect(jsonPath("$.updatedAt", validIsoDateTime()));
         // TODO: test more thoroughly
     }
 }
