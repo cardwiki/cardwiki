@@ -27,6 +27,8 @@ public class RevisionRepositoryTest extends TestDataGenerator {
     @Autowired
     private RevisionRepository revisionRepository;
 
+    private static final String REVISION_MESSAGE = "Test Revision";
+
     @Test
     public void givenUser_whenSaveRevisionWithoutCard_throwsDataIntegrityViolationException() {
         User user = givenApplicationUser();

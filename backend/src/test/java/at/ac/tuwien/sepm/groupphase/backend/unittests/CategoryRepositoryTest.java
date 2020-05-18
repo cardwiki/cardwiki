@@ -23,7 +23,6 @@ public class CategoryRepositoryTest extends TestDataGenerator {
     @Autowired
     private CategoryRepository categoryRepository;
 
-
     @Test
     public void givenNothing_whenSaveCategoryWithParent_thenExistsByIdAndHasParent() {
         Category category = givenCategory();
@@ -76,7 +75,7 @@ public class CategoryRepositoryTest extends TestDataGenerator {
     @Test
     public void givenCategory_whenCreateCategoryWithSameName_thenThrowsDataIntegrityViolationException() {
         Category category1 = givenCategory();
-        Category category2 = new Category(2L, "Test Category");
+        Category category2 = new Category(2L, category1.getName());
 
         assertThrows(DataIntegrityViolationException.class, () -> categoryRepository.save(category2));
     }

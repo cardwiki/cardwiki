@@ -27,6 +27,10 @@ public class CardEndpointTest extends TestDataGenerator {
     @Autowired
     private ObjectMapper objectMapper;
 
+    private static final String UTF_16_SAMPLE_TEXT = "ユ简크로أفضل البحوثΣὲ γνДесแผ∮E⋅∞∑çéèñé";
+    private static final String FRONT_TEXT = "Test Front";
+    private static final String BACK_TEXT = "Back Front";
+
     @Test
     public void createCardReturnsCardDetails() throws Exception {
         Deck deck = givenDeck();
@@ -36,7 +40,7 @@ public class CardEndpointTest extends TestDataGenerator {
         dto.setTextBack(BACK_TEXT);
 
         mvc.perform(post("/api/v1/decks/{deckId}/cards", deck.getId())
-            .with(mockLogin(USER_ROLES, user.getOAuthId()))
+            .with(mockLogin(USER_ROLES, user.getAuthId()))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(201))
@@ -55,7 +59,7 @@ public class CardEndpointTest extends TestDataGenerator {
         dto.setTextBack(UTF_16_SAMPLE_TEXT);
 
         mvc.perform(post("/api/v1/decks/{deckId}/cards", deck.getId())
-            .with(mockLogin(USER_ROLES, user.getOAuthId()))
+            .with(mockLogin(USER_ROLES, user.getAuthId()))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(201))
@@ -71,7 +75,7 @@ public class CardEndpointTest extends TestDataGenerator {
         dto.setTextBack(BACK_TEXT);
 
         mvc.perform(post("/api/v1/decks/{deckId}/cards", 123)
-            .with(mockLogin(USER_ROLES, user.getOAuthId()))
+            .with(mockLogin(USER_ROLES, user.getAuthId()))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(404));

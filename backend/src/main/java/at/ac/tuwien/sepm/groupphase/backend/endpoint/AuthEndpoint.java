@@ -14,9 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -46,7 +44,7 @@ public class AuthEndpoint {
     public WhoAmIDto index(Authentication auth) {
         WhoAmIDto dto = new WhoAmIDto();
         if (auth != null) {
-            dto.setId(auth.getName());
+            dto.setAuthId(auth.getName());
             dto.setHasAccount(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER")));
             dto.setAdmin(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")));
         }

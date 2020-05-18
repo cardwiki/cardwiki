@@ -10,7 +10,7 @@ import java.util.Objects;
 public class DeckDto {
     private Long id;
     private String name;
-    private String createdBy;
+    private Long createdBy;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<CategorySimpleDto> categories;

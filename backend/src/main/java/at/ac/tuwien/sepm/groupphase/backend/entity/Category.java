@@ -22,7 +22,7 @@ public class Category {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name="created_by", referencedColumnName="oAuthId", updatable = false)
+    @JoinColumn(name="created_by", referencedColumnName="id", updatable = false)
     private User createdBy;
 
     @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)

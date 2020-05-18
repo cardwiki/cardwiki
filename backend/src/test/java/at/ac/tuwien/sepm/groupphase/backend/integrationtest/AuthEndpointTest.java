@@ -32,7 +32,7 @@ public class AuthEndpointTest {
             get("/api/v1/auth/whoami")
         )
         .andExpect(status().is(200))
-        .andExpect(jsonPath("$.id").value(IsNull.nullValue()))
+        .andExpect(jsonPath("$.authId").value(IsNull.nullValue()))
         .andExpect(jsonPath("$.hasAccount").value(false))
         .andExpect(jsonPath("$.admin").value(false));
     }
@@ -44,7 +44,7 @@ public class AuthEndpointTest {
             .with(mockLogin(USER_ROLES, "foo"))
         )
             .andExpect(status().is(200))
-            .andExpect(jsonPath("$.id").value("foo"))
+            .andExpect(jsonPath("$.authId").value("foo"))
             .andExpect(jsonPath("$.hasAccount").value(true))
             .andExpect(jsonPath("$.admin").value(false));
     }
@@ -56,7 +56,7 @@ public class AuthEndpointTest {
                 .with(mockLogin(ADMIN_ROLES, "foo"))
         )
             .andExpect(status().is(200))
-            .andExpect(jsonPath("$.id").value("foo"))
+            .andExpect(jsonPath("$.authId").value("foo"))
             .andExpect(jsonPath("$.hasAccount").value(true))
             .andExpect(jsonPath("$.admin").value(true));
     }

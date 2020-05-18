@@ -29,17 +29,13 @@ public class SimpleUserService implements UserService {
     @Override
     public User loadUserByUsername(String username) {
         LOGGER.debug("Load user by username {}", username);
-        try {
-            return userRepository.findByUsername(username);
-        } catch (NotFoundException e) {
-            throw new UserNotFoundException(e.getMessage(), e);
-        }
+        return userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
     }
 
     @Override
     public User loadUserByOauthId(String oauthId) {
         LOGGER.debug("Load user by OAuthId {}", oauthId);
-        return userRepository.findById(oauthId).orElseThrow(UserNotFoundException::new);
+        return userRepository.findByAuthId(oauthId).orElseThrow(UserNotFoundException::new);
     }
 
     @Override

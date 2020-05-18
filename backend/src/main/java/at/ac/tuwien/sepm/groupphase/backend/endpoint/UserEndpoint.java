@@ -33,7 +33,7 @@ public class UserEndpoint {
         if (authentication == null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not authenticated");
         User u = userMapper.userInputDtoToUser(userInputDto);
-        u.setOAuthId(authentication.getName());
+        u.setAuthId(authentication.getName());
         return userMapper.userToUserOutputDto(userService.createUser(u));
     }
 

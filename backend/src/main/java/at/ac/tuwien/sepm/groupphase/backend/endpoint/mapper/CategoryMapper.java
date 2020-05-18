@@ -21,7 +21,7 @@ public interface CategoryMapper {
     @IterableMapping(qualifiedByName = "simpleCategory")
     List<CategorySimpleDto> categoryToCategorySimpleDto(List<Category> categories);
 
-    @Mapping(source = "category.createdBy.username", target = "createdBy")
+    @Mapping(source = "category.createdBy.id", target = "createdBy")
     @Mapping(source = "children", target = "children", qualifiedByName = "childrenToSimpleChildren")
     @Mapping(source = "parent", target = "parent", qualifiedByName="parentToSimpleParent")
     CategoryDetailedDto categoryToCategoryDetailedDto(Category category);

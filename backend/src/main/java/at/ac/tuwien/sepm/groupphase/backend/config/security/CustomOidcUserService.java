@@ -19,6 +19,13 @@ public class CustomOidcUserService extends OidcUserService {
         OidcUser user = super.loadUser(userRequest);
         String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
         // We need to construct our own OidcUser because the user returned by super is immutable.
-        return new DefaultOidcUser(config.setupRoles(user), user.getIdToken(), user.getUserInfo(), userNameAttributeName);
+
+        return new DefaultOidcUser(config.setupRoles(user), user.getIdToken(), user.getUserInfo(), userNameAttributeName){
+            @Override
+            public String getName() {
+                // we prefix the provider to prevent account hijacking on id collisions
+                return SecurityConfig.buildAuthId(userRequest.getClientRegistration(), super.getName());
+            }
+        };
     }
 }

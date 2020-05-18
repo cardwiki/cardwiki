@@ -7,7 +7,7 @@ import java.util.List;
 @Data
 public class CategoryDetailedDto extends CategorySimpleDto {
 
-    private String createdBy;
+    private Long createdBy;
     private CategorySimpleDto parent;
     private List<CategorySimpleDto> children;
     private LocalDateTime createdAt;

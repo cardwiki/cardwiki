@@ -17,7 +17,7 @@ public interface CardMapper {
     CardDetailsDto cardToCardDetailsDto(Card card);
 
 
-    @Mapping(source = "revision.createdBy.username", target = "createdBy")
+    @Mapping(source = "revision.createdBy.id", target = "createdBy")
     RevisionSimpleDto revisionToRevisionSimpleDto(Revision revision);
 
 

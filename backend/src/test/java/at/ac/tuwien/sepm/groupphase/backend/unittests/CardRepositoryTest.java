@@ -50,7 +50,7 @@ public class CardRepositoryTest extends TestDataGenerator {
         card.setDeck(deck);
         deck.getCards().add(card);
         Revision revision = new Revision();
-        revision.setMessage(REVISION_MESSAGE);
+        revision.setMessage("some message");
         card.setLatestRevision(revision);
         revision.setCard(card);
         revision.setCreatedBy(user);
@@ -67,7 +67,7 @@ public class CardRepositoryTest extends TestDataGenerator {
 
         // When
         Revision revision = new Revision();
-        revision.setMessage(REVISION_MESSAGE);
+        revision.setMessage("some message");
         card.setLatestRevision(revision);
         revision.setCard(card);
         revision.setCreatedBy(user);

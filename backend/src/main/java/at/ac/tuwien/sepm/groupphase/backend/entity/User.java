@@ -7,6 +7,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -16,7 +17,11 @@ public class User {
     public static final int MAX_DESCRIPTION_LENGTH = 5000;
 
     @Id
-    private String oAuthId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(unique = true)
+    private String authId;
 
     @Column(nullable = false, unique = true, length = MAX_USERNAME_LENGTH)
     private String username;
@@ -41,20 +46,24 @@ public class User {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    public User() {
+    public User(Long id) {
+        this.id = id;
     }
 
-    public User(String oAuthId, String username, boolean admin, boolean enabled, String description) {
-        this.oAuthId = oAuthId;
-        this.username = username;
-        this.admin = admin;
-        this.enabled = enabled;
-        this.description = description;
+    public User() {
     }
 
     public void dismissRevision(Revision revision) {
         if (!revisions.remove(revision))
             throw new NoSuchElementException("Tried to dismiss revision which is not yet associated with user");
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getUsername() {
@@ -69,8 +78,12 @@ public class User {
         return admin;
     }
 
-    public String getOAuthId() {
-        return oAuthId;
+    public String getAuthId() {
+        return authId;
+    }
+
+    public void setAuthId(String authId) {
+        this.authId = authId;
     }
 
     public void setAdmin(boolean admin) {
@@ -83,10 +96,6 @@ public class User {
 
     public boolean isEnabled(){
         return enabled;
-    }
-
-    public void setOAuthId(String oauthId) {
-        this.oAuthId = oauthId;
     }
 
     public Set<Revision> getRevisions() {
@@ -123,12 +132,14 @@ public class User {
 
     @Override
     public String toString() {
-        return "ApplicationUser{" +
-            "oAuthId='" + oAuthId + '\'' +
+        return "User{" +
+            "id=" + id +
+            ", authId='" + authId + '\'' +
             ", username='" + username + '\'' +
             ", admin=" + admin +
             ", enabled=" + enabled +
-            ", description=" + description +
+            ", description='" + description + '\'' +
+            ", revisions=" + revisions +
             ", createdAt=" + createdAt +
             ", updatedAt=" + updatedAt +
             '}';

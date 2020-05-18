@@ -10,7 +10,7 @@ import java.util.List;
 @Mapper
 public interface RevisionMapper {
 
-    @Mapping(source = "revision.createdBy.username", target = "createdBy")
+    @Mapping(source = "revision.createdBy.id", target = "createdBy")
     RevisionSimpleDto revisionToRevisionSimpleDto(Revision revision);
 
     List<RevisionSimpleDto> revisionsToRevisionSimpleDtoList(List<Revision> revisions);

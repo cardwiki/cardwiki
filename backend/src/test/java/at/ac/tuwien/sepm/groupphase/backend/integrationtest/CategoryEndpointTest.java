@@ -48,7 +48,7 @@ public class CategoryEndpointTest extends TestDataGenerator {
         categoryInquiryDto.setParent(parent);
 
         mvc.perform(post("/api/v1/categories")
-            .with(mockLogin(USER_ROLES, user.getOAuthId()))
+            .with(mockLogin(USER_ROLES, user.getAuthId()))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(categoryInquiryDto)))
             .andExpect(status().is(201))
@@ -73,7 +73,7 @@ public class CategoryEndpointTest extends TestDataGenerator {
         categoryInquiryDto.setParent(parent);
 
         mvc.perform(put("/api/v1/categories/{id}", category.getId())
-            .with(mockLogin(USER_ROLES, user.getOAuthId()))
+            .with(mockLogin(USER_ROLES, user.getAuthId()))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(categoryInquiryDto)))
             .andExpect(status().is(200))
@@ -100,16 +100,13 @@ public class CategoryEndpointTest extends TestDataGenerator {
     @Transactional
     public void getCategoryReturnsCategoryDetails() throws Exception {
         Category category = givenCategory();
-        String user = category.getCreatedBy().getUsername();
 
-
-        ;
         mvc.perform(get("/api/v1/categories/{id}", category.getId()))
             .andExpect(status().is(200))
             .andExpect(jsonPath("$.name").value(category.getName()))
             .andExpect(jsonPath("$.id").value(category.getId()))
             .andExpect(jsonPath("$.parent.name").value(category.getParent().getName()))
-            .andExpect(jsonPath("$.createdBy").value(user));
+            .andExpect(jsonPath("$.createdBy").value(category.getCreatedBy().getId()));
 
     }
 
@@ -126,7 +123,7 @@ public class CategoryEndpointTest extends TestDataGenerator {
         categoryInquiryDto.setParent(parent);
 
         mvc.perform(put("/api/v1/categories/{categoryId}", category.getParent().getId())
-            .with(mockLogin(USER_ROLES, user.getOAuthId()))
+            .with(mockLogin(USER_ROLES, user.getAuthId()))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(categoryInquiryDto)))
             .andExpect(status().is(400));
@@ -145,7 +142,7 @@ public class CategoryEndpointTest extends TestDataGenerator {
         categoryInquiryDto.setParent(parent);
 
         mvc.perform(put("/api/v1/categories/{categoryId}", category.getId())
-            .with(mockLogin(USER_ROLES, user.getOAuthId()))
+            .with(mockLogin(USER_ROLES, user.getAuthId()))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(categoryInquiryDto)))
             .andExpect(status().is(400));
@@ -164,7 +161,7 @@ public class CategoryEndpointTest extends TestDataGenerator {
         categoryInquiryDto.setParent(parent);
 
         mvc.perform(post("/api/v1/categories")
-            .with(mockLogin(USER_ROLES, user.getOAuthId()))
+            .with(mockLogin(USER_ROLES, user.getAuthId()))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(categoryInquiryDto)))
             .andExpect(status().is(404));
@@ -189,7 +186,7 @@ public class CategoryEndpointTest extends TestDataGenerator {
         categoryInquiryDto.setParent(parent);
 
         mvc.perform(put("/api/v1/categories/{id}", 0L)
-            .with(mockLogin(USER_ROLES, user.getOAuthId()))
+            .with(mockLogin(USER_ROLES, user.getAuthId()))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(categoryInquiryDto)))
             .andExpect(status().is(404));

@@ -30,11 +30,13 @@ public class RevisionEditRepositoryTest extends TestDataGenerator {
     @Autowired
     private RevisionEditRepository revisionEditRepository;
 
+    private static final String UTF_16_SAMPLE_TEXT = "ユ简크로أفضل البحوثΣὲ γνДесแผ∮E⋅∞∑çéèñé";
+
     @Test
     public void givenNothing_whenSaveRevisionEditWithoutRevision_throwsJpaSystemException() {
         RevisionEdit edit = new RevisionEdit();
-        edit.setTextFront(FRONT_TEXT);
-        edit.setTextBack(BACK_TEXT);
+        edit.setTextFront("front text");
+        edit.setTextBack("back text");
 
         assertThrows(JpaSystemException.class, () -> revisionEditRepository.save(edit));
     }
@@ -45,8 +47,8 @@ public class RevisionEditRepositoryTest extends TestDataGenerator {
 
         // When
         RevisionEdit edit = new RevisionEdit();
-        edit.setTextFront(FRONT_TEXT);
-        edit.setTextBack(BACK_TEXT);
+        edit.setTextFront("front text");
+        edit.setTextBack("back text");
         edit.setRevision(revision);
         edit = revisionEditRepository.saveAndFlush(edit);
 
@@ -61,7 +63,7 @@ public class RevisionEditRepositoryTest extends TestDataGenerator {
         // When
         RevisionEdit edit = new RevisionEdit();
         edit.setTextFront("x".repeat(RevisionEdit.MAX_TEXT_SIZE + 1));
-        edit.setTextBack(BACK_TEXT);
+        edit.setTextBack("back text");
         edit.setRevision(revision);
 
         // Then
@@ -75,7 +77,7 @@ public class RevisionEditRepositoryTest extends TestDataGenerator {
         // When
         RevisionEdit edit = new RevisionEdit();
         edit.setTextFront("  ");
-        edit.setTextBack(BACK_TEXT);
+        edit.setTextBack("back text");
         edit.setRevision(revision);
 
         // Then
@@ -89,7 +91,7 @@ public class RevisionEditRepositoryTest extends TestDataGenerator {
         // When
         RevisionEdit edit = new RevisionEdit();
         edit.setTextFront(UTF_16_SAMPLE_TEXT);
-        edit.setTextBack(BACK_TEXT);
+        edit.setTextBack("back text");
         edit.setRevision(revision);
         edit = revisionEditRepository.saveAndFlush(edit);
 

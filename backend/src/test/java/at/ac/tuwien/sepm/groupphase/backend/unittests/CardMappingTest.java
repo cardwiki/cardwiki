@@ -53,7 +53,7 @@ public class CardMappingTest extends TestDataGenerator {
         assertAll(
             () -> assertEquals(revision.getId(), dto.getId()),
             () -> assertEquals(revision.getMessage(), dto.getMessage()),
-            () -> assertEquals(revision.getCreatedBy().getUsername(), dto.getCreatedBy()),
+            () -> assertEquals(revision.getCreatedBy().getId(), dto.getCreatedBy()),
             () -> assertEquals(revision.getCreatedAt(), dto.getCreatedAt())
         );
     }
@@ -61,8 +61,8 @@ public class CardMappingTest extends TestDataGenerator {
     @Test
     public void givenRevisionEditInquiryDto_whenMapToRevisionEdit_thenRevisionEditHasAllProperties() {
         RevisionEditInquiryDto dto = new RevisionEditInquiryDto();
-        dto.setTextFront(FRONT_TEXT);
-        dto.setTextBack(BACK_TEXT);
+        dto.setTextFront("front text");
+        dto.setTextBack("back text");
 
         RevisionEdit revisionEdit = cardMapper.revisionEditInquiryDtoToRevisionEdit(dto);
 

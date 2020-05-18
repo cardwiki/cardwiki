@@ -8,7 +8,7 @@ import org.mapstruct.Mapping;
 
 @Mapper
 public interface DeckMapper {
-    @Mapping(source = "createdBy.username", target = "createdBy")
+    @Mapping(source = "createdBy.id", target = "createdBy")
     DeckDto deckToDeckDto(Deck deck);
 
     Deck deckInputDtoToDeck(DeckInputDto deckInputDto);

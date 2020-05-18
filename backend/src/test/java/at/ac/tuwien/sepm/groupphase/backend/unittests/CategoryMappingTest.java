@@ -50,7 +50,7 @@ public class CategoryMappingTest extends TestDataGenerator {
             () -> assertEquals(categoryDetailedDto.getName(), category.getName()),
             () -> assertEquals(categoryDetailedDto.getParent().getName(), category.getParent().getName()),
             () -> assertEquals(categoryDetailedDto.getParent().getId(), category.getParent().getId()),
-            () -> assertEquals(categoryDetailedDto.getCreatedBy(), category.getCreatedBy().getUsername()),
+            () -> assertEquals(categoryDetailedDto.getCreatedBy(), category.getCreatedBy().getId()),
             () -> assertNotNull(categoryDetailedDto.getCreatedAt()),
             () -> assertNotNull(categoryDetailedDto.getUpdatedAt()),
             () -> assertEquals(categoryDetailedDto.getChildren().size(), 1),
@@ -73,7 +73,7 @@ public class CategoryMappingTest extends TestDataGenerator {
 
         assertAll(
             () -> assertEquals(2, categories.size()),
-            () -> assertEquals("Test Category", categoryDtos.get(0).getName()),
+            () -> assertEquals(category1.getName(), categoryDtos.get(0).getName()),
             () -> assertEquals("Second User", categoryDtos.get(1).getName())
         );
     }

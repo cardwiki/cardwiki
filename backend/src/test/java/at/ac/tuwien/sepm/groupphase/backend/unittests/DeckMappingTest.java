@@ -34,7 +34,7 @@ public class DeckMappingTest extends TestDataGenerator {
         assertAll(
             () -> assertEquals(deck.getId(), deckDto.getId()),
             () -> assertEquals(deck.getName(), deckDto.getName()),
-            () -> assertEquals(deck.getCreatedBy().getUsername(), deckDto.getCreatedBy()),
+            () -> assertEquals(deck.getCreatedBy().getId(), deckDto.getCreatedBy()),
             () -> assertEquals(deck.getCreatedAt(), deckDto.getCreatedAt()),
             () -> assertEquals(deck.getUpdatedAt(), deckDto.getUpdatedAt()),
             () -> assertEquals(

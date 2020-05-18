@@ -43,6 +43,8 @@ public class CardServiceTest extends TestDataGenerator {
     @MockBean
     private DeckService deckService;
 
+    private static final Long DECK_ID = 0L;
+
     @Test
     public void givenDeckAndUserExist_whenAddCardToDeck_thenReturnCard() {
         RevisionEdit revisionEdit = getUnconnectedSampleRevisionEdit();
