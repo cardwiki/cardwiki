@@ -5,8 +5,6 @@ import {LoginComponent} from './components/login/login.component';
 import {AuthGuard} from './guards/auth.guard';
 import {CategoryCreateComponent} from './components/category/category-create/category-create.component';
 import { CardEditComponent } from "./components/card/card-edit/card-edit.component";
-import {CategoryUpdateComponent} from './components/category/category-update/category-update.component';
-import {CardCreateComponent} from './components/card/card-create/card-create.component';
 import { CardCreateComponent } from './components/card/card-create/card-create.component';
 import { SearchComponent } from './components/search/search.component';
 import { AboutComponent } from './components/about/about.component';
