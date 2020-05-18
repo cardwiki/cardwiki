@@ -73,10 +73,8 @@ public class UserEndpointTest extends TestDataGenerator {
 
     @Test
     public void createUserTooLongUsername() throws Exception {
-        char[] usernameChars = new char[21];
-        Arrays.fill(usernameChars, 'a');
         ObjectNode input = objectMapper.createObjectNode();
-        input.put("username", new String(usernameChars));
+        input.put("username", "a".repeat(21));
         input.put("description", "example");
         input.put("admin", false);
 
@@ -88,10 +86,8 @@ public class UserEndpointTest extends TestDataGenerator {
 
     @Test
     public void createUserTooLongDescription() throws Exception {
-        char[] usernameChars = new char[5001];
-        Arrays.fill(usernameChars, 'a');
         ObjectNode input = objectMapper.createObjectNode();
-        input.put("username", new String(usernameChars));
+        input.put("username", "a".repeat(5001));
         input.put("description", "example");
         input.put("admin", false);
 
