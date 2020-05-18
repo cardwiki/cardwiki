@@ -11,6 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Arrays;
+
 import static at.ac.tuwien.sepm.groupphase.backend.integrationtest.security.MockedLogins.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -60,6 +62,36 @@ public class UserEndpointTest extends TestDataGenerator {
     public void createUserInvalidUsername() throws Exception {
         ObjectNode input = objectMapper.createObjectNode();
         input.put("username", "foo bar");
+        input.put("description", "example");
+        input.put("admin", false);
+
+        mvc.perform(post("/api/v1/users")
+            .with(mockLogin(USER_ROLES, "123"))
+            .contentType("application/json").content(input.toString()))
+            .andExpect(status().is(400));
+    }
+
+    @Test
+    public void createUserTooLongUsername() throws Exception {
+        char[] usernameChars = new char[21];
+        Arrays.fill(usernameChars, 'a');
+        ObjectNode input = objectMapper.createObjectNode();
+        input.put("username", new String(usernameChars));
+        input.put("description", "example");
+        input.put("admin", false);
+
+        mvc.perform(post("/api/v1/users")
+            .with(mockLogin(USER_ROLES, "123"))
+            .contentType("application/json").content(input.toString()))
+            .andExpect(status().is(400));
+    }
+
+    @Test
+    public void createUserTooLongDescription() throws Exception {
+        char[] usernameChars = new char[5001];
+        Arrays.fill(usernameChars, 'a');
+        ObjectNode input = objectMapper.createObjectNode();
+        input.put("username", new String(usernameChars));
         input.put("description", "example");
         input.put("admin", false);
 

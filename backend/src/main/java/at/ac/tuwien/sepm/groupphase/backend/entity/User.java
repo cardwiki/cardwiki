@@ -12,11 +12,13 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 public class User {
+    public static final int MAX_USERNAME_LENGTH = 20;
+    public static final int MAX_DESCRIPTION_LENGTH = 5000;
 
     @Id
     private String oAuthId;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = MAX_USERNAME_LENGTH)
     private String username;
 
     @Column(nullable = false)
@@ -25,7 +27,7 @@ public class User {
     @Column(nullable = false)
     private boolean enabled;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = MAX_DESCRIPTION_LENGTH)
     private String description;
 
     @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY)
