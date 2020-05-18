@@ -25,7 +25,6 @@ const routes: Routes = [
   {path: 'login', component: LoginComponent},
   {path: 'decks/:id/cards/new', component: CardCreateComponent},
   { path: 'decks/:deckId/cards/:cardId/edit', component: CardEditComponent },
-  { path: 'createCategory', component: CategoryCreateComponent },
   {path: 'categories/new', canActivate: [AuthGuard], component: CategoryCreateComponent},
   {path: 'categories/:id/edit', canActivate: [AuthGuard], component: CategoryUpdateComponent},
   {path: 'learn', canActivate: [AuthGuard], component: LearnComponent},
