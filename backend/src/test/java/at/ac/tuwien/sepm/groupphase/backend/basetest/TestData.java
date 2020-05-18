@@ -1,11 +1,9 @@
 package at.ac.tuwien.sepm.groupphase.backend.basetest;
 
+import java.time.LocalDateTime;
+
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
 import at.ac.tuwien.sepm.groupphase.backend.repository.*;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 public interface TestData {
 
@@ -14,6 +12,7 @@ public interface TestData {
     CardRepository getCardRepository();
     RevisionRepository getRevisionRepository();
     RevisionEditRepository getRevisionEditRepository();
+    CategoryRepository getCategoryRepository();
 
     String OAUTH_ID = "Fake Id";
     String USER_NAME = "Test User";
@@ -22,6 +21,8 @@ public interface TestData {
     String FRONT_TEXT = "Test Front";
     String BACK_TEXT = "Test Back";
     String UTF_16_SAMPLE_TEXT = "ユ简크로أفضل البحوثΣὲ γνДесแผ∮E⋅∞∑çéèñé";
+    String CATEGORY_NAME = "Test Category";
+    String PARENT_CATEGORY_NAME = "Test Parent Category";
 
     default User givenApplicationUser() {
         User user = new User();
@@ -69,6 +70,19 @@ public interface TestData {
         revision.setRevisionEdit(revisionEdit);
 
         return getRevisionEditRepository().saveAndFlush(revisionEdit);
+    }
+
+    default Category givenCategory() {
+        Category category = new Category();
+        Category parent = new Category();
+        User user = givenApplicationUser();
+        category.setCreatedBy(user);
+        category.setName(CATEGORY_NAME);
+        parent.setName(PARENT_CATEGORY_NAME);
+
+        parent = getCategoryRepository().saveAndFlush(parent);
+        category.setParent(parent);
+        return  getCategoryRepository().saveAndFlush(category);
     }
 
     Long DECK_ID = 0L;

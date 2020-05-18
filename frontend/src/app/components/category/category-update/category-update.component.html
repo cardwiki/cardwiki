@@ -1,1 +1,11 @@
-<p>category-update works!</p>
+<app-category-form
+  *ngIf="!error && category"
+  [mode]="editCategoryMode"
+  [category]="category"
+  [messages]="messages"
+>
+</app-category-form>
+
+<div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+  {{errorMessage}}
+</div>
