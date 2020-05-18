@@ -9,7 +9,6 @@ import {HeaderComponent} from './components/header/header.component';
 import {FooterComponent} from './components/footer/footer.component';
 import {HomeComponent} from './components/home/home.component';
 import {LoginComponent} from './components/login/login.component';
-import {MessageComponent} from './components/message/message.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {httpInterceptorProviders} from './interceptors';
 import { CategoryCreateComponent } from './components/category/category-create/category-create.component';
@@ -19,6 +18,9 @@ import { CardCreateComponent } from './components/card/card-create/card-create.c
 import { CardFormComponent } from './components/card/card-form/card-form.component';
 import { CardViewComponent } from './components/card/card-view/card-view.component';
 import { CardEditComponent } from './components/card/card-edit/card-edit.component';
+import { CategoryListComponent } from './components/category/category-list/category-list.component';
+import { ListComponent } from './components/category/list/list.component';
+import { CategoryDetailsComponent } from './components/category/category-details/category-details.component';
 
 @NgModule({
   declarations: [
@@ -27,13 +29,15 @@ import { CardEditComponent } from './components/card/card-edit/card-edit.compone
     FooterComponent,
     HomeComponent,
     LoginComponent,
-    MessageComponent,
     CategoryCreateComponent,
     CategoryFormComponent,
     CategoryUpdateComponent,
     CardCreateComponent,
     CardFormComponent,
     CardViewComponent,
+    CategoryListComponent,
+    ListComponent,
+    CategoryDetailsComponent,
     CardEditComponent,
   ],
   imports: [

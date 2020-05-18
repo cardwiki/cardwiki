@@ -14,6 +14,51 @@ export class CategoryService {
   constructor(private httpClient: HttpClient, private globals: Globals) {
   }
 
+// async doSearch(id: number): Promise<any> {
+//    return new Promise((resolve, reject) => {
+//     this.getCategoryById(id).subscribe((category) => {
+//       console.log(category);
+//           return resolve(category);
+//         },
+//         (error) => {
+//           if (error.status === 400 || error.status === 404) {
+//             reject('Page not found.');
+//           }
+//           reject(this.handleError(error));
+//         });
+//   });
+//  }
+
+  /**
+   * Handles errors returned by the endpoint
+   * @param error returned
+   * @return string containing the error message
+   */
+  handleError(error): string {
+      if (error.status === 500 || error.status === 0) {
+        if (error.error &&  error. error.message && error.error.message.includes('ConstraintViolationException')) {
+          return 'Invalid input. Category may already exist.';
+        }
+        return 'Something went wrong while processing your request.'  ;
+      }
+      if (error.status === 400) {
+        return error.error.message;
+      }
+      if (error.status === 401 || error.status === 403) {
+        return 'Not authorized: ' + error.status;
+      }
+      if (error.status === 503) {
+        return 'Service unavailable: ' + error.status;
+      }
+      const message = error.error.split('[')[1].split(']')[0];
+      const messages = message.split(',');
+      let result = '';
+      for (let i = 0; i < messages.length; i++) {
+        result += messages[i].substr(messages[i].indexOf(' '));
+      }
+      return result;
+    }
+
   /**
    * Loads all categories from the backend
    */
@@ -26,17 +71,8 @@ export class CategoryService {
    * @param id of category to load
    */
   getCategoryById(id: number): Observable<Category> {
-    console.log('Load category details for ' + id);
+    console.log('Load details for category with id ' + id);
     return this.httpClient.get<Category>(this.categoryBaseUri + '/' + id);
-  }
-
-  /**
-   * Loads a specific category from the backend
-   * @param id of category to load
-   */
-  getCategory(category: Category): Observable<Category> {
-    console.log('Load category details for category with name ' + category.name);
-    return this.httpClient.get<Category>(this.categoryBaseUri + '/find');
   }
 
   /**
@@ -50,10 +86,10 @@ export class CategoryService {
 
   /**
    * Edits category in the backend
-   * @param data to update category with
+   * @param category Dto containing the data to update category with
    */
-  editCategory(category: Category): Observable<Category> {
-    console.log('Edit category with id ' + category.id);
-    return this.httpClient.patch<Category>(this.categoryBaseUri, category);
+  editCategory(category: Category, id: number): Observable<Category> {
+    console.log('Edit category with id ' + id);
+    return this.httpClient.put<Category>(this.categoryBaseUri + '/' + id, category);
   }
 }
