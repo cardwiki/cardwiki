@@ -31,7 +31,7 @@ public class CardDataGenerator {
 
     @PostConstruct
     private void generateCards() {
-        User user = new User("Fake Id", "Test User", false, false);
+        User user = new User("Fake Id", "Test User", false, false, "i love cards");
         userRepository.saveAndFlush(user);
         Deck deck = new Deck();
         deck.setName("Test Deck");

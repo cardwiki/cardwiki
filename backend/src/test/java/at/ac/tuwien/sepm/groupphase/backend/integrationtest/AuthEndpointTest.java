@@ -27,7 +27,7 @@ public class AuthEndpointTest {
     }
 
     @Test
-    public void testWhoAmIAnon() throws Exception {
+    public void whoAmIAnon() throws Exception {
         mvc.perform(
             get("/api/v1/auth/whoami")
         )
@@ -38,7 +38,7 @@ public class AuthEndpointTest {
     }
 
     @Test
-    public void testWhoAmIUser() throws Exception {
+    public void whoAmIUser() throws Exception {
         mvc.perform(
             get("/api/v1/auth/whoami")
             .with(mockLogin(USER_ROLES, "foo"))
@@ -50,7 +50,7 @@ public class AuthEndpointTest {
     }
 
     @Test
-    public void testWhoAmIAdmin() throws Exception {
+    public void whoAmIAdmin() throws Exception {
         mvc.perform(
             get("/api/v1/auth/whoami")
                 .with(mockLogin(ADMIN_ROLES, "foo"))

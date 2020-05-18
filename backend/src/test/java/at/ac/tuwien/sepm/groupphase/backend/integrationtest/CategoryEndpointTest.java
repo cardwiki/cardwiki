@@ -6,6 +6,7 @@ import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategorySimpleDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -54,7 +55,8 @@ public class CategoryEndpointTest extends TestDataGenerator {
             .andExpect(jsonPath("$.name").value("blubb"))
             .andExpect(jsonPath("$.id").isNumber())
             .andExpect(jsonPath("$.parent.id").value(category.getId()))
-            .andExpect(jsonPath("$.parent.name").value(category.getName()));
+            .andExpect(jsonPath("$.parent.name").value(category.getName()))
+            .andExpect(jsonPath("$.createdAt").value(IsNull.notNullValue()));
     }
 
     @Test

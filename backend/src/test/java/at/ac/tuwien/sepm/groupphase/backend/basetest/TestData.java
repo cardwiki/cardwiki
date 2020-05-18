@@ -27,6 +27,7 @@ public interface TestData {
     default User givenApplicationUser() {
         User user = new User();
         user.setUsername(USER_NAME);
+        user.setDescription("some user");
         user.setOAuthId(OAUTH_ID);
         return getUserRepository().saveAndFlush(user);
     }
@@ -98,6 +99,7 @@ public interface TestData {
         user.setUsername(USER_NAME);
         user.setAdmin(false);
         user.setEnabled(true);
+        user.setDescription("some user");
         return user;
     }
 

@@ -2,6 +2,7 @@ package at.ac.tuwien.sepm.groupphase.backend.integrationtest;
 
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.UserInputDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -29,7 +30,10 @@ public class UserEndpointTest {
             .with(mockLogin(USER_ROLES, "123"))
             .contentType("application/json").content(objectMapper.writeValueAsString(new UserInputDto("test", "example", false))))
             .andExpect(status().is(201))
-            .andExpect(jsonPath("$.username").value("test"));
+            .andExpect(jsonPath("$.username").value("test"))
+            .andExpect(jsonPath("$.description").value("example"))
+            .andExpect(jsonPath("$.createdAt").value(IsNull.notNullValue()))
+            .andExpect(jsonPath("$.updatedAt").value(IsNull.notNullValue()));
         // TODO: test more thoroughly
     }
 }
