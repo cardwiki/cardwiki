@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -37,12 +36,11 @@ public class DeckEndpoint {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     @ApiOperation(value = "Create a new card deck", authorizations = @Authorization("ROLE_USER"))
-    public DeckDto create(@Valid @RequestBody DeckInputDto deckInputDto, Authentication authentication) {
+    public DeckDto create(@Valid @RequestBody DeckInputDto deckInputDto) {
         LOGGER.info("POST /api/v1/decks body: {}", deckInputDto);
         return deckMapper.deckToDeckDto(
             deckService.create(
-                deckMapper.deckInputDtoToDeck(deckInputDto),
-                authentication.getName()
+                deckMapper.deckInputDtoToDeck(deckInputDto)
             )
         );
     }

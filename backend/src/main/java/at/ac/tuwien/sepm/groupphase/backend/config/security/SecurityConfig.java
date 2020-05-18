@@ -57,6 +57,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         try {
             User u = userService.loadUserByOauthId(user.getName());
+            // TODO: check u.isEnabled()
             authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 
             if (u.isAdmin())

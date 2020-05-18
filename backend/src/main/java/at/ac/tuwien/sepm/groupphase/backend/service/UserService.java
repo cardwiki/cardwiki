@@ -1,9 +1,7 @@
 package at.ac.tuwien.sepm.groupphase.backend.service;
 
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.UserInputDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
-import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
 
 import java.util.List;
 
@@ -17,16 +15,24 @@ public interface UserService {
      *
      * @param username the username
      * @return the user entity
-     * @throws UsernameNotFoundException is thrown if the specified user does not exists
+     * @throws UserNotFoundException is thrown if the specified user does not exists
      */
-    User loadUserByUsername(String username) throws UsernameNotFoundException;
+    User loadUserByUsername(String username);
 
     /**
      * Loads an user for an OAuth ID.
      * @param oauthId
      * @return the user entity
+     * @throws UserNotFoundException if the specified user does not exist
      */
-    User loadUserByOauthId(String oauthId) throws NotFoundException;
+    User loadUserByOauthId(String oauthId);
+
+    /**
+     * Loads the currently authenticated user.
+     * @return the user entity
+     * @throws UserNotFoundException if the current user is not stored in the repository
+     */
+    User loadCurrentUser();
 
     /**
      * Create a new user.

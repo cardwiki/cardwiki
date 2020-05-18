@@ -33,9 +33,9 @@ public class SimpleCardService implements CardService {
 
     @Override
     @Transactional
-    public Card addCardToDeck(Long deckId, RevisionEdit revisionEdit, String oAuthId) {
-        LOGGER.debug("Add Card to Deck: {} {} {}", revisionEdit, deckId, oAuthId);
-        User user = userService.loadUserByOauthId(oAuthId);
+    public Card addCardToDeck(Long deckId, RevisionEdit revisionEdit) {
+        LOGGER.debug("Add Card to Deck: {} {}", revisionEdit, deckId);
+        User user = userService.loadCurrentUser();
         Deck deck = deckService.findOne(deckId);
 
         // Save Card with initial revision
@@ -72,9 +72,9 @@ public class SimpleCardService implements CardService {
 
     @Override
     @Transactional
-    public Card editCardInDeck(Long deckId, Long cardId, RevisionEdit revisionEdit, String oAuthId) {
+    public Card editCardInDeck(Long deckId, Long cardId, RevisionEdit revisionEdit) {
         LOGGER.debug("Edit Card {} in Deck {}: {}", cardId, deckId, revisionEdit);
-        User user = userService.loadUserByOauthId(oAuthId);
+        User user = userService.loadCurrentUser();
         Deck deck = deckService.findOne(deckId);
         Optional<Card> optCard = cardRepository.findDetailsById(cardId);
 
