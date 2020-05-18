@@ -1,11 +1,11 @@
-<div class="jumbotron mt-5">
-  <h1 class="display-4">Welcome to CardWiki!</h1>
-  <hr class="my-4">
-  <a *ngIf="!authService.isLoggedIn()" class="btn btn-primary btn-lg" routerLink="/login" role="button">Login</a>
-  <div *ngIf="authService.isLoggedIn()">
-    <p>Check out the latest message from the SEPM group phase.</p>
-    <p class="lead">
-      <a class="btn btn-primary btn-lg" routerLink="/message" role="button">Message</a>
-    </p>
+<div *ngIf="authService.isLoggedIn(); then logged_in else logged_out"></div>
+<ng-template #logged_in>
+  <app-dashboard></app-dashboard>
+</ng-template>
+<ng-template #logged_out>
+  <div class="jumbotron mt-5">
+    <h1 class="display-4">Welcome to CardWiki!</h1>
+    <hr class="my-4">
+    <a class="btn btn-primary btn-lg" routerLink="/login" role="button">Login</a>
   </div>
-</div>
+</ng-template>

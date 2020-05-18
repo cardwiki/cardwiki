@@ -17,6 +17,12 @@ import { CategoryUpdateComponent } from './components/category/category-update/c
 import { CardCreateComponent } from './components/card/card-create/card-create.component';
 import { CardFormComponent } from './components/card/card-form/card-form.component';
 import { CardViewComponent } from './components/card/card-view/card-view.component';
+import { SearchComponent } from './components/search/search.component';
+import { AboutComponent } from './components/about/about.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
+import { LearnComponent } from './components/learn/learn.component';
+import { DeckPreviewComponent } from './components/deck-preview/deck-preview.component';
 import { CategoryListComponent } from './components/category/category-list/category-list.component';
 import { ListComponent } from './components/category/list/list.component';
 import { CategoryDetailsComponent } from './components/category/category-details/category-details.component';
@@ -34,6 +40,12 @@ import { CategoryDetailsComponent } from './components/category/category-details
     CardCreateComponent,
     CardFormComponent,
     CardViewComponent,
+    SearchComponent,
+    AboutComponent,
+    DashboardComponent,
+    PageNotFoundComponent,
+    LearnComponent,
+    DeckPreviewComponent,
     CategoryListComponent,
     ListComponent,
     CategoryDetailsComponent,
