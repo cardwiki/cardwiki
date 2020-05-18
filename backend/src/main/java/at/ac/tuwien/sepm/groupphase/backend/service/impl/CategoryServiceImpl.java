@@ -59,9 +59,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public Category createCategory(Category category, String oAuthId) {
+    public Category createCategory(Category category) {
         LOGGER.debug("Create category {}", category);
-        User user = userService.loadUserByOauthId(oAuthId);
+        User user = userService.loadCurrentUser();
         category.setCreatedBy(user);
         Category parent = category.getParent();
         if (parent != null && !categoryRepository.existsById(parent.getId())) {
