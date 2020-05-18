@@ -50,7 +50,7 @@ public class CardEndpoint {
     @Secured("ROLE_USER")
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping(value = "/{cardId}")
-    @ApiOperation(value = "Edit a specific card in a deck")
+    @ApiOperation(value = "Edit a specific card in a deck", authorizations = {@Authorization(value = "ROLE_USER")})
     public CardDetailsDto edit(@Valid  @RequestBody RevisionEditInquiryDto revisionEditInquiryDto, @PathVariable Long deckId, @PathVariable Long cardId) {
         LOGGER.info("PATCH /api/v1/decks/{}/cards/{} body: {}", deckId, cardId, revisionEditInquiryDto);
         RevisionEdit revisionEdit = cardMapper.revisionEditInquiryDtoToRevisionEdit(revisionEditInquiryDto);
