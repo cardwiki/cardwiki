@@ -25,10 +25,10 @@ public class UserEndpointTest extends TestDataGenerator {
     @Autowired
     private ObjectMapper objectMapper;
 
+    // TODO: test more thoroughly
+
     @Test
     public void createUser() throws Exception {
-        JsonNode body = objectMapper.createObjectNode();
-
         ObjectNode input = objectMapper.createObjectNode();
         input.put("username", "test");
         input.put("description", "example");
@@ -42,6 +42,30 @@ public class UserEndpointTest extends TestDataGenerator {
         .andExpect(jsonPath("$.description").value("example"))
         .andExpect(jsonPath("$.createdAt", validIsoDateTime()))
         .andExpect(jsonPath("$.updatedAt", validIsoDateTime()));
-        // TODO: test more thoroughly
+    }
+
+    @Test
+    public void createUserNoUsername() throws Exception {
+        ObjectNode input = objectMapper.createObjectNode();
+        input.put("description", "example");
+        input.put("admin", false);
+
+        mvc.perform(post("/api/v1/users")
+            .with(mockLogin(USER_ROLES, "123"))
+            .contentType("application/json").content(input.toString()))
+            .andExpect(status().is(400));
+    }
+
+    @Test
+    public void createUserInvalidUsername() throws Exception {
+        ObjectNode input = objectMapper.createObjectNode();
+        input.put("username", "foo bar");
+        input.put("description", "example");
+        input.put("admin", false);
+
+        mvc.perform(post("/api/v1/users")
+            .with(mockLogin(USER_ROLES, "123"))
+            .contentType("application/json").content(input.toString()))
+            .andExpect(status().is(400));
     }
 }
