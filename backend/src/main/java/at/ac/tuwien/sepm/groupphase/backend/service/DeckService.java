@@ -1,6 +1,8 @@
 package at.ac.tuwien.sepm.groupphase.backend.service;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
+import at.ac.tuwien.sepm.groupphase.backend.exception.DeckNotFoundException;
+import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -11,6 +13,7 @@ public interface DeckService {
      *
      * @param id the id of the deck entry
      * @return the deck entry
+     * @throws DeckNotFoundException if the specified deck does not exist
      */
     Deck findOne(Long id);
 
@@ -27,8 +30,8 @@ public interface DeckService {
      * Create a new card deck.
      *
      * @param deck to create.
-     * @param OAuthId the OAuthID of the user creating the card
      * @return the new card deck.
+     * @throws UserNotFoundException if no authenticated user could be found
      */
-    Deck create(Deck deck, String OAuthId);
+    Deck create(Deck deck);
 }

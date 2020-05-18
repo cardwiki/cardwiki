@@ -48,13 +48,12 @@ public class CategoryEndpoint {
     @Secured("ROLE_USER")
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "Create new Category", authorizations = {@Authorization(value = "ROLE_USER")})
-    public CategoryDetailedDto createCategory(@RequestBody @Valid CategoryInquiryDto categoryInquiryDto,
-                                              Authentication authentication) {
+    public CategoryDetailedDto createCategory(@RequestBody @Valid CategoryInquiryDto categoryInquiryDto) {
         LOGGER.info("POST /api/v1/categories");
         try {
             return categoryMapper.categoryToCategoryDetailedDto(
                 categoryService.createCategory(
-                    categoryMapper.categoryInquiryDtoToCategory(categoryInquiryDto), authentication.getName()));
+                    categoryMapper.categoryInquiryDtoToCategory(categoryInquiryDto)));
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid parent category.", e);
         }

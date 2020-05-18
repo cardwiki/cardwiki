@@ -6,7 +6,6 @@ import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.RevisionSimpleDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
 import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionEdit;
-import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
