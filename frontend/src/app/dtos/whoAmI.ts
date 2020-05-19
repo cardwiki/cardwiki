@@ -1,6 +1,6 @@
 export class WhoAmI {
     constructor(
-        public id: string,
+        public authId: string,
         public admin: boolean,
         public hasAccount: boolean) {
     }
