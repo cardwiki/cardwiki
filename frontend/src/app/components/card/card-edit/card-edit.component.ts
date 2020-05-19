@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {CardService} from "../../../services/card.service";
 import {ActivatedRoute} from "@angular/router";
 import {CardContent} from "../../../dtos/cardContent";
@@ -9,10 +9,8 @@ import {CardContent} from "../../../dtos/cardContent";
   styleUrls: ['./card-edit.component.css']
 })
 export class CardEditComponent implements OnInit {
-
-  @Input() card: CardContent
-  @Input() side: 'front' | 'back'
-
+  
+  private card = new CardContent;
   private deckId: number;
   private cardId: number;
 
