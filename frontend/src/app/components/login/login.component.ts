@@ -27,14 +27,14 @@ export class LoginComponent implements OnInit {
       if ('success' in params){
         this.authService.whoAmI().subscribe(info => {
           // TODO: cache info in localStorage
-          if (info.id === null)
+          if (info.authId === null)
             return;
           if (info.hasAccount) {
             this.router.navigate(['/']);
           } else {
             // TODO: use proper dialog
             let username = prompt('choose your username');
-            this.authService.register(info.id, username).subscribe(status => {
+            this.authService.register(info.authId, username).subscribe(status => {
               // TODO: handle errors
               this.router.navigate(['/']);
             });
