@@ -1,5 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CardContent } from 'src/app/dtos/cardContent';
+import { Globals } from "../../../global/globals";
+import {HttpClient} from "@angular/common/http";
 
 @Component({
   selector: 'app-card-form',
@@ -10,7 +12,7 @@ export class CardFormComponent implements OnInit {
 
   @Input() card: CardContent
   @Output() cardSubmit: EventEmitter<CardContent> = new EventEmitter();
-  constructor() { }
+  constructor(private globals: Globals) { }
 
   ngOnInit(): void {
   }

@@ -17,6 +17,7 @@ import { CategoryUpdateComponent } from './components/category/category-update/c
 import { CardCreateComponent } from './components/card/card-create/card-create.component';
 import { CardFormComponent } from './components/card/card-form/card-form.component';
 import { CardViewComponent } from './components/card/card-view/card-view.component';
+import { CardEditComponent } from './components/card/card-edit/card-edit.component';
 import { SearchComponent } from './components/search/search.component';
 import { AboutComponent } from './components/about/about.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
@@ -49,6 +50,7 @@ import { CategoryDetailsComponent } from './components/category/category-details
     CategoryListComponent,
     ListComponent,
     CategoryDetailsComponent,
+    CardEditComponent,
   ],
   imports: [
     BrowserModule,

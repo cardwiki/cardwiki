@@ -4,6 +4,7 @@ import {HomeComponent} from './components/home/home.component';
 import {LoginComponent} from './components/login/login.component';
 import {AuthGuard} from './guards/auth.guard';
 import {CategoryCreateComponent} from './components/category/category-create/category-create.component';
+import { CardEditComponent } from "./components/card/card-edit/card-edit.component";
 import { CardCreateComponent } from './components/card/card-create/card-create.component';
 import { SearchComponent } from './components/search/search.component';
 import { AboutComponent } from './components/about/about.component';
@@ -20,6 +21,10 @@ const routes: Routes = [
   {path: 'about', component: AboutComponent},
   {path: 'search', component: SearchComponent},
   {path: 'login', component: LoginComponent},
+  {path: 'decks/:id/cards/new', component: CardCreateComponent},
+  { path: 'decks/:deckId/cards/:cardId/edit', component: CardEditComponent },
+  {path: 'categories/new', canActivate: [AuthGuard], component: CategoryCreateComponent},
+  {path: 'categories/:id/edit', canActivate: [AuthGuard], component: CategoryUpdateComponent},
   {path: 'learn', canActivate: [AuthGuard], component: LearnComponent},
   {path: 'learn/:id', component: DeckPreviewComponent},
   {path: 'decks/:id/cards/new', canActivate: [AuthGuard], component: CardCreateComponent},

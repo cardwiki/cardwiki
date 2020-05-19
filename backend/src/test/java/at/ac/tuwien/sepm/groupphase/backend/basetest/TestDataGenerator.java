@@ -15,7 +15,6 @@ import java.time.format.DateTimeParseException;
 /**
  * Provides repositories to the TestData interface
  */
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public abstract class TestDataGenerator {
     @Autowired
     private UserRepository userRepository;
@@ -30,12 +29,12 @@ public abstract class TestDataGenerator {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    private int userCounter = 0;
+    private static long userCounter = 0;
 
     public User givenApplicationUser() {
         userCounter++;
         User user = new User();
-        user.setId((long) userCounter);
+        user.setId(userCounter);
         user.setUsername("username-" + userCounter);
         user.setDescription("some user");
         user.setAuthId("auth" + userCounter);
@@ -106,7 +105,7 @@ public abstract class TestDataGenerator {
     public User getUnconnectedSampleUser() {
         userCounter++;
         User user = new User();
-        user.setId((long) userCounter);
+        user.setId(userCounter);
         user.setAuthId("auth-" + userCounter);
         user.setUsername("username" + userCounter);
         user.setAdmin(false);
