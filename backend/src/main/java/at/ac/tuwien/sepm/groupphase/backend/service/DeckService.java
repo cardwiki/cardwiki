@@ -36,8 +36,9 @@ public interface DeckService {
     /**
      * Update a Deck
      *
+     * @param id of the deck to update
      * @param deck to update
      * @return updated deck
      */
-    Deck update(Deck deck);
+    Deck update(Long id, Deck deck);
 }

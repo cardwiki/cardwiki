@@ -15,21 +15,12 @@ export class DeckService {
   }
 
   /**
-   * Loads a specific deck from the backend
+   * Loads a deck from the backend
    * @param id of deck to load
    */
   getDeckById(id: number): Observable<Deck> {
     console.log('Load Deck with id ' + id);
     return this.httpClient.get<Deck>(this.deckBaseUri + '/' + id);
-  }
-
-  /**
-   * Persists deck to the backend
-   * @param deck to persist
-   */
-  createDeck(deck: Deck): Observable<Deck> {
-    console.log('Create deck with name ' + deck.name);
-    return this.httpClient.post<Deck>(this.deckBaseUri, deck);
   }
 
   /**

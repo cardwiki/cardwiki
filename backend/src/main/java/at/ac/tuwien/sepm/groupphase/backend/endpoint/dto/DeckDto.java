@@ -4,7 +4,6 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 @Data
 public class DeckDto {
@@ -14,4 +13,5 @@ public class DeckDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<CategorySimpleDto> categories;
+    private List<CardContentDto> cards;
 }

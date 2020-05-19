@@ -63,13 +63,25 @@ public class DeckEndpoint {
             .collect(Collectors.toList());
     }
 
+    @GetMapping(value = "/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "Get a deck by id")
+    public DeckDto findOne(@PathVariable Long id) {
+        LOGGER.info("GET /api/v1/decks/{}", id);
+        try {
+            return deckMapper.deckToDeckDto(deckService.findOne(id));
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
     @PutMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Update deck")
     public DeckDto updateDeck(@PathVariable Long id, @Valid @RequestBody DeckInputDto deckInputDto) {
         LOGGER.info("PUT /api/v1/decks/{}", id);
         try {
-            return deckMapper.deckToDeckDto(deckService.update(deckMapper.deckInputDtoToDeck(deckInputDto)));
+            return deckMapper.deckToDeckDto(deckService.update(id, deckMapper.deckInputDtoToDeck(deckInputDto)));
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
