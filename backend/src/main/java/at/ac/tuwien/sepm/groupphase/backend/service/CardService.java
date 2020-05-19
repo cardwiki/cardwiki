@@ -4,6 +4,8 @@ import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
 import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionEdit;
 import org.springframework.security.core.Authentication;
 
+import java.util.List;
+
 public interface CardService {
 
     /**
@@ -16,4 +18,11 @@ public interface CardService {
      */
     Card addCardToDeck(Long deckId, RevisionEdit revisionEdit, String oAuthId);
 
+    /**
+     * Get all cards for a specific deck
+     *
+     * @param deckId of the deck whose cards to get
+     * @return list of cards of the deck
+     */
+    List<Card> getCardsByDeckId(Long deckId);
 }

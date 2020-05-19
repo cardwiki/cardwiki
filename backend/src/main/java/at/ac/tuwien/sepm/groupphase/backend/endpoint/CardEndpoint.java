@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.lang.invoke.MethodHandles;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/v1/decks/{deckId}/cards")
@@ -39,5 +40,12 @@ public class CardEndpoint {
         LOGGER.info("POST /api/v1/decks/{}/cards body: {}", deckId, revisionEditInquiryDto);
         RevisionEdit revisionEdit = cardMapper.revisionEditInquiryDtoToRevisionEdit(revisionEditInquiryDto);
         return cardMapper.cardToCardDetailsDto(cardService.addCardToDeck(deckId, revisionEdit, authentication.getName()));
+    }
+
+    @GetMapping
+    @ApiOperation(value = "Get all cards for a specific deck")
+    public List<CardContentDto> getCardsByDeckId(@PathVariable Long deckId) {
+        LOGGER.info("GET /api/v1/decks/{}/cards", deckId);
+        return cardMapper.cardToCardContentDto(cardService.getCardsByDeckId(deckId));
     }
 }

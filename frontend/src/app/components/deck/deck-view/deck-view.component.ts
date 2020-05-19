@@ -3,6 +3,7 @@ import {Deck} from '../../../dtos/deck';
 import {DeckService} from '../../../services/deck.service';
 import {ActivatedRoute} from '@angular/router';
 import {CardService} from '../../../services/card.service';
+import {CardDetails} from '../../../dtos/cardDetails';
 
 @Component({
   selector: 'app-deck-view',
@@ -12,6 +13,7 @@ import {CardService} from '../../../services/card.service';
 export class DeckViewComponent implements OnInit {
 
   deck: Deck;
+  cards: CardDetails[];
 
   constructor(private deckService: DeckService, private cardService: CardService, private route: ActivatedRoute) { }
 
@@ -19,22 +21,7 @@ export class DeckViewComponent implements OnInit {
     const id = +this.route.snapshot.paramMap.get('id');
     this.deckService.getDeckById(id).subscribe(deck => {
       this.deck = deck;
+      this.cardService.getCardsByDeckId(id).subscribe(cards => this.cards = cards);
     });
   }
-
-  updateDeck(): void {
-    this.deckService.updateDeck(this.deck);
-  }
-
-  // removeCard(): void {
-  //   this.cardService.removeCard();
-  // }
-
-  // createCard(): void {
-  //   this.cardService.createCard();
-  // }
-
-  // addCategory(): void {}
-
-  // removeCategory(): {}
 }

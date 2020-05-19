@@ -13,5 +13,4 @@ public class DeckDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<CategorySimpleDto> categories;
-    private List<CardContentDto> cards;
 }

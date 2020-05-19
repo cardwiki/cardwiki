@@ -39,7 +39,7 @@
   </div>
 </div>
 
-<table class="table table-borderless table-hover table-striped">
+<table class="table table-hover table-striped">
   <thead class="thead-light">
   <tr class="">
     <th scope="col">Front</th>
@@ -47,10 +47,10 @@
     <th scope="col" class="col-2"></th>
   </tr>
   </thead>
-  <tbody *ngFor="let card of deck.cards">
-  <tr class="">
-    <td>{{card.textFront}}front</td>
-    <td>{{card.textBack}}back</td>
+  <tbody *ngFor="let card of cards">
+  <tr *ngIf="card.textFront || card.textBack" class="">
+    <td class="align-middle">{{card.textFront}}</td>
+    <td class="align-middle">{{card.textBack}}</td>
     <td>
       <div class="btn-group float-right">
         <button type="button" class="btn btn-light"><i class="fas fa-pencil-alt"></i></button>
