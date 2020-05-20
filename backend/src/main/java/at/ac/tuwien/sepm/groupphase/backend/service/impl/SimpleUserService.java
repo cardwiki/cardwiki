@@ -1,7 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
-import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
@@ -33,16 +32,16 @@ public class SimpleUserService implements UserService {
     }
 
     @Override
-    public User loadUserByOauthId(String oauthId) {
-        LOGGER.debug("Load user by OAuthId {}", oauthId);
-        return userRepository.findByAuthId(oauthId).orElseThrow(UserNotFoundException::new);
+    public User loadUserByAuthId(String authId) {
+        LOGGER.debug("Load user by AuthId {}",  authId);
+        return userRepository.findByAuthId( authId).orElseThrow(UserNotFoundException::new);
     }
 
     @Override
     public User loadCurrentUser() {
         LOGGER.debug("Load current user");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return loadUserByOauthId(authentication.getName());
+        return loadUserByAuthId(authentication.getName());
     }
 
     @Override

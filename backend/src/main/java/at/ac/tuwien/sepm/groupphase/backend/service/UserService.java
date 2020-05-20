@@ -20,12 +20,12 @@ public interface UserService {
     User loadUserByUsername(String username);
 
     /**
-     * Loads an user for an OAuth ID.
-     * @param oauthId
+     * Loads an user for an Auth ID.
+     * @param authId
      * @return the user entity
      * @throws UserNotFoundException if the specified user does not exist
      */
-    User loadUserByOauthId(String oauthId);
+    User loadUserByAuthId(String authId);
 
     /**
      * Loads the currently authenticated user.
