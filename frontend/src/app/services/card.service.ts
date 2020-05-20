@@ -36,4 +36,14 @@ export class CardService {
     console.log('get cards for deck with id' + deckId);
     return this.httpClient.get<CardDetails[]>(this.getCardUri(deckId));
   }
+
+  editCard(deckId: number, cardId: number, card: CardContent): Observable<CardDetails> {
+    console.log(`edit card with id ${cardId} from deck ${deckId}: ${card}`);
+    return this.httpClient.patch<CardDetails>(this.getCardUri(deckId, cardId), card);
+  }
+
+  fetchCard(deckId: number, cardId: number): Observable<CardDetails> {
+    console.log(`fetch card with id ${cardId} from deck ${deckId}`);
+    return this.httpClient.get<CardDetails>(this.getCardUri(deckId, cardId));
+  }
 }

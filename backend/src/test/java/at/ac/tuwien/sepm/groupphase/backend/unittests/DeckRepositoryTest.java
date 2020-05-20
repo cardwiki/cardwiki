@@ -30,13 +30,13 @@ public class DeckRepositoryTest extends TestDataGenerator {
 
         assertAll(
             () -> assertEquals(1,
-                deckRepository.findByNameContainingIgnoreCase(DECK_NAME, paging).size()
+                deckRepository.findByNameContainingIgnoreCase(deck.getName(), paging).size()
             ),
             () -> assertTrue(
                 deckRepository.findByNameContainingIgnoreCase("404", paging).isEmpty()
             ),
             () -> assertEquals(1,
-                deckRepository.findByNameContainingIgnoreCase(DECK_NAME.substring(1,3), paging).size()
+                deckRepository.findByNameContainingIgnoreCase(deck.getName().substring(1,3), paging).size()
             )
         );
     }

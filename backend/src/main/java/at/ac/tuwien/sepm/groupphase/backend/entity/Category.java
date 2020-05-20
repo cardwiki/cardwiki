@@ -1,11 +1,7 @@
 package at.ac.tuwien.sepm.groupphase.backend.entity;
 
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
@@ -26,17 +22,15 @@ public class Category {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name="created_by", referencedColumnName="oAuthId", updatable = false)
+    @JoinColumn(name="created_by", referencedColumnName="id", updatable = false)
     private User createdBy;
 
-    @JsonIgnore
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinColumn(name = "parent_id", referencedColumnName = "id")
+    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
     private Category parent;
 
+    @OrderBy("LOWER(name) ASC")
     @JsonBackReference
-    @Fetch(FetchMode.SUBSELECT)
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Category> children = new HashSet<>();
 
     @CreationTimestamp
@@ -47,6 +41,7 @@ public class Category {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    @OrderBy("LOWER(name) ASC")
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "category_deck",
@@ -68,6 +63,11 @@ public class Category {
 
     public Category(Long id) {
         this.id = id;
+    }
+
+    public Category(Long id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
     public Category(String name, Category parent) {
@@ -140,7 +140,15 @@ public class Category {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdatedAt() {
+     public Set<Deck> getDecks() {
+         return decks;
+     }
+
+     public void setDecks(Set<Deck> decks) {
+         this.decks = decks;
+     }
+
+     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
@@ -168,7 +176,6 @@ public class Category {
             "id=" + id +
             ", name='" + name + '\'' +
             ", createdBy=" + createdBy +
-            ", parent=" + parent +
             ", createdAt=" + createdAt +
             ", updatedAt=" + updatedAt +
             '}';

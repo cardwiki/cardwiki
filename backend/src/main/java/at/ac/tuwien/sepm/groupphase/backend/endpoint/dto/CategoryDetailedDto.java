@@ -1,20 +1,17 @@
-package at.ac.tuwien.sepm.groupphase.backend.endpoint.dto;
-
-import at.ac.tuwien.sepm.groupphase.backend.entity.User;
-import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
+package at.ac.tuwien.sepm.groupphase.backend.endpoint.dto;;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.Objects;
-import java.util.Set;
+import java.util.List;
 
 @Data
 public class CategoryDetailedDto extends CategorySimpleDto {
 
-    private User createdBy;
-    private Category parent;
-    private Set<Category> children;
+    private Long createdBy;
+    private CategorySimpleDto parent;
+    private List<CategorySimpleDto> children;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private List<DeckSimpleDto> decks;
+
 }

@@ -1,8 +1,8 @@
 package at.ac.tuwien.sepm.groupphase.backend.config.security;
 
-import at.ac.tuwien.sepm.groupphase.backend.entity.User;
-import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,10 +10,8 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -22,21 +20,14 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.lang.invoke.MethodHandles;
+import java.util.*;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled=true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-
-    @Autowired
-    private CustomOAuth2UserService customOAuth2UserService;
-
-    @Autowired
-    private CustomOidcUserService customOidcUserService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     @Autowired
     private UserService userService;
@@ -44,27 +35,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(HttpSecurity httpSecurity) throws Exception {
         staticConfigure(httpSecurity);
-        httpSecurity.oauth2Login().userInfoEndpoint()
-            .userService(customOAuth2UserService)
-            .oidcUserService(customOidcUserService);
-    }
-
-    /**
-     * This method integrates Spring Security's OAuth2 with our persistence layer.
-     */
-    public Collection<GrantedAuthority> setupRoles(OAuth2User user){
-        Collection<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS");
-
-        try {
-            User u = userService.loadUserByOauthId(user.getName());
-            authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-
-            if (u.isAdmin())
-                authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-        } catch (NotFoundException e){
-        }
-
-        return authorities;
+        httpSecurity.oauth2Login()
+            .successHandler((request, response, authentication) -> {
+                AuthHandler.updateAuthentication(userService);
+                // TODO: don't hardcode frontend
+                response.sendRedirect("http://localhost:4200/login?success");
+            });
     }
 
     public static void staticConfigure(HttpSecurity httpSecurity) throws Exception {
@@ -74,20 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity.exceptionHandling().defaultAuthenticationEntryPointFor(new Http403ForbiddenEntryPoint(), new AntPathRequestMatcher("/**"));
         httpSecurity.logout().logoutUrl("/api/v1/auth/logout");
         httpSecurity.oauth2Login()
-            .authorizationEndpoint().baseUri("/api/v1/auth/providers").and()
-            .successHandler(new RefererRedirectionAuthenticationSuccessHandler());
-    }
-
-    public static class RefererRedirectionAuthenticationSuccessHandler
-        extends SimpleUrlAuthenticationSuccessHandler
-        implements AuthenticationSuccessHandler {
-
-        public RefererRedirectionAuthenticationSuccessHandler() {
-            super();
-            // TODO: don't hardcode frontend
-            // we cannot use setUseReferer(true) because it drops the path
-            setDefaultTargetUrl("http://localhost:4200/login?success");
-        }
+            .authorizationEndpoint().baseUri("/api/v1/auth/providers");
     }
 
     private final List<String> trustedOrigins = Collections.unmodifiableList(

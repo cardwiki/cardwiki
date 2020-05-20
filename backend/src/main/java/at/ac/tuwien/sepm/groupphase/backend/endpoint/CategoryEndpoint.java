@@ -7,10 +7,14 @@ import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.CategoryMapper;
 import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.service.CategoryService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Authorization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -41,22 +45,45 @@ public class CategoryEndpoint {
     }
 
     @PostMapping
+    @Secured("ROLE_USER")
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation(value = "Create new Category")
-    public CategoryDetailedDto createCategory(@Valid @RequestBody CategoryInquiryDto categoryInquiryDto) {
+    @ApiOperation(value = "Create new Category", authorizations = {@Authorization(value = "ROLE_USER")})
+    public CategoryDetailedDto createCategory(@RequestBody @Valid CategoryInquiryDto categoryInquiryDto) {
         LOGGER.info("POST /api/v1/categories");
         try {
             return categoryMapper.categoryToCategoryDetailedDto(
-                categoryService.createCategory(categoryMapper.categoryInquiryDtoToCategory(categoryInquiryDto)));
+                categoryService.createCategory(
+                    categoryMapper.categoryInquiryDtoToCategory(categoryInquiryDto)));
         } catch (NotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Parent.", e);
-        }   
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid parent category.", e);
+        }
     }
 
     @GetMapping(value = "/{id}")
     @ApiOperation(value = "Get detailed information about a specific category")
     public CategoryDetailedDto getCategory(@PathVariable Long id) {
         LOGGER.info("GET /api/v1/categories/{}", id);
-        return categoryMapper.categoryToCategoryDetailedDto(categoryService.findOneById(id));
+        try {
+            return categoryMapper.categoryToCategoryDetailedDto(categoryService.findOneById(id));
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found.");
+        }
+    }
+
+    @Secured("ROLE_USER")
+    @PutMapping(value = "/{id}")
+    @ApiOperation(value = "Update category with specific id", authorizations = {@Authorization(value = "ROLE_USER")})
+    public CategoryDetailedDto updateCategory(@PathVariable Long id,
+                                                @RequestBody @Valid CategoryInquiryDto categoryInquiryDto) {
+        LOGGER.info("PUT /api/v1/categories/{}", id);
+        try {
+            return categoryMapper.categoryToCategoryDetailedDto(
+                categoryService.updateCategory(
+                    id, categoryMapper.categoryInquiryDtoToCategory(categoryInquiryDto)));
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found.");
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 }

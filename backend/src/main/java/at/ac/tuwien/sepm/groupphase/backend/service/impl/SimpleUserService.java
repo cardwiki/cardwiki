@@ -1,13 +1,15 @@
 package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 
+import at.ac.tuwien.sepm.groupphase.backend.config.security.AuthHandler;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
-import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
+import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
@@ -25,18 +27,21 @@ public class SimpleUserService implements UserService {
     }
 
     @Override
-    public User loadUserByUsername(String username) throws UsernameNotFoundException {
-        LOGGER.debug("Load all user by username");
-        try {
-            return userRepository.findByUsername(username);
-        } catch (NotFoundException e) {
-            throw new UsernameNotFoundException(e.getMessage(), e);
-        }
+    public User loadUserByUsername(String username) {
+        LOGGER.debug("Load user by username {}", username);
+        return userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
     }
 
     @Override
-    public User loadUserByOauthId(String oauthId) throws NotFoundException {
-        return userRepository.findById(oauthId).orElseThrow(NotFoundException::new);
+    public User loadUserByAuthId(String authId) {
+        LOGGER.debug("Load user by AuthId {}",  authId);
+        return userRepository.findByAuthId(authId).orElseThrow(UserNotFoundException::new);
+    }
+
+    @Override
+    public User loadCurrentUser() {
+        LOGGER.debug("Load current user");
+        return loadUserByAuthId(AuthHandler.buildAuthId((OAuth2AuthenticationToken) SecurityContextHolder.getContext().getAuthentication()));
     }
 
     @Override

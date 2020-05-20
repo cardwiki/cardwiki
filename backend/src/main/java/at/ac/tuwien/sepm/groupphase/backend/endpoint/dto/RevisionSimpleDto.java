@@ -10,6 +10,6 @@ public class RevisionSimpleDto {
 
     private Long id;
     private String message;
-    private String createdBy;
+    private Long createdBy;
     private LocalDateTime createdAt;
 }

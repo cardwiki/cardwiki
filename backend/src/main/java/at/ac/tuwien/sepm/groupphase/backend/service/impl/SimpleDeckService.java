@@ -1,7 +1,7 @@
 package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
-import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
+import at.ac.tuwien.sepm.groupphase.backend.exception.DeckNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
@@ -33,12 +33,7 @@ public class SimpleDeckService implements DeckService {
     public Deck findOne(Long id) {
         LOGGER.debug("Find deck with id {}", id);
         Optional<Deck> deck = deckRepository.findById(id);
-        if (deck.isPresent()) {
-            Hibernate.initialize(deck.get().getCreatedBy());
-            Hibernate.initialize(deck.get().getCategories());
-            return deck.get();
-        }
-        else throw new NotFoundException(String.format("Could not find card deck with id %s", id));
+        return deck.orElseThrow(() -> new DeckNotFoundException(String.format("Could not find card deck with id %s", id)));
     }
 
     @Override
@@ -49,9 +44,9 @@ public class SimpleDeckService implements DeckService {
 
     @Transactional
     @Override
-    public Deck create(Deck deck, String oAuthId) {
+    public Deck create(Deck deck) {
         LOGGER.debug("Create new deck {}", deck);
-        deck.setCreatedBy(userService.loadUserByOauthId(oAuthId));
+        deck.setCreatedBy(userService.loadCurrentUser());
         return deckRepository.save(deck);
     }
 
@@ -65,7 +60,7 @@ public class SimpleDeckService implements DeckService {
             Hibernate.initialize(deck.getCategories());
             return deck;
         } else {
-            throw new NotFoundException(String.format("Could not find deck with id %s", deck.getId()));
+            throw new DeckNotFoundException(String.format("Could not find deck with id %s", deck.getId()));
         }
     }
 }

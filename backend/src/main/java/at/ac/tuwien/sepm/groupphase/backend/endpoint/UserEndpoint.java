@@ -1,14 +1,18 @@
 package at.ac.tuwien.sepm.groupphase.backend.endpoint;
 
+import at.ac.tuwien.sepm.groupphase.backend.config.security.AuthHandler;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.UserInputDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.UserOutputDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.UserMapper;
+import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -28,11 +32,14 @@ public class UserEndpoint {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     @ApiOperation(value = "Register the authenticated user")
-    public UserOutputDto register(Authentication authentication, @Valid @RequestBody UserInputDto userInputDto) {
-        if (authentication == null)
+    public UserOutputDto register(OAuth2AuthenticationToken token, @Valid @RequestBody UserInputDto userInputDto) {
+        if (token == null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not authenticated");
-        userInputDto.setOAuthId(authentication.getName());
-        return userMapper.userToUserOutputDto(userService.createUser(userMapper.userInputDtoToUser(userInputDto)));
+        User u = userMapper.userInputDtoToUser(userInputDto);
+        u.setAuthId(AuthHandler.buildAuthId((OAuth2AuthenticationToken) SecurityContextHolder.getContext().getAuthentication()));
+        u = userService.createUser(u);
+        AuthHandler.updateAuthentication(userService);
+        return userMapper.userToUserOutputDto(u);
     }
 
     @Secured("ROLE_USER")

@@ -7,8 +7,6 @@ import java.util.Objects;
 
 @Data
 public class UserOutputDto {
-    private String oAuthId;
-
     private String username;
 
     private String description;

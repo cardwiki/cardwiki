@@ -27,36 +27,36 @@ public class AuthEndpointTest {
     }
 
     @Test
-    public void testWhoAmIAnon() throws Exception {
+    public void whoAmIAnon() throws Exception {
         mvc.perform(
             get("/api/v1/auth/whoami")
         )
         .andExpect(status().is(200))
-        .andExpect(jsonPath("$.id").value(IsNull.nullValue()))
+        .andExpect(jsonPath("$.authId").value(IsNull.nullValue()))
         .andExpect(jsonPath("$.hasAccount").value(false))
         .andExpect(jsonPath("$.admin").value(false));
     }
 
     @Test
-    public void testWhoAmIUser() throws Exception {
+    public void whoAmIUser() throws Exception {
         mvc.perform(
             get("/api/v1/auth/whoami")
-            .with(mockLogin(USER_ROLES, "foo"))
+            .with(mockLogin(USER_ROLES, "foo:123"))
         )
             .andExpect(status().is(200))
-            .andExpect(jsonPath("$.id").value("foo"))
+            .andExpect(jsonPath("$.authId").value("foo:123"))
             .andExpect(jsonPath("$.hasAccount").value(true))
             .andExpect(jsonPath("$.admin").value(false));
     }
 
     @Test
-    public void testWhoAmIAdmin() throws Exception {
+    public void whoAmIAdmin() throws Exception {
         mvc.perform(
             get("/api/v1/auth/whoami")
-                .with(mockLogin(ADMIN_ROLES, "foo"))
+                .with(mockLogin(ADMIN_ROLES, "foo:123"))
         )
             .andExpect(status().is(200))
-            .andExpect(jsonPath("$.id").value("foo"))
+            .andExpect(jsonPath("$.authId").value("foo:123"))
             .andExpect(jsonPath("$.hasAccount").value(true))
             .andExpect(jsonPath("$.admin").value(true));
     }

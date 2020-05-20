@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -36,16 +35,33 @@ public class CardEndpoint {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     @ApiOperation(value = "Create a new card", authorizations = {@Authorization(value = "ROLE_USER")})
-    public CardDetailsDto create(@Valid  @RequestBody RevisionEditInquiryDto revisionEditInquiryDto, Authentication authentication, @PathVariable Long deckId) {
+    public CardDetailsDto create(@Valid  @RequestBody RevisionEditInquiryDto revisionEditInquiryDto, @PathVariable Long deckId) {
         LOGGER.info("POST /api/v1/decks/{}/cards body: {}", deckId, revisionEditInquiryDto);
         RevisionEdit revisionEdit = cardMapper.revisionEditInquiryDtoToRevisionEdit(revisionEditInquiryDto);
-        return cardMapper.cardToCardDetailsDto(cardService.addCardToDeck(deckId, revisionEdit, authentication.getName()));
+        return cardMapper.cardToCardDetailsDto(cardService.addCardToDeck(deckId, revisionEdit));
+    }
+
+    @GetMapping(value = "/{cardId}")
+    @ApiOperation(value = "Get information about a specific card in deck")
+    public CardSimpleDto findOne(@PathVariable Long deckId, @PathVariable Long cardId) {
+        LOGGER.info("GET /api/v1/decks/{}/cards/{}", deckId, cardId);
+        return cardMapper.cardToCardSimpleDto(cardService.findOne(deckId, cardId));
+    }
+
+    @Secured("ROLE_USER")
+    @ResponseStatus(HttpStatus.OK)
+    @PatchMapping(value = "/{cardId}")
+    @ApiOperation(value = "Edit a specific card in a deck", authorizations = {@Authorization(value = "ROLE_USER")})
+    public CardDetailsDto edit(@Valid  @RequestBody RevisionEditInquiryDto revisionEditInquiryDto, @PathVariable Long deckId, @PathVariable Long cardId) {
+        LOGGER.info("PATCH /api/v1/decks/{}/cards/{} body: {}", deckId, cardId, revisionEditInquiryDto);
+        RevisionEdit revisionEdit = cardMapper.revisionEditInquiryDtoToRevisionEdit(revisionEditInquiryDto);
+        return cardMapper.cardToCardDetailsDto(cardService.editCardInDeck(deckId, cardId, revisionEdit));
     }
 
     @GetMapping
     @ApiOperation(value = "Get all cards for a specific deck")
     public List<CardContentDto> getCardsByDeckId(@PathVariable Long deckId) {
         LOGGER.info("GET /api/v1/decks/{}/cards", deckId);
-        return cardMapper.cardToCardContentDto(cardService.getCardsByDeckId(deckId));
+        return cardMapper.cardToCardContentDto(cardService.findCardsByDeckId(deckId));
     }
 }

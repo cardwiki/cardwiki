@@ -5,4 +5,5 @@ import {Injectable} from '@angular/core';
 })
 export class Globals {
   readonly backendUri: string = 'http://localhost:8080/api/v1';
+  readonly maxTextSize: number = 1000;
 }
