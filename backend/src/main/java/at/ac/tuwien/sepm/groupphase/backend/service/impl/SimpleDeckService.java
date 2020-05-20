@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -29,6 +30,7 @@ public class SimpleDeckService implements DeckService {
     @Override
     public Deck findOne(Long id) {
         LOGGER.debug("Find deck with id {}", id);
+        Objects.requireNonNull(id, "id argument must not be null");
         Optional<Deck> deck = deckRepository.findById(id);
         if (deck.isPresent()) return deck.get();
         else throw new NotFoundException(String.format("Could not find card deck with id %s", id));
@@ -37,6 +39,7 @@ public class SimpleDeckService implements DeckService {
     @Override
     public List<Deck> searchByName(String name, Pageable pageable) {
         LOGGER.debug("Search card decks for name {} {}", name, pageable);
+        Objects.requireNonNull(name, "name argument must not be null");
         return deckRepository.findByNameContainingIgnoreCase(name, pageable);
     }
 
@@ -44,6 +47,8 @@ public class SimpleDeckService implements DeckService {
     @Override
     public Deck create(Deck deck, String oAuthId) {
         LOGGER.debug("Create new deck {}", deck);
+        Objects.requireNonNull(deck, "deck argument must not be null");
+        Objects.requireNonNull(oAuthId, "oAuthId argument must not be null");
         deck.setCreatedBy(userService.loadUserByOauthId(oAuthId));
         return deckRepository.save(deck);
     }
