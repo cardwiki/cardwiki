@@ -1,0 +1,9 @@
+<h1 class="mt-5 mb-5">Edit deck</h1>
+
+<form>
+  <div class="form-group">
+    <label for="deck-edit-name">Name</label>
+    <input type="text" class="form-control" id="deck-edit-name" name="deck-edit-name" [(ngModel)]="deck.name" required/>
+  </div>
+  <button type="submit" class="btn btn-light" (click)="save()">Save changes</button>
+</form>

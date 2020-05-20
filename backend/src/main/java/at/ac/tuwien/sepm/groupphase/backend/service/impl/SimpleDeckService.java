@@ -61,7 +61,9 @@ public class SimpleDeckService implements DeckService {
         LOGGER.debug("Update deck with id: {}", deck.getId());
         if (deckRepository.existsById(id)) {
             deck.setId(id);
-            return deckRepository.save(deck);
+            deck = deckRepository.save(deck);
+            Hibernate.initialize(deck.getCategories());
+            return deck;
         } else {
             throw new NotFoundException(String.format("Could not find deck with id %s", deck.getId()));
         }
