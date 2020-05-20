@@ -1,6 +1,6 @@
 export class DeckSimple {
   constructor(
-    name: string
+    public name: string
   ) {
   }
 }
