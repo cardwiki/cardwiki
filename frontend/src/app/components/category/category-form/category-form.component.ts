@@ -23,7 +23,6 @@ export class CategoryFormComponent implements OnInit {
 
   categories: Category[];
   result: Category = new Category(null);
-  parentId: number = null;
 
   constructor(private formBuilder: FormBuilder, private authService: AuthService,
               private router: Router, private categoryService: CategoryService) {
@@ -44,14 +43,15 @@ export class CategoryFormComponent implements OnInit {
     $('#modal').hide();
     $('.modal-backdrop').remove();
     console.log('submitted form values:', this.categoryForm.value);
-
+    let parentId;
     for (let i = 0; i < this.categories.length; i++) {
       if (this.categories[i].name === this.categoryForm.value.parentCategory) {
-        this.parentId = this.categories[i].id;
+        parentId = this.categories[i].id;
         break;
       }
     }
-    const parent = this.parentId ? new Category(this.categoryForm.value.parentCategory, null, this.parentId) : null;
+    const parent = parentId ? new Category(this.categoryForm.value.parentCategory, null, parentId) : null;
+    console.log('parent', parent);
     if (this.mode === 'Update') {
       console.log(this.category);
       const payload = new Category(this.categoryForm.value.name, parent);
@@ -189,6 +189,7 @@ export class CategoryFormComponent implements OnInit {
     if (this.categoryForm) {
       this.categoryForm.controls['name'].setValue(this.category.name);
       if (this.category.parent) {
+        console.log('parent name:', this.category.parent.name);
         this.categoryForm.controls['parentCategory'].setValue(this.category.parent.name);
       }
     }

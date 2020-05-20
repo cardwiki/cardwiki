@@ -7,6 +7,7 @@ import at.ac.tuwien.sepm.groupphase.backend.repository.CategoryRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.CategoryService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 
+import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,13 +76,18 @@ public class CategoryServiceImpl implements CategoryService {
     public Category updateCategory(Long id, Category category) {
         LOGGER.debug("Update category with id {}", id);
         if (!categoryRepository.existsById(id)) throw new NotFoundException("Category not found.");
-        if (category.getParent() != null && category.getParent().getId().equals(id)) {
-            throw new IllegalArgumentException("Category cannot be its own parent.");
-        }
-        if (category.getParent() != null && categoryRepository.parentExistsWithId(id, category.getParent().getId())) {
-           throw new IllegalArgumentException("Circular Child-Parent relation.");
+        Category parent = category.getParent();
+        if (parent != null) {
+            if (category.getParent().getId().equals(id)) {
+                throw new IllegalArgumentException("Category cannot be its own parent.");
+            }
+            if (categoryRepository.ancestorExistsWithId(id, parent.getId())) {
+                throw new IllegalArgumentException("Circular Child-Parent relation.");
+            }
         }
         category.setId(id);
-        return categoryRepository.save(category);
+        Category result     = categoryRepository.save(category);
+        Hibernate.initialize(result.getParent());
+        return result;
     }
 }

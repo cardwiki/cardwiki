@@ -79,4 +79,19 @@ public class CategoryRepositoryTest extends TestDataGenerator {
 
         assertThrows(DataIntegrityViolationException.class, () -> categoryRepository.save(category2));
     }
+
+    @Test
+    public void givenCategoryWithParent_whenAncestorExistsWithIdWithIdAsParentIdAndParentIdAsId_thenReturnsTrue() {
+        Category category = givenCategory();
+
+        assertTrue(categoryRepository.ancestorExistsWithId(category.getParent().getId(), category.getId()));
+    }
+
+    @Test
+    public void givenCategoryWithParenty_whenAncestorExistsWithIdWithIdAndIndependentCategoryId_thenReturnsFalse() {
+        Category category = givenCategory();
+        Category parent = categoryRepository.save(new Category("blubb", null));
+
+        assertFalse(categoryRepository.ancestorExistsWithId(category.getId(), parent.getId()));
+    }
 }

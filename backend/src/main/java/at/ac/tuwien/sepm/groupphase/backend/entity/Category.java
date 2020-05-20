@@ -11,7 +11,11 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "category")
+@Table(name = "categories",
+    uniqueConstraints = @UniqueConstraint(
+        columnNames = "name",
+        name = "name_not_unique"
+    ))
 public class Category {
 
     @Id
