@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 
+import at.ac.tuwien.sepm.groupphase.backend.config.security.AuthHandler;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.UserRepository;
@@ -7,8 +8,8 @@ import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
@@ -34,14 +35,13 @@ public class SimpleUserService implements UserService {
     @Override
     public User loadUserByAuthId(String authId) {
         LOGGER.debug("Load user by AuthId {}",  authId);
-        return userRepository.findByAuthId( authId).orElseThrow(UserNotFoundException::new);
+        return userRepository.findByAuthId(authId).orElseThrow(UserNotFoundException::new);
     }
 
     @Override
     public User loadCurrentUser() {
         LOGGER.debug("Load current user");
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return loadUserByAuthId(authentication.getName());
+        return loadUserByAuthId(AuthHandler.buildAuthId((OAuth2AuthenticationToken) SecurityContextHolder.getContext().getAuthentication()));
     }
 
     @Override

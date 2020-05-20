@@ -37,7 +37,7 @@ public abstract class TestDataGenerator {
         user.setId(userCounter);
         user.setUsername("username-" + userCounter);
         user.setDescription("some user");
-        user.setAuthId("auth" + userCounter);
+        user.setAuthId("service:" + userCounter);
         return userRepository.saveAndFlush(user);
     }
 
@@ -106,7 +106,7 @@ public abstract class TestDataGenerator {
         userCounter++;
         User user = new User();
         user.setId(userCounter);
-        user.setAuthId("auth-" + userCounter);
+        user.setAuthId("service:" + userCounter);
         user.setUsername("username" + userCounter);
         user.setAdmin(false);
         user.setEnabled(true);

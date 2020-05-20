@@ -90,7 +90,7 @@ public class CardEndpointTest extends TestDataGenerator {
         dto.setTextBack(null);
 
         mvc.perform(post("/api/v1/decks/{deckId}/cards", 123)
-            .with(mockLogin(USER_ROLES, "foo"))
+            .with(mockLogin(USER_ROLES, "foo:123"))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(400));
@@ -103,7 +103,7 @@ public class CardEndpointTest extends TestDataGenerator {
         dto.setTextBack("  ");
 
         mvc.perform(post("/api/v1/decks/{deckId}/cards", 123)
-            .with(mockLogin(USER_ROLES, "foo"))
+            .with(mockLogin(USER_ROLES, "foo:123"))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(400));
@@ -116,7 +116,7 @@ public class CardEndpointTest extends TestDataGenerator {
         dto.setTextBack(BACK_TEXT);
 
         mvc.perform(post("/api/v1/decks/{deckId}/cards", 123)
-            .with(mockLogin(ANONYMOUS_ROLES, "foo"))
+            .with(mockLogin(ANONYMOUS_ROLES, "foo:123"))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(403));
@@ -236,7 +236,7 @@ public class CardEndpointTest extends TestDataGenerator {
         dto.setTextBack(null);
 
         mvc.perform(patch("/api/v1/decks/{deckId}/cards/{cardId}", deck.getId(), card.getId())
-            .with(mockLogin(USER_ROLES, "foo"))
+            .with(mockLogin(USER_ROLES, "foo:123"))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(400));
@@ -251,7 +251,7 @@ public class CardEndpointTest extends TestDataGenerator {
         dto.setTextBack("  ");
 
         mvc.perform(patch("/api/v1/decks/{deckId}/cards/{cardId}", deck.getId(), card.getId())
-            .with(mockLogin(USER_ROLES, "foo"))
+            .with(mockLogin(USER_ROLES, "foo:123"))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(400));
@@ -266,7 +266,7 @@ public class CardEndpointTest extends TestDataGenerator {
         dto.setTextBack(BACK_TEXT);
 
         mvc.perform(patch("/api/v1/decks/{deckId}/cards/{cardId}", deck.getId(), card.getId())
-            .with(mockLogin(ANONYMOUS_ROLES, "foo"))
+            .with(mockLogin(ANONYMOUS_ROLES, "foo:123"))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(403));

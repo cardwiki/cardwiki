@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.endpoint;
 
+import at.ac.tuwien.sepm.groupphase.backend.config.security.AuthHandler;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.OAuth2ProviderDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.WhoAmIDto;
 import io.swagger.annotations.ApiOperation;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ResolvableType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,7 +46,7 @@ public class AuthEndpoint {
     public WhoAmIDto index(Authentication auth) {
         WhoAmIDto dto = new WhoAmIDto();
         if (auth != null) {
-            dto.setAuthId(auth.getName());
+            dto.setAuthId(AuthHandler.buildAuthId((OAuth2AuthenticationToken) auth));
             dto.setHasAccount(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER")));
             dto.setAdmin(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")));
         }
