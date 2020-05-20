@@ -15,6 +15,7 @@ import {httpInterceptorProviders} from './interceptors';
 import { CategoryCreateComponent } from './components/category/category-create/category-create.component';
 import { CategoryFormComponent } from './components/category/category-form/category-form.component';
 import { CategoryUpdateComponent } from './components/category/category-update/category-update.component';
+import { DeckCreateModalComponent } from './components/deck/deck-create-modal/deck-create-modal.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { CategoryUpdateComponent } from './components/category/category-update/c
     CategoryCreateComponent,
     CategoryFormComponent,
     CategoryUpdateComponent,
+    DeckCreateModalComponent,
   ],
   imports: [
     BrowserModule,
