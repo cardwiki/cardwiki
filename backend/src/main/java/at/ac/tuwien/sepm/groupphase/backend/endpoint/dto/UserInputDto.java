@@ -1,74 +1,27 @@
 package at.ac.tuwien.sepm.groupphase.backend.endpoint.dto;
 
+import at.ac.tuwien.sepm.groupphase.backend.entity.User;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.Objects;
+import javax.validation.constraints.Pattern;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserInputDto {
-    private String oAuthId;
-
     @NotNull
+    @Pattern(regexp = "[a-z0-9_-]+")
+    @Length(max = User.MAX_USERNAME_LENGTH)
     private String username;
 
     @NotNull
+    @Length(max = User.MAX_DESCRIPTION_LENGTH)
     private String description;
 
     private boolean isAdmin;
-
-    public String getOAuthId() {
-        return oAuthId;
-    }
-
-    public void setOAuthId(String oAuthId) {
-        this.oAuthId = oAuthId;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public boolean isAdmin() {
-        return isAdmin;
-    }
-
-    public void setAdmin(boolean admin) {
-        isAdmin = admin;
-    }
-
-    @Override
-    public String toString() {
-        return "UserInputDto{" +
-            "oAuthId='" + oAuthId + '\'' +
-            ", username='" + username + '\'' +
-            ", description='" + description + '\'' +
-            ", isAdmin=" + isAdmin +
-            '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UserInputDto that = (UserInputDto) o;
-        return isAdmin == that.isAdmin &&
-            oAuthId.equals(that.oAuthId) &&
-            username.equals(that.username) &&
-            description.equals(that.description);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(oAuthId, username, description, isAdmin);
-    }
 }

@@ -1,0 +1,27 @@
+<div class="container-md-5 mt-4 pt-4 pb-4 pl-4 pr-4">
+  <div class="col-md-9 mx-auto">
+    <div class="card rounded pl-5 pt-2">
+    <div class="row">
+        <h2>Categories:</h2>
+      <div>
+        <a href="/categories/new"><button class="btn-link ml-5 mt-2">add category</button></a>
+      </div>
+    </div>
+      <app-list
+        class="row"
+        *ngIf="!this.error"
+        [list]="categories"
+        [specs]="specs"
+        [path]="path"
+      >
+      </app-list>
+</div>
+  </div>
+</div>
+
+
+<div *ngIf="this.error" class="alert alert-warning alert-dismissible fade show" role="alert">
+  <strong>Error!</strong> {{ errorMessage }}
+  <button class="btn-primary" (click)="vanishError()">Dismiss</button>
+</div>
+

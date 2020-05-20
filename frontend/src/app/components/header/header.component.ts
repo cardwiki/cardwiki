@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthService} from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -8,9 +9,19 @@ import {AuthService} from '../../services/auth.service';
 })
 export class HeaderComponent implements OnInit {
 
-  constructor(public authService: AuthService) { }
+  private searchTerm = ''
+
+  constructor(public authService: AuthService, private router: Router) { }
 
   ngOnInit() {
   }
 
+  onSubmit() {
+    console.log('search', this.searchTerm)
+    this.router.navigate(['/search'], {
+      queryParams: {
+        name: this.searchTerm
+      }
+    })
+  }
 }

@@ -1,7 +1,7 @@
 package at.ac.tuwien.sepm.groupphase.backend.datagenerator;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
-import at.ac.tuwien.sepm.groupphase.backend.repository.ApplicationUserRepository;
+import at.ac.tuwien.sepm.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
 import org.slf4j.Logger;
@@ -19,20 +19,24 @@ public class CardDataGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final int NUMBER_OF_CARDS_TO_GENERATE = 3;
 
-    private final ApplicationUserRepository applicationUserRepository;
+    private final UserRepository userRepository;
     private final CardRepository cardRepository;
     private final DeckRepository deckRepository;
 
-    public CardDataGenerator(CardRepository cardRepository, DeckRepository deckRepository, ApplicationUserRepository applicationUserRepository) {
+    public CardDataGenerator(CardRepository cardRepository, DeckRepository deckRepository, UserRepository userRepository) {
         this.cardRepository = cardRepository;
         this.deckRepository = deckRepository;
-        this.applicationUserRepository = applicationUserRepository;
+        this.userRepository = userRepository;
     }
 
     @PostConstruct
     private void generateCards() {
-        User user = new User("Fake Id", "Test User", false, false);
-        applicationUserRepository.saveAndFlush(user);
+        User user = new User();
+        user.setAuthId("fake id");
+        user.setDescription("test user");
+        user.setAdmin(false);
+        user.setEnabled(false);
+        userRepository.saveAndFlush(user);
         Deck deck = new Deck();
         deck.setName("Test Deck");
         deck.setCreatedBy(user);

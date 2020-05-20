@@ -23,7 +23,7 @@
     "@ng-bootstrap/ng-bootstrap": "6.0.2",
     "bootstrap": "4.4.1",
     "core-js": "3.6.5",
-    "jquery": "3.5.0",
+    "jquery": "3.5.1",
     "jwt-decode": "2.2.0",
     "lodash": "4.17.15",
     "rxjs": "6.5.5",

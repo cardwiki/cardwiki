@@ -39,60 +39,19 @@ public class DeckServiceTest extends TestDataGenerator {
     @Autowired
     private DeckService deckService;
 
-    private static final Long EXISTENT_ID = 1L;
-    private static final Long NONEXISTENT_ID = 2L;
-    private final Deck DECK;
-    private final User USER;
-    private static final String OAUTH_ID = "oauth_id";
-    private static final String NONEXISTENT_OAUTH_ID = "smh";
-
-    public DeckServiceTest() {
-        User user = new User();
-        user.setUsername("username");
-        user.setOAuthId(OAUTH_ID);
-        USER = user;
-        Deck deck = new Deck();
-        deck.setId(1L);
-        deck.setName(DECK_NAME);
-        deck.setCreatedBy(USER);
-        deck.setCreatedAt(LocalDateTime.now());
-        deck.setUpdatedAt(LocalDateTime.now());
-        DECK = deck;
-    }
-
-    @BeforeEach
-    public void setup() {
-        Mockito.when(
-            deckRepository.findByNameContainingIgnoreCase(DECK_NAME, null)
-        ).thenReturn(Collections.singletonList(DECK));
-        Mockito.when(
-            deckRepository.findByNameContainingIgnoreCase("", null)
-        ).thenReturn(Collections.emptyList());
-        Mockito.when(
-            deckRepository.findById(EXISTENT_ID)
-        ).thenReturn(Optional.of(DECK));
-        Mockito.when(
-            deckRepository.findById(NONEXISTENT_ID)
-        ).thenReturn(Optional.empty());
-        Mockito.when(
-            deckRepository.save(any())
-        ).thenReturn(DECK);
-        Mockito.when(
-            userService.loadUserByOauthId(OAUTH_ID)
-        ).thenReturn(USER);
-        Mockito.when(
-            userService.loadUserByOauthId(NONEXISTENT_OAUTH_ID)
-        ).thenThrow(new NotFoundException());
-    }
-
     @Test
     public void givenNothing_whenFindOneNonexistent_thenThrowNotFoundException() {
-        assertThrows(NotFoundException.class, () -> deckService.findOne(NONEXISTENT_ID));
+        Long id = 1L;
+        Mockito.when(deckRepository.findById(id)).thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class, () -> deckService.findOne(id));
     }
 
     @Test
     public void givenNothing_whenFindOneExistent_thenReturnDeck() {
-        assertEquals(DECK, deckService.findOne(EXISTENT_ID));
+        Long id = 1L;
+        Deck deck = getSampleDeck();
+        Mockito.when(deckRepository.findById(id)).thenReturn(Optional.of(deck));
+        assertEquals(deck, deckService.findOne(id));
     }
 
     @Test
@@ -107,32 +66,43 @@ public class DeckServiceTest extends TestDataGenerator {
 
     @Test
     public void givenNothing_whenSearchByNameNotExistent_thenReturnEmptyList() {
-        assertTrue(deckService.searchByName("", null).isEmpty());
+        Mockito.when(deckRepository.findByNameContainingIgnoreCase("", Pageable.unpaged()))
+            .thenReturn(Collections.emptyList());
+        assertTrue(deckService.searchByName("", Pageable.unpaged()).isEmpty());
     }
 
     @Test
     public void givenNothing_whenSearchByNameExistent_thenReturnDeck() {
-        assertTrue(deckService.searchByName(DECK_NAME, null).contains(DECK));
+        Deck deck = getSampleDeck();
+        Mockito.when(deckRepository.findByNameContainingIgnoreCase(deck.getName(), Pageable.unpaged()))
+            .thenReturn(Collections.singletonList(deck));
+        assertTrue(deckService.searchByName(deck.getName(), Pageable.unpaged()).contains(deck));
     }
 
     @Test
     public void givenNothing_whenCreate_thenReturnDeckWithCorrectUser() {
-        Deck deck = new Deck();
-        deck.setName("Name");
-        assertEquals(DECK, deckService.create(deck, OAUTH_ID));
+        Deck deck = getSampleDeck();
+        Deck simpleDeck = new Deck();
+        simpleDeck.setName(deck.getName());
+
+        Mockito.when(deckRepository.save(simpleDeck)).thenReturn(deck);
+        Mockito.when(userService.loadCurrentUser()).thenReturn(deck.getCreatedBy());
+        assertEquals(deck, deckService.create(simpleDeck));
     }
 
     @Test
-    public void givenNothing_whenCreateNonExistentOAuthId_thenThrowNotFound() {
-        Deck deck = new Deck();
-        deck.setName("Name");
-        assertThrows(NotFoundException.class, () -> deckService.create(deck, NONEXISTENT_OAUTH_ID));
+    public void givenNothing_whenCreateNoCurrentUser_thenThrowIllegalState() {
+        Deck deck = getSampleDeck();
+        Deck simpleDeck = new Deck();
+        simpleDeck.setName("Name");
+
+        Mockito.when(deckRepository.save(simpleDeck)).thenReturn(deck);
+        Mockito.when(userService.loadCurrentUser()).thenReturn(null);
+        assertThrows(IllegalStateException.class, () -> deckService.create(simpleDeck));
     }
 
     @Test
     public void givenNothing_whenCreateArgNull_thenThrowNullPointer() {
-        assertThrows(NullPointerException.class, () -> deckService.create(null, null));
-        assertThrows(NullPointerException.class, () -> deckService.create(null, OAUTH_ID));
-        assertThrows(NullPointerException.class, () -> deckService.create(DECK, null));
+        assertThrows(NullPointerException.class, () -> deckService.create(null));
     }
 }

@@ -1,9 +1,11 @@
 package at.ac.tuwien.sepm.groupphase.backend.entity;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Entity
 @Table(name = "revisions")
@@ -15,22 +17,24 @@ public class Revision {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="card_id", nullable=false)
+    @JoinColumn(name="card_id", nullable=false, updatable = false)
     private Card card;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="created_by") // TODO: Consider adding DELETED_USER and make it not nullable
+    @JoinColumn(name="created_by", nullable = false, updatable = false)
     private User createdBy;
 
     @OneToOne(mappedBy = "revision", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private RevisionEdit revisionEdit;
 
     @Size(max = MAX_MESSAGE_SIZE)
+    @NotBlank
     @Column(nullable = false, length = MAX_MESSAGE_SIZE, updatable = false)
     private String message;
 
+    @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now(); // Created at object creation to guarantee consistent business key (date, message) for equals and hashcode
+    private LocalDateTime createdAt;
 
     @PreRemove
     private void dismissContainers() {
@@ -87,20 +91,6 @@ public class Revision {
 
     public void setCreatedBy(User createdBy) {
         this.createdBy = createdBy;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Revision)) return false;
-        Revision revision = (Revision) o;
-        return Objects.equals(createdAt, revision.createdAt) &&
-            Objects.equals(message, revision.message);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(message, createdAt);
     }
 
     @Override

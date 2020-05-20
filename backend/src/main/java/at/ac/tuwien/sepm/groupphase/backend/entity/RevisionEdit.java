@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepm.groupphase.backend.entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Objects;
 
@@ -14,13 +15,16 @@ public class RevisionEdit {
 
     @OneToOne
     @MapsId
+    @JoinColumn(name = "revision_id", updatable = false)
     private Revision revision;
 
     @Size(max = MAX_TEXT_SIZE)
+    @NotBlank
     @Column(nullable = false, name = "text_front", length = MAX_TEXT_SIZE, updatable = false)
     private String textFront;
 
     @Size(max = MAX_TEXT_SIZE)
+    @NotBlank
     @Column(nullable = false, name = "text_back", length = MAX_TEXT_SIZE, updatable = false)
     private String textBack;
 

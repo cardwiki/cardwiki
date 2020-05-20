@@ -1,7 +1,9 @@
 package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
+import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
+import at.ac.tuwien.sepm.groupphase.backend.repository.RevisionRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.CardService;
 import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
@@ -12,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class SimpleCardService implements CardService {
@@ -29,9 +33,9 @@ public class SimpleCardService implements CardService {
 
     @Override
     @Transactional
-    public Card addCardToDeck(Long deckId, RevisionEdit revisionEdit, String oAuthId) {
+    public Card addCardToDeck(Long deckId, RevisionEdit revisionEdit) {
         LOGGER.debug("Add Card to Deck: {} {}", revisionEdit, deckId);
-        User user = userService.loadUserByOauthId(oAuthId);
+        User user = userService.loadCurrentUser();
         Deck deck = deckService.findOne(deckId);
 
         // Save Card with initial revision
@@ -53,4 +57,42 @@ public class SimpleCardService implements CardService {
         return cardRepository.save(card);
     }
 
+    @Override
+    @Transactional
+    public Card findOne(Long deckId, Long cardId) {
+        LOGGER.debug("Find card with id {} in deck with id {}", deckId, cardId);
+        Deck deck = deckService.findOne(deckId);
+        Optional<Card> card = cardRepository.findSimpleById(cardId);
+
+        if (card.isPresent() && card.get().getDeck().getId().equals(deck.getId())) {
+            return card.get();
+        }
+        else throw new NotFoundException(String.format("Could not find card with id %s in deck with id %s", cardId, deckId));
+    }
+
+    @Override
+    @Transactional
+    public Card editCardInDeck(Long deckId, Long cardId, RevisionEdit revisionEdit) {
+        LOGGER.debug("Edit Card {} in Deck {}: {}", cardId, deckId, revisionEdit);
+        User user = userService.loadCurrentUser();
+        Deck deck = deckService.findOne(deckId);
+        Optional<Card> optCard = cardRepository.findDetailsById(cardId);
+
+        if (optCard.isPresent() && optCard.get().getDeck().getId().equals(deck.getId())) {
+            Card card = optCard.get();
+
+            Revision revision = new Revision();
+            revision.setMessage("Edited");
+            card.setLatestRevision(revision);
+            revision.setCard(card);
+            revision.setCreatedBy(user);
+
+            // Add content
+            card.getLatestRevision().setRevisionEdit(revisionEdit);
+            revisionEdit.setRevision(card.getLatestRevision());
+
+            return cardRepository.saveAndFlush(card);
+        }
+        else throw new NotFoundException(String.format("Could not find card with id %s in deck with id %s", cardId, deckId));
+    }
 }

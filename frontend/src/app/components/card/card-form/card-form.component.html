@@ -1,0 +1,20 @@
+<form (ngSubmit)="onSubmit()" #cardForm="ngForm">
+    <div class="form-group">
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">Front Text</span>
+            </div>
+            <textarea class="form-control" aria-label="Front Text" [(ngModel)]="card.textFront" name="textFront" required minlength="1" maxlength="{{globals.maxTextSize}}"></textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">Back Text</span>
+            </div>
+            <textarea class="form-control" aria-label="Back Text" [(ngModel)]="card.textBack" name="textBack" required minlength="1" maxlength="{{globals.maxTextSize}}"></textarea>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>

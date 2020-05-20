@@ -1,10 +1,7 @@
 package at.ac.tuwien.sepm.groupphase.backend.unittests;
 
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
-import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
-import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
-import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
-import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionEdit;
+import at.ac.tuwien.sepm.groupphase.backend.entity.*;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,7 +24,7 @@ public class CardRepositoryTest extends TestDataGenerator {
     private CardRepository cardRepository;
 
     @Test
-    public void givenNothing_whenSaveCard_thenThrowDataIntegrityViolationException() {
+    public void givenNothing_whenSaveCardWithoutDeck_thenThrowDataIntegrityViolationException() {
         Card card = new Card();
         assertThrows(DataIntegrityViolationException.class, () -> cardRepository.save(card));
     }
@@ -45,16 +42,18 @@ public class CardRepositoryTest extends TestDataGenerator {
     }
 
     @Test
-    public void givenDeck_whenSaveCardWithRevision_thenFindCardByIdHasLatestRevisionAndRevisionsIsNotEmpty() {
+    public void givenDeckAndUser_whenSaveCardWithRevision_thenFindCardByIdHasLatestRevisionAndRevisionsIsNotEmpty() {
         Deck deck = givenDeck();
+        User user = givenApplicationUser();
 
         Card card = new Card();
         card.setDeck(deck);
         deck.getCards().add(card);
         Revision revision = new Revision();
-        revision.setMessage(REVISION_MESSAGE);
+        revision.setMessage("some message");
         card.setLatestRevision(revision);
         revision.setCard(card);
+        revision.setCreatedBy(user);
         cardRepository.save(card);
 
         assertEquals(revision, cardRepository.findById(card.getId()).orElseThrow().getLatestRevision());
@@ -62,14 +61,16 @@ public class CardRepositoryTest extends TestDataGenerator {
     }
 
     @Test
-    public void givenCard_whenAddRevision_thenFindCardByIdHasRevision() {
+    public void givenCardAndUser_whenAddRevision_thenFindCardByIdHasRevision() {
         Card card = givenCard();
+        User user = givenApplicationUser();
 
         // When
         Revision revision = new Revision();
-        revision.setMessage(REVISION_MESSAGE);
+        revision.setMessage("some message");
         card.setLatestRevision(revision);
         revision.setCard(card);
+        revision.setCreatedBy(user);
         cardRepository.saveAndFlush(card);
 
         // Then

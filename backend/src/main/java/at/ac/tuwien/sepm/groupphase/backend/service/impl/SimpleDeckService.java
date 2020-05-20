@@ -1,7 +1,8 @@
 package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
-import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
+import at.ac.tuwien.sepm.groupphase.backend.entity.User;
+import at.ac.tuwien.sepm.groupphase.backend.exception.DeckNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
@@ -32,8 +33,7 @@ public class SimpleDeckService implements DeckService {
         LOGGER.debug("Find deck with id {}", id);
         Objects.requireNonNull(id, "id argument must not be null");
         Optional<Deck> deck = deckRepository.findById(id);
-        if (deck.isPresent()) return deck.get();
-        else throw new NotFoundException(String.format("Could not find card deck with id %s", id));
+        return deck.orElseThrow(() -> new DeckNotFoundException(String.format("Could not find card deck with id %s", id)));
     }
 
     @Override
@@ -45,11 +45,13 @@ public class SimpleDeckService implements DeckService {
 
     @Transactional
     @Override
-    public Deck create(Deck deck, String oAuthId) {
+    public Deck create(Deck deck) {
         LOGGER.debug("Create new deck {}", deck);
         Objects.requireNonNull(deck, "deck argument must not be null");
-        Objects.requireNonNull(oAuthId, "oAuthId argument must not be null");
-        deck.setCreatedBy(userService.loadUserByOauthId(oAuthId));
+        deck.setCreatedBy(userService.loadCurrentUser());
+        User user = userService.loadCurrentUser();
+        if (user == null) throw new IllegalStateException("current user was null in secured api operation");
+        deck.setCreatedBy(user);
         return deckRepository.save(deck);
     }
 }

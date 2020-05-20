@@ -3,10 +3,12 @@ package at.ac.tuwien.sepm.groupphase.backend.endpoint;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.UserInputDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.UserOutputDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.UserMapper;
+import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -30,10 +32,12 @@ public class UserEndpoint {
     public UserOutputDto register(Authentication authentication, @Valid @RequestBody UserInputDto userInputDto) {
         if (authentication == null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not authenticated");
-        userInputDto.setOAuthId(authentication.getName());
-        return userMapper.userToUserOutputDto(userService.createUser(userMapper.userInputDtoToUser(userInputDto)));
+        User u = userMapper.userInputDtoToUser(userInputDto);
+        u.setAuthId(authentication.getName());
+        return userMapper.userToUserOutputDto(userService.createUser(u));
     }
 
+    @Secured("ROLE_USER")
     @GetMapping
     @ApiOperation(value = "List all users")
     public List<UserOutputDto> get() {

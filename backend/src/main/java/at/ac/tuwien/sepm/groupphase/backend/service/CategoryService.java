@@ -9,7 +9,7 @@ public interface CategoryService  {
     /**
      * Find all category entries.
      *
-     * @return list of all category entries
+     * @return list of all category entries sorted by name
      */
     List<Category> findAll();
 
@@ -30,4 +30,12 @@ public interface CategoryService  {
      */
     Category createCategory(Category category);
 
+    /**
+     * Updates a category.
+     *
+     * @param id of the category to be updated.
+     * @param category containing the data to update the category with
+     * @return details of the category which has been updated
+     */
+    Category updateCategory(Long id, Category category);
 }
