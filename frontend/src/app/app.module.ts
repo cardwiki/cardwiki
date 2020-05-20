@@ -27,6 +27,8 @@ import { DeckPreviewComponent } from './components/deck-preview/deck-preview.com
 import { CategoryListComponent } from './components/category/category-list/category-list.component';
 import { ListComponent } from './components/category/list/list.component';
 import { CategoryDetailsComponent } from './components/category/category-details/category-details.component';
+import { Md2htmlPipe } from './pipes/md2html.pipe';
+import { MarkdownSyntaxComponent } from './components/help/markdown-syntax/markdown-syntax.component';
 
 @NgModule({
   declarations: [
@@ -51,6 +53,8 @@ import { CategoryDetailsComponent } from './components/category/category-details
     ListComponent,
     CategoryDetailsComponent,
     CardEditComponent,
+    Md2htmlPipe,
+    MarkdownSyntaxComponent,
   ],
   imports: [
     BrowserModule,
