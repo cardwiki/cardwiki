@@ -3,6 +3,8 @@ package at.ac.tuwien.sepm.groupphase.backend.config.security;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +16,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -23,6 +24,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,15 +34,13 @@ import java.util.List;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled=true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     @Autowired
     private CustomOAuth2UserService customOAuth2UserService;
 
     @Autowired
     private CustomOidcUserService customOidcUserService;
-
-    @Autowired
-    private UserService userService;
 
     @Override
     public void configure(HttpSecurity httpSecurity) throws Exception {
@@ -51,17 +51,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     public static String buildAuthId(ClientRegistration reg, String name){
+        // we prefix the provider to prevent account hijacking on id collisions
         return reg.getRegistrationId() + ":" + name;
     }
 
     /**
      * This method integrates Spring Security's OAuth2 with our persistence layer.
      */
-    public Collection<GrantedAuthority> setupRoles(OAuth2User user){
+    public static Collection<GrantedAuthority> setupRoles(UserService userService, String authId){
         Collection<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS");
 
         try {
-            User u = userService.loadUserByOauthId(user.getName());
+            User u = userService.loadUserByAuthId(authId);
             // TODO: check u.isEnabled()
             authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 
