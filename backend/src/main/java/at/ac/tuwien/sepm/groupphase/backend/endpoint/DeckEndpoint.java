@@ -49,7 +49,7 @@ public class DeckEndpoint {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Search for card decks")
     public List<DeckDto> search(@RequestParam String name, @RequestParam Integer limit, @RequestParam Integer offset) {
-        LOGGER.info("GET /api/v1/decks?name={}", name);
+        LOGGER.info("GET /api/v1/decks?name={}&limit={}&offset={}", name, limit, offset);
         return deckService.searchByName(name, PageRequest.of(offset, limit))
             .stream()
             .map(deckMapper::deckToDeckDto)
