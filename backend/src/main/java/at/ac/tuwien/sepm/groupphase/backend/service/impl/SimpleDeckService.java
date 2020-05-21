@@ -33,6 +33,7 @@ public class SimpleDeckService implements DeckService {
     public Deck findOne(Long id) {
         LOGGER.debug("Find deck with id {}", id);
         Optional<Deck> deck = deckRepository.findById(id);
+        deck.ifPresent(value -> Hibernate.initialize(value.getCategories()));
         return deck.orElseThrow(() -> new DeckNotFoundException(String.format("Could not find card deck with id %s", id)));
     }
 

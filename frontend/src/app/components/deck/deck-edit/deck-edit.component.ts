@@ -17,9 +17,9 @@ export class DeckEditComponent implements OnInit {
 
   ngOnInit(): void {
     const id = +this.route.snapshot.paramMap.get('id');
-    this.deckService.getDeckById(id).subscribe(deck => {
-      this.deck = deck;
-    });
+    this.deckService.getDeckById(id).subscribe(
+      deck => this.deck = deck
+    );
   }
 
   save(): void {

@@ -1,6 +1,6 @@
 <h1 class="mt-5 mb-5">Edit deck</h1>
 
-<form>
+<form *ngIf="deck">
   <div class="form-group">
     <label for="deck-edit-name">Name</label>
     <input type="text" class="form-control" id="deck-edit-name" name="deck-edit-name" [(ngModel)]="deck.name" required/>

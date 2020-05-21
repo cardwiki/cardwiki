@@ -1,7 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.service;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
-import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionEdit;
 import at.ac.tuwien.sepm.groupphase.backend.exception.DeckNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
@@ -45,8 +44,17 @@ public interface CardService {
     /**
      * Get all cards for a specific deck
      *
-     * @param deckId of the deck whose cards to get
+     * @param deckId of the deck
      * @return list of cards of the deck
      */
     List<Card> findCardsByDeckId(Long deckId);
+
+    /**
+     * Add delete-revision to card
+     *
+     * @param deckId of the card's deck
+     * @param cardId of the card to which the delete-revision will be added
+     * @return card with added delete-revision
+     */
+    Card addDeleteRevisionToCard(Long deckId, Long cardId);
 }

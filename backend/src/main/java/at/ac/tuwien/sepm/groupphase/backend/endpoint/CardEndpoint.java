@@ -58,10 +58,20 @@ public class CardEndpoint {
         return cardMapper.cardToCardDetailsDto(cardService.editCardInDeck(deckId, cardId, revisionEdit));
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping
     @ApiOperation(value = "Get all cards for a specific deck")
     public List<CardContentDto> getCardsByDeckId(@PathVariable Long deckId) {
         LOGGER.info("GET /api/v1/decks/{}/cards", deckId);
         return cardMapper.cardToCardContentDto(cardService.findCardsByDeckId(deckId));
+    }
+
+    @Secured("ROLE_USER")
+    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping(value = "/{cardId}")
+    @ApiOperation(value = "Removes card from deck", authorizations = {@Authorization(value = "ROLE_USER")})
+    public CardContentDto addDeleteRevisionToCard(@PathVariable Long deckId, @PathVariable Long cardId) {
+        LOGGER.info("DELETE /api/v1/decks/{}/cards/{}", deckId, cardId);
+        return cardMapper.cardToCardContentDto(cardService.addDeleteRevisionToCard(deckId, cardId));
     }
 }

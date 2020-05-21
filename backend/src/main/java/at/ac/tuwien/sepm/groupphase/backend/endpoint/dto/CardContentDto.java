@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class CardContentDto {
 
+    private Long id;
     private String textFront;
     private String textBack;
 }

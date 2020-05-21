@@ -4,6 +4,7 @@ import {Globals} from '../global/globals';
 import {Observable} from 'rxjs';
 import { CardContent } from '../dtos/cardContent';
 import { CardDetails } from '../dtos/cardDetails';
+import {CardSimple} from '../dtos/cardSimple';
 
 @Injectable({
   providedIn: 'root'
@@ -32,9 +33,19 @@ export class CardService {
    * Gets all cards for a specific deck
    * @param deckId of the deck whose cards to get
    */
-  getCardsByDeckId(deckId: number): Observable<CardDetails[]> {
-    console.log('get cards for deck with id' + deckId);
-    return this.httpClient.get<CardDetails[]>(this.getCardUri(deckId));
+  getCardsByDeckId(deckId: number): Observable<CardSimple[]> {
+    console.log('get cards for deck with id ' + deckId);
+    return this.httpClient.get<CardSimple[]>(this.getCardUri(deckId));
+  }
+
+  /**
+   * Removes a card from its deck
+   * @param deckId of the card's deck
+   * @param cardId of the card to remove
+   */
+  removeCardFromDeck(deckId: number, cardId: number): Observable<CardSimple> {
+    console.log(`remove card with id ${cardId} from deck ${deckId}`);
+    return this.httpClient.delete<CardSimple>(this.getCardUri(deckId, cardId));
   }
 
   editCard(deckId: number, cardId: number, card: CardContent): Observable<CardDetails> {

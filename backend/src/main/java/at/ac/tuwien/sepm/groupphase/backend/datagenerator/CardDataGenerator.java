@@ -36,6 +36,7 @@ public class CardDataGenerator {
         user.setDescription("test user");
         user.setAdmin(false);
         user.setEnabled(false);
+        user.setUsername("CoolFighter2005");
         userRepository.saveAndFlush(user);
         Deck deck = new Deck();
         deck.setName("Test Deck");

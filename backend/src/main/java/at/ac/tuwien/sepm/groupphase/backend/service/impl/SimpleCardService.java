@@ -61,6 +61,22 @@ public class SimpleCardService implements CardService {
         return cardRepository.findCardsByDeck_Id(deckId);
     }
 
+    @Override
+    @Transactional
+    public Card addDeleteRevisionToCard(Long deckId, Long cardId) {
+        LOGGER.debug("Add delete-revision to card with id {} from deck with id {}", cardId, deckId);
+        Card card = findOne(deckId, cardId);
+        User user = userService.loadCurrentUser();
+
+        Revision revision = new Revision();
+        revision.setCard(card);
+        revision.setMessage("Deleted");
+        card.setLatestRevision(revision);
+        revision.setCreatedBy(user);
+
+        return cardRepository.save(card);
+    }
+
     @Transactional
     public Card findOne(Long deckId, Long cardId) {
         LOGGER.debug("Find card with id {} in deck with id {}", deckId, cardId);

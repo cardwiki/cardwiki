@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
 
-<div class="container mt-5 mb-5">
+<div class="container mt-5 mb-5" *ngIf="deck">
   <div class="row justify-content-between">
     <div class="col">
       <h1>{{deck.name}}</h1>
@@ -31,7 +31,7 @@
         <button type="button" class="btn btn-light mr-1">Learn</button>
       </div>
     </div>
-    <div class="col">
+    <div class="col" *ngIf="deck">
       <div class="btn-toolbar float-right">
         <button type="button" class="btn btn-light float-right mr-1"><i class="fas fa-undo"></i> Flip</button>
         <a href="decks/{{deck.id}}/cards/new" class="btn btn-light float-right"><i class="fas fa-plus"></i> Add new card</a>
@@ -40,7 +40,7 @@
   </div>
 </div>
 
-<table class="table table-hover table-striped">
+<table class="table table-hover table-striped" *ngIf="cards">
   <thead class="thead-light">
   <tr class="">
     <th scope="col">Front</th>
@@ -54,10 +54,10 @@
     <td class="align-middle">{{card.textBack}}</td>
     <td>
       <div class="btn-group float-right">
-        <button type="button" class="btn btn-light"><i class="fas fa-pencil-alt"></i></button>
+        <a href="decks/{{deck.id}}/cards/{{card.id}}/edit" class="btn btn-light"><i class="fas fa-pencil-alt"></i></a>
         <button type="button" class="btn btn-light"><i class="far fa-clone"></i></button>
         <button type="button" class="btn btn-light"><i class="fas fa-history"></i></button>
-        <button type="button" class="btn btn-light"><i class="fas fa-trash-alt"></i></button>
+        <button type="button" class="btn btn-light" (click)="removeCard($event, card)"><i class="fas fa-trash-alt"></i></button>
       </div>
     </td>
   </tr>

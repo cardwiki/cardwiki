@@ -11,7 +11,12 @@ import java.util.Optional;
 @Repository
 public interface CardRepository extends JpaRepository<Card, Long> {
 
-    //@Query("select c from Card c where c.deck.id = ?1 and c.latestRevision.revisionEdit is not null")
+    /**
+     * Find cards for a specific deck
+     *
+     * @param deckId of the deck
+     * @return list of cards of the deck
+     */
     List<Card> findCardsByDeck_Id(Long deckId);
 
     /**
