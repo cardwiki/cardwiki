@@ -2,6 +2,7 @@ package at.ac.tuwien.sepm.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckInputDto;
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckUpdateDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.DeckMapper;
 import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
@@ -73,13 +74,14 @@ public class DeckEndpoint {
         }
     }
 
-    @PutMapping(value = "/{id}")
+    @Secured("ROLE_USER")
+    @PatchMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "Update deck")
-    public DeckDto updateDeck(@PathVariable Long id, @Valid @RequestBody DeckInputDto deckInputDto) {
-        LOGGER.info("PUT /api/v1/decks/{}", id);
+    @ApiOperation(value = "Update deck", authorizations = @Authorization("ROLE_USER"))
+    public DeckDto updateDeck(@PathVariable Long id, @Valid @RequestBody DeckUpdateDto deckUpdateDto) {
+        LOGGER.info("PATCH /api/v1/decks/{} body: {}", id, deckUpdateDto);
         try {
-            return deckMapper.deckToDeckDto(deckService.update(id, deckMapper.deckInputDtoToDeck(deckInputDto)));
+            return deckMapper.deckToDeckDto(deckService.update(id, deckMapper.deckUpdateDtoToDeck(deckUpdateDto)));
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }

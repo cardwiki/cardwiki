@@ -16,8 +16,7 @@
   </div>
 
   <div class="row mt-3">
-    <span class="badge badge-secondary mr-1">Category 1</span>
-    <span class="badge badge-secondary mr-1">Category 2</span>
+    <h5><a href="/categories/{{category.id}}" class="badge  badge-dark mr-1" *ngFor="let category of deck.categories">{{category.name}}</a></h5>
   </div>
 </div>
 

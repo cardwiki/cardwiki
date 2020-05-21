@@ -31,7 +31,7 @@ export class CardService {
 
   /**
    * Gets all cards for a specific deck
-   * @param deckId of the deck whose cards to get
+   * @param deckId of the deck for which cards to get
    */
   getCardsByDeckId(deckId: number): Observable<CardSimple[]> {
     console.log('get cards for deck with id ' + deckId);

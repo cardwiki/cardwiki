@@ -3,7 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {Globals} from '../global/globals';
 import {Deck} from '../dtos/deck';
 import {Observable} from 'rxjs';
-import {DeckSimple} from '../dtos/deckSimple';
+import {DeckUpdate} from '../dtos/deckUpdate';
 
 @Injectable({
   providedIn: 'root'
@@ -26,10 +26,10 @@ export class DeckService {
 
   /**
    * Updates deck in the backend
-   * @param deck to update
+   * @param deck update
    */
-  updateDeck(deck: DeckSimple): Observable<DeckSimple> {
+  updateDeck(deck: DeckUpdate): Observable<Deck> {
     console.log('Update Deck with id ' + deck.id);
-    return this.httpClient.put<DeckSimple>(this.deckBaseUri + '/' + deck.id, deck);
+    return this.httpClient.patch<Deck>(this.deckBaseUri + '/' + deck.id, deck);
   }
 }
