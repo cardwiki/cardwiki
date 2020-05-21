@@ -1,6 +1,9 @@
 package at.ac.tuwien.sepm.groupphase.backend.integrationtest.security;
 
 import at.ac.tuwien.sepm.groupphase.backend.config.security.SecurityConfig;
+import at.ac.tuwien.sepm.groupphase.backend.config.security.SecurityProps;
+import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -35,10 +38,15 @@ import java.util.Set;
 @ActiveProfiles("test")
 @Order(0)
 public class SecurityTestConfig extends WebSecurityConfigurerAdapter {
+    @Autowired
+    private SecurityProps securityProps;
+
+    @Autowired
+    private UserService userService;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        SecurityConfig.staticConfigure(http);
+        SecurityConfig.staticConfigure(http, userService, securityProps);
         http.oauth2Login()
             .tokenEndpoint().accessTokenResponseClient(this.mockAccessTokenResponseClient()).and()
             .userInfoEndpoint().userService(this.mockUserService());

@@ -1,6 +1,5 @@
 package at.ac.tuwien.sepm.groupphase.backend.endpoint;
 
-import at.ac.tuwien.sepm.groupphase.backend.config.security.AuthHandler;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.UserInputDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.UserOutputDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.UserMapper;
@@ -12,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -32,13 +30,12 @@ public class UserEndpoint {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     @ApiOperation(value = "Register the authenticated user")
-    public UserOutputDto register(OAuth2AuthenticationToken token, @Valid @RequestBody UserInputDto userInputDto) {
+    public UserOutputDto register(Authentication token, @Valid @RequestBody UserInputDto userInputDto) {
         if (token == null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not authenticated");
         User u = userMapper.userInputDtoToUser(userInputDto);
-        u.setAuthId(AuthHandler.buildAuthId((OAuth2AuthenticationToken) SecurityContextHolder.getContext().getAuthentication()));
+        u.setAuthId(SecurityContextHolder.getContext().getAuthentication().getName());
         u = userService.createUser(u);
-        AuthHandler.updateAuthentication(userService);
         return userMapper.userToUserOutputDto(u);
     }
 

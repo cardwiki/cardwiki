@@ -24,7 +24,8 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     this.authService.getAuthProviders().subscribe(providers => this.authProviders = providers);
     this.route.queryParams.subscribe(params => {
-      if ('success' in params){
+      if ('token' in params){
+        this.authService.setToken(params['token']);
         this.authService.whoAmI().subscribe(info => {
           // TODO: cache info in localStorage
           if (info.authId === null)
@@ -34,7 +35,7 @@ export class LoginComponent implements OnInit {
           } else {
             // TODO: use proper dialog
             let username = prompt('choose your username');
-            this.authService.register(info.authId, username).subscribe(status => {
+            this.authService.register(username).subscribe(status => {
               // TODO: handle errors
               this.router.navigate(['/']);
             });
