@@ -1,0 +1,21 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title"></h5>
+    Create card deck
+    <button type="button" class="close" (click)="activeModal.dismiss()">
+      &times;
+    </button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="deckForm">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" class="form-control" id="name" formControlName="name">
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss()">Cancel</button>
+    <button type="button" class="btn btn-primary" [disabled]="!deckForm.valid" (click)="createDeck()">Create</button>
+  </div>
+</div>
