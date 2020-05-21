@@ -4,9 +4,9 @@ import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.SignatureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -47,7 +47,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             Claims claims;
             try {
                 claims = jwtParser.parseClaimsJws(token.substring(PREFIX.length())).getBody();
-            } catch (SignatureException e){
+            } catch (JwtException e){
                 LOGGER.debug("Invalid authorization attempt: {}", e.getMessage());
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().write("Invalid authorization token");

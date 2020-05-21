@@ -3,6 +3,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Router,ActivatedRoute } from '@angular/router';
 import {AuthService} from '../../services/auth.service';
 import { OAuthProviders } from 'src/app/dtos/oauthProviders';
+import {parse as parseCookie} from 'cookie';
 
 @Component({
   selector: 'app-login',
@@ -24,8 +25,8 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     this.authService.getAuthProviders().subscribe(providers => this.authProviders = providers);
     this.route.queryParams.subscribe(params => {
-      if ('token' in params){
-        this.authService.setToken(params['token']);
+      if ('success' in params){
+        this.authService.setToken(parseCookie(document.cookie).token);
         this.authService.whoAmI().subscribe(info => {
           // TODO: cache info in localStorage
           if (info.authId === null)

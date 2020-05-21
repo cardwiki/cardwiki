@@ -21,6 +21,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
+import javax.servlet.http.Cookie;
 import java.lang.invoke.MethodHandles;
 import java.util.*;
 
@@ -80,8 +81,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .signWith(Keys.hmacShaKeyFor(securityProps.getSecret()), SignatureAlgorithm.HS512)
                     .compact();
 
+                // We pass the token with a cookie so that it is not stored in the browser history.
+                Cookie cookie = new Cookie("token", token);
+                cookie.setPath("/");
+                response.addCookie(cookie);
+
                 // TODO: support multiple frontends
-                response.sendRedirect("http://localhost:4200/login?token=" + token);
+                response.sendRedirect("http://localhost:4200/login?success");
             });
 
         // for every request we query the database for user roles
