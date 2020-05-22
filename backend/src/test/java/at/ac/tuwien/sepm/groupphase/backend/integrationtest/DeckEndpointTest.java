@@ -76,7 +76,7 @@ public class DeckEndpointTest extends TestDataGenerator {
 
         mvc.perform(
             post("/api/v1/decks")
-                .with(mockLogin(USER_ROLES, "0"))
+                .with(mockLogin(USER_ROLES, "x:0"))
                 .contentType("application/json")
                 .content(input.toString())
         ).andExpect(status().isBadRequest());
@@ -89,7 +89,7 @@ public class DeckEndpointTest extends TestDataGenerator {
 
         mvc.perform(
             post("/api/v1/decks")
-                .with(mockLogin(USER_ROLES, "0"))
+                .with(mockLogin(USER_ROLES, "x:0"))
                 .contentType("application/json")
                 .content(input.toString())
         ).andExpect(status().isBadRequest());
