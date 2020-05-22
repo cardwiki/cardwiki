@@ -11,15 +11,18 @@ import {parse as parseCookie} from 'cookie';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
-
-  // After first submission attempt, form validation will start
-  submitted: boolean = false;
   // Error flag
   error: boolean = false;
   errorMessage: string = '';
   authProviders: OAuthProviders;
+  oAuthInfo;
+  registerForm;
+  username: string;
 
   constructor(private formBuilder: FormBuilder, private authService: AuthService, private router: Router, private route: ActivatedRoute) {
+    this.registerForm = this.formBuilder.group({
+      username: ''
+    });
   }
 
   ngOnInit(): void {
@@ -28,21 +31,35 @@ export class LoginComponent implements OnInit {
       if ('success' in params){
         this.authService.setToken(parseCookie(document.cookie).token);
         this.authService.whoAmI().subscribe(info => {
-          // TODO: cache info in localStorage
+          this.oAuthInfo = info;
+          localStorage.setItem('whoami', JSON.stringify(info)); //TODO standardize/save in auth object?
+          console.log(info);
           if (info.authId === null)
-            return;
+            return; //TODO proper error handling?
           if (info.hasAccount) {
             this.router.navigate(['/']);
-          } else {
-            // TODO: use proper dialog
-            let username = prompt('choose your username');
-            this.authService.register(username).subscribe(status => {
-              // TODO: handle errors
-              this.router.navigate(['/']);
-            });
           }
         });
       }
+    });
+  }
+
+  register(username: string) {
+    this.authService.register(username).subscribe(status => {
+      console.log("Status: ", status);
+      if (status.username) {
+        this.username = status.username;
+        setTimeout(() =>
+          {
+            this.registerForm.reset();
+            this.oAuthInfo = null;
+            this.router.navigate(['/']);
+          },
+          2500);
+      }
+    }, error1 => {
+      this.errorMessage = error1.error.message; //TODO fix sql statement in error message
+      this.error = true;
     });
   }
 

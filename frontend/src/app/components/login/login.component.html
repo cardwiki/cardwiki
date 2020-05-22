@@ -15,15 +15,32 @@
           <h3 class="mb-0">Login with OAuth 2.0</h3>
         </div>
 
-        <div class="card-body">
-			
-			<ul>
-				<li *ngFor="let provider of authProviders"><a href="{{authService.getProviderUrl(provider.id)}}">{{provider.name}}</a></li>
-			</ul>
+        <div *ngIf="!oAuthInfo" class="card-body px-4">
+          <a *ngFor="let provider of authProviders" class="btn btn-lg btn-outline-dark btn-{{provider.name}} w-100 my-2" role="button" href="{{authService.getProviderUrl(provider.id)}}">
+            <img src="assets/images/{{provider.name}}.svg" height="24" class="mr-2 mb-1" type="image/svg+xml"/>
+            {{provider.name}}
+            <!--<span class="ml-2 mb-1" style="width: 24px;"></span> padding?-->
+          </a>
+        </div>
+
+        <div *ngIf="oAuthInfo" class="card-body px-4">
+          <form [formGroup]="registerForm" (ngSubmit)="register(username.value)">
+            <div class="form-group">
+              <label for="usernameInput">Please choose a username to complete your registration:</label>
+              <input type="text" class="form-control" id="usernameInput" aria-describedby="usernameHelp" placeholder="Enter username" pattern="[a-z0-9_-]+" required="" #username>
+              <small id="usernameHelp" class="form-text text-muted">Other users will be able to see this.</small>
+            </div>
+            <button type="submit" class="btn btn-outline-dark">Register</button>
+          </form>
+        </div>
+
+        <div *ngIf="username" class="card-body px-4">
+          <div class="alert alert-success" role="alert">
+            Hello {{username}}, welcome to CardWiki!
+          </div>
         </div>
 
       </div>
-
     </div>
   </div>
 </div>
