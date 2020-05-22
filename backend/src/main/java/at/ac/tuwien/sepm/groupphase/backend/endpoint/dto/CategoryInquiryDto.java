@@ -8,7 +8,7 @@ import javax.validation.constraints.*;
 @Data
 public class CategoryInquiryDto {
 
-    @NotEmpty(message = "Name must not be null nor empty.")
+    @NotBlank(message = "Name must not be null nor empty.")
     @Length(max = 200, message = "Name exceeds size limit.")
     private String name;
 

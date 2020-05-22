@@ -8,13 +8,14 @@ import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.service.CategoryService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Authorization;
+import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -54,8 +55,8 @@ public class CategoryEndpoint {
             return categoryMapper.categoryToCategoryDetailedDto(
                 categoryService.createCategory(
                     categoryMapper.categoryInquiryDtoToCategory(categoryInquiryDto)));
-        } catch (NotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid parent category.", e);
+        } catch (DataIntegrityViolationException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, handleDataIntegrityViolationException(e));
         }
     }
 
@@ -63,11 +64,7 @@ public class CategoryEndpoint {
     @ApiOperation(value = "Get detailed information about a specific category")
     public CategoryDetailedDto getCategory(@PathVariable Long id) {
         LOGGER.info("GET /api/v1/categories/{}", id);
-        try {
-            return categoryMapper.categoryToCategoryDetailedDto(categoryService.findOneById(id));
-        } catch (NotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found.");
-        }
+       return categoryMapper.categoryToCategoryDetailedDto(categoryService.findOneById(id));
     }
 
     @Secured("ROLE_USER")
@@ -80,10 +77,20 @@ public class CategoryEndpoint {
             return categoryMapper.categoryToCategoryDetailedDto(
                 categoryService.updateCategory(
                     id, categoryMapper.categoryInquiryDtoToCategory(categoryInquiryDto)));
-        } catch (NotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found.");
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (DataIntegrityViolationException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, handleDataIntegrityViolationException(e));
         }
+    }
+
+    private String handleDataIntegrityViolationException (DataIntegrityViolationException e) {
+        if (e.getCause() instanceof ConstraintViolationException) {
+            String cause = ((ConstraintViolationException) e.getCause()).getConstraintName().toLowerCase();
+            if (cause.contains("name_unique")) {
+               return "A category with that name already exists.";
+            } else {
+                return cause;
+            }
+        }
+        return e.getMessage();
     }
 }

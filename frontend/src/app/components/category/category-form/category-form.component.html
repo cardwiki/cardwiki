@@ -12,12 +12,16 @@
     </button>
     </a>
     <span *ngIf="mode == 'Create'">
-      <button class="btn-primary" id="createSub" (click)="createSubcategory()">
-        Create Subcategory
-      </button>
-      <button class="btn-primary" id="createNew" (click)="category.parent.name = null; vanishResult();">
-        Create another category
-      </button>
+      <a routerLink="/categories/new" [queryParams]="{ parent: this.categoryForm.value['name'].trim() }">
+        <button class="btn-primary" id="createSub" (click)="vanishResult()">
+          Create Subcategory
+        </button>
+      </a>
+      <a routerLink="/categories/new">
+        <button class="btn-primary" id="createNew" (click)="vanishResult()">
+          Create another category
+        </button>
+      </a>
     </span>
   </div>
 </div>
@@ -42,6 +46,7 @@
               aria-describedby="categoryNameHelp"
               placeholder="Enter category name"
               maxLength="200"
+              nameIsBlank
               autocomplete="off"
             >
             <div *ngIf="categoryForm.controls.name.errors" class="error">

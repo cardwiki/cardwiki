@@ -36,13 +36,10 @@ export class CategoryService {
    */
   handleError(error): string {
       if (error.status === 500 || error.status === 0) {
-        if (error.error &&  error. error.message && error.error.message.includes('ConstraintViolationException')) {
-          return 'Invalid input. Category may already exist.';
-        }
         return 'Something went wrong while processing your request.'  ;
       }
       if (error.status === 400) {
-        return error.error.message;
+        return typeof(error.error) === 'string' ? error.error : error.error.message;
       }
       if (error.status === 401 || error.status === 403) {
         return 'Not authorized: ' + error.status;
@@ -50,13 +47,16 @@ export class CategoryService {
       if (error.status === 503) {
         return 'Service unavailable: ' + error.status;
       }
-      const message = error.error.split('[')[1].split(']')[0];
-      const messages = message.split(',');
-      let result = '';
-      for (let i = 0; i < messages.length; i++) {
-        result += messages[i].substr(messages[i].indexOf(' '));
+      if (error.error.message && error.error.includes('Validation errors')) {
+        const message = error.error.split('[')[1].split(']')[0];
+        const messages = message.split(',');
+        let result = '';
+        for (let i = 0; i < messages.length; i++) {
+          result += messages[i].substr(messages[i].indexOf(' '));
+        }
+        return result;
       }
-      return result;
+      return error.error.message ? error.error.message : error.message;
     }
 
   /**
@@ -90,6 +90,7 @@ export class CategoryService {
    */
   editCategory(category: Category, id: number): Observable<Category> {
     console.log('Edit category with id ' + id);
+    console.log('asgfasdfasdas ' + category.name);
     return this.httpClient.put<Category>(this.categoryBaseUri + '/' + id, category);
   }
 }

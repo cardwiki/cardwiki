@@ -14,14 +14,15 @@ public class CategoryRepositoryImpl implements CategoryRepositoryCustom {
 
     @Override
     public boolean ancestorExistsWithId(Long id, Long parentId) {
-        return !entityManager.createNativeQuery("WITH LINK(ID, PARENT_ID, LEVEL) AS (" +
-            "SELECT ID, PARENT_ID, 0 FROM CATEGORIES WHERE CATEGORIES.ID=:parentId " +
-            "UNION ALL " +
-            "SELECT CATEGORIES.ID, CATEGORIES.PARENT_ID, LEVEL + 1 " +
-            "FROM LINK INNER JOIN CATEGORIES ON LINK.PARENT_ID = CATEGORIES.ID AND " +
-            "CATEGORIES.ID!=:parentId) " +
-            "SELECT a.NAME FROM CATEGORIES AS a INNER JOIN LINK ON LINK.ID=a.ID " +
-            "WHERE LINK.ID=:id")
+        return !entityManager.createNativeQuery(
+            "WITH link(id, parent_id, level) AS (" +
+                "SELECT id, parent_id, 0 FROM categories WHERE categories.id=:parentId " +
+                "UNION ALL " +
+                "SELECT categories.id, categories.parent_id, LEVEL + 1 " +
+                "FROM link INNER JOIN categories ON link.parent_id = categories.id " +
+                "AND categories.id!=:parentId" +
+            ") " +
+            "SELECT id FROM link WHERE link.id=:id")
             .setParameter("parentId", parentId)
             .setParameter("id", id)
             .getResultList()

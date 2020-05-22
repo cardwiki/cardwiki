@@ -5,6 +5,7 @@ import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategoryInquiryDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategorySimpleDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
+import at.ac.tuwien.sepm.groupphase.backend.repository.CategoryRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.Test;
@@ -37,6 +38,19 @@ public class CategoryEndpointTest extends TestDataGenerator {
 
     @Test
     @Transactional
+    public void getCategoriesReturnsFullListOfCategories() throws Exception {
+        getCategoryRepository().saveAndFlush(new Category("test2", null));
+        getCategoryRepository().saveAndFlush(new Category("test1", null));
+
+        mvc.perform(get("/api/v1/categories"))
+            .andExpect(status().is(200))
+            .andExpect(jsonPath("$", hasSize(2)))
+            .andExpect(jsonPath("$[0].name").value("test1"))
+            .andExpect(jsonPath("$[1].name").value("test2"));
+    }
+
+    @Test
+    @Transactional
     public void createCategoryReturnsCategoryDetails() throws Exception {
         Category category = givenCategory();
         User user = givenApplicationUser();
@@ -61,6 +75,93 @@ public class CategoryEndpointTest extends TestDataGenerator {
 
     @Test
     @Transactional
+    public void createCategoryWithNonExistentParentThrowsBadRequest() throws Exception {
+        givenCategory();
+        User user = givenApplicationUser();
+        CategoryInquiryDto categoryInquiryDto = new CategoryInquiryDto();
+        categoryInquiryDto.setName("blubb");
+        CategorySimpleDto parent = new CategorySimpleDto();
+        parent.setName("blubb parent");
+        parent.setId(0L);
+        categoryInquiryDto.setParent(parent);
+
+        mvc.perform(post("/api/v1/categories")
+            .with(mockLogin(USER_ROLES, user.getAuthId()))
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(categoryInquiryDto)))
+            .andExpect(status().is(400));
+    }
+
+    @Test
+    @Transactional
+    public void createCategoryWithParentWithoutIdThrowsBadRequest() throws Exception {
+        givenCategory();
+        User user = givenApplicationUser();
+        CategoryInquiryDto categoryInquiryDto = new CategoryInquiryDto();
+        categoryInquiryDto.setName("blubb");
+        CategorySimpleDto parent = new CategorySimpleDto();
+        parent.setName("blubb parent");
+        parent.setId(null);
+        categoryInquiryDto.setParent(parent);
+
+        mvc.perform(post("/api/v1/categories")
+            .with(mockLogin(USER_ROLES, user.getAuthId()))
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(categoryInquiryDto)))
+            .andExpect(status().is(400));
+    }
+
+    @Test
+    @Transactional
+    public void createCategoryWithDuplicateNameThrowsBadRequest() throws Exception {
+        givenCategory();
+        User user = givenApplicationUser();
+        CategoryInquiryDto categoryInquiryDto = new CategoryInquiryDto();
+        categoryInquiryDto.setName("category");
+
+        mvc.perform(post("/api/v1/categories")
+            .with(mockLogin(USER_ROLES, user.getAuthId()))
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(categoryInquiryDto)))
+            .andExpect(status().is(400));
+    }
+
+    @Test
+    @Transactional
+    public void createCategoryWithBlankNameStringThrowsBadRequest() throws Exception {
+        User user = givenApplicationUser();
+        CategoryInquiryDto categoryInquiryDto = new CategoryInquiryDto();
+        categoryInquiryDto.setName("   ");
+
+        mvc.perform(post("/api/v1/categories")
+            .with(mockLogin(USER_ROLES, user.getAuthId()))
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(categoryInquiryDto)))
+            .andExpect(status().is(400));
+    }
+
+    @Test
+    @Transactional
+    public void getCategoryReturnsCategoryDetails() throws Exception {
+        Category category = givenCategory();
+
+        mvc.perform(get("/api/v1/categories/{id}", category.getId()))
+            .andExpect(status().is(200))
+            .andExpect(jsonPath("$.name").value(category.getName()))
+            .andExpect(jsonPath("$.id").value(category.getId()))
+            .andExpect(jsonPath("$.parent.name").value(category.getParent().getName()))
+            .andExpect(jsonPath("$.createdBy").value(category.getCreatedBy().getId()));
+
+    }
+
+    @Test
+    public void getCategoryWhichDoesNotExistThrowsNotFound() throws Exception {
+        mvc.perform(get("/api/v1/categories/{id}", 0L))
+            .andExpect(status().is(404));
+    }
+
+    @Test
+    @Transactional
     public void updateCategoryWithValidDataReturnsUpdatedCategoryDetails() throws Exception {
         Category category = givenCategory();
         User user = givenApplicationUser();
@@ -81,33 +182,6 @@ public class CategoryEndpointTest extends TestDataGenerator {
             .andExpect(jsonPath("$.id").isNumber())
             .andExpect(jsonPath("$.parent.id").value(newParent.getId()))
             .andExpect(jsonPath("$.parent.name").value(newParent.getName()));
-    }
-
-    @Test
-    @Transactional
-    public void getCategoriesReturnsFullListOfCategories() throws Exception {
-        getCategoryRepository().saveAndFlush(new Category("test2", null));
-        getCategoryRepository().saveAndFlush(new Category("test1", null));
-
-        mvc.perform(get("/api/v1/categories"))
-            .andExpect(status().is(200))
-            .andExpect(jsonPath("$", hasSize(2)))
-            .andExpect(jsonPath("$[0].name").value("test1"))
-            .andExpect(jsonPath("$[1].name").value("test2"));
-    }
-
-    @Test
-    @Transactional
-    public void getCategoryReturnsCategoryDetails() throws Exception {
-        Category category = givenCategory();
-
-        mvc.perform(get("/api/v1/categories/{id}", category.getId()))
-            .andExpect(status().is(200))
-            .andExpect(jsonPath("$.name").value(category.getName()))
-            .andExpect(jsonPath("$.id").value(category.getId()))
-            .andExpect(jsonPath("$.parent.name").value(category.getParent().getName()))
-            .andExpect(jsonPath("$.createdBy").value(category.getCreatedBy().getId()));
-
     }
 
     @Test
@@ -150,31 +224,6 @@ public class CategoryEndpointTest extends TestDataGenerator {
 
     @Test
     @Transactional
-    public void createCategoryWithNonExistentParentThrowsNotFound() throws Exception {
-        givenCategory();
-        User user = givenApplicationUser();
-        CategoryInquiryDto categoryInquiryDto = new CategoryInquiryDto();
-        categoryInquiryDto.setName("blubb");
-        CategorySimpleDto parent = new CategorySimpleDto();
-        parent.setName("blubb parent");
-        parent.setId(0L);
-        categoryInquiryDto.setParent(parent);
-
-        mvc.perform(post("/api/v1/categories")
-            .with(mockLogin(USER_ROLES, user.getAuthId()))
-            .contentType("application/json")
-            .content(objectMapper.writeValueAsString(categoryInquiryDto)))
-            .andExpect(status().is(404));
-    }
-
-    @Test
-    public void getCategoryWhichDoesNotExistThrowsNotFound() throws Exception {
-        mvc.perform(get("/api/v1/categories/{id}", 0L))
-            .andExpect(status().is(404));
-    }
-
-    @Test
-    @Transactional
     public void updateCategoryWhichDoesNotExistThrowsNotFound() throws Exception {
         Category category = givenCategory();
         User user = givenApplicationUser();
@@ -190,5 +239,35 @@ public class CategoryEndpointTest extends TestDataGenerator {
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(categoryInquiryDto)))
             .andExpect(status().is(404));
+    }
+
+    @Test
+    @Transactional
+    public void updateCategoryWithBlankNameStringThrowsBadRequest() throws Exception {
+        Category category = givenCategory();
+        User user = givenApplicationUser();
+        CategoryInquiryDto categoryInquiryDto = new CategoryInquiryDto();
+        categoryInquiryDto.setName("    ");
+
+        mvc.perform(put("/api/v1/categories/{id}", category.getId())
+            .with(mockLogin(USER_ROLES, user.getAuthId()))
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(categoryInquiryDto)))
+            .andExpect(status().is(400));
+    }
+
+    @Test
+    @Transactional
+    public void updateCategoryWithDuplicateNameThrowsBadRequest() throws Exception {
+        Category category = givenCategory();
+        User user = givenApplicationUser();
+        CategoryInquiryDto categoryInquiryDto = new CategoryInquiryDto();
+        categoryInquiryDto.setName(category.getParent().getName());
+
+        mvc.perform(put("/api/v1/categories/{id}", category.getId())
+            .with(mockLogin(USER_ROLES, user.getAuthId()))
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(categoryInquiryDto)))
+            .andExpect(status().is(400));
     }
 }

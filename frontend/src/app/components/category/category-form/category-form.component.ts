@@ -28,7 +28,7 @@ export class CategoryFormComponent implements OnInit {
               private router: Router, private categoryService: CategoryService) {
     this.categoryForm = this.formBuilder.group({
 
-      name: ['', [Validators.required, Validators.maxLength(200)]],
+      name: ['', [Validators.required, Validators.maxLength(200), this.nameIsBlank.bind(this)]],
         parentCategory: ['',
           {
             validators: [Validators.maxLength(200), this.validateCategoryName.bind(this)], updateOn: 'change'
@@ -96,6 +96,9 @@ export class CategoryFormComponent implements OnInit {
       if (errors.required) {
         return 'Field is required.';
       }
+      if (errors.nameIsBlank) {
+        return 'Name must not be blank.';
+      }
       const result = this.checkCommonErrors(errors);
       return result ? result : null;
     }
@@ -133,7 +136,7 @@ export class CategoryFormComponent implements OnInit {
   validateCategoryName() {
     if (this.categories && this.categoryForm && this.categoryForm.controls) {
       const value = this.categoryForm.controls.parentCategory.value;
-      const valid = (value !== null && value !== '') ? this.categories.map(category => category.name).includes(value) : true;
+      const valid = (value && value !== '') ? this.categories.map(category => category.name).includes(value) : true;
       if (!valid) {
         return {'categoryNotFound': true};
       }
@@ -142,12 +145,11 @@ export class CategoryFormComponent implements OnInit {
     return null;
   }
 
-  createSubcategory() {
-    if (this.result) {
-      this.category.name = null;
-      this.category.parent.name = this.result.name;
+  nameIsBlank() {
+    if (this.categories && this.categoryForm && this.categoryForm.controls && this.categoryForm.controls.name.dirty) {
+      return this.categoryForm.controls.name.value && this.categoryForm.controls.name.value.trim() === '' ? {'nameIsBlank': true} : null;
     }
-    this.vanishResult();
+    return null;
   }
 
   /**
@@ -159,6 +161,7 @@ export class CategoryFormComponent implements OnInit {
     this.categoryForm.reset();
     this.fetchCategories();
     this.setDefaults();
+    console.log(this.mode);
   }
 
   ngOnInit(): void {

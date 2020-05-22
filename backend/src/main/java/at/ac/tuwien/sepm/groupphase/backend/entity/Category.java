@@ -14,7 +14,7 @@ import java.util.Set;
 @Table(name = "categories",
     uniqueConstraints = @UniqueConstraint(
         columnNames = "name",
-        name = "name_not_unique"
+        name = "name_unique"
     ))
 public class Category {
 
@@ -22,7 +22,7 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
 
     @ManyToOne
