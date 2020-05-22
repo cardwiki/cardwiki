@@ -3,6 +3,7 @@ backend test:
   stage: test
   script:
     - cd backend/
+    - mvn -version
     - mvn test
     - awk -F,
       '{ instructions += $4 + $5; covered += $5 } END
