@@ -11,6 +11,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
@@ -122,5 +124,17 @@ public class CardRepositoryTest extends TestDataGenerator {
 
         // Then
         assertTrue(cardRepository.findById(card.getId()).orElseThrow().getRevisions().isEmpty());
+    }
+
+    @Test
+    public void givenDeck_whenFindByDeckId_thenFindCardsContainingDeck() {
+        Card card = givenCard();
+        Deck deck = card.getDeck();
+
+        List<Card> cards = cardRepository.findCardsByDeck_Id(deck.getId());
+
+        for (Card returnedCard: cards) {
+            assertEquals(deck, returnedCard.getDeck());
+        }
     }
 }

@@ -14,6 +14,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.constraints.Null;
+
 import static at.ac.tuwien.sepm.groupphase.backend.integrationtest.security.MockedLogins.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -285,6 +287,64 @@ public class CardEndpointTest extends TestDataGenerator {
             .with(mockLogin(USER_ROLES, user.getAuthId()))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
+            .andExpect(status().is(404));
+    }
+
+    @Test
+    public void deleteCardReturnsCardContent() throws Exception {
+        Card card = givenCard();
+        Deck deck = card.getDeck();
+        User user = givenApplicationUser();
+
+        mvc.perform(delete("/api/v1/decks/{deckId}/cards/{cardId}", deck.getId(), card.getId())
+            .with(mockLogin(USER_ROLES, user.getAuthId()))
+            .contentType("application/json"))
+            .andExpect(status().is(200))
+            .andExpect(jsonPath("$.id").isNumber());
+    }
+
+    @Test
+    public void deleteCardWithInvalidDeckIdThrowsNotFoundException() throws Exception {
+        Card card = givenCard();
+        User user = givenApplicationUser();
+
+        mvc.perform(delete("/api/v1/decks/{deckId}/cards/{cardId}", 123, card.getId())
+            .with(mockLogin(USER_ROLES, user.getAuthId()))
+            .contentType("application/json"))
+            .andExpect(status().is(404));
+    }
+
+    @Test
+    @Transactional
+    public void deleteCardWithInvalidCardIdThrowsNotFoundException() throws Exception {
+        RevisionEdit revisionEdit = givenRevisionEdit();
+        Deck deck = revisionEdit.getRevision().getCard().getDeck();
+        User user = givenApplicationUser();
+
+        mvc.perform(delete("/api/v1/decks/{deckId}/cards/{cardId}", deck.getId(), 123)
+            .with(mockLogin(USER_ROLES, user.getAuthId()))
+            .contentType("application/json"))
+            .andExpect(status().is(404));
+    }
+
+    @Test
+    public void deleteCardForAnonymousThrowsForbidden() throws Exception {
+        mvc.perform(delete("/api/v1/decks/{deckId}/cards/{cardId}", 123, 123)
+            .with(mockLogin(ANONYMOUS_ROLES, "foo:123"))
+            .contentType("application/json"))
+            .andExpect(status().is(403));
+    }
+
+    @Test
+    @Transactional
+    public void deleteCardWithDeckMismatchThrowsNotFoundException() throws Exception {
+        RevisionEdit revisionEdit = givenRevisionEdit();
+        Card card = revisionEdit.getRevision().getCard();
+        Deck deck = givenDeck();
+        User user = givenApplicationUser();
+        mvc.perform(delete("/api/v1/decks/{deckId}/cards/{cardId}", deck.getId(), card.getId())
+            .with(mockLogin(USER_ROLES, user.getAuthId()))
+            .contentType("application/json"))
             .andExpect(status().is(404));
     }
 }

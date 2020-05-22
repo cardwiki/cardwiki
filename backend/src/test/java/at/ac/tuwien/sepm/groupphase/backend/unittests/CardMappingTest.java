@@ -13,6 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -72,5 +74,16 @@ public class CardMappingTest extends TestDataGenerator {
         );
     }
 
+    @Test
+    public void givenCard_whenMapToCardContentDto_thenDtoHasAllProperties() {
+        Card card = getSampleRevisionEdit().getRevision().getCard();
 
+        CardContentDto dto = cardMapper.cardToCardContentDto(card);
+
+        assertAll(
+            () -> assertEquals(card.getId(), dto.getId()),
+            () -> assertEquals(card.getLatestRevision().getRevisionEdit().getTextFront(), dto.getTextFront()),
+            () -> assertEquals(card.getLatestRevision().getRevisionEdit().getTextBack(), dto.getTextBack())
+        );
+    }
 }

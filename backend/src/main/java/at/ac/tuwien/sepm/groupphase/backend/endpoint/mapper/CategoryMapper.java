@@ -21,6 +21,8 @@ public interface CategoryMapper {
     @IterableMapping(qualifiedByName = "simpleCategory")
     List<CategorySimpleDto> categoryToCategorySimpleDto(List<Category> categories);
 
+    Category categorySimpleDtoToCategory(CategorySimpleDto categorySimpleDto);
+
     @Mapping(source = "category.createdBy.id", target = "createdBy")
     @Mapping(source = "children", target = "children", qualifiedByName = "childrenToSimpleChildren")
     @Mapping(source = "parent", target = "parent", qualifiedByName="parentToSimpleParent")
@@ -36,6 +38,8 @@ public interface CategoryMapper {
         return INSTANCE.categoryToCategorySimpleDto(parent);
     }
 
-     Category categoryInquiryDtoToCategory(CategoryInquiryDto categoryInquiryDto);
+    Category categoryInquiryDtoToCategory(CategoryInquiryDto categoryInquiryDto);
+
+
 
 }

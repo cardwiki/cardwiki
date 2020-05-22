@@ -12,6 +12,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import javax.xml.bind.annotation.XmlType;
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
@@ -59,5 +62,18 @@ public class DeckRepositoryTest extends TestDataGenerator {
         Deck deck = new Deck();
         deck.setName("Test Name");
         assertThrows(DataIntegrityViolationException.class, () -> deckRepository.save(deck));
+    }
+
+    @Test
+    public void givenId_whenFindById_thenFindDeck() {
+        Deck deck = givenDeck();
+
+        Optional<Deck> returnedDeck = deckRepository.findById(deck.getId());
+
+        returnedDeck.ifPresent(value -> assertEquals(deck, value));
+    }
+
+    @Test void givenNothing_whenFindById_thenResultIsNull() {
+        assertTrue(deckRepository.findById(1L).isEmpty());
     }
 }

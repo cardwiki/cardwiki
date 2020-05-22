@@ -1,10 +1,13 @@
 package at.ac.tuwien.sepm.groupphase.backend.unittests;
 
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategorySimpleDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckInputDto;
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckUpdateDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.CategoryMapper;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.DeckMapper;
+import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,5 +56,15 @@ public class DeckMappingTest extends TestDataGenerator {
         deckInputDto.setName(name);
         Deck deck = deckMapper.deckInputDtoToDeck(deckInputDto);
         assertEquals(deckInputDto.getName(), deck.getName());
+    }
+
+    @Test
+    public void givenDeckUpdateDto_whenMapToDeck_thenDeckHasAllProperties() {
+        DeckUpdateDto deckUpdateDto = new DeckUpdateDto();
+        deckUpdateDto.setName("Test Deck");
+
+        Deck deck = deckMapper.deckUpdateDtoToDeck(deckUpdateDto);
+
+        assertEquals(deckUpdateDto.getName(), deck.getName());
     }
 }
