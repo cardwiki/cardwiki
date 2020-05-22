@@ -10,8 +10,8 @@
       <li class="nav-item">
         <a class="nav-link" routerLink="/categories">Categories</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" routerLink="/decks/new">Create a deck</a>
+      <li class="nav-item" *ngIf="authService.isLoggedIn()">
+        <a class="nav-link" (click)="openDeckModal()">Create a deck</a>
       </li>
     </ul>
     <form (ngSubmit)="onSubmit()" #searchForm="ngForm" class="form-inline my-2 my-lg-0 mr-auto mw-25 flex-grow-1">

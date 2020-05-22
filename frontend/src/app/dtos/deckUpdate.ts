@@ -5,7 +5,7 @@ export class DeckUpdate extends DeckSimple {
   constructor(
     public id: number,
     public name: string,
-    public categories: Category[]) {
+    public categories: {id: number, name: string}[]) {
     super(id, name);
   }
 }

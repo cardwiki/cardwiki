@@ -15,6 +15,7 @@ import { DeckViewComponent } from './components/deck/deck-view/deck-view.compone
 import { CategoryCreateComponent } from './components/category/category-create/category-create.component';
 import { CategoryFormComponent } from './components/category/category-form/category-form.component';
 import { CategoryUpdateComponent } from './components/category/category-update/category-update.component';
+import { DeckCreateModalComponent } from './components/deck/deck-create-modal/deck-create-modal.component';
 import { CardCreateComponent } from './components/card/card-create/card-create.component';
 import { CardFormComponent } from './components/card/card-form/card-form.component';
 import { CardViewComponent } from './components/card/card-view/card-view.component';
@@ -41,6 +42,7 @@ import { CategoryDetailsComponent } from './components/category/category-details
     CategoryCreateComponent,
     CategoryFormComponent,
     CategoryUpdateComponent,
+    DeckCreateModalComponent,
     CardCreateComponent,
     CardFormComponent,
     CardViewComponent,

@@ -11,11 +11,13 @@ import java.util.*;
 @Entity
 @Table(name = "decks")
 public class Deck {
+    public static final int MAX_NAME_LENGTH = 255;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Size(min = 1, max = 255)
+    @Size(min = 1, max = MAX_NAME_LENGTH)
     @Column(nullable = false)
     private String name;
 

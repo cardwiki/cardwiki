@@ -23,7 +23,7 @@ const routes: Routes = [
   {path: 'search', component: SearchComponent},
   {path: 'login', component: LoginComponent},
   {path: 'decks/:id/cards/new', component: CardCreateComponent},
-  { path: 'decks/:deckId/cards/:cardId/edit', component: CardEditComponent },
+  {path: 'decks/:deckId/cards/:cardId/edit', component: CardEditComponent},
   {path: 'learn', canActivate: [AuthGuard], component: LearnComponent},
   {path: 'learn/:id', component: DeckPreviewComponent},
   {path: 'decks/:id/cards/new', canActivate: [AuthGuard], component: CardCreateComponent},

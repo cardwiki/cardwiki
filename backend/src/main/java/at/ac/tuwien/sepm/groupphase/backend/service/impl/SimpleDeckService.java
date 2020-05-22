@@ -2,6 +2,7 @@ package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
+import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.exception.DeckNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.CategoryService;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -36,6 +38,7 @@ public class SimpleDeckService implements DeckService {
     @Override
     public Deck findOne(Long id) {
         LOGGER.debug("Find deck with id {}", id);
+        Objects.requireNonNull(id, "id argument must not be null");
         Optional<Deck> deck = deckRepository.findById(id);
         return deck.orElseThrow(() -> new DeckNotFoundException(String.format("Could not find card deck with id %s", id)));
     }
@@ -43,6 +46,7 @@ public class SimpleDeckService implements DeckService {
     @Override
     public List<Deck> searchByName(String name, Pageable pageable) {
         LOGGER.debug("Search card decks for name {} {}", name, pageable);
+        Objects.requireNonNull(name, "name argument must not be null");
         return deckRepository.findByNameContainingIgnoreCase(name, pageable);
     }
 
@@ -50,7 +54,11 @@ public class SimpleDeckService implements DeckService {
     @Override
     public Deck create(Deck deck) {
         LOGGER.debug("Create new deck {}", deck);
+        Objects.requireNonNull(deck, "deck argument must not be null");
         deck.setCreatedBy(userService.loadCurrentUser());
+        User user = userService.loadCurrentUser();
+        if (user == null) throw new IllegalStateException("current user was null in secured api operation");
+        deck.setCreatedBy(user);
         return deckRepository.save(deck);
     }
 

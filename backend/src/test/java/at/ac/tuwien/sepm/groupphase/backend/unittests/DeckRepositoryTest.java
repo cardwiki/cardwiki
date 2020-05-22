@@ -8,7 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -27,21 +27,24 @@ public class DeckRepositoryTest extends TestDataGenerator {
     @Test
     public void givenDeck_whenFindByName_thenFindDeckContainingName() {
         Deck deck = givenDeck();
-        PageRequest paging = PageRequest.of(0, 10);
 
         deckRepository.save(deck);
 
         assertAll(
             () -> assertEquals(1,
-                deckRepository.findByNameContainingIgnoreCase(deck.getName(), paging).size()
-            ),
-            () -> assertTrue(
-                deckRepository.findByNameContainingIgnoreCase("404", paging).isEmpty()
+                deckRepository.findByNameContainingIgnoreCase(deck.getName(), Pageable.unpaged()).size()
             ),
             () -> assertEquals(1,
-                deckRepository.findByNameContainingIgnoreCase(deck.getName().substring(1,3), paging).size()
+                deckRepository.findByNameContainingIgnoreCase(deck.getName().substring(1,3), Pageable.unpaged()).size()
             )
         );
+    }
+
+    @Test
+    public void givenDeck_whenFindByNameNotContained_thenEmptyList() {
+        Deck deck = givenDeck();
+
+        assertTrue(deckRepository.findByNameContainingIgnoreCase("NotAName", Pageable.unpaged()).isEmpty());
     }
 
     @Test
