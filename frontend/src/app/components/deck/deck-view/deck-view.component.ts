@@ -18,7 +18,12 @@ export class DeckViewComponent implements OnInit {
   constructor(private deckService: DeckService, private cardService: CardService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
-    const id = +this.route.snapshot.paramMap.get('id');
+    this.route.paramMap.subscribe(params => {
+      this.loadDeck(Number(params.get('id')));
+    });
+  }
+
+  loadDeck(id: number) {
     this.deckService.getDeckById(id).subscribe(deck => {
       this.deck = deck;
       this.cardService.getCardsByDeckId(id).subscribe(cards => this.cards = cards);

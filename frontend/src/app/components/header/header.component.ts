@@ -34,7 +34,7 @@ export class HeaderComponent implements OnInit {
 
     modalRef.result.then(
       (res: Observable<Deck>) => res.subscribe(
-        (deck: Deck) => this.router.navigate([])
+        (deck: Deck) => this.router.navigate(['decks', deck.id])
       )
     ).catch(() => {});
   }

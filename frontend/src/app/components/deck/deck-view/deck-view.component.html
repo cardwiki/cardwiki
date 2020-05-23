@@ -7,7 +7,7 @@
     </div>
     <div class="col">
       <div class="btn-toolbar float-right">
-        <a href="decks/{{deck.id}}/edit" class="btn btn-light float-right mr-1"><i class="fas fa-pencil-alt"></i> Edit</a>
+        <a routerLink="/decks/{{deck.id}}/edit" class="btn btn-light float-right mr-1"><i class="fas fa-pencil-alt"></i> Edit</a>
         <button type="button" class="btn btn-light float-right mr-1"><i class="far fa-star"></i> Save</button>
         <button type="button" class="btn btn-light mr-1">Fork</button>
         <button type="button" class="btn btn-link">View History</button>
@@ -16,7 +16,7 @@
   </div>
 
   <div class="row mt-3">
-    <h5 ><a href="/categories/{{category.id}}" class="badge badge-light border mr-1" *ngFor="let category of deck.categories" style="font-weight:normal">{{category.name}}</a></h5>
+    <h5 ><a routerLink="/categories/{{category.id}}" class="badge badge-light border mr-1" *ngFor="let category of deck.categories" style="font-weight:normal">{{category.name}}</a></h5>
   </div>
 </div>
 
@@ -33,7 +33,7 @@
     <div class="col" *ngIf="deck">
       <div class="btn-toolbar float-right">
         <button type="button" class="btn btn-light float-right mr-1"><i class="fas fa-undo"></i> Flip</button>
-        <a href="decks/{{deck.id}}/cards/new" class="btn btn-light float-right"><i class="fas fa-plus"></i> Add new card</a>
+        <a routerLink="/decks/{{deck.id}}/cards/new" class="btn btn-light float-right"><i class="fas fa-plus"></i> Add new card</a>
       </div>
     </div>
   </div>
@@ -53,7 +53,7 @@
     <td class="align-middle">{{card.textBack}}</td>
     <td>
       <div class="btn-group float-right">
-        <a href="decks/{{deck.id}}/cards/{{card.id}}/edit" class="btn btn-light"><i class="fas fa-pencil-alt"></i></a>
+        <a routerLink="/decks/{{deck.id}}/cards/{{card.id}}/edit" class="btn btn-light"><i class="fas fa-pencil-alt"></i></a>
         <button type="button" class="btn btn-light"><i class="far fa-clone"></i></button>
         <button type="button" class="btn btn-light"><i class="fas fa-history"></i></button>
         <button type="button" class="btn btn-light" (click)="removeCard($event, card)"><i class="fas fa-trash-alt"></i></button>
