@@ -10,3 +10,12 @@ backend test:
        { print covered, "/", instructions, " instructions covered";
        printf "%.2f%% covered", 100*covered/instructions }'
       target/site/jacoco/jacoco.csv
+
+frontend test:
+  image: node:12-alpine
+  stage: test
+  script:
+    - cd frontend/
+    - npm ci
+    - npx tsc
+

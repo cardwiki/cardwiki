@@ -14,6 +14,7 @@ import {httpInterceptorProviders} from './interceptors';
 import { CategoryCreateComponent } from './components/category/category-create/category-create.component';
 import { CategoryFormComponent } from './components/category/category-form/category-form.component';
 import { CategoryUpdateComponent } from './components/category/category-update/category-update.component';
+import { DeckCreateModalComponent } from './components/deck/deck-create-modal/deck-create-modal.component';
 import { CardCreateComponent } from './components/card/card-create/card-create.component';
 import { CardFormComponent } from './components/card/card-form/card-form.component';
 import { CardViewComponent } from './components/card/card-view/card-view.component';
@@ -27,6 +28,8 @@ import { DeckPreviewComponent } from './components/deck-preview/deck-preview.com
 import { CategoryListComponent } from './components/category/category-list/category-list.component';
 import { ListComponent } from './components/category/list/list.component';
 import { CategoryDetailsComponent } from './components/category/category-details/category-details.component';
+import { Md2htmlPipe } from './pipes/md2html.pipe';
+import { MarkdownSyntaxComponent } from './components/help/markdown-syntax/markdown-syntax.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +41,7 @@ import { CategoryDetailsComponent } from './components/category/category-details
     CategoryCreateComponent,
     CategoryFormComponent,
     CategoryUpdateComponent,
+    DeckCreateModalComponent,
     CardCreateComponent,
     CardFormComponent,
     CardViewComponent,
@@ -51,6 +55,8 @@ import { CategoryDetailsComponent } from './components/category/category-details
     ListComponent,
     CategoryDetailsComponent,
     CardEditComponent,
+    Md2htmlPipe,
+    MarkdownSyntaxComponent,
   ],
   imports: [
     BrowserModule,

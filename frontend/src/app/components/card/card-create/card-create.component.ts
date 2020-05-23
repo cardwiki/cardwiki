@@ -11,7 +11,7 @@ import { CardService } from 'src/app/services/card.service';
 export class CardCreateComponent implements OnInit {
 
   private deckId: number
-  private card = new CardContent('Sample Front Text', 'Some \n Multi \n Line Text which is a bit longer')
+  private card = new CardContent('', '')
 
   constructor(private cardService: CardService, private route: ActivatedRoute) { }
 
