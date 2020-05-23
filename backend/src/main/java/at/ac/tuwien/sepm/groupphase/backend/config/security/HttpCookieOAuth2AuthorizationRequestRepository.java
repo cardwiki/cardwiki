@@ -40,11 +40,11 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
                     JWEObject obj = JWEObject.parse(cookie.getValue());
                     obj.decrypt(new DirectDecrypter(secret));
                     return (OAuth2AuthorizationRequest) SerializationUtils.deserialize(Base64.getUrlDecoder().decode(obj.getPayload().toString()));
-                } catch (ParseException | KeyLengthException e) {
-                    e.printStackTrace();
+                } catch (ParseException e) {
+                    LOGGER.error("Could not parse cookie value: {}", e.getMessage());
                     return null;
                 } catch (JOSEException e) {
-                    e.printStackTrace();
+                    LOGGER.error("Could not decrypt cookie: {}", e.getMessage());
                     return null;
                 }
             }).orElse(null);
@@ -57,7 +57,7 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
         try {
             jweObject.encrypt(new DirectEncrypter(secret));
         } catch (JOSEException e) {
-            LOGGER.info("JOSEException {}", e);
+            LOGGER.error("Could not encrypt cookie: {}", e.getMessage());
         }
 
         Cookie cookie = new Cookie(COOKIE_NAME, jweObject.serialize());
