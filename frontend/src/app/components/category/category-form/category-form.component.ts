@@ -51,9 +51,7 @@ export class CategoryFormComponent implements OnInit {
       }
     }
     const parent = parentId ? new Category(this.categoryForm.value.parentCategory, null, parentId) : null;
-    console.log('parent', parent);
     if (this.mode === 'Update') {
-      console.log(this.category);
       const payload = new Category(this.categoryForm.value.name, parent);
       this.categoryService.editCategory(payload, this.category.id).subscribe(
         (categoryResult) => {

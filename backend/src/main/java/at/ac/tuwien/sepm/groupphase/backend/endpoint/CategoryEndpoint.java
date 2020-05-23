@@ -1,10 +1,9 @@
 package at.ac.tuwien.sepm.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategoryDetailedDto;
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategoryInquiryDto;
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategoryInputDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategorySimpleDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.CategoryMapper;
-import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.service.CategoryService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Authorization;
@@ -49,48 +48,29 @@ public class CategoryEndpoint {
     @Secured("ROLE_USER")
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "Create new Category", authorizations = {@Authorization(value = "ROLE_USER")})
-    public CategoryDetailedDto createCategory(@RequestBody @Valid CategoryInquiryDto categoryInquiryDto) {
+    public CategoryDetailedDto createCategory(@RequestBody @Valid CategoryInputDto categoryInputDto) {
         LOGGER.info("POST /api/v1/categories");
-        try {
-            return categoryMapper.categoryToCategoryDetailedDto(
-                categoryService.createCategory(
-                    categoryMapper.categoryInquiryDtoToCategory(categoryInquiryDto)));
-        } catch (DataIntegrityViolationException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, handleDataIntegrityViolationException(e));
-        }
+        return categoryMapper.categoryToCategoryDetailedDto(
+            categoryService.createCategory(
+                categoryMapper.categoryInputDtoToCategory(categoryInputDto)));
     }
 
     @GetMapping(value = "/{id}")
     @ApiOperation(value = "Get detailed information about a specific category")
     public CategoryDetailedDto getCategory(@PathVariable Long id) {
         LOGGER.info("GET /api/v1/categories/{}", id);
-       return categoryMapper.categoryToCategoryDetailedDto(categoryService.findOneById(id));
+        return categoryMapper.categoryToCategoryDetailedDto(categoryService.findOneById(id));
     }
 
     @Secured("ROLE_USER")
     @PutMapping(value = "/{id}")
     @ApiOperation(value = "Update category with specific id", authorizations = {@Authorization(value = "ROLE_USER")})
     public CategoryDetailedDto updateCategory(@PathVariable Long id,
-                                                @RequestBody @Valid CategoryInquiryDto categoryInquiryDto) {
+                                              @RequestBody @Valid CategoryInputDto categoryInputDto) {
         LOGGER.info("PUT /api/v1/categories/{}", id);
-        try {
-            return categoryMapper.categoryToCategoryDetailedDto(
-                categoryService.updateCategory(
-                    id, categoryMapper.categoryInquiryDtoToCategory(categoryInquiryDto)));
-        } catch (DataIntegrityViolationException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, handleDataIntegrityViolationException(e));
-        }
-    }
+        return categoryMapper.categoryToCategoryDetailedDto(
+            categoryService.updateCategory(
+                id, categoryMapper.categoryInputDtoToCategory(categoryInputDto)));
 
-    private String handleDataIntegrityViolationException (DataIntegrityViolationException e) {
-        if (e.getCause() instanceof ConstraintViolationException) {
-            String cause = ((ConstraintViolationException) e.getCause()).getConstraintName().toLowerCase();
-            if (cause.contains("name_unique")) {
-               return "A category with that name already exists.";
-            } else {
-                return cause;
-            }
-        }
-        return e.getMessage();
     }
 }

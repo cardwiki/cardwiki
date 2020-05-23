@@ -8,9 +8,11 @@ import at.ac.tuwien.sepm.groupphase.backend.service.CategoryService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 
 import org.hibernate.Hibernate;
+import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,8 +66,11 @@ public class CategoryServiceImpl implements CategoryService {
         User user = userService.loadCurrentUser();
         category.setCreatedBy(user);
         category.setName(category.getName().trim().replaceAll(" +", " "));
-
-        return categoryRepository.saveAndFlush(category);
+        try {
+            return categoryRepository.saveAndFlush(category);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException(handleDataIntegrityViolationException(e));
+        }
     }
 
     @Override
@@ -87,8 +92,25 @@ public class CategoryServiceImpl implements CategoryService {
 
         category.setId(id);
         category.setName(category.getName().trim().replaceAll(" +", " "));
-        Category result = categoryRepository.saveAndFlush(category);
+        Category result;
+        try {
+            result = categoryRepository.saveAndFlush(category);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException(handleDataIntegrityViolationException(e));
+        }
         Hibernate.initialize(result.getParent());
         return result;
+    }
+
+    private String handleDataIntegrityViolationException (DataIntegrityViolationException e) {
+        if (e.getCause() instanceof ConstraintViolationException) {
+            String cause = ((ConstraintViolationException) e.getCause()).getConstraintName().toLowerCase();
+            if (cause.contains("name_unique")) {
+                return "A category with that name already exists.";
+            } else {
+                return cause;
+            }
+        }
+        return e.getMessage();
     }
 }

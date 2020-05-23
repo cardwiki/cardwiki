@@ -2,7 +2,7 @@ package at.ac.tuwien.sepm.groupphase.backend.unittests;
 
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategoryDetailedDto;
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategoryInquiryDto;
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategoryInputDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategorySimpleDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckSimpleDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.CategoryMapper;
@@ -80,20 +80,20 @@ public class CategoryMappingTest extends TestDataGenerator {
 
     @Test
     @Transactional
-    public void givenValidCategoryInquiryDto_whenMapToCategory_thenGetCategoryEntityWithCorrespondingValues() {
-        CategoryInquiryDto categoryInquiryDto = new CategoryInquiryDto();
-        categoryInquiryDto.setName("test");
+    public void givenValidCategoryInputDto_whenMapToCategory_thenGetCategoryEntityWithCorrespondingValues() {
+        CategoryInputDto categoryInputDto = new CategoryInputDto();
+        categoryInputDto.setName("test");
         CategorySimpleDto parent = new CategorySimpleDto();
         parent.setName("test parent");
         parent.setId(1L);
-        categoryInquiryDto.setParent(parent);
+        categoryInputDto.setParent(parent);
 
-        Category category = categoryMapper.categoryInquiryDtoToCategory(categoryInquiryDto);
+        Category category = categoryMapper.categoryInputDtoToCategory(categoryInputDto);
 
         assertAll(
-            () -> assertEquals(categoryInquiryDto.getName(), category.getName()),
-            () -> assertEquals(categoryInquiryDto.getParent().getName(), category.getParent().getName()),
-            () -> assertEquals(categoryInquiryDto.getParent().getId(), category.getParent().getId())
+            () -> assertEquals(categoryInputDto.getName(), category.getName()),
+            () -> assertEquals(categoryInputDto.getParent().getName(), category.getParent().getName()),
+            () -> assertEquals(categoryInputDto.getParent().getId(), category.getParent().getId())
         );
     }
 }

@@ -38,7 +38,7 @@ export class CategoryService {
       if (error.status === 500 || error.status === 0) {
         return 'Something went wrong while processing your request.'  ;
       }
-      if (error.status === 400) {
+      if (error.status === 400 || error.status === 404 || error.status === 409) {
         return typeof(error.error) === 'string' ? error.error : error.error.message;
       }
       if (error.status === 401 || error.status === 403) {
