@@ -1,6 +1,6 @@
 <div *ngIf="side == 'front'">
-    <pre>{{card.textFront}}</pre>
+    <div [innerHtml]="card.textFront | md2html"></div>
 </div>
 <div *ngIf="side == 'back'">
-    <pre>{{card.textBack}}</pre>
+    <div [innerHtml]="card.textBack | md2html"></div>
 </div>

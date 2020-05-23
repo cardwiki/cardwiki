@@ -25,7 +25,7 @@ export class AuthService {
   whoAmI() {
     return this.httpClient.get<WhoAmI>(this.baseUri + '/whoami')
     .pipe(tap(res => {
-       localStorage.setItem('loggedIn', String(res.hasAccount));
+       localStorage.setItem('hasAccount', String(res.hasAccount));
     }));
   }
 
@@ -33,24 +33,28 @@ export class AuthService {
     return this.baseUri + '/providers/' + provider;
   }
 
-  register(id, username){
+  register(username){
     return this.httpClient.post<UserRegistration>(this.globals.backendUri + '/users', {username: username, description: ''})
       .pipe(tap(res => {
-        // localStorage.setItem('loggedIn', String(res.hasAccount));
-        localStorage.setItem('loggedIn', 'true');
+        localStorage.setItem('hasAccount', 'true');
       }));
+  }
+
+  getToken() {
+    return localStorage.getItem('authToken');
   }
 
   /**
    * Check if a valid JWT token is saved in the localStorage
    */
   isLoggedIn() {
-      return localStorage.getItem('loggedIn') === 'true';
+    return !!this.getToken()
+      && (this.getTokenExpirationDate(this.getToken()).valueOf() > new Date().valueOf())
+      && localStorage.getItem('hasAccount') == 'true';
   }
 
   logoutUser() {
-    localStorage.removeItem('loggedIn');
-    return this.httpClient.post<void>(this.baseUri + '/logout', {});
+    localStorage.removeItem('authToken');
   }
 
   /**
@@ -67,5 +71,21 @@ export class AuthService {
     //  }
     //}
     return 'UNDEFINED';
+  }
+
+  setToken(token: string) {
+    localStorage.setItem('authToken', token);
+  }
+
+  private getTokenExpirationDate(token: string): Date {
+
+    const decoded: any = jwt_decode(token);
+    if (decoded.exp === undefined) {
+      return null;
+    }
+
+    const date = new Date(0);
+    date.setUTCSeconds(decoded.exp);
+    return date;
   }
 }

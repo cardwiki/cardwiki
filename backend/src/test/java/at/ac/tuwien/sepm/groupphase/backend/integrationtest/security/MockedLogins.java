@@ -19,17 +19,9 @@ public abstract class MockedLogins {
     public final static Collection<GrantedAuthority> ADMIN_ROLES = AuthorityUtils.createAuthorityList("ROLE_USER", "ROLE_ADMIN");
 
     public static SecurityMockMvcRequestPostProcessors.OAuth2LoginRequestPostProcessor mockLogin(Collection<? extends GrantedAuthority> authorities, String authId){
-        if (!authId.contains(":"))
-            throw new IllegalArgumentException("authId must contain a colon");
-
-        String parts[] = authId.split(":", 2);
-
         OAuth2User user = Mockito.mock(OAuth2User.class);
         Mockito.doReturn(authorities).when(user).getAuthorities();
-        Mockito.doReturn(parts[1]).when(user).getName();
-
-        ClientRegistration clientRegistration = Mockito.mock(ClientRegistration.class);
-        Mockito.doReturn(parts[0]).when(clientRegistration).getRegistrationId();
-        return oauth2Login().oauth2User(user).clientRegistration(clientRegistration);
+        Mockito.doReturn(authId).when(user).getName();
+        return oauth2Login().oauth2User(user);
     }
 }
