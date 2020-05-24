@@ -12,6 +12,7 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
@@ -44,22 +45,24 @@ public class SimpleLearnService implements LearnService {
         card.setId(attempt.getCardId());
 
         Progress.Id id = new Progress.Id(user, card);
-        // return 400 and proper error message if card does not exist
-        // catch give foreign key constraint name and catch ConstraintViolationException
 
         Progress progress = progressRepository.findById(id).orElse(new Progress(id));
         // TODO: implement spaced repetition
         progress.setDue(LocalDateTime.now().plusHours(3));
         progress.setFactor(1);
+
         try {
             progressRepository.saveAndFlush(progress);
-        } catch (ConstraintViolationException e){
-            // TODO: not working because the exception is SQLIntegrityConstraintViolationException
-            LOGGER.debug(">>>", e.getConstraintName());
-            if (e.getConstraintName().equals(Progress.FKNAME_CARD))
-                throw new BadRequestException("cardId not found");
-            else
-                throw e;
+        } catch (DataIntegrityViolationException e){
+            if (e.getCause().getClass() == ConstraintViolationException.class){
+                ConstraintViolationException cve = (ConstraintViolationException) e.getCause();
+                // TODO: change contains to equals after hibernate version contains
+                //  https://github.com/hibernate/hibernate-orm/pull/3417
+                if (cve.getConstraintName().contains(Progress.FKNAME_CARD))
+                    throw new BadRequestException("cardId not found");
+                else
+                    throw e;
+            }
         }
     }
 }
