@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.endpoint.exceptionhandler;
 
+import at.ac.tuwien.sepm.groupphase.backend.exception.BadRequestException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleNotFound(RuntimeException ex, WebRequest request) {
         LOGGER.warn(ex.getMessage());
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+    }
+
+    @ExceptionHandler(value = {BadRequestException.class})
+    protected ResponseEntity<Object> handleBadRequest(RuntimeException ex, WebRequest request) {
+        LOGGER.warn(ex.getMessage());
+        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
     /**
