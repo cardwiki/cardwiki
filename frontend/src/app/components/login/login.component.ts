@@ -24,7 +24,7 @@ export class LoginComponent implements OnInit {
       'username': new FormControl(this.username, [
         Validators.required,
         Validators.minLength(1),
-        Validators.pattern(/[a-z0-9_-]+/)
+        Validators.pattern(/^[a-z0-9_-]+$/)
       ]),
     });
   }
