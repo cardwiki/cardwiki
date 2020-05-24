@@ -23,7 +23,7 @@ public class LearnEndpoint {
         learnService.saveAttempt(attempt);
     }
 
-    @PostMapping("/next")
+    @GetMapping("/next")
     public CardDetailsDto getNextCard(@RequestParam Long deckId){
         return cardMapper.cardToCardDetailsDto(learnService.findNextCardByDeckId(deckId));
     }
