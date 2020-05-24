@@ -16,6 +16,16 @@ public class Progress {
 
     private int easinessFactor;
 
+    private int interval;
+
+    public enum Status {
+        LEARNING,
+        REVIEWING
+    }
+
+    @NotNull
+    private Status status;
+
     @NotNull
     private LocalDateTime due;
 
@@ -24,6 +34,22 @@ public class Progress {
 
     public Progress(Id id) {
         this.id = id;
+    }
+
+    public int getInterval() {
+        return interval;
+    }
+
+    public void setInterval(int interval) {
+        this.interval = interval;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public Id getId() {
