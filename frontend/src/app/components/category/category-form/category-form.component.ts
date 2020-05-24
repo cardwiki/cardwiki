@@ -1,10 +1,9 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AuthService} from '../../../services/auth.service';
 import {Router} from '@angular/router';
 import {Category} from '../../../dtos/category';
 import {CategoryService} from '../../../services/category.service';
-import * as $ from 'jquery';
 
 @Component({
   selector: 'app-category-form',
@@ -16,6 +15,7 @@ export class CategoryFormComponent implements OnInit {
   @Input() mode: String;
   @Input() category: Category;
   @Input() messages: { header: string, success: string, error: string };
+  @ViewChild('dismissModal') dismissModalButton: ElementRef;
   categoryForm: FormGroup;
   submitted: boolean;
   error: boolean;
@@ -40,8 +40,7 @@ export class CategoryFormComponent implements OnInit {
    * Submits form data to createCategory() or editCategory() function
    */
   submitCategoryForm() {
-    $('#modal').hide();
-    $('.modal-backdrop').remove();
+    this.dismissModalButton.nativeElement.click();
     console.log('submitted form values:', this.categoryForm.value);
     let parentId;
     for (let i = 0; i < this.categories.length; i++) {
@@ -58,13 +57,13 @@ export class CategoryFormComponent implements OnInit {
           console.log(categoryResult);
           this.result = categoryResult;
           this.submitted = true;
+          this.error = false;
         },
         (error) => {
           console.log('Updating category failed:');
           console.log(error);
           this.errorMessage = this.categoryService.handleError(error);
           this.error = true;
-          this.submitted = true;
         }
       );
     } else {
@@ -74,12 +73,12 @@ export class CategoryFormComponent implements OnInit {
             this.result = categoryResult;
             this.submitted = true;
             this.fetchCategories();
+            this.error = false;
           },
           (error) => {
             console.log('Creating category failed:', error);
             this.errorMessage = this.categoryService.handleError(error);
             this.error = true;
-            this.submitted = true;
           }
         );
     }
@@ -159,12 +158,10 @@ export class CategoryFormComponent implements OnInit {
     this.categoryForm.reset();
     this.fetchCategories();
     this.setDefaults();
-    console.log(this.mode);
   }
 
   ngOnInit(): void {
     this.vanishResult();
-    console.log(this.category);
   }
 
   onRefresh(): void {
