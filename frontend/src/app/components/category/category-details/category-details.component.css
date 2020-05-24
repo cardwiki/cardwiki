@@ -1,4 +1,4 @@
-a:not(.detailView) {
+a:any-link {
   color: black;
 }
 .card {
