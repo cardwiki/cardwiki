@@ -45,6 +45,7 @@ public class SimpleUserService implements UserService {
     @Override
     public User createUser(User user) {
         // TODO: only admins can create admin users
+        // TODO: return proper error message if username is duplicate
         return userRepository.save(user);
     }
 
