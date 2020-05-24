@@ -4,9 +4,11 @@ import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.AttemptInputDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Progress;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
+import at.ac.tuwien.sepm.groupphase.backend.exception.BadRequestException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.ProgressRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.LearnService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
+import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +51,15 @@ public class SimpleLearnService implements LearnService {
         // TODO: implement spaced repetition
         progress.setDue(LocalDateTime.now().plusHours(3));
         progress.setFactor(1);
-        progressRepository.saveAndFlush(progress);
+        try {
+            progressRepository.saveAndFlush(progress);
+        } catch (ConstraintViolationException e){
+            // TODO: not working because the exception is SQLIntegrityConstraintViolationException
+            LOGGER.debug(">>>", e.getConstraintName());
+            if (e.getConstraintName().equals(Progress.FKNAME_CARD))
+                throw new BadRequestException("cardId not found");
+            else
+                throw e;
+        }
     }
 }

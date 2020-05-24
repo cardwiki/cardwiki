@@ -1,9 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.entity;
 
-import javax.persistence.Embeddable;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -15,6 +12,9 @@ public class Progress {
     private Id id;
 
     private long factor;
+
+    public static final String FKNAME_USER = "FK_PROGRESS_USER";
+    public static final String FKNAME_CARD = "FK_PROGRESS_CARD";
 
     @NotNull
     private LocalDateTime due;
@@ -52,10 +52,12 @@ public class Progress {
 
     @Embeddable
     public static class Id implements Serializable {
-        @OneToOne
+        @ManyToOne
+        @JoinColumn(foreignKey = @ForeignKey(name = FKNAME_USER))
         private User user;
 
-        @OneToOne
+        @ManyToOne
+        @JoinColumn(foreignKey = @ForeignKey(name = FKNAME_CARD))
         private Card card;
 
         public Id() {
