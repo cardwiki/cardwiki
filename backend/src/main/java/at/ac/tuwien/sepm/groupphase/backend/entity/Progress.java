@@ -8,13 +8,13 @@ import java.util.Objects;
 
 @Entity
 public class Progress {
+    public static final String FKNAME_USER = "FK_PROGRESS_USER";
+    public static final String FKNAME_CARD = "FK_PROGRESS_CARD";
+
     @EmbeddedId
     private Id id;
 
-    private long factor;
-
-    public static final String FKNAME_USER = "FK_PROGRESS_USER";
-    public static final String FKNAME_CARD = "FK_PROGRESS_CARD";
+    private int easinessFactor;
 
     @NotNull
     private LocalDateTime due;
@@ -34,12 +34,12 @@ public class Progress {
         this.id = id;
     }
 
-    public long getFactor() {
-        return factor;
+    public long getEasinessFactor() {
+        return easinessFactor;
     }
 
-    public void setFactor(long factor) {
-        this.factor = factor;
+    public void setEasinessFactor(int easinessFactor) {
+        this.easinessFactor = easinessFactor;
     }
 
     public LocalDateTime getDue() {

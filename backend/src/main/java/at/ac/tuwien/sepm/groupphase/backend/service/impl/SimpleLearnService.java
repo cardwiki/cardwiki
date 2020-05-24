@@ -49,7 +49,7 @@ public class SimpleLearnService implements LearnService {
         Progress progress = progressRepository.findById(id).orElse(new Progress(id));
         // TODO: implement spaced repetition
         progress.setDue(LocalDateTime.now().plusHours(3));
-        progress.setFactor(1);
+        progress.setEasinessFactor(1);
 
         try {
             progressRepository.saveAndFlush(progress);
