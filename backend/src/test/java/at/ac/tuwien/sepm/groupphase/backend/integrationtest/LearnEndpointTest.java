@@ -78,7 +78,7 @@ public class LearnEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    public void a() throws Exception {
+    public void givenAuthenticatedUser_whenNonexistentStatus_then400() throws Exception {
         User user = givenApplicationUser();
         Card card = givenCard();
 

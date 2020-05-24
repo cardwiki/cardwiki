@@ -12,6 +12,6 @@ import java.util.List;
 
 @Repository
 public interface ProgressRepository extends JpaRepository<Progress,Progress.Id> {
-    @Query("select c from Card c left join Progress p on c.id = p.id.card.id where c.deck.id=:deckId")
+    @Query("select c from Card c left join Progress p on c.id = p.id.card.id where c.deck.id=:deckId order by p.status asc nulls first, p.due asc nulls first")
     List<Card> findNextCards(@Param("deckId") Long deckId, Pageable pageable);
 }
