@@ -27,7 +27,7 @@
           <form [formGroup]="registerForm" (ngSubmit)="register(registerForm.value.username)">
             <div class="form-group">
               <label for="usernameInput">Please choose a username to complete your registration:</label>
-              <input type="text" class="form-control" id="usernameInput" aria-describedby="usernameHelp" placeholder="Enter username" formControlName="username" required>
+              <input type="text" class="form-control" id="usernameInput" aria-describedby="usernameHelp" placeholder="Enter username" formControlName="username" [ngModel]="_textValue" (ngModelChange)="ConvertToLower($event)" required>
               <small id="usernameHelp" class="form-text text-muted">Other users will be able to see this.</small>
               <div *ngIf="formUsername.invalid && (formUsername.dirty || formUsername.touched)"
                    class="alert alert-danger">
