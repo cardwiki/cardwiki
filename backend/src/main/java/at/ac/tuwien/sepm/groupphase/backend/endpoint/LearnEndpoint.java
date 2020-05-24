@@ -5,6 +5,7 @@ import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CardDetailsDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.CardMapper;
 import at.ac.tuwien.sepm.groupphase.backend.service.LearnService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Authorization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,14 +30,14 @@ public class LearnEndpoint {
 
     @Secured("ROLE_USER")
     @PostMapping("/attempt")
-    @ApiOperation(value = "Submit an attempt at recalling a card")
+    @ApiOperation(value = "Submit an attempt at recalling a card", authorizations = {@Authorization(value = "apiKey")})
     public void attempt(@Valid @RequestBody AttemptInputDto attempt){
         learnService.saveAttempt(attempt);
     }
 
     @Secured("ROLE_USER")
     @GetMapping("/next")
-    @ApiOperation(value = "Get the next card of a deck to learn")
+    @ApiOperation(value = "Get the next card of a deck to learn", authorizations = {@Authorization(value = "apiKey")})
     public CardDetailsDto getNextCard(@RequestParam Long deckId){
         return cardMapper.cardToCardDetailsDto(learnService.findNextCardByDeckId(deckId));
     }
