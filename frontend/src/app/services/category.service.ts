@@ -110,7 +110,6 @@ export class CategoryService {
    */
   editCategory(category: Category, id: number): Observable<Category> {
     console.log('Edit category with id ' + id);
-    console.log('asgfasdfasdas ' + category.name);
     return this.httpClient.put<Category>(this.categoryBaseUri + '/' + id, category);
   }
 }
