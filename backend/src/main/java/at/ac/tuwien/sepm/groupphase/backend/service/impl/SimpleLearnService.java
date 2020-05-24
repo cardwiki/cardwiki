@@ -37,6 +37,9 @@ public class SimpleLearnService implements LearnService {
         throw new UnsupportedOperationException("not implemented yet");
     }
 
+    private static final int LEARNING_STEPS[] = {1, 10};
+    private static final int INITIAL_REVIEW_INTERVAL = 1;
+
     @Override
     public void saveAttempt(AttemptInputDto attempt) {
         LOGGER.debug("Save new attempt {}", attempt);
@@ -47,9 +50,33 @@ public class SimpleLearnService implements LearnService {
         Progress.Id id = new Progress.Id(user, card);
 
         Progress progress = progressRepository.findById(id).orElse(new Progress(id));
-        // TODO: implement spaced repetition
-        progress.setDue(LocalDateTime.now().plusHours(3));
-        progress.setEasinessFactor(1);
+
+        // This spaced-repetition algorithm is based on Anki's algorithm, which is based on SuperMemo 2.
+
+        if (progress.getStatus() == Progress.Status.LEARNING){
+            if (attempt.getStatus() == AttemptInputDto.Status.AGAIN){
+                progress.setInterval(LEARNING_STEPS[0]);
+            } else if (attempt.getStatus() == AttemptInputDto.Status.GOOD){
+                if (progress.getInterval() >= LEARNING_STEPS[LEARNING_STEPS.length - 1]){
+                    progress.setInterval(INITIAL_REVIEW_INTERVAL);
+                    progress.setStatus(Progress.Status.REVIEWING);
+                } else {
+                    for (int min : LEARNING_STEPS){
+                        if (min > progress.getInterval()){
+                            progress.setInterval(min);
+                            break;
+                        }
+                    }
+                }
+            } else if (attempt.getStatus() == AttemptInputDto.Status.EASY){
+                progress.setInterval(INITIAL_REVIEW_INTERVAL);
+                progress.setStatus(Progress.Status.REVIEWING);
+            }
+
+            progress.setDue(LocalDateTime.now().plusMinutes(progress.getInterval()));
+        } else {
+            // TODO: implement REVIEWING
+        }
 
         try {
             progressRepository.saveAndFlush(progress);

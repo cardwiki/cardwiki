@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
+@Table(name = "progress")
 public class Progress {
     public static final String FKNAME_USER = "FK_PROGRESS_USER";
     public static final String FKNAME_CARD = "FK_PROGRESS_CARD";
@@ -35,6 +36,9 @@ public class Progress {
 
     public Progress(Id id) {
         this.id = id;
+        easinessFactor = 250;
+        status = Status.LEARNING;
+        ivl = 1;
     }
 
     public int getInterval() {
