@@ -1,0 +1,41 @@
+<div *ngIf="error" class="alert alert-warning alert-dismissible fade show" (click)=vanishError() role="alert">
+  <strong>Error:</strong> {{errorMessage}}
+  <button class="btn-primary" (click)="vanishError()">Dismiss</button>
+</div>
+
+<div *ngIf="category && !error" class="container-md-9 mt-4 pt-4 pb-4 pl-4 pr-4">
+  <div class="card rounded pl-5 pt-2">
+    <div class="col-md-9 mx-auto">
+      <div class="row">
+        <h2>Category {{category.name}}:</h2>
+        <div>
+          <a routerLink="/categories/{{category.id}}/">
+            <button class="btn-link ml-3 mt-2">view details</button>
+          </a>
+        </div>
+      </div>
+      <div>
+        <div class="row pt-2">
+          <div>
+            <h3>Subcategories</h3>
+          </div>
+          <div>
+            <a routerLink="/categories/{{category.id}}/subcategories">
+              <button class="btn-link ml-3">view all</button>
+            </a>
+          </div>
+        </div>
+        <div *ngIf="category.children" class="row pt-3">
+          <div>
+            <app-list
+              [list]="filteredList"
+              [specs]="specs"
+              [path]="'categories'"
+            >
+            </app-list>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

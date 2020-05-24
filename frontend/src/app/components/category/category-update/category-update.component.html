@@ -1,11 +1,11 @@
 <app-category-form
-  *ngIf="!error && category"
+  *ngIf="!result.error && result.category"
   [mode]="editCategoryMode"
-  [category]="category"
+  [category]="result.category"
   [messages]="messages"
 >
 </app-category-form>
 
-<div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
-  {{errorMessage}}
+<div *ngIf="result.error" class="alert alert-danger alert-dismissible fade show" role="alert">
+  {{result.errorMessage}}
 </div>

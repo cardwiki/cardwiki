@@ -27,6 +27,9 @@ import { DeckPreviewComponent } from './components/deck-preview/deck-preview.com
 import { CategoryListComponent } from './components/category/category-list/category-list.component';
 import { ListComponent } from './components/category/list/list.component';
 import { CategoryDetailsComponent } from './components/category/category-details/category-details.component';
+import { ListSearchComponent } from './components/category/list-search/list-search.component';
+import { CategorySubcategoriesComponent } from './components/category/category-subcategories/category-subcategories.component';
+import { CategoryDecksComponent } from './components/category/category-decks/category-decks.component';
 
 @NgModule({
   declarations: [
@@ -51,6 +54,9 @@ import { CategoryDetailsComponent } from './components/category/category-details
     ListComponent,
     CategoryDetailsComponent,
     CardEditComponent,
+    ListSearchComponent,
+    CategorySubcategoriesComponent,
+    CategoryDecksComponent,
   ],
   imports: [
     BrowserModule,

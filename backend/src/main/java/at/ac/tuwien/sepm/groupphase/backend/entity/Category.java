@@ -29,7 +29,7 @@ public class Category {
     @JoinColumn(name="created_by", referencedColumnName="id", updatable = false)
     private User createdBy;
 
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Category parent;
 
     @OrderBy("LOWER(name) ASC")

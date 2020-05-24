@@ -14,7 +14,7 @@ import * as $ from 'jquery';
 export class CategoryFormComponent implements OnInit {
 
   @Input() mode: String;
-  @Input() category: Category = new Category(null, new Category(null));
+  @Input() category: Category;
   @Input() messages: { header: string, success: string, error: string };
   categoryForm: FormGroup;
   submitted: boolean;
@@ -164,6 +164,7 @@ export class CategoryFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.vanishResult();
+    console.log(this.category);
   }
 
   onRefresh(): void {

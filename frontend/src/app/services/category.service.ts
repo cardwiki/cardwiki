@@ -30,6 +30,26 @@ export class CategoryService {
 //  }
 
   /**
+   * fetches the details of a Category
+   * @param id of the Category to find
+   * @return object containing the Category found or the error thrown
+   */
+  doSearch(id: number, filter: string = null) {
+    const result = { category: null, error: false, errorMessage: '' };
+    this.getCategoryById(id)
+      .subscribe((category) => {
+          category.id = id;
+          result.category = category;
+        },
+        (error) => {
+          console.log(error);
+          result.error = true;
+          result.errorMessage = this.handleError(error);
+        });
+    return result;
+  }
+
+  /**
    * Handles errors returned by the endpoint
    * @param error returned
    * @return string containing the error message
