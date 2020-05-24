@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface DeckService {
+
     /**
      * Find a single card deck by id.
      *
@@ -34,4 +35,13 @@ public interface DeckService {
      * @throws UserNotFoundException if no authenticated user could be found
      */
     Deck create(Deck deck);
+
+    /**
+     * Update a Deck
+     *
+     * @param id of the deck to update
+     * @param deckUpdate to update
+     * @return updated deck
+     */
+    Deck update(Long id, Deck deckUpdate);
 }

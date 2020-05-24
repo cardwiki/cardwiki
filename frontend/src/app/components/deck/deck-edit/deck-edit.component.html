@@ -1,0 +1,32 @@
+<h1 class="mt-5 mb-5">Edit deck</h1>
+
+<form *ngIf="deck">
+  <div class="form-group w-75">
+    <label for="deck-edit-name">Name</label>
+    <input type="text" class="form-control" id="deck-edit-name" name="deck-edit-name" [(ngModel)]="deck.name" required/>
+  </div>
+
+  <div class="form-group w-75">
+    <label class="mt-5" for="deck-add-category">Categories</label>
+    <div class="input-group" *ngIf="categories">
+      <select class="custom-select" id="deck-add-category" name="deck-add-category" [(ngModel)]="selectedCategory">
+        <option *ngFor="let category of categories" [ngValue]="category">{{category.name}}</option>
+      </select>
+      <div class="input-group-append">
+        <button class="btn btn-outline-secondary" type="button" (click)="addCategory()">Add Category</button>
+      </div>
+    </div>
+
+    <ul class="list-group mt-2">
+      <li class="list-group-item list-group-item-action list-group-item-secondary d-flex justify-content-between align-items-center" *ngFor="let category of deck.categories">
+        {{category.name}}
+        <div>
+          <button type="button" class="btn btn-sm btn-light" (click)="removeCategory($event, category)"><i class="fas fa-trash-alt"></i> Remove</button>
+        </div>
+      </li>
+    </ul>
+
+  </div>
+
+  <button type="submit" class="btn btn-light" (click)="save()">Save changes</button>
+</form>

@@ -1,9 +1,10 @@
 package at.ac.tuwien.sepm.groupphase.backend.unittests;
 
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategorySimpleDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckInputDto;
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.CategoryMapper;
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckUpdateDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.DeckMapper;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import org.junit.jupiter.api.Test;
@@ -24,9 +25,6 @@ public class DeckMappingTest extends TestDataGenerator {
     @Autowired
     private DeckMapper deckMapper;
 
-    @Autowired
-    private CategoryMapper categoryMapper;
-
     @Test
     public void givenNothing_whenMapDeckToDeckDto_thenDtoHasAllProperties() {
         Deck deck = givenDeck();
@@ -38,9 +36,14 @@ public class DeckMappingTest extends TestDataGenerator {
             () -> assertEquals(deck.getCreatedAt(), deckDto.getCreatedAt()),
             () -> assertEquals(deck.getUpdatedAt(), deckDto.getUpdatedAt()),
             () -> assertEquals(
-                deck.getCategories().stream()
-                    .map((x) -> categoryMapper.categoryToCategorySimpleDto(x))
-                    .collect(Collectors.toList()),
+                deck.getCategories().stream().map(
+                    (x) -> {
+                        CategorySimpleDto dto = new CategorySimpleDto();
+                        dto.setId(x.getId());
+                        dto.setName(x.getName());
+                        return dto;
+                    }
+                ).collect(Collectors.toList()),
                 deckDto.getCategories()
             )
         );
@@ -53,5 +56,15 @@ public class DeckMappingTest extends TestDataGenerator {
         deckInputDto.setName(name);
         Deck deck = deckMapper.deckInputDtoToDeck(deckInputDto);
         assertEquals(deckInputDto.getName(), deck.getName());
+    }
+
+    @Test
+    public void givenDeckUpdateDto_whenMapToDeck_thenDeckHasAllProperties() {
+        DeckUpdateDto deckUpdateDto = new DeckUpdateDto();
+        deckUpdateDto.setName("Test Deck");
+
+        Deck deck = deckMapper.deckUpdateDtoToDeck(deckUpdateDto);
+
+        assertEquals(deckUpdateDto.getName(), deck.getName());
     }
 }

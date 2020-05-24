@@ -3,6 +3,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Router,ActivatedRoute } from '@angular/router';
 import {AuthService} from '../../services/auth.service';
 import { OAuthProviders } from 'src/app/dtos/oauthProviders';
+import {parse as parseCookie} from 'cookie';
 
 @Component({
   selector: 'app-login',
@@ -25,6 +26,7 @@ export class LoginComponent implements OnInit {
     this.authService.getAuthProviders().subscribe(providers => this.authProviders = providers);
     this.route.queryParams.subscribe(params => {
       if ('success' in params){
+        this.authService.setToken(parseCookie(document.cookie).token);
         this.authService.whoAmI().subscribe(info => {
           // TODO: cache info in localStorage
           if (info.authId === null)
@@ -34,7 +36,7 @@ export class LoginComponent implements OnInit {
           } else {
             // TODO: use proper dialog
             let username = prompt('choose your username');
-            this.authService.register(info.authId, username).subscribe(status => {
+            this.authService.register(username).subscribe(status => {
               // TODO: handle errors
               this.router.navigate(['/']);
             });

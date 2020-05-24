@@ -1,8 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.repository;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
-import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -12,6 +10,15 @@ import java.util.Optional;
 
 @Repository
 public interface CardRepository extends JpaRepository<Card, Long> {
+
+    /**
+     * Find cards for a specific deck
+     *
+     * @param deckId of the deck
+     * @return list of cards of the deck
+     */
+    List<Card> findCardsByDeck_Id(Long deckId);
+
     /**
      * Find card using id and include revisionSet
      *

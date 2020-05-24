@@ -3,19 +3,17 @@ package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
 import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
-import at.ac.tuwien.sepm.groupphase.backend.repository.RevisionRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.CardService;
 import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.invoke.MethodHandles;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class SimpleCardService implements CardService {
@@ -58,6 +56,27 @@ public class SimpleCardService implements CardService {
     }
 
     @Override
+    public List<Card> findCardsByDeckId(Long deckId) {
+        LOGGER.debug("Find all cards for deck with id {}", deckId);
+        return cardRepository.findCardsByDeck_Id(deckId);
+    }
+
+    @Override
+    @Transactional
+    public Card addDeleteRevisionToCard(Long deckId, Long cardId) {
+        LOGGER.debug("Add delete-revision to card with id {} from deck with id {}", cardId, deckId);
+        Card card = findOne(deckId, cardId);
+        User user = userService.loadCurrentUser();
+
+        Revision revision = new Revision();
+        revision.setCard(card);
+        revision.setMessage("Deleted");
+        card.setLatestRevision(revision);
+        revision.setCreatedBy(user);
+
+        return cardRepository.save(card);
+    }
+
     @Transactional
     public Card findOne(Long deckId, Long cardId) {
         LOGGER.debug("Find card with id {} in deck with id {}", deckId, cardId);

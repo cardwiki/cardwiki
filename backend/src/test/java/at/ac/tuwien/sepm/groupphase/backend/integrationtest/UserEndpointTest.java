@@ -37,7 +37,7 @@ public class UserEndpointTest extends TestDataGenerator {
         input.put("admin", false);
 
         mvc.perform(post("/api/v1/users")
-            .with(mockLogin(USER_ROLES, "123"))
+            .with(mockLogin(USER_ROLES, "foo:123"))
             .contentType("application/json").content(input.toString()))
         .andExpect(status().is(201))
         .andExpect(jsonPath("$.username").value("test"))
@@ -53,7 +53,7 @@ public class UserEndpointTest extends TestDataGenerator {
         input.put("admin", false);
 
         mvc.perform(post("/api/v1/users")
-            .with(mockLogin(USER_ROLES, "123"))
+            .with(mockLogin(USER_ROLES, "foo:123"))
             .contentType("application/json").content(input.toString()))
             .andExpect(status().is(400));
     }
@@ -66,7 +66,7 @@ public class UserEndpointTest extends TestDataGenerator {
         input.put("admin", false);
 
         mvc.perform(post("/api/v1/users")
-            .with(mockLogin(USER_ROLES, "123"))
+            .with(mockLogin(USER_ROLES, "foo:123"))
             .contentType("application/json").content(input.toString()))
             .andExpect(status().is(400));
     }
@@ -79,7 +79,7 @@ public class UserEndpointTest extends TestDataGenerator {
         input.put("admin", false);
 
         mvc.perform(post("/api/v1/users")
-            .with(mockLogin(USER_ROLES, "123"))
+            .with(mockLogin(USER_ROLES, "foo:123"))
             .contentType("application/json").content(input.toString()))
             .andExpect(status().is(400));
     }
@@ -92,7 +92,7 @@ public class UserEndpointTest extends TestDataGenerator {
         input.put("admin", false);
 
         mvc.perform(post("/api/v1/users")
-            .with(mockLogin(USER_ROLES, "123"))
+            .with(mockLogin(USER_ROLES, "foo:123"))
             .contentType("application/json").content(input.toString()))
             .andExpect(status().is(400));
     }

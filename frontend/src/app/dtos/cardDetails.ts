@@ -9,6 +9,6 @@ export class CardDetails extends CardContent {
     public textFront: string,
     public textBack: string,
     public revisions: RevisionSimple[]) {
-      super(textFront, textBack)
+      super(textFront, textBack);
   }
 }

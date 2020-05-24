@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -29,12 +30,13 @@ public class UserEndpoint {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     @ApiOperation(value = "Register the authenticated user")
-    public UserOutputDto register(Authentication authentication, @Valid @RequestBody UserInputDto userInputDto) {
-        if (authentication == null)
+    public UserOutputDto register(Authentication token, @Valid @RequestBody UserInputDto userInputDto) {
+        if (token == null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not authenticated");
         User u = userMapper.userInputDtoToUser(userInputDto);
-        u.setAuthId(authentication.getName());
-        return userMapper.userToUserOutputDto(userService.createUser(u));
+        u.setAuthId(SecurityContextHolder.getContext().getAuthentication().getName());
+        u = userService.createUser(u);
+        return userMapper.userToUserOutputDto(u);
     }
 
     @Secured("ROLE_USER")

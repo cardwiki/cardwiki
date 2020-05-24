@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface DeckRepository extends JpaRepository<Deck, Long> {
@@ -19,4 +20,12 @@ public interface DeckRepository extends JpaRepository<Deck, Long> {
      */
     @EntityGraph(attributePaths = {"createdBy", "categories"})
     List<Deck> findByNameContainingIgnoreCase(String name, Pageable pageable);
+
+    /**
+     * Find a specific deck by id
+     * @param deckId of the deck to find
+     * @return deck found
+     */
+    @EntityGraph(attributePaths = {"categories"})
+    Optional<Deck> findById(Long deckId);
 }

@@ -1,0 +1,62 @@
+<div class="container mt-5 mb-5" *ngIf="deck">
+  <div class="row justify-content-between">
+    <div class="col">
+      <h1>{{deck.name}}</h1>
+    </div>
+    <div class="col">
+      <div class="btn-toolbar float-right">
+        <a routerLink="/decks/{{deck.id}}/edit" class="btn btn-light float-right mr-1"><i class="fas fa-pencil-alt"></i> Edit</a>
+        <button type="button" class="btn btn-light float-right mr-1"><i class="far fa-star"></i> Save</button>
+        <button type="button" class="btn btn-light mr-1">Fork</button>
+        <button type="button" class="btn btn-link">View History</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-3">
+    <h5 ><a routerLink="/categories/{{category.id}}" class="badge badge-light border mr-1" *ngFor="let category of deck.categories" style="font-weight:normal">{{category.name}}</a></h5>
+  </div>
+</div>
+
+<div class="container mt-5 mb-3">
+  <div class="row justify-content-between">
+    <div class="col">
+      <div class="row align-items-center">
+        <div class="progress mr-2" style="height: 30px; width: 200px">
+          <div class="progress-bar bg-secondary" role="progressbar" style="width: 30%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">30%</div>
+        </div>
+        <button type="button" class="btn btn-light mr-1">Learn</button>
+      </div>
+    </div>
+    <div class="col" *ngIf="deck">
+      <div class="btn-toolbar float-right">
+        <button type="button" class="btn btn-light float-right mr-1"><i class="fas fa-undo"></i> Flip</button>
+        <a routerLink="/decks/{{deck.id}}/cards/new" class="btn btn-light float-right"><i class="fas fa-plus"></i> Add new card</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<table class="table table-hover table-striped" *ngIf="cards">
+  <thead class="thead-light">
+  <tr class="">
+    <th scope="col">Front</th>
+    <th scope="col">Back</th>
+    <th scope="col" class="col-2"></th>
+  </tr>
+  </thead>
+  <tbody *ngFor="let card of cards">
+  <tr *ngIf="card.textFront || card.textBack" class="">
+    <td class="align-middle">{{card.textFront}}</td>
+    <td class="align-middle">{{card.textBack}}</td>
+    <td>
+      <div class="btn-group float-right">
+        <a routerLink="/decks/{{deck.id}}/cards/{{card.id}}/edit" class="btn btn-light"><i class="fas fa-pencil-alt"></i></a>
+        <button type="button" class="btn btn-light"><i class="far fa-clone"></i></button>
+        <button type="button" class="btn btn-light"><i class="fas fa-history"></i></button>
+        <button type="button" class="btn btn-light" (click)="removeCard($event, card)"><i class="fas fa-trash-alt"></i></button>
+      </div>
+    </td>
+  </tr>
+  </tbody>
+</table>

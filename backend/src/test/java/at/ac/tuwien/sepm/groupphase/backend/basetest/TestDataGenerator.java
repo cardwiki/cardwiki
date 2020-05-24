@@ -7,6 +7,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -15,6 +16,7 @@ import java.time.format.DateTimeParseException;
 /**
  * Provides repositories to the TestData interface
  */
+@Transactional
 public abstract class TestDataGenerator {
     @Autowired
     private UserRepository userRepository;
@@ -37,7 +39,7 @@ public abstract class TestDataGenerator {
         user.setId(userCounter);
         user.setUsername("username-" + userCounter);
         user.setDescription("some user");
-        user.setAuthId("auth" + userCounter);
+        user.setAuthId("service:" + userCounter);
         return userRepository.saveAndFlush(user);
     }
 
@@ -106,7 +108,7 @@ public abstract class TestDataGenerator {
         userCounter++;
         User user = new User();
         user.setId(userCounter);
-        user.setAuthId("auth-" + userCounter);
+        user.setAuthId("service:" + userCounter);
         user.setUsername("username" + userCounter);
         user.setAdmin(false);
         user.setEnabled(true);

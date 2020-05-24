@@ -41,10 +41,10 @@ public class AuthEndpointTest {
     public void whoAmIUser() throws Exception {
         mvc.perform(
             get("/api/v1/auth/whoami")
-            .with(mockLogin(USER_ROLES, "foo"))
+            .with(mockLogin(USER_ROLES, "foo:123"))
         )
             .andExpect(status().is(200))
-            .andExpect(jsonPath("$.authId").value("foo"))
+            .andExpect(jsonPath("$.authId").value("foo:123"))
             .andExpect(jsonPath("$.hasAccount").value(true))
             .andExpect(jsonPath("$.admin").value(false));
     }
@@ -53,10 +53,10 @@ public class AuthEndpointTest {
     public void whoAmIAdmin() throws Exception {
         mvc.perform(
             get("/api/v1/auth/whoami")
-                .with(mockLogin(ADMIN_ROLES, "foo"))
+                .with(mockLogin(ADMIN_ROLES, "foo:123"))
         )
             .andExpect(status().is(200))
-            .andExpect(jsonPath("$.authId").value("foo"))
+            .andExpect(jsonPath("$.authId").value("foo:123"))
             .andExpect(jsonPath("$.hasAccount").value(true))
             .andExpect(jsonPath("$.admin").value(true));
     }
