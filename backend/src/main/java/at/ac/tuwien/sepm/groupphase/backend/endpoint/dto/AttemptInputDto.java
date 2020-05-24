@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class AttemptInputDto {
+    private Long cardId;
     private Status status;
 
     public enum Status {

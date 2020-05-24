@@ -17,6 +17,30 @@ public class Progress {
 
     private LocalDateTime due;
 
+    public Id getId() {
+        return id;
+    }
+
+    public void setId(Id id) {
+        this.id = id;
+    }
+
+    public Long getFactor() {
+        return factor;
+    }
+
+    public void setFactor(Long factor) {
+        this.factor = factor;
+    }
+
+    public LocalDateTime getDue() {
+        return due;
+    }
+
+    public void setDue(LocalDateTime due) {
+        this.due = due;
+    }
+
     @Embeddable
     public static class Id implements Serializable {
         @OneToOne
