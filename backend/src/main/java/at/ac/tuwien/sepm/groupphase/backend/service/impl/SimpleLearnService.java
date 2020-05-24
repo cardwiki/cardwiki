@@ -37,8 +37,9 @@ public class SimpleLearnService implements LearnService {
         throw new UnsupportedOperationException("not implemented yet");
     }
 
-    private static final int LEARNING_STEPS[] = {1, 10};
-    private static final int INITIAL_REVIEW_INTERVAL = 1;
+    private static final int LEARNING_STEPS[] = {1, 10}; // in minutes
+    private static final int GRADUATING_INTERVAL = 1; // in days
+    private static final int EASY_INTERVAL = 4; // in days
 
     @Override
     public void saveAttempt(AttemptInputDto attempt) {
@@ -58,7 +59,7 @@ public class SimpleLearnService implements LearnService {
                 progress.setInterval(LEARNING_STEPS[0]);
             } else if (attempt.getStatus() == AttemptInputDto.Status.GOOD){
                 if (progress.getInterval() >= LEARNING_STEPS[LEARNING_STEPS.length - 1]){
-                    progress.setInterval(INITIAL_REVIEW_INTERVAL);
+                    progress.setInterval(GRADUATING_INTERVAL);
                     progress.setStatus(Progress.Status.REVIEWING);
                 } else {
                     for (int min : LEARNING_STEPS){
@@ -69,7 +70,7 @@ public class SimpleLearnService implements LearnService {
                     }
                 }
             } else if (attempt.getStatus() == AttemptInputDto.Status.EASY){
-                progress.setInterval(INITIAL_REVIEW_INTERVAL);
+                progress.setInterval(EASY_INTERVAL);
                 progress.setStatus(Progress.Status.REVIEWING);
             }
 
