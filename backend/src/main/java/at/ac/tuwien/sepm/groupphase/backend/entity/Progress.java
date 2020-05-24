@@ -14,11 +14,17 @@ public class Progress {
     @EmbeddedId
     private Id id;
 
-    @NotNull
-    private Long factor;
+    private long factor;
 
     @NotNull
     private LocalDateTime due;
+
+    public Progress(){
+    }
+
+    public Progress(Id id) {
+        this.id = id;
+    }
 
     public Id getId() {
         return id;
@@ -28,11 +34,11 @@ public class Progress {
         this.id = id;
     }
 
-    public Long getFactor() {
+    public long getFactor() {
         return factor;
     }
 
-    public void setFactor(Long factor) {
+    public void setFactor(long factor) {
         this.factor = factor;
     }
 

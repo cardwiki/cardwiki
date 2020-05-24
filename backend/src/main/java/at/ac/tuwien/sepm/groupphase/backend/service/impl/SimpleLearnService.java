@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
+import java.time.LocalDateTime;
 
 @Service
 public class SimpleLearnService implements LearnService {
@@ -40,8 +41,14 @@ public class SimpleLearnService implements LearnService {
         Card card = new Card();
         card.setId(attempt.getCardId());
 
-        Progress progress = new Progress();
-        progress.setId(new Progress.Id(user, card));
+        Progress.Id id = new Progress.Id(user, card);
+        // return 400 and proper error message if card does not exist
+        // catch give foreign key constraint name and catch ConstraintViolationException
+
+        Progress progress = progressRepository.findById(id).orElse(new Progress(id));
+        // TODO: implement spaced repetition
+        progress.setDue(LocalDateTime.now().plusHours(3));
+        progress.setFactor(1);
         progressRepository.saveAndFlush(progress);
     }
 }
