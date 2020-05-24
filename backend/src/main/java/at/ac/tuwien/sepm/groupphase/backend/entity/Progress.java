@@ -16,7 +16,8 @@ public class Progress {
 
     private int easinessFactor;
 
-    private int interval;
+    // named ivl instead of interval because that's a reserved SQL keyword
+    private int ivl;
 
     public enum Status {
         LEARNING,
@@ -37,11 +38,11 @@ public class Progress {
     }
 
     public int getInterval() {
-        return interval;
+        return ivl;
     }
 
     public void setInterval(int interval) {
-        this.interval = interval;
+        this.ivl = interval;
     }
 
     public Status getStatus() {
