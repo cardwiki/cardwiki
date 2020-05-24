@@ -1,3 +1,4 @@
+<app-error *ngIf="result.error" [errorMessage]="result.errorMessage" (click)="vanishError()"></app-error>
 <app-category-form
   *ngIf="!result.error && result.category"
   [mode]="editCategoryMode"

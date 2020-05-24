@@ -1,7 +1,4 @@
-<div *ngIf="result.error" class="alert alert-warning alert-dismissible fade show" (click)=vanishError() role="alert">
-  <strong>Error:</strong> {{result.errorMessage}}
-  <button class="btn-primary" (click)="vanishError()">Dismiss</button>
-</div>
+<app-error *ngIf="result.error" [errorMessage]="result.errorMessage" (click)="vanishError()"></app-error>
 <div *ngIf="result.category && !result.error" class="container-md-9 mt-4 pt-4 pb-4 pl-4 pr-4">
   <div class="card rounded pl-5 pt-2">
     <div class="col-md-9 mx-auto">

@@ -1,8 +1,4 @@
-<div *ngIf="error" class="alert alert-warning alert-dismissible fade show" (click)=vanishError() role="alert">
-  <strong>{{messages.error}}: </strong>{{ errorMessage }}
-  <button class="btn-primary" (click)="vanishError()">Dismiss</button>
-</div>
-
+<app-error *ngIf="error" [errorMessage]="errorMessage" (click)="vanishError()"></app-error>
 <div *ngIf="!error && specs" class="row ml-0">
   <div class="column">
     <div class="row ml-0">

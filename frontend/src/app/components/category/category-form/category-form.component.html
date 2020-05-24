@@ -1,8 +1,4 @@
-<div *ngIf="error" class="alert alert-warning alert-dismissible fade show" (click)=vanishResult() role="alert">
-  <strong>{{messages.error}}</strong> {{ errorMessage }}
-  <button class="btn-primary" (click)="vanishResult()">Dismiss</button>
-</div>
-
+<app-error *ngIf="error" [errorMessage]="errorMessage" (click)="vanishResult()"></app-error>
 <div *ngIf="!error && submitted" class="alert alert-success alert-dismissible fade show" role="alert">
   <strong>{{messages.success}}: {{result.name}}</strong>
   <div>

@@ -22,6 +22,12 @@ export class CategoryUpdateComponent implements OnInit {
     console.log('result', this.result);
   }
 
+  vanishError() {
+    if (this.result) {
+      this.result.error = false;
+    }
+  }
+
   ngOnInit(): void {
     this.messages = { header: 'Update category', success: 'Category successfully updated', error: 'Error updating category'};
   }
