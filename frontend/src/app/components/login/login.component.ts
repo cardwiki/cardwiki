@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Router,ActivatedRoute } from '@angular/router';
 import {AuthService} from '../../services/auth.service';
 import { OAuthProviders } from 'src/app/dtos/oauthProviders';
@@ -20,10 +20,16 @@ export class LoginComponent implements OnInit {
   username: string;
 
   constructor(private formBuilder: FormBuilder, private authService: AuthService, private router: Router, private route: ActivatedRoute) {
-    this.registerForm = this.formBuilder.group({
-      username: ''
+    this.registerForm = new FormGroup({
+      'username': new FormControl(this.username, [
+        Validators.required,
+        Validators.minLength(1),
+        Validators.pattern(/[a-z0-9_-]+/)
+      ]),
     });
   }
+
+  get formUsername() { return this.registerForm.get('username'); }
 
   ngOnInit(): void {
     this.authService.getAuthProviders().subscribe(providers => this.authProviders = providers);

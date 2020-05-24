@@ -24,13 +24,22 @@
         </div>
 
         <div *ngIf="oAuthInfo" class="card-body px-4">
-          <form [formGroup]="registerForm" (ngSubmit)="register(username.value)">
+          <form [formGroup]="registerForm" (ngSubmit)="register(registerForm.value.username)">
             <div class="form-group">
               <label for="usernameInput">Please choose a username to complete your registration:</label>
-              <input type="text" class="form-control" id="usernameInput" aria-describedby="usernameHelp" placeholder="Enter username" pattern="[a-z0-9_-]+" required="" #username>
+              <input type="text" class="form-control" id="usernameInput" aria-describedby="usernameHelp" placeholder="Enter username" formControlName="username" required>
               <small id="usernameHelp" class="form-text text-muted">Other users will be able to see this.</small>
+              <div *ngIf="formUsername.invalid && (formUsername.dirty || formUsername.touched)"
+                   class="alert alert-danger">
+                <div *ngIf="formUsername.errors.required">
+                  Name is required.
+                </div>
+                <div *ngIf="formUsername.errors.pattern">
+                  Name must only contain alphanumeric characters, underscores or dashes.
+                </div>
+              </div>
             </div>
-            <button type="submit" class="btn btn-outline-dark">Register</button>
+            <button type="submit" class="btn btn-outline-dark" [disabled]="registerForm.invalid">Register</button>
           </form>
         </div>
 
