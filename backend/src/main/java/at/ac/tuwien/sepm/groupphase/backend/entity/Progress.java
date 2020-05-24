@@ -4,6 +4,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -13,8 +14,10 @@ public class Progress {
     @EmbeddedId
     private Id id;
 
+    @NotNull
     private Long factor;
 
+    @NotNull
     private LocalDateTime due;
 
     public Id getId() {

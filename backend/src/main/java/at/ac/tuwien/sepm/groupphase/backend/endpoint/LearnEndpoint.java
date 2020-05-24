@@ -9,6 +9,7 @@ import io.swagger.annotations.Authorization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,8 +31,10 @@ public class LearnEndpoint {
 
     @Secured("ROLE_USER")
     @PostMapping("/attempt")
+    @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "Submit an attempt at recalling a card", authorizations = {@Authorization(value = "apiKey")})
     public void attempt(@Valid @RequestBody AttemptInputDto attempt){
+        LOGGER.info("POST /api/v1/learn body: {}", attempt);
         learnService.saveAttempt(attempt);
     }
 
@@ -39,6 +42,7 @@ public class LearnEndpoint {
     @GetMapping("/next")
     @ApiOperation(value = "Get the next card of a deck to learn", authorizations = {@Authorization(value = "apiKey")})
     public CardDetailsDto getNextCard(@RequestParam Long deckId){
+        LOGGER.info("GET /api/v1/learn/next?deckId={}", deckId);
         return cardMapper.cardToCardDetailsDto(learnService.findNextCardByDeckId(deckId));
     }
 }
