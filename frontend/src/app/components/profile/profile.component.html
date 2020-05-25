@@ -1,0 +1,53 @@
+<div class="container" *ngIf="profile">
+  <h2 class="mt-5 mx-3">{{profile.username}}</h2>
+
+  <div class="row">
+    <div class="cardcontainer col-md-8 col-xl-4 col-12">
+      <div class="card mt-4">
+        <div class="card-header">
+          Bio
+        </div>
+        <div class="card-body">
+          <p class="card-text">{{profile.description}}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cardcontainer col-md-4 col-xl-2 col-12">
+      <div class="card mt-4">
+        <div class="card-header">
+          Decks
+        </div>
+        <ul class="list-group list-group-flush">
+          <li *ngFor="let deck of decks" class="list-group-item">
+            <a routerLink="/decks/{{deck.id}}">{{deck.name}}</a>
+          </li>
+        </ul>
+        <button *ngIf="!maxDecksLoaded" class="card-footer btn p-1" (click)="loadDecks()">
+          Load more...
+        </button>
+      </div>
+    </div>
+
+    <div class="cardcontainer col-xl-6 col-12">
+      <div class="card mt-4">
+        <div class="card-header">
+          Revisions
+        </div>
+        <ul class="list-group list-group-flush">
+          <li *ngFor="let revision of revisions" class="list-group-item">
+            {{revision.createdAt | date : 'medium' }}:
+            <a routerLink="/decks/{{revision.card.deck.id}}/cards/{{revision.card.id}}/revision?id={{revision.id}}">{{revision.message}}</a>
+            card
+            <a routerLink="/decks/{{revision.card.deck.id}}/cards/{{revision.card.id}}">{{revision.card.textFront}}</a>
+            in
+            <a routerLink="/decks/{{revision.card.deck.id}}">{{revision.card.deck.name}}</a>.
+          </li>
+        </ul>
+        <button *ngIf="!maxRevisionsLoaded" class="card-footer btn p-1" (click)="loadRevisions()">
+          Load more...
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -17,6 +17,7 @@ import {CategoryUpdateComponent} from './components/category/category-update/cat
 import {CategoryListComponent} from './components/category/category-list/category-list.component';
 import {CategoryDetailsComponent} from './components/category/category-details/category-details.component';
 import { MarkdownSyntaxComponent } from './components/help/markdown-syntax/markdown-syntax.component';
+import {ProfileComponent} from "./components/profile/profile.component";
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
@@ -36,6 +37,7 @@ const routes: Routes = [
   {path: 'categories/:id', component: CategoryDetailsComponent},
   {path: 'categories/:id/edit', canActivate: [AuthGuard], component: CategoryUpdateComponent},
   {path: 'help/markdown-syntax', component: MarkdownSyntaxComponent},
+  {path: 'users/:username/profile', component: ProfileComponent},
   {path: '**', component: PageNotFoundComponent},
 ];
 

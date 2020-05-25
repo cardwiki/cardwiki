@@ -32,6 +32,7 @@ import { ListComponent } from './components/category/list/list.component';
 import { CategoryDetailsComponent } from './components/category/category-details/category-details.component';
 import { Md2htmlPipe } from './pipes/md2html.pipe';
 import { MarkdownSyntaxComponent } from './components/help/markdown-syntax/markdown-syntax.component';
+import { ProfileComponent } from './components/profile/profile.component';
 
 
 @NgModule({
@@ -62,6 +63,7 @@ import { MarkdownSyntaxComponent } from './components/help/markdown-syntax/markd
     CardEditComponent,
     Md2htmlPipe,
     MarkdownSyntaxComponent,
+    ProfileComponent,
   ],
   imports: [
     BrowserModule,
