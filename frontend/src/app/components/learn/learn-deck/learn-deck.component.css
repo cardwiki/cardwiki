@@ -1,0 +1,20 @@
+h2.heading {
+  font-size: 4vw;
+}
+.card {
+  background-color: #a94442;
+  height: 40vh;
+  widht: 10vw;
+}
+.text-body {
+  padding: 2vh 2vw;
+}
+#button1, #button2, #button3 {
+  margin-right: 3vw;
+  margin-left: 3vw;
+  height: 38px;
+  width: 80px;
+}
+#x {
+  background-color: #42A948;
+}

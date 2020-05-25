@@ -1,0 +1,39 @@
+<div class="container mt-5 mb-5" *ngIf="deck && card" (click)="onFlip()">
+  <div class="row justify-content-between">
+    <div class="col">
+      <p class="heading">Learn Deck</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <h2 class="heading">{{deck.name}}</h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <div class="card card-deck rounded justify-content-center align-content-center ml-0">
+        <div class="text-body">{{backside ? card.textBack : card.textFront}}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="flipped" class="container mt-5 mb-5">
+  <div class="row justify-content-center ml-0 mr-0">
+    <div class="btn-group justify-content-center">
+      <div class="col-md-3 text-center" id="button1">
+        <button class="btn btn-outline-info mb-1" (click)="onNext('Again')">Again</button>
+        <p>< 1m</p>
+      </div>
+      <div class="col-md-3 text-center" id="button2">
+        <button class="btn btn-outline-info mb-1" (click)="onNext('Good')">Good</button>
+        <p>< 10m</p>
+      </div>
+      <div class="col-md-3 text-center" id="button3">
+        <button class="btn btn-outline-info mb-1" (click)="onNext('Easy')">Easy</button>
+        <p>4d</p>
+      </div>
+    </div>
+  </div>
+</div>
+
