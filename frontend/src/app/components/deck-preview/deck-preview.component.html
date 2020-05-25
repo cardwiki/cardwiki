@@ -1,2 +1,52 @@
-<p>deck-preview works!</p>
-<p>Viewing deck: {{deckId}}</p>
+<div class="container mt-5 mb-5" *ngIf="deck">
+  <div class="row">
+    <div class="col">
+      <a routerLink="/decks/{{deck.id}}" class="btn btn-light float-left mr-1"><i class="fas fa-arrow-left"></i> Back to {{deck.name}}</a>
+    </div>
+
+    <div class="col">
+      <div class="btn-group float-right">
+        <a routerLink="/decks/{{deck.id}}/cards/{{currentcard.id}}/edit" class="btn btn-light"><i class="fas fa-pencil-alt"></i></a>
+        <button type="button" class="btn btn-light"><i class="fas fa-history"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card text-center mt-3">
+    <div class="card-header">
+      Preview
+    </div>
+    <div class="card-body card-content" (click)="flip(!this.flipped)">
+      <h5 class="card-title my-3" *ngIf="!flipped">{{currentcard.textFront}}</h5>
+      <h5 class="card-title my-3" *ngIf="flipped">{{currentcard.textBack}}</h5>
+    </div>
+
+    <div class="card-footer btn-group p-0">
+        <button (click)="previousCard()" type="button" class="btn btn-light border-right card-navigation">
+          <div class="text-muted">
+            <i class="fas fa-arrow-left"></i> Previous
+          </div>
+        </button>
+
+        <button (click)="nextCard()" type="button" class="btn btn-light border-left card-navigation">
+          <div class="text-muted">
+            Next <i class="fas fa-arrow-right"></i>
+          </div>
+        </button>
+    </div>
+
+    <!--<div class="row">
+      <button (click)="previousCard()" class="btn py-0 col pr-0 border-right card-navigation">
+        <div class="card-footer text-muted">
+          <i class="fas fa-arrow-left"></i> Previous
+        </div>
+      </button>
+
+      <a (click)="nextCard()" class="col pl-0 border-left card-navigation">
+        <div class="card-footer text-muted">
+           Next <i class="fas fa-arrow-right"></i>
+        </div>
+      </a>
+    </div>-->
+  </div>
+</div>

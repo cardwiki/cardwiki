@@ -23,16 +23,17 @@ const routes: Routes = [
   {path: 'about', component: AboutComponent},
   {path: 'search', component: SearchComponent},
   {path: 'login', component: LoginComponent},
-  {path: 'decks/:id/cards/new', component: CardCreateComponent},
+  {path: 'decks/:id/cards/new', component: CardCreateComponent}, //TODO duplicate?
   {path: 'decks/:deckId/cards/:cardId/edit', component: CardEditComponent},
   {path: 'learn', canActivate: [AuthGuard], component: LearnComponent},
-  {path: 'learn/:id', component: DeckPreviewComponent},
-  {path: 'decks/:id/cards/new', canActivate: [AuthGuard], component: CardCreateComponent},
-  {path: 'createCategory', canActivate: [AuthGuard], component: CategoryCreateComponent},
+  {path: 'learn/:id', component: DeckPreviewComponent}, //TODO use decks/:id/learn instead? duplicate?
+  {path: 'decks/:id/cards/new', canActivate: [AuthGuard], component: CardCreateComponent}, //TODO duplicate?
+  {path: 'createCategory', canActivate: [AuthGuard], component: CategoryCreateComponent}, //TODO duplicate?
   {path: 'decks/:id', component: DeckViewComponent},
   {path: 'decks/:id/edit', component: DeckEditComponent},
+  {path: 'decks/:id/preview', component: DeckPreviewComponent},
   {path: 'categories', component: CategoryListComponent},
-  {path: 'categories/new', canActivate: [AuthGuard], component: CategoryCreateComponent},
+  {path: 'categories/new', canActivate: [AuthGuard], component: CategoryCreateComponent}, //TODO duplicate?
   {path: 'categories/:id', component: CategoryDetailsComponent},
   {path: 'categories/:id/edit', canActivate: [AuthGuard], component: CategoryUpdateComponent},
   {path: 'help/markdown-syntax', component: MarkdownSyntaxComponent},
