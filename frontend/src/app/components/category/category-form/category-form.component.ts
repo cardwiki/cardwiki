@@ -54,7 +54,7 @@ export class CategoryFormComponent implements OnInit {
       const payload = new Category(this.categoryForm.value.name, parent);
       this.categoryService.editCategory(payload, this.category.id).subscribe(
         (categoryResult) => {
-          console.log(categoryResult);
+          console.log('Result:', categoryResult);
           this.result = categoryResult;
           this.submitted = true;
           this.error = false;
@@ -69,7 +69,7 @@ export class CategoryFormComponent implements OnInit {
     } else {
       this.categoryService.createCategory(new Category(this.categoryForm.value.name, parent))
         .subscribe((categoryResult) => {
-            console.log(categoryResult);
+            console.log('Result:', categoryResult);
             this.result = categoryResult;
             this.submitted = true;
             this.fetchCategories();

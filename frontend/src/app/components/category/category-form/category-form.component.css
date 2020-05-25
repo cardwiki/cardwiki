@@ -1,8 +1,9 @@
 .fieldContents {
   font-weight: bold;
 }
-.btn-primary[id="createNew"], [id="createSub"] {
-  margin-left: 10px;
+.btn-primary {
+  margin-right: 10px;
+  margin-bottom: 5px;
 }
 .btn-secondary[id="reset"] {
   margin-right: 10px;

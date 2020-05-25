@@ -7,9 +7,12 @@
       <div class="col">
         <div class="row mb-3">
           <div class="list">
-            <form *ngIf="list.length > 0" class="form pl-2" [formGroup]="searchForm" (keydown)="keyDownFunction($event)">
-              <div class="form-group">
-                <label for="search"><div class="mr-1">filter: </div></label>
+            <form *ngIf="list.length > 0" class="form pl-2 mb-2" [formGroup]="searchForm" (keydown)="keyDownFunction($event)">
+              <div class="form-inline">
+                <label for="search">
+                  <div class="mr-1">filter: </div>
+                </label>
+                <div class="input-group flex-grow-1">
               <input
                 type="text"
                 id="search"
@@ -18,16 +21,19 @@
                 autocomplete="off"
                 #searchFormField
               >
+                <div class="input-group-append">
                 <a
                   *ngIf="id"
                   routerLink="/categories/{{id}}/{{path === 'categories' ? 'subcategories' : path}}"
                   [queryParams]="{ filter: searchForm.value['search'] || ''}"
                 >
-                  <button class="submit ml-2 mt-2">search</button>
+                  <button class="btn btn-outline-success mr-2">Search</button>
                 </a>
-                <button type="button" class="btn-secondary ml-2" (click)="onReset()">
+                </div>
+                <button type="button" class="btn btn-outline-secondary" (click)="onReset()">
                   Reset
                 </button>
+                </div>
                 </div>
             </form>
             <app-list

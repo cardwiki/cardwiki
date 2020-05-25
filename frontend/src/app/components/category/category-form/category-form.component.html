@@ -27,7 +27,7 @@
     <span class="anchor" id="formLogin"></span>
     <div class="card rounded-0">
       <div class="card-header">
-        <h3 class="mb-0">{{messages.header}} {{category.name}}</h3>
+        <h3 class="mb-0">{{messages.header}} {{mode === 'Update' ? "'"+category.name+"'" : category.name}}</h3>
       </div>
       <div class="card-body">
 
@@ -99,10 +99,10 @@
                     *ngIf="categoryForm.touched && categoryForm.dirty && categoryForm.valid"
                     type="submit"
                     class="btn btn-success float-left"
-                  > 
+                  >
                     Submit
                   </button>
-                  <button #dismissModal type="button" class="btn-default" data-dismiss="modal">Cancel</button>
+                  <button #dismissModal type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 </div>
               </div>
             </div>

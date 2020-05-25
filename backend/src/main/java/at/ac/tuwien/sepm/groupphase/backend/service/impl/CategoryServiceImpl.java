@@ -75,31 +75,37 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public Category updateCategory(Long id, Category category) {
+    public Category updateCategory(Long id, Category categoryUpdate) {
         LOGGER.debug("Update category with id {}", id);
-        if (!categoryRepository.existsById(id)) throw new CategoryNotFoundException("Category not found.");
+        Category category = findOneById(id);
 
-        Category parent = category.getParent();
-        if (parent != null) {
-            category.setParent(parent);
-            if (parent.getId().equals(id)) {
+        Category parent = null;
+        Category oldParent= category.getParent();
+        if (oldParent != null) {
+            oldParent.getChildren().remove(category);
+        }
+        Category newParent = categoryUpdate.getParent();
+        if (newParent != null) {
+            if (newParent.getId().equals(id)) {
                 throw new IllegalArgumentException("Category cannot be its own parent.");
             }
-            if (categoryRepository.ancestorExistsWithId(id, parent.getId())) {
+            if (categoryRepository.ancestorExistsWithId(id, newParent.getId())) {
                 throw new IllegalArgumentException("Circular Child-Parent relation.");
             }
+            parent = findOneById(newParent.getId());
+            parent.getChildren().add(category);
         }
 
+        category.setParent(parent);
         category.setId(id);
-        category.setName(category.getName().trim().replaceAll(" +", " "));
-        Category result;
+        category.setName(categoryUpdate.getName().trim().replaceAll(" +", " "));
         try {
-            result = categoryRepository.saveAndFlush(category);
+            category = categoryRepository.saveAndFlush(category);
         } catch (DataIntegrityViolationException e) {
             throw new IllegalArgumentException(handleDataIntegrityViolationException(e));
         }
-        Hibernate.initialize(result.getParent());
-        return result;
+        Hibernate.initialize(category.getParent());
+        return category;
     }
 
     private String handleDataIntegrityViolationException (DataIntegrityViolationException e) {

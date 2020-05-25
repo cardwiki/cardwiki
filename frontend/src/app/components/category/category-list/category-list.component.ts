@@ -31,7 +31,7 @@ export class CategoryListComponent implements OnInit {
         console.log('Getting categories.');
         this.categories = categories;
         if (categories) {
-          this.specs = { listSize: categories.length, pageSize: 12, page: 1};
+          this.specs = { listSize: categories.length, pageSize: 20, page: 1};
         }
       },
       (error) => {

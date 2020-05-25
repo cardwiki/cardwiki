@@ -2,6 +2,9 @@ a:any-link {
   color: black;
 }
 .card {
-  background-color: #DDDDDD;
+  background-color: #EEEEEE;
+}
+.className {
+  border: 1px solid grey;
 }
 
