@@ -5,6 +5,7 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {DeckCreateModalComponent} from '../deck/deck-create-modal/deck-create-modal.component';
 import {Observable} from 'rxjs';
 import {Deck} from '../../dtos/deck';
+import { SearchQueryParams } from 'src/app/interfaces/search-query-params';
 
 @Component({
   selector: 'app-header',
@@ -22,10 +23,11 @@ export class HeaderComponent implements OnInit {
 
   onSubmit() {
     console.log('search', this.searchTerm)
+    const queryParams: SearchQueryParams = {
+      name: this.searchTerm
+    }
     this.router.navigate(['/search'], {
-      queryParams: {
-        name: this.searchTerm
-      }
+      queryParams
     })
   }
 
