@@ -1,18 +1,31 @@
-<div class="container mt-5 mb-5" *ngIf="deck && card" (click)="onFlip()">
+<div class="container mt-5 mb-5" *ngIf="deck && card">
   <div class="row justify-content-between">
     <div class="col">
       <p class="heading">Learn Deck</p>
     </div>
   </div>
-  <div class="row">
-    <div class="col">
-      <h2 class="heading">{{deck.name}}</h2>
+  <div class="row ml-0 mr-0">
+    <div class="col-md-12 d-md-inline-flex">
+      <div class="col" >
+        <span id="heading" class="mr-4">
+          {{deck.name}}
+        </span>
+        <span>
+          <button routerLink="/decks/{{deck.id}}" class="btn btn-outline-info float-right mt-2 mr-0"id="detailsButton">
+            View details
+          </button>
+        </span>
+      </div>
     </div>
   </div>
   <div class="row">
     <div class="col">
-      <div class="card card-deck rounded justify-content-center align-content-center ml-0">
-        <div class="text-body">{{backside ? card.textBack : card.textFront}}</div>
+      <div
+        class="card card-deck rounded justify-content-center align-content-center ml-0"
+        (click)="onFlip()"
+        id="learnCard"
+      >
+        <div class="text-body" id="cardBody">{{backside ? card.textBack : card.textFront}}</div>
       </div>
     </div>
   </div>

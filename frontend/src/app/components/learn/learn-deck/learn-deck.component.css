@@ -1,12 +1,25 @@
-h2.heading {
+#heading {
   font-size: 4vw;
 }
-.card {
+
+@media screen and (min-width: 1200px) {
+  #heading {
+    font-size: 48px;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  #heading {
+    font-size: 20px;
+  }
+}
+
+#learnCard {
   background-color: #a94442;
   height: 40vh;
   widht: 10vw;
 }
-.text-body {
+#cardBody {
   padding: 2vh 2vw;
 }
 #button1, #button2, #button3 {
@@ -17,4 +30,7 @@ h2.heading {
 }
 #x {
   background-color: #42A948;
+}
+#detailsButton {
+  margin-bottom: 3vh;
 }

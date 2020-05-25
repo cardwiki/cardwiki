@@ -30,7 +30,6 @@ export class LearnDeckComponent implements OnInit {
   @HostListener('document:keypress', ['$event'])
   handleKeyBoardEvent(event: KeyboardEvent) {
     if (event.key === ' ') {
-      console.log('space');
       this.onFlip();
     } else if (this.flipped) {
       if (event.key === '1') {
@@ -79,6 +78,7 @@ export class LearnDeckComponent implements OnInit {
   }
 
   async triggerNext(status: string) {
+    console.log(status);
     await this.learnService.sendAttemptStatus(new LearnAttempt(this.card.id, status))
       .subscribe(() => {
         console.log('Status ' + status + ' successfully submitted.');
