@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
@@ -34,9 +35,9 @@ public class SimpleLearnService implements LearnService {
     }
 
     @Override
-    public List<Card> findNextCardsByDeckId(Long deckId) {
+    public List<Card> findNextCardsByDeckId(Long deckId, Pageable pageable) {
         LOGGER.debug("Get next card for deck with id {}", deckId);
-        return progressRepository.findNextCards(deckId, PageRequest.of(0, 1));
+        return progressRepository.findNextCards(deckId, pageable);
     }
 
     private static final int[] LEARNING_STEPS = {1, 10}; // in minutes

@@ -9,6 +9,7 @@ import io.swagger.annotations.Authorization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -43,9 +44,9 @@ public class LearnEndpoint {
     @Secured("ROLE_USER")
     @GetMapping("/next")
     @ApiOperation(value = "Get the next card of a deck to learn", authorizations = {@Authorization(value = "apiKey")})
-    public List<CardDetailsDto> getNextCard(@RequestParam Long deckId){
-        LOGGER.info("GET /api/v1/learn/next?deckId={}", deckId);
-        return learnService.findNextCardsByDeckId(deckId).stream()
+    public List<CardDetailsDto> getNextCard(@RequestParam Long deckId, @RequestParam Integer limit, @RequestParam Integer offset){
+        LOGGER.info("GET /api/v1/learn/next?deckId={}&limit={}&offset={}", deckId, limit, offset);
+        return learnService.findNextCardsByDeckId(deckId, PageRequest.of(offset, limit)).stream()
             .map(cardMapper::cardToCardDetailsDto)
             .collect(Collectors.toList());
     }
