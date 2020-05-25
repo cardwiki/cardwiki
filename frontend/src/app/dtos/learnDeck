@@ -1,6 +1,0 @@
-export class LearnDeck {
-  constructor(
-    public deckId: number,
-    public status: string
-  ) { }
-}

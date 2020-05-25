@@ -3,7 +3,8 @@ import {CardSimple} from '../../../dtos/cardSimple';
 import {DeckService} from '../../../services/deck.service';
 import {ActivatedRoute} from '@angular/router';
 import {DeckSimple} from '../../../dtos/deckSimple';
-import {CardService} from '../../../services/card.service';
+import {LearnService} from '../../../services/learn.service';
+import {LearnAttempt} from '../../../dtos/learnAttempt';
 
 @Component({
   selector: 'app-learn-deck',
@@ -17,12 +18,12 @@ export class LearnDeckComponent implements OnInit {
   backside: boolean;
   flipped: boolean;
 
-  constructor(private deckService: DeckService, private cardService: CardService, private route: ActivatedRoute) { }
+  constructor(private deckService: DeckService, private learnService: LearnService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       this.loadDeck(Number(params.get('id')));
-      this.getNextCard(Number(params.get('id')), 2);
+      this.getNextCard(Number(params.get('id')));
     });
   }
 
@@ -33,13 +34,13 @@ export class LearnDeckComponent implements OnInit {
       this.onFlip();
     } else if (this.flipped) {
       if (event.key === '1') {
-        this.onNext('Again');
+        this.onNext('AGAIN');
       }
       if (event.key === '2') {
-        this.onNext('Good');
+        this.onNext('GOOD');
       }
       if (event.key === '3') {
-        this.onNext('Easy') ;
+        this.onNext('EASY') ;
       }
     }
   }
@@ -53,8 +54,8 @@ export class LearnDeckComponent implements OnInit {
     });
   }
 
-  getNextCard(deckId: number, cardId: number) {
-    this.cardService.fetchCard(deckId, cardId)
+  getNextCard(deckId: number) {
+    this.learnService.getNextCard(deckId)
       .subscribe(cardDetails => {
         this.card = new CardSimple(cardDetails.id, cardDetails.textFront, cardDetails.textBack);
       },
@@ -71,14 +72,19 @@ export class LearnDeckComponent implements OnInit {
   async onNext(status: string) {
     this.flipped = false;
     this.backside = false;
-    console.log('Send status: ' + status);
+    console.log('Attempting to submit status: ' + status);
     await this.triggerNext(status);
-    this.getNextCard(this.deck.id, 2);
+    this.getNextCard(this.deck.id);
 
   }
 
   async triggerNext(status: string) {
-    // send status
-    console.log('sending status');
+    await this.learnService.sendAttemptStatus(new LearnAttempt(this.card.id, status))
+      .subscribe(() => {
+        console.log('Status ' + status + ' successfully submitted.');
+        },
+        error => {
+        console.log(error);
+        });
     }
 }
