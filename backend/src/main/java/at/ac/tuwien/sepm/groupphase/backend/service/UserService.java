@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepm.groupphase.backend.service;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
+import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
 import org.springframework.data.domain.Pageable;
@@ -56,4 +57,13 @@ public interface UserService {
      * @return List of Decks created by the user
      */
     List<Deck> getDecks(String username, Pageable pageable);
+
+    /**
+     * Loads revisions created by user using username
+     *
+     * @param username of the user to search revisions for
+     * @param pageable pagination data consisting of LIMIT and OFFSET
+     * @return List of Revisions created by the user
+     */
+    List<Revision> getRevisions(String username, Pageable pageable);
 }

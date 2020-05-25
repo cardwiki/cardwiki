@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper;
 
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.RevisionDetailedDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.RevisionSimpleDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
 import org.mapstruct.Mapper;
@@ -12,6 +13,11 @@ public interface RevisionMapper {
 
     @Mapping(source = "revision.createdBy.id", target = "createdBy")
     RevisionSimpleDto revisionToRevisionSimpleDto(Revision revision);
+
+    @Mapping(source = "revision.card", target = "card")
+    @Mapping(source = "revision.revisionEdit.textFront", target = "card.textFront")
+    @Mapping(source = "revision.revisionEdit.textBack", target = "card.textBack")
+    RevisionDetailedDto revisionToRevisionDetailedDto(Revision revision);
 
     List<RevisionSimpleDto> revisionsToRevisionSimpleDtoList(List<Revision> revisions);
 }

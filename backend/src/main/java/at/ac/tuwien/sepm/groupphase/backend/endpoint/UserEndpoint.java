@@ -1,9 +1,11 @@
 package at.ac.tuwien.sepm.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckSimpleDto;
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.RevisionDetailedDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.UserInputDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.UserOutputDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.DeckMapper;
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.RevisionMapper;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.UserMapper;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
@@ -33,6 +35,9 @@ public class UserEndpoint {
     @Autowired
     private DeckMapper deckMapper;
 
+    @Autowired
+    private RevisionMapper revisionMapper;
+
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     @ApiOperation(value = "Register the authenticated user")
@@ -52,17 +57,21 @@ public class UserEndpoint {
         return userService.getAll().stream().map(user -> userMapper.userToUserOutputDto(user)).collect(Collectors.toList());
     }
 
-    //@Secured("ROLE_USER") //TODO allow for everyone?
     @GetMapping(value = "/{userName}/profile")
     @ApiOperation(value = "Get user profile")
     public UserOutputDto getProfile(@PathVariable String userName) { //TODO censor admin bool and timestamps?
         return userMapper.userToUserOutputDto(userService.loadUserByUsername(userName));
     }
 
-    //@Secured("ROLE_USER") //TODO allow for everyone?
     @GetMapping(value = "/{userName}/decks")
     @ApiOperation(value = "Get decks created by user")
     public List<DeckSimpleDto> getDecks(@PathVariable String userName, @RequestParam Integer limit, @RequestParam Integer offset) {
         return userService.getDecks(userName, PageRequest.of(offset, limit)).stream().map(deckMapper::deckToDeckSimpleDto).collect(Collectors.toList());
+    }
+
+    @GetMapping(value = "/{userName}/revisions")
+    @ApiOperation(value = "Get revisions created by user")
+    public List<RevisionDetailedDto> getRevisions(@PathVariable String userName, @RequestParam Integer limit, @RequestParam Integer offset) {
+        return userService.getRevisions(userName, PageRequest.of(offset, limit)).stream().map(revision -> revisionMapper.revisionToRevisionDetailedDto(revision)).collect(Collectors.toList());
     }
 }

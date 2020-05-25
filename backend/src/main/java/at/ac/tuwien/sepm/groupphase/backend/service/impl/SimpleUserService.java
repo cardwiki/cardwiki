@@ -1,9 +1,11 @@
 package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
+import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
+import at.ac.tuwien.sepm.groupphase.backend.repository.RevisionRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import org.slf4j.Logger;
@@ -22,11 +24,13 @@ public class SimpleUserService implements UserService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final UserRepository userRepository;
     private final DeckRepository deckRepository;
+    private final RevisionRepository revisionRepository;
 
     @Autowired
-    public SimpleUserService(UserRepository userRepository, DeckRepository deckRepository) {
+    public SimpleUserService(UserRepository userRepository, DeckRepository deckRepository, RevisionRepository revisionRepository) {
         this.userRepository = userRepository;
         this.deckRepository = deckRepository;
+        this.revisionRepository = revisionRepository;
     }
 
     @Override
@@ -34,6 +38,13 @@ public class SimpleUserService implements UserService {
         LOGGER.debug("Load {} decks with offset {} from user by username {}", pageable.getPageSize(), pageable.getOffset(), username);
         User user = loadUserByUsername(username);
         return deckRepository.findByCreatedBy(user, pageable);
+    }
+
+    @Override
+    public List<Revision> getRevisions(String username, Pageable pageable) {
+        LOGGER.debug("Load {} revisions with offset {} from user by username {}", pageable.getPageSize(), pageable.getOffset(), username);
+        User user = loadUserByUsername(username);
+        return revisionRepository.findByCreatedBy(user, pageable);
     }
 
     @Override
