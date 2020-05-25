@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -56,14 +57,14 @@ public class CategoryRepositoryTest extends TestDataGenerator {
     }
 
     @Test
-    public void givenTwoCategories_whenFindAll_thenReturnsListWithLengthTwoWhichContainsBothElements() {
+    public void givenTwoCategories_whenFindAllSorted_thenReturnsListWithLengthTwoWhichContainsBothElementsInAlphabeticOrder() {
         Category category1 = givenCategory();
         Category category2 = category1.getParent();
 
         assertAll(
-            () -> assertEquals(categoryRepository.findAll().size(), 2),
-            () -> assertTrue(categoryRepository.findAll().contains(category1)),
-            () -> assertTrue(categoryRepository.findAll().contains(category2))
+            () -> assertEquals(categoryRepository.findAll(Sort.by(Sort.Order.asc("name").ignoreCase())).size(), 2),
+            () -> assertEquals(categoryRepository.findAll(Sort.by(Sort.Order.asc("name").ignoreCase())).get(0), category1),
+            () -> assertEquals(categoryRepository.findAll(Sort.by(Sort.Order.asc("name").ignoreCase())).get(1), category2)
         );
     }
 
@@ -78,5 +79,20 @@ public class CategoryRepositoryTest extends TestDataGenerator {
         Category category2 = new Category(2L, category1.getName());
 
         assertThrows(DataIntegrityViolationException.class, () -> categoryRepository.save(category2));
+    }
+
+    @Test
+    public void givenCategoryWithParent_whenAncestorExistsWithIdWithIdAsParentIdAndParentIdAsId_thenReturnsTrue() {
+        Category category = givenCategory();
+
+        assertTrue(categoryRepository.ancestorExistsWithId(category.getParent().getId(), category.getId()));
+    }
+
+    @Test
+    public void givenCategoryWithParent_whenAncestorExistsWithIdWithIdAndIndependentCategoryId_thenReturnsFalse() {
+        Category category = givenCategory();
+        Category parent = categoryRepository.save(new Category("blubb", null));
+
+        assertFalse(categoryRepository.ancestorExistsWithId(category.getId(), parent.getId()));
     }
 }

@@ -11,21 +11,25 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "category")
+@Table(name = "categories",
+    uniqueConstraints = @UniqueConstraint(
+        columnNames = "name",
+        name = "name_unique"
+    ))
 public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
 
     @ManyToOne
     @JoinColumn(name="created_by", referencedColumnName="id", updatable = false)
     private User createdBy;
 
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Category parent;
 
     @OrderBy("LOWER(name) ASC")
@@ -49,14 +53,6 @@ public class Category {
         inverseJoinColumns = @JoinColumn(name = "deck_id")
     )
     private Set<Deck> decks = new HashSet<>();
-
-    public void addSubcategory(Category subcategory) {
-        children.add(subcategory);
-    }
-
-    public void removeSubcategory(Category subcategory) {
-        children.remove(subcategory);
-    }
 
     public Category() {
     }
@@ -120,8 +116,8 @@ public class Category {
         Category oldParent = this.parent;
         this.parent = parent;
 
-        if (oldParent != null) oldParent.removeSubcategory(this);
-        if (parent != null) parent.addSubcategory(this);
+        if (oldParent != null) oldParent.getChildren().remove(this);
+        if (parent != null) parent.getChildren().add(this);
     }
 
     public Set<Category> getChildren() {

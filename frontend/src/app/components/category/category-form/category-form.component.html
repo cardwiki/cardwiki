@@ -1,8 +1,4 @@
-<div *ngIf="error" class="alert alert-warning alert-dismissible fade show" (click)=vanishResult() role="alert">
-  <strong>{{messages.error}}</strong> {{ errorMessage }}
-  <button class="btn-primary" (click)="vanishResult()">Dismiss</button>
-</div>
-
+<app-error *ngIf="error" [errorMessage]="errorMessage" (buttonClick)="vanishResult()"></app-error>
 <div *ngIf="!error && submitted" class="alert alert-success alert-dismissible fade show" role="alert">
   <strong>{{messages.success}}: {{result.name}}</strong>
   <div>
@@ -12,12 +8,16 @@
     </button>
     </a>
     <span *ngIf="mode == 'Create'">
-      <button class="btn-primary" id="createSub" (click)="createSubcategory()">
-        Create Subcategory
-      </button>
-      <button class="btn-primary" id="createNew" (click)="category.parent.name = null; vanishResult();">
-        Create another category
-      </button>
+      <a routerLink="/categories/new" [queryParams]="{ parent: this.categoryForm.value['name'].trim() }">
+        <button class="btn-primary" id="createSub" (click)="vanishResult()">
+          Create Subcategory
+        </button>
+      </a>
+      <a routerLink="/categories/new">
+        <button class="btn-primary" id="createNew" (click)="vanishResult()">
+          Create another category
+        </button>
+      </a>
     </span>
   </div>
 </div>
@@ -27,9 +27,11 @@
     <span class="anchor" id="formLogin"></span>
     <div class="card rounded-0">
       <div class="card-header">
-        <h3 class="mb-0">{{messages.header}} {{category.name}}</h3>
+        <h3 class="mb-0">{{messages.header}} {{mode === 'Update' ? "'"+category.name+"'" : category.name}}</h3>
       </div>
       <div class="card-body">
+
+        <!-- form-->
         <form class="form" [formGroup]="categoryForm" (submit)="submitCategoryForm();">
           <div class="form-group">
             <label for="categoryName">Name</label>
@@ -42,6 +44,7 @@
               aria-describedby="categoryNameHelp"
               placeholder="Enter category name"
               maxLength="200"
+              nameIsBlank
               autocomplete="off"
             >
             <div *ngIf="categoryForm.controls.name.errors" class="error">
@@ -71,15 +74,15 @@
           <datalist id="categories">
             <option *ngFor="let cat of categories" value="{{cat.name}}">
           </datalist>
-
+        <!-- modal-->
           <div id="modal" class="modal fade" role="dialog">
-            <div *ngIf="categoryForm.touched && categoryForm.dirty && categoryForm.valid" class="modal-dialog">
+            <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
                   <span class="modal-title"><h4>Submit category?</h4></span>
                   <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
                 </div>
-                <div class="modal-body">
+                <div *ngIf="categoryForm.touched && categoryForm.dirty && categoryForm.valid" class="modal-body">
                   <p>Name: </p>
                   <p class="fieldContents">{{categoryForm.value.name}}</p>
                   <p *ngIf="categoryForm.value['parentCategory']">
@@ -87,35 +90,31 @@
                   </p>
                   <p class="fieldContents">{{categoryForm.value['parentCategory']}}</p>
                 </div>
-                <div class="modal-footer">
-                  <button type="submit" class="btn btn-success float-left">Submit</button>
-                  <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                </div>
-              </div>
-            </div>
-            <div *ngIf="!categoryForm.touched || !categoryForm.dirty || !categoryForm.valid" class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <span class="modal-title"><h4>Error(s)!</h4></span>
-                  <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
-                </div>
-                <div class="modal-body">
+                <div *ngIf="!categoryForm.touched || !categoryForm.dirty || !categoryForm.valid"class="modal-body">
                   <p *ngIf="!categoryForm.touched || !categoryForm.dirty">Please input data first.</p>
                   <p *ngIf="!categoryForm.valid">Form contains invalid field data.</p>
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-default" data-dismiss="modal">Dismiss</button>
+                  <button
+                    *ngIf="categoryForm.touched && categoryForm.dirty && categoryForm.valid"
+                    type="submit"
+                    class="btn btn-success float-left"
+                  >
+                    Submit
+                  </button>
+                  <button #dismissModal type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 </div>
               </div>
             </div>
           </div>
+          <!-- buttons-->
           <button type="button" data-toggle="modal" data-target="#modal" class="btn btn-success float-right">
             {{mode}}
           </button>
-          <button type="button" class="btn-secondary" (click)="categoryForm.reset(); setDefaults()">
+          <button type="button" class="btn-secondary" id="reset" (click)="categoryForm.reset(); setDefaults()">
             Reset
           </button>
-          <button type="button" class="btn-secondary" id="refresh" (click)="onRefresh()">
+          <button type="button" class="btn-secondary" (click)="onRefresh()">
             Refresh Categories
           </button>
         </form>
