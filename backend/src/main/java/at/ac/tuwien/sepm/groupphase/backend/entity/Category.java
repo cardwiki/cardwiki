@@ -54,14 +54,6 @@ public class Category {
     )
     private Set<Deck> decks = new HashSet<>();
 
-    public void addSubcategory(Category subcategory) {
-        children.add(subcategory);
-    }
-
-    public void removeSubcategory(Category subcategory) {
-        children.remove(subcategory);
-    }
-
     public Category() {
     }
 
@@ -124,8 +116,8 @@ public class Category {
         Category oldParent = this.parent;
         this.parent = parent;
 
-        if (oldParent != null) oldParent.removeSubcategory(this);
-        if (parent != null) parent.addSubcategory(this);
+        if (oldParent != null) oldParent.getChildren().remove(this);
+        if (parent != null) parent.getChildren().add(this);
     }
 
     public Set<Category> getChildren() {

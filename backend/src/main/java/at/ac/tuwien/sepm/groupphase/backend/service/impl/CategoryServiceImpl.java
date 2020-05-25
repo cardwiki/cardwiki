@@ -80,10 +80,6 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = findOneById(id);
 
         Category parent = null;
-        Category oldParent= category.getParent();
-        if (oldParent != null) {
-            oldParent.getChildren().remove(category);
-        }
         Category newParent = categoryUpdate.getParent();
         if (newParent != null) {
             if (newParent.getId().equals(id)) {
@@ -93,7 +89,6 @@ public class CategoryServiceImpl implements CategoryService {
                 throw new IllegalArgumentException("Circular Child-Parent relation.");
             }
             parent = findOneById(newParent.getId());
-            parent.getChildren().add(category);
         }
 
         category.setParent(parent);
