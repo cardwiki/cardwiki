@@ -39,7 +39,7 @@
             {{revision.createdAt | date : 'medium' }}:
             <a routerLink="/decks/{{revision.card.deck.id}}/cards/{{revision.card.id}}/revision?id={{revision.id}}">{{revision.message}}</a>
             card
-            <a routerLink="/decks/{{revision.card.deck.id}}/cards/{{revision.card.id}}">{{revision.card.textFront}}</a>
+            <a routerLink="/decks/{{revision.card.deck.id}}/cards/{{revision.card.id}}">{{revision.card.textFront.length > REVISIONTEXT_TRUNCATE ? (revision.card.textFront | slice:0:REVISIONTEXT_TRUNCATE)+'...' : revision.card.textFront}}</a>
             in
             <a routerLink="/decks/{{revision.card.deck.id}}">{{revision.card.deck.name}}</a>.
           </li>

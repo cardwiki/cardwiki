@@ -14,6 +14,7 @@ export class ProfileComponent implements OnInit {
 
   DECK_PAGINATION_LIMIT: number = 10;
   REVISION_PAGINATION_LIMIT: number = 10;
+  REVISIONTEXT_TRUNCATE: number = 30;
 
   profile: UserProfile;
   decks: DeckSimple[] = [];
