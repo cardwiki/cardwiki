@@ -97,7 +97,6 @@ public class CategoryServiceImpl implements CategoryService {
         }
 
         category.setParent(parent);
-        category.setId(id);
         category.setName(categoryUpdate.getName().trim().replaceAll(" +", " "));
         try {
             category = categoryRepository.saveAndFlush(category);
