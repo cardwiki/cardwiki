@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.lang.invoke.MethodHandles;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/api/v1/learn")
@@ -41,8 +43,10 @@ public class LearnEndpoint {
     @Secured("ROLE_USER")
     @GetMapping("/next")
     @ApiOperation(value = "Get the next card of a deck to learn", authorizations = {@Authorization(value = "apiKey")})
-    public CardDetailsDto getNextCard(@RequestParam Long deckId){
+    public List<CardDetailsDto> getNextCard(@RequestParam Long deckId){
         LOGGER.info("GET /api/v1/learn/next?deckId={}", deckId);
-        return cardMapper.cardToCardDetailsDto(learnService.findNextCardByDeckId(deckId));
+        return learnService.findNextCardsByDeckId(deckId).stream()
+            .map(cardMapper::cardToCardDetailsDto)
+            .collect(Collectors.toList());
     }
 }

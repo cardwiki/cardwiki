@@ -5,7 +5,6 @@ import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Progress;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.exception.BadRequestException;
-import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.ProgressRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.LearnService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
@@ -35,11 +34,9 @@ public class SimpleLearnService implements LearnService {
     }
 
     @Override
-    public Card findNextCardByDeckId(Long deckId) {
+    public List<Card> findNextCardsByDeckId(Long deckId) {
         LOGGER.debug("Get next card for deck with id {}", deckId);
-        List<Card> card = progressRepository.findNextCards(deckId, PageRequest.of(0, 1));
-        if (card.isEmpty()) throw new NotFoundException(String.format("No cards to learn for deck: %s", deckId));
-        return card.get(0);
+        return progressRepository.findNextCards(deckId, PageRequest.of(0, 1));
     }
 
     private static final int[] LEARNING_STEPS = {1, 10}; // in minutes
