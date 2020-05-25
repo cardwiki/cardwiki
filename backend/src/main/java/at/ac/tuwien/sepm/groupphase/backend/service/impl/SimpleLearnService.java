@@ -5,6 +5,7 @@ import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Progress;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.exception.BadRequestException;
+import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.ProgressRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.LearnService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
@@ -13,10 +14,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class SimpleLearnService implements LearnService {
@@ -34,12 +37,15 @@ public class SimpleLearnService implements LearnService {
     @Override
     public Card findNextCardByDeckId(Long deckId) {
         LOGGER.debug("Get next card for deck with id {}", deckId);
-        throw new UnsupportedOperationException("not implemented yet");
+        List<Card> card = progressRepository.findNextCards(deckId, PageRequest.of(0, 1));
+        if (card.isEmpty()) throw new NotFoundException(String.format("No cards to learn for deck: %s", deckId));
+        return card.get(0);
     }
 
-    private static final int LEARNING_STEPS[] = {1, 10}; // in minutes
+    private static final int[] LEARNING_STEPS = {1, 10}; // in minutes
     private static final int GRADUATING_INTERVAL = 1; // in days
     private static final int EASY_INTERVAL = 4; // in days
+    public static final int EASY_BONUS = 130; // percentage
 
     @Override
     public void saveAttempt(AttemptInputDto attempt) {
@@ -73,11 +79,43 @@ public class SimpleLearnService implements LearnService {
                 progress.setInterval(EASY_INTERVAL);
                 progress.setStatus(Progress.Status.REVIEWING);
             }
-
-            progress.setDue(LocalDateTime.now().plusMinutes(progress.getInterval()));
         } else {
-            // TODO: implement REVIEWING
+            switch (attempt.getStatus()) {
+                case EASY: {
+                    int ef = progress.getEasinessFactor() + 15;
+                    progress.setEasinessFactor(Math.max(ef, Integer.MAX_VALUE));
+                    long interval = ((long) progress.getInterval() * progress.getEasinessFactor() * (long) EASY_BONUS) / 10_000L;
+                    try {
+                        progress.setInterval(Math.toIntExact(interval));
+                    } catch (ArithmeticException e) {
+                        progress.setInterval(Integer.MAX_VALUE);
+                    }
+                    break;
+                }
+                case GOOD: {
+                    long interval = ((long) progress.getInterval() * progress.getEasinessFactor()) / 100L;
+                    try {
+                        progress.setInterval(Math.toIntExact(interval));
+                    } catch (ArithmeticException e) {
+                        progress.setInterval(Integer.MAX_VALUE);
+                    }
+                    break;
+                }
+                case AGAIN: {
+                    int ef = progress.getEasinessFactor() - 20;
+                    progress.setEasinessFactor(Math.max(ef, 130));
+                    long interval = (progress.getInterval() * 20L) / 100L;
+                    try {
+                        progress.setInterval(Math.toIntExact(interval));
+                    } catch (ArithmeticException e) {
+                        progress.setInterval(Integer.MAX_VALUE);
+                    }
+                    break;
+                }
+            }
         }
+
+        progress.setDue(LocalDateTime.now().plusMinutes(progress.getInterval()));
 
         try {
             progressRepository.saveAndFlush(progress);

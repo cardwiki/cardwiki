@@ -65,7 +65,7 @@ public class Progress {
         this.id = id;
     }
 
-    public long getEasinessFactor() {
+    public int getEasinessFactor() {
         return easinessFactor;
     }
 
