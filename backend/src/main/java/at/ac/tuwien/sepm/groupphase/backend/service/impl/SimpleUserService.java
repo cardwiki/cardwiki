@@ -1,12 +1,15 @@
 package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 
+import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
+import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -18,10 +21,19 @@ public class SimpleUserService implements UserService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final UserRepository userRepository;
+    private final DeckRepository deckRepository;
 
     @Autowired
-    public SimpleUserService(UserRepository userRepository) {
+    public SimpleUserService(UserRepository userRepository, DeckRepository deckRepository) {
         this.userRepository = userRepository;
+        this.deckRepository = deckRepository;
+    }
+
+    @Override
+    public List<Deck> getDecks(String username, Pageable pageable) {
+        LOGGER.debug("Load {} decks with offset {} from user by username {}", pageable.getPageSize(), pageable.getOffset(), username);
+        User user = loadUserByUsername(username);
+        return deckRepository.findByCreatedBy(user, pageable);
     }
 
     @Override
