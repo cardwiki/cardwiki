@@ -62,7 +62,7 @@ export class ProfileComponent implements OnInit {
   }
 
   saveDescription(): void {
-    this.userService.editDescription(this.profile.description).subscribe(
+    this.userService.editDescription(this.profile.id, this.profile.description).subscribe(
       profile => {
         this.profile = profile;
         this.editingSuccess = true;

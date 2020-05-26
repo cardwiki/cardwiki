@@ -86,11 +86,11 @@ public interface UserService {
     List<Revision> getRevisions(long id, Pageable pageable);
 
     /**
-     * Change description of user with id {@code id}
+     * Change settings of user with id {@code id}
      *
      * @param id of user to edit
-     * @param description to insert
-     * @return User with new description
+     * @param user contains user data to edit
+     * @return User with changed settings
      */
-    User editDescription(long id, String description);
+    User editSettings(long id, User user);
 }

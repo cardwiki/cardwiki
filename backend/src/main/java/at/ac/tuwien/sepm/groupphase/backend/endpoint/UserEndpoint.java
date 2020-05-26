@@ -1,9 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.endpoint;
 
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckSimpleDto;
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.RevisionDetailedDto;
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.UserInputDto;
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.UserOutputDto;
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.*;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.DeckMapper;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.RevisionMapper;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.UserMapper;
@@ -94,9 +91,9 @@ public class UserEndpoint {
     }
 
     @Secured("ROLE_USER")
-    @PostMapping(value = "/description")
-    @ApiOperation(value = "Change description of logged in user")
-    public UserOutputDto editDescription(@Valid  @RequestBody String description) {
-        return userMapper.userToUserOutputDto(userService.editDescription(userService.loadCurrentUser().getId(), description));
+    @PatchMapping(value = "/{id}")
+    @ApiOperation(value = "Change settings of logged in user")
+    public UserOutputDto editSettings(@PathVariable long id, @Valid @RequestBody UserEditInquiryDto userEditInquiryDto) {
+        return userMapper.userToUserOutputDto(userService.editSettings(id, userMapper.userEditInquiryDtoToUser(userEditInquiryDto)));
     }
 }

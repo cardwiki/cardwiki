@@ -84,12 +84,13 @@ export class UserService {
   }
 
   /**
-   * Edit description for logged in user
+   * Edit description for user with userid {@code userid}
    *
+   * @param userid to query revisions for
    * @param description to save
    */
-  editDescription(description: string): Observable<UserProfile> {
+  editDescription(userid: number, description: string): Observable<UserProfile> {
     console.log('Save description: ' + description);
-    return this.httpClient.post<UserProfile>(`${this.userBaseUri}/description`, description);
+    return this.httpClient.patch<UserProfile>(`${this.userBaseUri}/${userid}`, {description: description});
   }
 }

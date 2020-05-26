@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
@@ -47,12 +48,14 @@ public class SimpleUserService implements UserService {
     }
 
     @Override
-    public User editDescription(long id, String description) {
-        User user = loadUserById(id);
+    @Transactional
+    public User editSettings(long id, User user) {
+        if (id != loadCurrentUser().getId()) throw new UserNotFoundException(); //TODO throw correct error
 
-        user.setDescription(description);
+        User currentUser = userRepository.getOne(id);
+        currentUser.setDescription(user.getDescription());
 
-        return userRepository.save(user);
+        return userRepository.save(currentUser);
     }
 
     @Override
