@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class SimpleUserService implements UserService {
@@ -88,5 +89,12 @@ public class SimpleUserService implements UserService {
     @Override
     public List<User> getAll() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public List<User> searchByUsername(String username, Pageable pageable) {
+        LOGGER.debug("Search users for username {} {}", username, pageable);
+        Objects.requireNonNull(username, "name argument must not be null");
+        return userRepository.findByUsernameContainingIgnoreCase(username, pageable);
     }
 }

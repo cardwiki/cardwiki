@@ -18,6 +18,7 @@ import {CategoryListComponent} from './components/category/category-list/categor
 import {CategoryDetailsComponent} from './components/category/category-details/category-details.component';
 import { MarkdownSyntaxComponent } from './components/help/markdown-syntax/markdown-syntax.component';
 import {ProfileComponent} from "./components/profile/profile.component";
+import {UserSearchComponent} from "./components/user-search/user-search.component";
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
@@ -38,6 +39,7 @@ const routes: Routes = [
   {path: 'categories/:id/edit', canActivate: [AuthGuard], component: CategoryUpdateComponent},
   {path: 'help/markdown-syntax', component: MarkdownSyntaxComponent},
   {path: 'users/:userid/profile', component: ProfileComponent},
+  {path: 'users', component: UserSearchComponent},
   {path: '**', component: PageNotFoundComponent},
 ];
 

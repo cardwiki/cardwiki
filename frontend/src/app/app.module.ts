@@ -33,6 +33,7 @@ import { CategoryDetailsComponent } from './components/category/category-details
 import { Md2htmlPipe } from './pipes/md2html.pipe';
 import { MarkdownSyntaxComponent } from './components/help/markdown-syntax/markdown-syntax.component';
 import { ProfileComponent } from './components/profile/profile.component';
+import { UserSearchComponent } from './components/user-search/user-search.component';
 
 
 @NgModule({
@@ -64,6 +65,7 @@ import { ProfileComponent } from './components/profile/profile.component';
     Md2htmlPipe,
     MarkdownSyntaxComponent,
     ProfileComponent,
+    UserSearchComponent,
   ],
   imports: [
     BrowserModule,

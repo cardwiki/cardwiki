@@ -59,6 +59,15 @@ public interface UserService {
     List<User> getAll();
 
     /**
+     * Find all users containing {@code username} (case insensitive)
+     *
+     * @param username the search string
+     * @param pageable the paging parameters
+     * @return ordered list of all users with usernames containing {@code username}
+     */
+    List<User> searchByUsername(String username, Pageable pageable);
+
+    /**
      * Loads decks created by user using their id
      *
      * @param id of the user to search decks for

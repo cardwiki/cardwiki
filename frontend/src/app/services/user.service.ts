@@ -16,6 +16,25 @@ export class UserService {
   constructor(private httpClient: HttpClient, private globals: Globals) { }
 
   /**
+   * Load users containing {@code userid} in their username
+   *
+   * @param username to search for
+   * @param offset of the page.
+   * @param limit of results returned.
+   */
+  searchUsers(username: string, limit: number = 10, offset: number = 0): Observable<UserProfile[]> {
+    console.log('search for users with username: ' + username);
+    const params = new HttpParams({
+      fromObject: {
+        username: username,
+        offset: offset.toString(10),
+        limit: limit.toString(10)
+      }
+    });
+    return this.httpClient.get<UserProfile[]>(this.userBaseUri, {params});
+  }
+
+  /**
    * Load profile of user with userid {@code userid} from
    * the backend.
    *

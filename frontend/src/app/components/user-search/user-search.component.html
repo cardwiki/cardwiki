@@ -1,0 +1,27 @@
+<div class="container w-75 mt-4">
+  <form (ngSubmit)="onSubmit()" #searchForm="ngForm" class="form-inline my-2 my-lg-0 mr-auto mw-25 flex-grow-1">
+    <div class="input-group flex-grow-1" role="group">
+      <input [(ngModel)]="searchTerm" name="searchTerm" class="form-control" type="search" placeholder="Find users" aria-label="Search">
+      <div class="input-group-append">
+        <button class="btn btn-outline-dark" type="submit">Search</button>
+      </div>
+    </div>
+  </form>
+
+  <div *ngIf="noUsersFound" class="alert-danger mt-4">No users found.</div>
+
+  <div *ngIf="users.length>0" class="card mt-4">
+    <div class="card-header">
+      Results
+    </div>
+    <ul class="list-group list-group-flush">
+      <li *ngFor="let user of users" class="list-group-item">
+        <a routerLink="/users/{{user.id}}/profile">{{user.username}}</a>
+      </li>
+    </ul>
+    <button *ngIf="!maxUsersLoaded" class="card-footer btn p-1" (click)="loadUsers()">
+      Load more...
+    </button>
+  </div>
+
+</div>

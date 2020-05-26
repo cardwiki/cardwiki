@@ -50,11 +50,22 @@ public class UserEndpoint {
         return userMapper.userToUserOutputDto(u);
     }
 
+    /*
     @Secured("ROLE_USER")
     @GetMapping
     @ApiOperation(value = "List all users")
     public List<UserOutputDto> get() {
         return userService.getAll().stream().map(user -> userMapper.userToUserOutputDto(user)).collect(Collectors.toList());
+    }
+     */
+
+    @GetMapping
+    @ApiOperation(value = "Search for users")
+    public List<UserOutputDto> search(@RequestParam String username, @RequestParam Integer limit, @RequestParam Integer offset) {
+        return userService.searchByUsername(username, PageRequest.of(offset, limit))
+            .stream()
+            .map(userMapper::userToUserOutputDto)
+            .collect(Collectors.toList());
     }
 
     @Secured("ROLE_USER")

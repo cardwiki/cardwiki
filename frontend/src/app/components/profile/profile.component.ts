@@ -53,7 +53,6 @@ export class ProfileComponent implements OnInit {
 
   loadRevisions(offset: number = this.revisions.length/this.REVISION_PAGINATION_LIMIT): void {
     this.userService.getRevisions(this.profile.id, this.REVISION_PAGINATION_LIMIT, offset).subscribe(revisions => {
-        console.log(revisions);
         Array.prototype.push.apply(this.revisions, revisions);
         if (revisions.length < this.REVISION_PAGINATION_LIMIT) this.maxRevisionsLoaded = true;
       })

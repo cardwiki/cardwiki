@@ -13,6 +13,9 @@
       <li class="nav-item" *ngIf="authService.isLoggedIn()">
         <a class="nav-link" href="#" (click)="openDeckModal(); false">Create a deck</a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/users">Users</a>
+      </li>
     </ul>
     <form (ngSubmit)="onSubmit()" #searchForm="ngForm" class="form-inline my-2 my-lg-0 mr-auto mw-25 flex-grow-1">
       <div class="input-group flex-grow-1" role="group">
