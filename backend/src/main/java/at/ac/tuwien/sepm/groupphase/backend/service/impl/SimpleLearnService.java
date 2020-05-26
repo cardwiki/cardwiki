@@ -15,10 +15,12 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SimpleLearnService implements LearnService {
@@ -36,7 +38,9 @@ public class SimpleLearnService implements LearnService {
     @Override
     public List<Card> findNextCardsByDeckId(Long deckId, Pageable pageable) {
         LOGGER.debug("Get next card for deck with id {}", deckId);
-        return progressRepository.findNextCards(deckId, pageable);
+        return progressRepository.findNextCards(deckId, userService.loadCurrentUser().getId(), pageable).stream()
+            .peek((x) -> x.setDeck(null))
+            .collect(Collectors.toList());
     }
 
     private static final int[] LEARNING_STEPS = {1, 10}; // in minutes
