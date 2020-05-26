@@ -5,8 +5,6 @@ import {ActivatedRoute} from '@angular/router';
 import {DeckSimple} from '../../../dtos/deckSimple';
 import {LearnService} from '../../../services/learn.service';
 import {LearnAttempt} from '../../../dtos/learnAttempt';
-import {CardService} from '../../../services/card.service';
-import {$} from 'jquery';
 
 @Component({
   selector: 'app-learn-deck',
@@ -59,7 +57,7 @@ export class LearnDeckComponent implements OnInit {
   getNextCard(deckId: number) {
    this.learnService.getNextCard(deckId)
       .subscribe(cardDetails => {
-        this.card = new CardSimple(cardDetails.id, cardDetails.textFront, cardDetails.textBack);
+        this.card = new CardSimple(cardDetails[0].id, cardDetails[0].textFront, cardDetails[0].textBack);
       },
         error => {
         console.log(error);
