@@ -1,7 +1,10 @@
 a:any-link {
   color: black;
 }
-.container-md-5 {
-  background-color: #DDDDDD;
+.card {
+  background-color: #EEEEEE;
+}
+.className {
+  border: 1px solid grey;
 }
 

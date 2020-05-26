@@ -30,9 +30,12 @@ import { DeckPreviewComponent } from './components/deck-preview/deck-preview.com
 import { CategoryListComponent } from './components/category/category-list/category-list.component';
 import { ListComponent } from './components/category/list/list.component';
 import { CategoryDetailsComponent } from './components/category/category-details/category-details.component';
+import { ListSearchComponent } from './components/category/list-search/list-search.component';
+import { CategorySubcategoriesComponent } from './components/category/category-subcategories/category-subcategories.component';
+import { CategoryDecksComponent } from './components/category/category-decks/category-decks.component';
 import { Md2htmlPipe } from './pipes/md2html.pipe';
 import { MarkdownSyntaxComponent } from './components/help/markdown-syntax/markdown-syntax.component';
-
+import { ErrorComponent } from './components/error/error.component';
 
 @NgModule({
   declarations: [
@@ -60,8 +63,12 @@ import { MarkdownSyntaxComponent } from './components/help/markdown-syntax/markd
     ListComponent,
     CategoryDetailsComponent,
     CardEditComponent,
+    ListSearchComponent,
+    CategorySubcategoriesComponent,
+    CategoryDecksComponent,
     Md2htmlPipe,
     MarkdownSyntaxComponent,
+    ErrorComponent,
   ],
   imports: [
     BrowserModule,

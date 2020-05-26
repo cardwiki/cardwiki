@@ -10,31 +10,22 @@ import { Category } from '../../../dtos/category';
 })
 export class CategoryUpdateComponent implements OnInit {
   editCategoryMode: string = 'Update';
-  category: Category = null;
+  result: { category: Category, error: boolean, errorMessage: string };
   messages: { header: string, success: string, error: string };
-  error: boolean = false;
-  errorMessage: string;
 
   constructor(private route: ActivatedRoute, private categoryService: CategoryService) {
     this.route.params.subscribe( async (params) => await this.doSearch(params['id']));
   }
 
   doSearch(id: number) {
-    this.categoryService.getCategoryById(id)
-      .subscribe((category) => {
-          this.category = category;
-          this.category.id = id;
-        },
-        (error) => {
-          if (error.status === 400 || error.status === 404) {
-            this.error = true;
-            this.errorMessage = 'Page not found.';
-          } else {
-            console.log(error);
-            this.error = true;
-            this.errorMessage = this.categoryService.handleError(error);
-          }
-        });
+    this.result = this.categoryService.doSearch(id);
+    console.log('result', this.result);
+  }
+
+  vanishError() {
+    if (this.result) {
+      this.result.error = false;
+    }
   }
 
   ngOnInit(): void {

@@ -94,7 +94,7 @@ public abstract class TestDataGenerator {
 
         parent = categoryRepository.saveAndFlush(parent);
         category.setParent(parent);
-        return  categoryRepository.saveAndFlush(category);
+        return categoryRepository.saveAndFlush(category);
     }
 
     Long DECK_ID = 0L;

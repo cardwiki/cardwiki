@@ -1,3 +1,3 @@
 export type OAuthProviders = {
-    [id: string]: string
+    [id: string]: {id: string, name: string}
 }
