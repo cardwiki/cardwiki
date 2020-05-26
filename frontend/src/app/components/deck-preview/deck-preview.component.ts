@@ -17,6 +17,9 @@ export class DeckPreviewComponent implements OnInit {
   handleKeyboardEvent(event: KeyboardEvent) {
     if (event.key === 'ArrowRight') this.nextCard();
     else if (event.key === 'ArrowLeft') this.previousCard();
+    else if (event.key === 'ArrowUp') this.flipped = true;
+    else if (event.key === 'ArrowDown') this.flipped = false;
+    else if (event.key === ' ') this.flipped = !this.flipped;
   }
 
   deck: Deck;
