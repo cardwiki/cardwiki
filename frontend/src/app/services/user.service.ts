@@ -21,8 +21,8 @@ export class UserService {
    *
    * @param userid of user to load profile for
    */
-  getProfile(userid: number): Observable<UserProfile> {
-    console.log('load card decks for user: ' + userid);
+  getProfile(userid: string = '@me'): Observable<UserProfile> {
+    console.log('load profile for user: ' + userid);
     return this.httpClient.get<UserProfile>(`${this.userBaseUri}/${userid}/profile`);
   }
 

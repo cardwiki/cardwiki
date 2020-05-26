@@ -57,6 +57,13 @@ public class UserEndpoint {
         return userService.getAll().stream().map(user -> userMapper.userToUserOutputDto(user)).collect(Collectors.toList());
     }
 
+    @Secured("ROLE_USER")
+    @GetMapping(value = "/@me/profile")
+    @ApiOperation(value = "Get user profile of logged in user")
+    public UserOutputDto getProfile() {
+        return userMapper.userToUserOutputDto(userService.loadCurrentUser());
+    }
+
     @GetMapping(value = "/{id}/profile")
     @ApiOperation(value = "Get user profile")
     public UserOutputDto getProfile(@PathVariable long id) { //TODO censor admin bool and timestamps?
