@@ -12,6 +12,6 @@ public interface CategoryRepositoryCustom {
      * @param parentId of the corresponding parent category
      * @return true if there is a circular relation between the two categories, false else
      */
-    boolean parentExistsWithId(Long id, Long parentId);
+    boolean ancestorExistsWithId(Long id, Long parentId);
 
 }

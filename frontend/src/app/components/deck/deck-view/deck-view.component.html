@@ -48,8 +48,8 @@
   </thead>
   <tbody *ngFor="let card of cards">
   <tr *ngIf="card.textFront || card.textBack" class="">
-    <td class="align-middle">{{card.textFront}}</td>
-    <td class="align-middle">{{card.textBack}}</td>
+    <td class="w-50">{{card.textFront}}</td>
+    <td class="w-50">{{card.textBack}}</td>
     <td>
       <div class="btn-group float-right">
         <a routerLink="/decks/{{deck.id}}/cards/{{card.id}}/edit" class="btn btn-light"><i class="fas fa-pencil-alt"></i></a>

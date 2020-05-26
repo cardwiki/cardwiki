@@ -1,47 +1,23 @@
-<div *ngIf="error" class="alert alert-warning alert-dismissible fade show" (click)=vanishError() role="alert">
-  <strong>{{messages.error}}: </strong>{{ errorMessage }}
-  <button class="btn-primary" (click)="vanishError()">Dismiss</button>
-</div>
-
-
-
-  <div *ngIf="!error && specs && !loading" class="row ml-0">
-    <div class="column">
-      <div class="row ml-0">
-        <h5>{{messages? messages.header:''}}</h5>
-      </div>
-      <div *ngIf="list.length > 0">
-        <div class="col">
-          <div class="row mb-3">
-            <div class="list">
-              <label>search:
-              <input
-                type="text"
-                [formControl]="searchField"
-                name="search"
-                autocomplete="off"
-              >
-              </label>
-              <ul>
-                <li *ngFor="let item of filteredList || list |
+<div *ngIf="specs" class="row ml-0">
+  <div *ngIf="list.length > 0">
+    <ul>
+      <li *ngFor="let item of list |
                   slice: (specs.page - 1) * specs.pageSize : (specs.page - 1) * specs.pageSize + specs.pageSize
                   trackBy: trackChange"
-                >
-                  <a routerLink="/categories/{{item.id}}">{{item.name}}</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <ngb-pagination
-            class="row"
-            [(page)] = specs.page
-            [pageSize] = specs.pageSize
-            [collectionSize]="list.length"
-            size="sm"
-          ></ngb-pagination>
-        </div>
-      </div>
-        <div *ngIf="list.length === 0" class="row pl-4">None found.</div>
+      >
+        <a routerLink="/{{path}}/{{item.id}}">{{item.name}}</a>
+      </li>
+    </ul>
+    <div class="xyz" id="pagination">
+      <ngb-pagination
+        class="row ml-0 pl-4"
+        [(page)]=specs.page
+        [pageSize]=specs.pageSize
+        [collectionSize]="list.length"
+        size="sm"
+      ></ngb-pagination>
     </div>
   </div>
+  <div *ngIf="list.length === 0" class="row pl-4 ml-0">None found.</div>
+</div>
 

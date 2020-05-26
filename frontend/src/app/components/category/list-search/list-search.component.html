@@ -1,0 +1,50 @@
+<app-error *ngIf="error" [errorMessage]="errorMessage" (click)="vanishError()"></app-error>
+<div *ngIf="!error && specs" class="row ml-0">
+  <div class="column">
+    <div class="row ml-0">
+      <h5>{{messages ? messages.header:''}}</h5>
+    </div>
+      <div class="col">
+        <div class="row mb-3">
+          <div class="list">
+            <form *ngIf="list.length > 0" class="form pl-2 mb-2" [formGroup]="searchForm" (keydown)="keyDownFunction($event)">
+              <div class="form-inline">
+                <label for="search">
+                  <div class="mr-1">filter: </div>
+                </label>
+                <div class="input-group flex-grow-1">
+              <input
+                type="text"
+                id="search"
+                formControlName="search"
+                name="search"
+                autocomplete="off"
+                #searchFormField
+              >
+                <div class="input-group-append">
+                <a
+                  *ngIf="id"
+                  routerLink="/categories/{{id}}/{{path === 'categories' ? 'subcategories' : path}}"
+                  [queryParams]="{ filter: searchForm.value['search'] || ''}"
+                >
+                  <button class="btn btn-outline-success mr-2">Search</button>
+                </a>
+                </div>
+                <button type="button" class="btn btn-outline-secondary" (click)="onReset()">
+                  Reset
+                </button>
+                </div>
+                </div>
+            </form>
+            <app-list
+              class="row ml-0"
+              *ngIf="!this.error"
+              [list]="filteredList ? filteredList : list"
+              [specs]="specs"
+              [path]="path"
+            ></app-list>
+          </div>
+        </div>
+      </div>
+  </div>
+</div>

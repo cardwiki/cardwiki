@@ -30,19 +30,36 @@ export class CategoryService {
 //  }
 
   /**
+   * fetches the details of a Category
+   * @param id of the Category to find
+   * @return object containing the Category found or the error thrown
+   */
+  doSearch(id: number, filter: string = null) {
+    const result = { category: null, error: false, errorMessage: '' };
+    this.getCategoryById(id)
+      .subscribe((category) => {
+          category.id = id;
+          result.category = category;
+        },
+        (error) => {
+          console.log(error);
+          result.error = true;
+          result.errorMessage = this.handleError(error);
+        });
+    return result;
+  }
+
+  /**
    * Handles errors returned by the endpoint
    * @param error returned
    * @return string containing the error message
    */
   handleError(error): string {
       if (error.status === 500 || error.status === 0) {
-        if (error.error &&  error. error.message && error.error.message.includes('ConstraintViolationException')) {
-          return 'Invalid input. Category may already exist.';
-        }
         return 'Something went wrong while processing your request.'  ;
       }
-      if (error.status === 400) {
-        return error.error.message;
+      if (error.status === 400 || error.status === 404 || error.status === 409) {
+        return typeof(error.error) === 'string' ? error.error : error.error.message;
       }
       if (error.status === 401 || error.status === 403) {
         return 'Not authorized: ' + error.status;
@@ -50,13 +67,16 @@ export class CategoryService {
       if (error.status === 503) {
         return 'Service unavailable: ' + error.status;
       }
-      const message = error.error.split('[')[1].split(']')[0];
-      const messages = message.split(',');
-      let result = '';
-      for (let i = 0; i < messages.length; i++) {
-        result += messages[i].substr(messages[i].indexOf(' '));
+      if (error.error.message && error.error.includes('Validation errors')) {
+        const message = error.error.split('[')[1].split(']')[0];
+        const messages = message.split(',');
+        let result = '';
+        for (let i = 0; i < messages.length; i++) {
+          result += messages[i].substr(messages[i].indexOf(' '));
+        }
+        return result;
       }
-      return result;
+      return error.error.message ? error.error.message : error.message;
     }
 
   /**

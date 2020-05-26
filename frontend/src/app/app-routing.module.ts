@@ -16,19 +16,21 @@ import { DeckPreviewComponent } from './components/deck-preview/deck-preview.com
 import {CategoryUpdateComponent} from './components/category/category-update/category-update.component';
 import {CategoryListComponent} from './components/category/category-list/category-list.component';
 import {CategoryDetailsComponent} from './components/category/category-details/category-details.component';
+import {CategorySubcategoriesComponent} from './components/category/category-subcategories/category-subcategories.component';
+import {CategoryDecksComponent} from './components/category/category-decks/category-decks.component';
+
 import { MarkdownSyntaxComponent } from './components/help/markdown-syntax/markdown-syntax.component';
+
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
   {path: 'about', component: AboutComponent},
   {path: 'search', component: SearchComponent},
   {path: 'login', component: LoginComponent},
-  {path: 'decks/:id/cards/new', component: CardCreateComponent}, //TODO duplicate?
   {path: 'decks/:deckId/cards/:cardId/edit', component: CardEditComponent},
   {path: 'learn', canActivate: [AuthGuard], component: LearnComponent},
-  {path: 'learn/:id', component: DeckPreviewComponent}, //TODO use decks/:id/learn instead? duplicate?
-  {path: 'decks/:id/cards/new', canActivate: [AuthGuard], component: CardCreateComponent}, //TODO duplicate?
-  {path: 'createCategory', canActivate: [AuthGuard], component: CategoryCreateComponent}, //TODO duplicate?
+  {path: 'learn/:id', component: DeckPreviewComponent},
+  {path: 'decks/:id/cards/new', canActivate: [AuthGuard], component: CardCreateComponent},
   {path: 'decks/:id', component: DeckViewComponent},
   {path: 'decks/:id/edit', component: DeckEditComponent},
   {path: 'decks/:id/preview', component: DeckPreviewComponent},
@@ -36,6 +38,8 @@ const routes: Routes = [
   {path: 'categories/new', canActivate: [AuthGuard], component: CategoryCreateComponent}, //TODO duplicate?
   {path: 'categories/:id', component: CategoryDetailsComponent},
   {path: 'categories/:id/edit', canActivate: [AuthGuard], component: CategoryUpdateComponent},
+  {path: 'categories/:id/subcategories', component: CategorySubcategoriesComponent},
+  {path: 'categories/:id/decks', component: CategoryDecksComponent},
   {path: 'help/markdown-syntax', component: MarkdownSyntaxComponent},
   {path: '**', component: PageNotFoundComponent},
 ];

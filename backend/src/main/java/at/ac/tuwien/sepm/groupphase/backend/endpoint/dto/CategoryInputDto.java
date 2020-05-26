@@ -6,9 +6,9 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.*;
 
 @Data
-public class CategoryInquiryDto {
+public class CategoryInputDto {
 
-    @NotEmpty(message = "Name must not be null nor empty.")
+    @NotBlank(message = "Name must not be null nor empty.")
     @Length(max = 200, message = "Name exceeds size limit.")
     private String name;
 
