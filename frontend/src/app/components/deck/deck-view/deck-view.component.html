@@ -25,7 +25,7 @@
         <div class="progress mr-2" style="height: 30px; width: 200px">
           <div class="progress-bar bg-secondary" role="progressbar" style="width: 30%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">30%</div>
         </div>
-        <button type="button" class="btn btn-light mr-1">Learn</button>
+        <a routerLink="/learn/{{deck.id}}" type="button" class="btn btn-light mr-1">Learn</a>
       </div>
     </div>
     <div class="col" *ngIf="deck">

@@ -20,6 +20,7 @@ import {CategorySubcategoriesComponent} from './components/category/category-sub
 import {CategoryDecksComponent} from './components/category/category-decks/category-decks.component';
 
 import { MarkdownSyntaxComponent } from './components/help/markdown-syntax/markdown-syntax.component';
+import {LearnDeckComponent} from './components/learn/learn-deck/learn-deck.component';
 
 
 const routes: Routes = [
@@ -30,7 +31,7 @@ const routes: Routes = [
   {path: 'decks/:id/cards/new', component: CardCreateComponent},
   {path: 'decks/:deckId/cards/:cardId/edit', component: CardEditComponent},
   {path: 'learn', canActivate: [AuthGuard], component: LearnComponent},
-  {path: 'learn/:id', component: DeckPreviewComponent},
+  {path: 'learn/:id', component: LearnDeckComponent},
   {path: 'decks/:id/cards/new', canActivate: [AuthGuard], component: CardCreateComponent},
   {path: 'createCategory', canActivate: [AuthGuard], component: CategoryCreateComponent},
   {path: 'decks/:id', component: DeckViewComponent},

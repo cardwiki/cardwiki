@@ -1,0 +1,57 @@
+<div class="container mt-5 mb-5" *ngIf="deck && card">
+  <div class="row justify-content-between">
+    <div class="col">
+      <p class="heading">Learn Deck</p>
+    </div>
+  </div>
+  <div class="row ml-0 mr-0 mb-2">
+    <div class="col-md-12 d-md-inline-block">
+      <div class="col" id="heading">
+        <span class="header" id="heading-text">
+          {{deck.name}}
+          </span>
+        <span>
+          <button routerLink="/decks/{{deck.id}}" class="btn-sm btn-outline-secondary align-text-bottom"id="detailsButton">
+            View details
+          </button>
+        </span>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <div
+        class="card card-deck rounded ml-0"
+        (click)="onFlip()"
+        id="learnCard"
+      >
+        <div *ngIf="!backside" class="card-header pt-0 mb-2"><i class="fas fa-question-circle" style="color: Tomato"></i></div>
+        <div *ngIf="backside" class="card-header pt-0 mr-2"><i class="far fa-hand-point-down" style="color: green"></i></div>
+        <div class="card-body justify-content-center align-content-center">
+        <app-card-view class="text-center" [card]="card" side="{{backside ? 'back' : 'front'}}"></app-card-view>
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="flipped" class="container mt-5 mb-5">
+  <div class="row justify-content-center ml-0 mr-0">
+    <div class="btn-group justify-content-center">
+      <div class="col-md-3 text-center" id="button1">
+        <button class="btn btn-outline-info mb-1" (click)="onNext('AGAIN')">Again</button>
+        <p>< 1m</p>
+      </div>
+      <div class="col-md-3 text-center" id="button2">
+        <button class="btn btn-outline-info mb-1" (click)="onNext('GOOD')">Good</button>
+        <p>< 10m</p>
+      </div>
+      <div class="col-md-3 text-center" id="button3">
+        <button class="btn btn-outline-info mb-1" (click)="onNext('EASY')">Easy</button>
+        <p>4d</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
