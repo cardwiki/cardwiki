@@ -27,6 +27,9 @@
         <a class="nav-link" routerLink="/about" routerLinkActive="active">About</a>
       </li>
       <li class="nav-item">
+        <a class="nav-link" *ngIf="authService.isLoggedIn()" routerLink="/users/@me/profile" routerLinkActive="active">Profile</a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link" *ngIf="!authService.isLoggedIn()" routerLink="/login" routerLinkActive="active">Login</a>
         <a class="nav-link" *ngIf="authService.isLoggedIn()" routerLink="/" (click)="authService.logoutUser()">Logout</a>
       </li>
