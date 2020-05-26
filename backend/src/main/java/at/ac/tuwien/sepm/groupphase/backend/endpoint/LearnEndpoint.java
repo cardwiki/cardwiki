@@ -44,7 +44,7 @@ public class LearnEndpoint {
     @Secured("ROLE_USER")
     @GetMapping("/next")
     @ApiOperation(value = "Get the next card of a deck to learn", authorizations = {@Authorization(value = "apiKey")})
-    public List<CardDetailsDto> getNextCard(@RequestParam Long deckId, @RequestParam Integer limit, @RequestParam Integer offset){
+    public List<CardDetailsDto> getNextCard(@RequestParam Long deckId, @RequestParam(defaultValue = "10") Integer limit, @RequestParam(defaultValue = "0") Integer offset){
         LOGGER.info("GET /api/v1/learn/next?deckId={}&limit={}&offset={}", deckId, limit, offset);
         return learnService.findNextCardsByDeckId(deckId, PageRequest.of(offset, limit)).stream()
             .map(cardMapper::cardToCardDetailsDto)
