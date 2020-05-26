@@ -57,6 +57,7 @@ export class DeckService {
     console.log('search card decks: ' + name);
     const params = new HttpParams({
       fromObject: {
+        name,
         offset: offset.toString(10),
         limit: limit.toString(10)
       }

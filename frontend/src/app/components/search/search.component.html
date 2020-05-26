@@ -1,3 +1,24 @@
 <h1>Search</h1>
-<p>Deck: {{deckName}}</p>
-<p>Categories: <span>{{categories.join(', ')}}</span></p>
+<form (ngSubmit)="onSubmit()" #searchForm="ngForm">
+    <div class="form-group">
+        <label for="deckName">Deck Name</label>
+        <input type="text" class="form-control" id="deckName" name="deckName" [(ngModel)]="newQueryParams.name">
+    </div>
+    <button type="submit" class="btn btn-primary" [disabled]="loading">Submit</button>
+</form>
+<hr>
+<ul class="list-group">
+    <a *ngFor="let deck of decks" routerLink="/decks/{{deck.id}}" class="list-group-item list-group-item-action">
+        {{deck.name}}
+        <span class="ml-2">
+            <a *ngFor="let category of deck.categories" routerLink="/categories/{{category.id}}"
+                class="badge badge-light border mr-1 font-weight-normal">{{category.name}}</a>
+        </span>
+    </a>
+</ul>
+<div *ngIf="loading" class="spinner-grow text-primary" role="status">
+    <span class="sr-only">Loading...</span>
+</div>
+<div class="my-4">
+    <button *ngIf="canLoadMore" class="btn btn-secondary" (click)="loadMore()" [disabled]="loading">Load more</button>
+</div>
