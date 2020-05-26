@@ -52,7 +52,7 @@ export class SearchComponent implements OnInit {
       }, error => {
         console.error('Could not search for decks', error)
         alert('Error while searching for decks')
-      }, () => this.loading = false)
+      }).add(() => this.loading = false)
   }
 
   /**
