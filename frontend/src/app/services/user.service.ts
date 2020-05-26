@@ -16,51 +16,51 @@ export class UserService {
   constructor(private httpClient: HttpClient, private globals: Globals) { }
 
   /**
-   * Load profile of user with username {@code username} from
+   * Load profile of user with userid {@code userid} from
    * the backend.
    *
-   * @param username of user to load profile for
+   * @param userid of user to load profile for
    */
-  getProfile(username: string): Observable<UserProfile> {
-    console.log('load card decks for user: ' + username);
-    return this.httpClient.get<UserProfile>(`${this.userBaseUri}/${username}/profile`);
+  getProfile(userid: number): Observable<UserProfile> {
+    console.log('load card decks for user: ' + userid);
+    return this.httpClient.get<UserProfile>(`${this.userBaseUri}/${userid}/profile`);
   }
 
   /**
-   * Load all card decks created by user with username {@code username} from
+   * Load all card decks created by user with userid {@code userid} from
    * the backend.
    *
-   * @param username to query decks for
+   * @param userid to query decks for
    * @param offset of the page.
    * @param limit of results returned.
    */
-  getDecks(username: string, limit: number, offset: number): Observable<DeckSimple[]> {
-    console.log('load card decks for user: ' + username);
+  getDecks(userid: number, limit: number, offset: number): Observable<DeckSimple[]> {
+    console.log('load card decks for user: ' + userid);
     const params = new HttpParams({
       fromObject: {
         offset: offset.toString(10),
         limit: limit.toString(10)
       }
     });
-    return this.httpClient.get<DeckSimple[]>(`${this.userBaseUri}/${username}/decks`, { params });
+    return this.httpClient.get<DeckSimple[]>(`${this.userBaseUri}/${userid}/decks`, { params });
   }
 
   /**
-   * Load all card revisions created by user with username {@code username} from
+   * Load all card revisions created by user with userid {@code userid} from
    * the backend.
    *
-   * @param username to query revisions for
+   * @param userid to query revisions for
    * @param offset of the page.
    * @param limit of results returned.
    */
-  getRevisions(username: string, limit: number, offset: number): Observable<RevisionDetailed[]> {
-    console.log('load card revisions for user: ' + username);
+  getRevisions(userid: number, limit: number, offset: number): Observable<RevisionDetailed[]> {
+    console.log('load card revisions for user: ' + userid);
     const params = new HttpParams({
       fromObject: {
         offset: offset.toString(10),
         limit: limit.toString(10)
       }
     });
-    return this.httpClient.get<RevisionDetailed[]>(`${this.userBaseUri}/${username}/revisions`, { params });
+    return this.httpClient.get<RevisionDetailed[]>(`${this.userBaseUri}/${userid}/revisions`, { params });
   }
 }

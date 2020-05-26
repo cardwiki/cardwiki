@@ -1,5 +1,5 @@
 <div class="container" *ngIf="profile">
-  <h2 class="mt-5 mx-3">{{profile.username}}</h2>
+  <h2 class="mt-5">{{profile.username}}</h2>
 
   <div class="row">
     <div class="cardcontainer col-md-8 col-xl-4 col-12">
@@ -39,7 +39,7 @@
             {{revision.createdAt | date : 'medium' }}:
             <a routerLink="/decks/{{revision.card.deck.id}}/cards/{{revision.card.id}}/revision?id={{revision.id}}">{{revision.message}}</a>
             card
-            <a routerLink="/decks/{{revision.card.deck.id}}/cards/{{revision.card.id}}">{{revision.card.textFront.length > REVISIONTEXT_TRUNCATE ? (revision.card.textFront | slice:0:REVISIONTEXT_TRUNCATE)+'...' : revision.card.textFront}}</a>
+            <a routerLink="/decks/{{revision.card.deck.id}}/cards/{{revision.card.id}}">{{revision.card.textFront && revision.card.textFront.length > REVISIONTEXT_TRUNCATE ? (revision.card.textFront | slice:0:REVISIONTEXT_TRUNCATE)+'...' : revision.card.textFront}}</a>
             in
             <a routerLink="/decks/{{revision.card.deck.id}}">{{revision.card.deck.name}}</a>.
           </li>

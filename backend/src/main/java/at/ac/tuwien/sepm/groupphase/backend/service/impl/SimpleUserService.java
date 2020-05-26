@@ -34,17 +34,21 @@ public class SimpleUserService implements UserService {
     }
 
     @Override
-    public List<Deck> getDecks(String username, Pageable pageable) {
-        LOGGER.debug("Load {} decks with offset {} from user by username {}", pageable.getPageSize(), pageable.getOffset(), username);
-        User user = loadUserByUsername(username);
-        return deckRepository.findByCreatedBy(user, pageable);
+    public List<Deck> getDecks(long id, Pageable pageable) {
+        LOGGER.debug("Load {} decks with offset {} from user {}", pageable.getPageSize(), pageable.getOffset(), id);
+        return deckRepository.findByCreatedBy_Id(id, pageable);
     }
 
     @Override
-    public List<Revision> getRevisions(String username, Pageable pageable) {
-        LOGGER.debug("Load {} revisions with offset {} from user by username {}", pageable.getPageSize(), pageable.getOffset(), username);
-        User user = loadUserByUsername(username);
-        return revisionRepository.findByCreatedBy(user, pageable);
+    public List<Revision> getRevisions(long id, Pageable pageable) {
+        LOGGER.debug("Load {} revisions with offset {} from user {}", pageable.getPageSize(), pageable.getOffset(), id);
+        return revisionRepository.findByCreatedBy_Id(id, pageable);
+    }
+
+    @Override
+    public User loadUserById(long id) {
+        LOGGER.debug("Load user by id {}", id);
+        return userRepository.findById(id).orElseThrow(UserNotFoundException::new);
     }
 
     @Override

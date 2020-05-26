@@ -7,6 +7,8 @@ import java.util.Objects;
 
 @Data
 public class UserOutputDto {
+    private Long id;
+
     private String username;
 
     private String description;

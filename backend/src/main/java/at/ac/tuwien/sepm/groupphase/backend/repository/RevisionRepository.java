@@ -14,10 +14,10 @@ public interface RevisionRepository extends JpaRepository<Revision, Long> {
     /**
      * Find all revisions created by user
      *
-     * @param user to query
+     * @param id of the user to query
      * @param pageable pagination parameters for the query
      * @return ordered list of all revisions created by user
      */
     @EntityGraph(attributePaths = {"card", "card.deck"})
-    List<Revision> findByCreatedBy(User user, Pageable pageable);
+    List<Revision> findByCreatedBy_Id(long id, Pageable pageable);
 }

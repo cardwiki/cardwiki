@@ -11,6 +11,15 @@ import java.util.List;
 public interface UserService {
 
     /**
+     * Loads a user using the userId
+     *
+     * @param id of the user
+     * @return the user entity
+     * @throws UserNotFoundException is thrown if the specified user does not exists
+     */
+    User loadUserById(long id);
+
+    /**
      * Find a user in the context of Spring Security based on the email address
      * <p>
      * For more information have a look at this tutorial:
@@ -50,20 +59,20 @@ public interface UserService {
     List<User> getAll();
 
     /**
-     * Loads decks created by user using username
+     * Loads decks created by user using their id
      *
-     * @param username of the user to search decks for
+     * @param id of the user to search decks for
      * @param pageable pagination data consisting of LIMIT and OFFSET
      * @return List of Decks created by the user
      */
-    List<Deck> getDecks(String username, Pageable pageable);
+    List<Deck> getDecks(long id, Pageable pageable);
 
     /**
-     * Loads revisions created by user using username
+     * Loads revisions created by user using their id
      *
-     * @param username of the user to search revisions for
+     * @param id of the user to search revisions for
      * @param pageable pagination data consisting of LIMIT and OFFSET
      * @return List of Revisions created by the user
      */
-    List<Revision> getRevisions(String username, Pageable pageable);
+    List<Revision> getRevisions(long id, Pageable pageable);
 }

@@ -26,12 +26,12 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
-      this.loadProfile(params.get('username'));
+      this.loadProfile(params.get('userid'));
     });
   }
 
-  loadProfile(username: string): void {
-    this.userService.getProfile(username).subscribe(profile => {
+  loadProfile(userid: string): void {
+    this.userService.getProfile(userid).subscribe(profile => {
       this.profile = profile;
       this.loadDecks(0);
       this.loadRevisions(0);
@@ -39,15 +39,15 @@ export class ProfileComponent implements OnInit {
   }
 
   loadDecks(offset: number = this.decks.length/this.DECK_PAGINATION_LIMIT): void {
-    this.userService.getDecks(this.profile.username, this.DECK_PAGINATION_LIMIT, offset).subscribe(decks => {
+    this.userService.getDecks(this.profile.id, this.DECK_PAGINATION_LIMIT, offset).subscribe(decks => {
         Array.prototype.push.apply(this.decks, decks);
         if (decks.length < this.DECK_PAGINATION_LIMIT) this.maxDecksLoaded = true;
       })
   }
 
   loadRevisions(offset: number = this.revisions.length/this.REVISION_PAGINATION_LIMIT): void {
-    console.log(this.revisions.length);
-    this.userService.getRevisions(this.profile.username, this.REVISION_PAGINATION_LIMIT, offset).subscribe(revisions => {
+    this.userService.getRevisions(this.profile.id, this.REVISION_PAGINATION_LIMIT, offset).subscribe(revisions => {
+        console.log(revisions);
         Array.prototype.push.apply(this.revisions, revisions);
         if (revisions.length < this.REVISION_PAGINATION_LIMIT) this.maxRevisionsLoaded = true;
       })

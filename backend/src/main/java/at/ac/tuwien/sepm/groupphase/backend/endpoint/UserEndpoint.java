@@ -57,21 +57,21 @@ public class UserEndpoint {
         return userService.getAll().stream().map(user -> userMapper.userToUserOutputDto(user)).collect(Collectors.toList());
     }
 
-    @GetMapping(value = "/{userName}/profile")
+    @GetMapping(value = "/{id}/profile")
     @ApiOperation(value = "Get user profile")
-    public UserOutputDto getProfile(@PathVariable String userName) { //TODO censor admin bool and timestamps?
-        return userMapper.userToUserOutputDto(userService.loadUserByUsername(userName));
+    public UserOutputDto getProfile(@PathVariable long id) { //TODO censor admin bool and timestamps?
+        return userMapper.userToUserOutputDto(userService.loadUserById(id));
     }
 
-    @GetMapping(value = "/{userName}/decks")
+    @GetMapping(value = "/{id}/decks")
     @ApiOperation(value = "Get decks created by user")
-    public List<DeckSimpleDto> getDecks(@PathVariable String userName, @RequestParam Integer limit, @RequestParam Integer offset) {
-        return userService.getDecks(userName, PageRequest.of(offset, limit)).stream().map(deckMapper::deckToDeckSimpleDto).collect(Collectors.toList());
+    public List<DeckSimpleDto> getDecks(@PathVariable long id, @RequestParam Integer limit, @RequestParam Integer offset) {
+        return userService.getDecks(id, PageRequest.of(offset, limit)).stream().map(deckMapper::deckToDeckSimpleDto).collect(Collectors.toList());
     }
 
-    @GetMapping(value = "/{userName}/revisions")
+    @GetMapping(value = "/{id}/revisions")
     @ApiOperation(value = "Get revisions created by user")
-    public List<RevisionDetailedDto> getRevisions(@PathVariable String userName, @RequestParam Integer limit, @RequestParam Integer offset) {
-        return userService.getRevisions(userName, PageRequest.of(offset, limit)).stream().map(revision -> revisionMapper.revisionToRevisionDetailedDto(revision)).collect(Collectors.toList());
+    public List<RevisionDetailedDto> getRevisions(@PathVariable long id, @RequestParam Integer limit, @RequestParam Integer offset) {
+        return userService.getRevisions(id, PageRequest.of(offset, limit)).stream().map(revision -> revisionMapper.revisionToRevisionDetailedDto(revision)).collect(Collectors.toList());
     }
 }

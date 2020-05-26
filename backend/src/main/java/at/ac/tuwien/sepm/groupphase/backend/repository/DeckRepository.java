@@ -33,10 +33,10 @@ public interface DeckRepository extends JpaRepository<Deck, Long> {
     /**
      * Find all decks created by user
      *
-     * @param user to query
+     * @param id of the user to query
      * @param pageable pagination parameters for the query
      * @return ordered list of all decks created by user
      */
     @EntityGraph(attributePaths = {"createdBy"})
-    List<Deck> findByCreatedBy(User user, Pageable pageable);
+    List<Deck> findByCreatedBy_Id(long id, Pageable pageable);
 }
