@@ -38,6 +38,10 @@ export class DeckEditComponent implements OnInit {
     );
   }
 
+  cancel(): void {
+    this.location.back()
+  }
+
   addCategory(): void {
     if (this.selectedCategory && !this.deck.categories.includes(this.selectedCategory)) {
       this.deck.categories.push(this.selectedCategory);

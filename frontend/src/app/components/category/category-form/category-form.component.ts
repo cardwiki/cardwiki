@@ -4,6 +4,7 @@ import {AuthService} from '../../../services/auth.service';
 import {Router} from '@angular/router';
 import {Category} from '../../../dtos/category';
 import {CategoryService} from '../../../services/category.service';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-category-form',
@@ -24,8 +25,7 @@ export class CategoryFormComponent implements OnInit {
   categories: Category[];
   result: Category = new Category(null);
 
-  constructor(private formBuilder: FormBuilder, private authService: AuthService,
-              private router: Router, private categoryService: CategoryService) {
+  constructor(private formBuilder: FormBuilder, private categoryService: CategoryService, private location: Location) {
     this.categoryForm = this.formBuilder.group({
 
       name: ['', [Validators.required, Validators.maxLength(200), this.nameIsBlank.bind(this)]],
@@ -167,6 +167,10 @@ export class CategoryFormComponent implements OnInit {
   onRefresh(): void {
     this.fetchCategories();
     this.categoryForm.controls['parentCategory'].setValue('');
+  }
+
+  onCancel(): void {
+    this.location.back()
   }
 
   fetchCategories() {
