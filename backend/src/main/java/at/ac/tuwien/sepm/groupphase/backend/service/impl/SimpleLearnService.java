@@ -4,7 +4,6 @@ import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.AttemptInputDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Progress;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
-import at.ac.tuwien.sepm.groupphase.backend.exception.BadRequestException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.ProgressRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.LearnService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
@@ -123,7 +122,7 @@ public class SimpleLearnService implements LearnService {
                 // TODO: change contains to equals after hibernate version contains
                 //  https://github.com/hibernate/hibernate-orm/pull/3417
                 if (cve.getConstraintName().contains(Progress.FKNAME_CARD))
-                    throw new BadRequestException("cardId not found");
+                    throw new IllegalArgumentException("cardId not found");
                 else
                     throw e;
             }
