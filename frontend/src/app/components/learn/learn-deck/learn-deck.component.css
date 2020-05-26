@@ -21,13 +21,28 @@
   }
 }
 
+@media screen and (min-width: 900px) {
+  #learnCard {
+    width: 700px;
+  }
+}
+
+#questionMark {
+  color: Tomato;
+}
+
+#finger {
+  color: green;
+}
+
 #learnCard {
   height: 40vh;
-  width: 80vw;
+
   padding: 3vh 3vw;
   background-color: #E8E8FF;
   margin-right: 70px;
 }
+
 
 .card-header {
   height: 1vh;
@@ -38,6 +53,13 @@
   font-size: 50px;
 }
 
+.card {
+
+}
+
+.card-body {
+
+}
 
 #button1, #button2, #button3 {
   margin-right: 3vw;
