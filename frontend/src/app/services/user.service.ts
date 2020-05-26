@@ -63,4 +63,14 @@ export class UserService {
     });
     return this.httpClient.get<RevisionDetailed[]>(`${this.userBaseUri}/${userid}/revisions`, { params });
   }
+
+  /**
+   * Edit description for logged in user
+   *
+   * @param description to save
+   */
+  editDescription(description: string): Observable<UserProfile> {
+    console.log('Save description: ' + description);
+    return this.httpClient.post<UserProfile>(`${this.userBaseUri}/description`, description);
+  }
 }

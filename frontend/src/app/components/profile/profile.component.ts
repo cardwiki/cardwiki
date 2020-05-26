@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {UserService} from "../../services/user.service";
 import {UserProfile} from "../../dtos/userProfile";
 import {DeckSimple} from "../../dtos/deckSimple";
 import {RevisionDetailed} from "../../dtos/revisionDetailed";
+import {Globals} from "../../global/globals";
 
 @Component({
   selector: 'app-profile',
@@ -16,16 +17,21 @@ export class ProfileComponent implements OnInit {
   REVISION_PAGINATION_LIMIT: number = 10;
   REVISIONTEXT_TRUNCATE: number = 30;
 
-  profile: UserProfile;
+  @Input() profile: UserProfile; //TODO using this correctly? (only editing one field)
   decks: DeckSimple[] = [];
   revisions: RevisionDetailed[] = [];
   maxDecksLoaded: boolean = false;
   maxRevisionsLoaded: boolean = false;
 
-  constructor(private userService: UserService, private route: ActivatedRoute) { }
+  me: boolean = false;
+  editingDescription: boolean = false;
+  editingSuccess: boolean = false;
+
+  constructor(private globals: Globals, private userService: UserService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
+      if (params.get('userid') == '@me') this.me = true;
       this.loadProfile(params.get('userid'));
     });
   }
@@ -51,6 +57,18 @@ export class ProfileComponent implements OnInit {
         Array.prototype.push.apply(this.revisions, revisions);
         if (revisions.length < this.REVISION_PAGINATION_LIMIT) this.maxRevisionsLoaded = true;
       })
+  }
+
+  saveDescription(): void {
+    this.userService.editDescription(this.profile.description).subscribe(
+      profile => {
+        this.profile = profile;
+        this.editingSuccess = true;
+        setTimeout(() => {
+          this.editingDescription = this.editingSuccess = false;
+        }, 1000)
+      }
+    );
   }
 
 }

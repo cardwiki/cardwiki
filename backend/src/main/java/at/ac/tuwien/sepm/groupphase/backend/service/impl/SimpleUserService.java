@@ -46,6 +46,15 @@ public class SimpleUserService implements UserService {
     }
 
     @Override
+    public User editDescription(long id, String description) {
+        User user = loadUserById(id);
+
+        user.setDescription(description);
+
+        return userRepository.save(user);
+    }
+
+    @Override
     public User loadUserById(long id) {
         LOGGER.debug("Load user by id {}", id);
         return userRepository.findById(id).orElseThrow(UserNotFoundException::new);

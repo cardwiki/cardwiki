@@ -81,4 +81,11 @@ public class UserEndpoint {
     public List<RevisionDetailedDto> getRevisions(@PathVariable long id, @RequestParam Integer limit, @RequestParam Integer offset) {
         return userService.getRevisions(id, PageRequest.of(offset, limit)).stream().map(revision -> revisionMapper.revisionToRevisionDetailedDto(revision)).collect(Collectors.toList());
     }
+
+    @Secured("ROLE_USER")
+    @PostMapping(value = "/description")
+    @ApiOperation(value = "Change description of logged in user")
+    public UserOutputDto editDescription(@Valid  @RequestBody String description) {
+        return userMapper.userToUserOutputDto(userService.editDescription(userService.loadCurrentUser().getId(), description));
+    }
 }

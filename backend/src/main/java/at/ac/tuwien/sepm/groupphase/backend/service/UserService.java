@@ -75,4 +75,13 @@ public interface UserService {
      * @return List of Revisions created by the user
      */
     List<Revision> getRevisions(long id, Pageable pageable);
+
+    /**
+     * Change description of user with id {@code id}
+     *
+     * @param id of user to edit
+     * @param description to insert
+     * @return User with new description
+     */
+    User editDescription(long id, String description);
 }
