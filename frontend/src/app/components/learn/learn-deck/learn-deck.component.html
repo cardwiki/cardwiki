@@ -4,14 +4,14 @@
       <p class="heading">Learn Deck</p>
     </div>
   </div>
-  <div class="row ml-0 mr-0">
-    <div class="col-md-12 d-md-inline-flex">
-      <div class="col" >
-        <span id="heading" class="mr-4">
+  <div class="row ml-0 mr-0 mb-2">
+    <div class="col-md-12 d-md-inline-block">
+      <div class="col" id="heading">
+        <span class="header" id="heading-text">
           {{deck.name}}
-        </span>
+          </span>
         <span>
-          <button routerLink="/decks/{{deck.id}}" class="btn btn-outline-info float-right mt-2 mr-0"id="detailsButton">
+          <button routerLink="/decks/{{deck.id}}" class="btn-sm btn-outline-secondary align-text-bottom"id="detailsButton">
             View details
           </button>
         </span>
@@ -21,11 +21,15 @@
   <div class="row">
     <div class="col">
       <div
-        class="card card-deck rounded justify-content-center align-content-center ml-0"
+        class="card card-deck rounded ml-0"
         (click)="onFlip()"
         id="learnCard"
       >
-        <div class="text-body" id="cardBody">{{backside ? card.textBack : card.textFront}}</div>
+        <div *ngIf="!backside" class="card-header pt-0 mb-2"><i class="fas fa-question-circle" style="color: Tomato"></i></div>
+        <div *ngIf="backside" class="card-header pt-0 mr-2"><i class="far fa-hand-point-down" style="color: green"></i></div>
+        <div class="card-body justify-content-center align-content-center">
+        <app-card-view class="text-center" [card]="card" side="{{backside ? 'back' : 'front'}}"></app-card-view>
+      </div>
       </div>
     </div>
   </div>
@@ -49,4 +53,5 @@
     </div>
   </div>
 </div>
+
 

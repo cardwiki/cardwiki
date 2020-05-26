@@ -1,36 +1,51 @@
-#heading {
+#heading-text {
   font-size: 4vw;
+  margin-right: 3vw;
+  width: 72vw;
+}
+
+#heading {
+  margin-left: 4vw;
+  border-left: solid lightskyblue 1vw;
 }
 
 @media screen and (min-width: 1200px) {
-  #heading {
+  #heading-text {
     font-size: 48px;
   }
 }
 
-@media screen and (max-width: 400px) {
-  #heading {
+@media screen and (max-width: 575px) {
+  #heading-text {
     font-size: 20px;
   }
 }
 
 #learnCard {
-  background-color: #a94442;
   height: 40vh;
-  widht: 10vw;
+  width: 80vw;
+  padding: 3vh 3vw;
+  background-color: #E8E8FF;
+  margin-right: 70px;
 }
-#cardBody {
-  padding: 2vh 2vw;
+
+.card-header {
+  height: 1vh;
+  width: 100%;
+  border: none;
+  margin-left: -30px;
+  margin-top: -20px;
+  font-size: 50px;
 }
+
+
 #button1, #button2, #button3 {
   margin-right: 3vw;
   margin-left: 3vw;
   height: 38px;
   width: 80px;
 }
-#x {
-  background-color: #42A948;
-}
+
 #detailsButton {
-  margin-bottom: 3vh;
+  margin-bottom: 0px;
 }
