@@ -75,10 +75,10 @@ public class UserEndpoint {
         return userMapper.userToUserOutputDto(userService.loadCurrentUser());
     }
 
-    @GetMapping(value = "/{id}/profile")
+    @GetMapping(value = "/{username}/profile")
     @ApiOperation(value = "Get user profile")
-    public UserOutputDto getProfile(@PathVariable long id) { //TODO censor admin bool and timestamps?
-        return userMapper.userToUserOutputDto(userService.loadUserById(id));
+    public UserOutputDto getProfile(@PathVariable String username) {
+        return userMapper.userToUserOutputDto(userService.loadUserByUsername(username));
     }
 
     @GetMapping(value = "/{id}/decks")

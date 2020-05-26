@@ -38,7 +38,7 @@ const routes: Routes = [
   {path: 'categories/:id', component: CategoryDetailsComponent},
   {path: 'categories/:id/edit', canActivate: [AuthGuard], component: CategoryUpdateComponent},
   {path: 'help/markdown-syntax', component: MarkdownSyntaxComponent},
-  {path: 'users/:userid/profile', component: ProfileComponent},
+  {path: 'users/:username/profile', component: ProfileComponent},
   {path: 'users', component: UserSearchComponent},
   {path: '**', component: PageNotFoundComponent},
 ];

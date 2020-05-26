@@ -16,7 +16,7 @@
     </div>
     <ul class="list-group list-group-flush">
       <li *ngFor="let user of users" class="list-group-item">
-        <a routerLink="/users/{{user.id}}/profile">{{user.username}}</a>
+        <a routerLink="/users/{{user.username}}/profile">{{user.username}}</a>
       </li>
     </ul>
     <button *ngIf="!maxUsersLoaded" class="card-footer btn p-1" (click)="loadUsers()">

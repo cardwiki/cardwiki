@@ -27,17 +27,20 @@ export class ProfileComponent implements OnInit {
   editingDescription: boolean = false;
   editingSuccess: boolean = false;
 
-  constructor(private globals: Globals, private userService: UserService, private route: ActivatedRoute) { }
+  constructor(private globals: Globals, private userService: UserService, private route: ActivatedRoute) {
+  }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
-      if (params.get('userid') == '@me') this.me = true;
-      this.loadProfile(params.get('userid'));
+      this.revisions = [];
+      this.decks = [];
+      this.me = (params.get('username') == '@me');
+      this.loadProfile(params.get('username'));
     });
   }
 
-  loadProfile(userid: string): void {
-    this.userService.getProfile(userid).subscribe(profile => {
+  loadProfile(username: string): void {
+    this.userService.getProfile(username).subscribe(profile => {
       this.profile = profile;
       this.loadDecks(0);
       this.loadRevisions(0);
