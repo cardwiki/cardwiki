@@ -66,13 +66,13 @@ public class UserEndpoint {
     }
 
     @Secured("ROLE_USER")
-    @GetMapping(value = "/@me/profile")
+    @GetMapping(value = "/byname/@me")
     @ApiOperation(value = "Get user profile of logged in user")
     public UserOutputDto getProfile() {
         return userMapper.userToUserOutputDto(userService.loadCurrentUser());
     }
 
-    @GetMapping(value = "/{username}/profile")
+    @GetMapping(value = "/byname/{username}")
     @ApiOperation(value = "Get user profile")
     public UserOutputDto getProfile(@PathVariable String username) {
         return userMapper.userToUserOutputDto(userService.loadUserByUsername(username));
