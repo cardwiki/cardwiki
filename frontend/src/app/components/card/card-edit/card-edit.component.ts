@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {CardService} from "../../../services/card.service";
 import {ActivatedRoute} from "@angular/router";
 import {CardContent} from "../../../dtos/cardContent";
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-card-edit',
@@ -14,7 +15,7 @@ export class CardEditComponent implements OnInit {
   private deckId: number;
   private cardId: number;
 
-  constructor(private cardService: CardService, private route: ActivatedRoute) { }
+  constructor(private cardService: CardService, private route: ActivatedRoute, private location: Location) { }
 
   ngOnInit(): void {
     this.deckId = Number(this.route.snapshot.paramMap.get('deckId'));
@@ -43,13 +44,17 @@ export class CardEditComponent implements OnInit {
       .subscribe(
         cardDetails => {
           console.log('edited card', cardDetails);
-          alert('Successfully edited card')
+          this.location.back()
         },
         error => {
           console.error('error editing card', error);
           alert('Error while editing card')
         }
       )
+  }
+
+  cancel(): void {
+    this.location.back()
   }
 
 }

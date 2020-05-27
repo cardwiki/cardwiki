@@ -102,21 +102,16 @@
                   >
                     Submit
                   </button>
-                  <button #dismissModal type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                  <button #dismissModal type="button" class="btn btn-outline-danger" data-dismiss="modal">Cancel</button>
                 </div>
               </div>
             </div>
           </div>
           <!-- buttons-->
-          <button type="button" data-toggle="modal" data-target="#modal" class="btn btn-success float-right">
+          <button type="button" data-toggle="modal" data-target="#modal" class="btn btn-success">
             {{mode}}
           </button>
-          <button type="button" class="btn-secondary" id="reset" (click)="categoryForm.reset(); setDefaults()">
-            Reset
-          </button>
-          <button type="button" class="btn-secondary" (click)="onRefresh()">
-            Refresh Categories
-          </button>
+          <button type="button" class="btn btn-outline-danger ml-2" (click)="onCancel()">Cancel</button>
         </form>
       </div>
     </div>

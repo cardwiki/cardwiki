@@ -14,6 +14,7 @@ export class Md2htmlPipe implements PipeTransform {
     this.converter = new MarkdownIt({
       breaks: true,
     })
+      .disable(['heading', 'lheading'])	
       .use(MarkdownItTexmath, {
         engine: 'katex',
         delimiters: 'dollars',
