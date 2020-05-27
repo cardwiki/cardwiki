@@ -1,60 +1,35 @@
-#heading-text {
-  font-size: min(max(4vw, 20px), 48px);
-  margin-right: 3vw;
-  width: 72vw;
+.scene {
+	width: 100%;
+	max-width: 700px;
+	height: 300px;
+	perspective: 600px;
+	font-size: 2em;
+}
+.flip-card {
+	width: 100%;
+	height: 100%;
+	position: relative;
+	transition: transform 1s;
+	transform-style: preserve-3d;
 }
 
-#heading {
-  margin-left: 2vw;
-  border-left: solid lightskyblue 1vw;
-  min-width: 200px;
+.flip-card-face {
+	height: 100%;
+	width: 100%;
+	backface-visibility: hidden;
+	box-shadow: 0 .3rem 1.3rem 0 rgba(0,0,0,.25);
+	position: absolute;
+
+	display: flex;
+	align-content: center;
+	align-items: center;
+	justify-content: center;
+	background: white;
 }
 
-container {
-  width: 70vw;
-  min-width: 350px;
+.flip-card-face-back {
+	transform: rotateX( 180deg );
 }
-
-#iconFront {
-  font-size: min(max(4.5vw, 23px), 40px);
-  color: #CF9500;
-  margin-top: calc(min(max(1vw, 7px), 15px));
-  margin-left: calc(min(max(1vw, 2px), 15px) - 15px);
-}
-
-#iconBack {
-  font-size: min(max(4vw, 21px), 40px);
-  color: green;
-  margin-top: calc(min(max(1.5vw, 10px), 17px));
-  margin-left: calc(min(max(1.5vw, 12px), 23px) - 22px);
-}
-
-#learnCard {
-  height: fit-content;
-  width: 70%;
-  min-width: 200px;
-  max-width: 700px;
-  min-height: min(25vw, 300px);
-  padding: 0;
-  background-color: #E8E8FF;
-  margin-right: 10vw;
-}
-
-
-.card-header {
-  background-color: rgba(0, 0, 0, 0);
-  height: 1vh;
-  border: none;
-  width: 95%;
-}
-
-#button1, #button2, #button3 {
-  margin-right: 3vw;
-  margin-left: 3vw;
-  height: 38px;
-  width: 80px;
-}
-
-#detailsButton {
-  margin-bottom: 0px;
+.flipped {
+	transform: rotateX(180deg);
 }

@@ -1,55 +1,21 @@
-<div class="container mt-5 mb-5 flex-grow-1" id="body" *ngIf="deck && card">
-  <div class="row">
-    <div class="col">
-      <p class="heading">Learn Deck</p>
-    </div>
-  </div>
-  <div class="row ml-0 mr-0 mb-2">
-    <div class="col-md-12 d-md-inline-block justify-content-center">
-      <div class="col" id="heading">
-        <span class="header" id="heading-text">
-          {{deck.name}}
-          </span>
-        <span>
-          <button routerLink="/decks/{{deck.id}}" class="btn-sm btn-outline-secondary align-text-bottom" id="detailsButton">
-            View details
-          </button>
-        </span>
-      </div>
-    </div>
-  </div>
-  <div class="row ml-0 mr-0 justify-content-center">
-      <div
-        class="card card-deck rounded ml-0 mr-0"
-        (click)="onFlip()"
-        id="learnCard"
-      >
-        <div *ngIf="!backside" class="card-header pt-0 mb-3 mr-3"><i id="iconFront" class="fas fa-question"></i></div>
-        <div *ngIf="backside" class="card-header pt-0 mb-3 mr-3"><i id="iconBack" class="far fa-hand-point-right"></i></div>
-        <div class="card-body justify-content-center align-content-center">
-        <app-card-view class="text-center" [card]="card" side="{{backside ? 'back' : 'front'}}"></app-card-view>
-      </div>
-    </div>
-  </div>
+<div class="container mt-5 d-flex flex-column" *ngIf="deck && card">
+	<h1 class=mb-4>Learning <a routerLink="/decks/{{deck.id}}">{{deck.name}}</a></h1>
+	<div class="d-flex align-items-center flex-column wrapper">
+		<div class="scene text-center" (click)="onFlip()">
+			<div class=flip-card [ngClass]="backside ? 'flipped' : ''">
+				<div class=flip-card-face [innerHtml]="card.textFront | md2html"></div>
+				<div class="flip-card-face flip-card-face-back" [innerHtml]="card.textBack  | md2html"></div>
+			</div>
+		</div>
+		<table *ngIf="flipped" class="text-center mt-3">
+			<tr>
+				<td><button class="btn btn-outline-info" (click)="onNext('AGAIN')">Again</button></td>
+				<td><button class="btn btn-outline-info mx-3" (click)="onNext('GOOD')">Good</button></td>
+				<td><button class="btn btn-outline-info" (click)="onNext('EASY')">Easy</button></td>
+			</tr>
+			<tr>
+				<td>&lt; 1m</td><td>&lt; 10m</td><td>4d</td>
+			</tr>
+		</table>
+	</div>
 </div>
-
-<div *ngIf="flipped" class="container mt-5 mb-5 flex-grow-1">
-  <div class="row justify-content-center  mr-0">
-    <div class="btn-group justify-content-center">
-      <div class="col-md-3 text-center" id="button1">
-        <button class="btn btn-outline-info mb-1" (click)="onNext('AGAIN')">Again</button>
-        <p>< 1m</p>
-      </div>
-      <div class="col-md-3 text-center" id="button2">
-        <button class="btn btn-outline-info mb-1" (click)="onNext('GOOD')">Good</button>
-        <p>< 10m</p>
-      </div>
-      <div class="col-md-3 text-center" id="button3">
-        <button class="btn btn-outline-info mb-1" (click)="onNext('EASY')">Easy</button>
-        <p>4d</p>
-      </div>
-    </div>
-  </div>
-</div>
-
-
