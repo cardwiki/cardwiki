@@ -12,6 +12,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
@@ -57,19 +61,24 @@ public class CategoryRepositoryTest extends TestDataGenerator {
     }
 
     @Test
-    public void givenTwoCategories_whenFindAllSorted_thenReturnsListWithLengthTwoWhichContainsBothElementsInAlphabeticOrder() {
+    public void givenFourCategories_whenFindAllSorted_thenReturnsListWithLengthFourWhichContainsAllElementsInAlphabeticOrder() {
         Category category1 = givenCategory();
         Category category2 = category1.getParent();
+        Category category3 = getCategoryRepository().save(new Category("Valid name", null));
+        List<Category> categories = new ArrayList<>();
+        categories.add(category1);
+        categories.add(category2);
+        categories.add(category3);
+        categories.sort(Comparator.comparing(Category::getName, String.CASE_INSENSITIVE_ORDER));
 
         assertAll(
-            () -> assertEquals(categoryRepository.findAll(Sort.by(Sort.Order.asc("name").ignoreCase())).size(), 2),
-            () -> assertEquals(categoryRepository.findAll(Sort.by(Sort.Order.asc("name").ignoreCase())).get(0), category1),
-            () -> assertEquals(categoryRepository.findAll(Sort.by(Sort.Order.asc("name").ignoreCase())).get(1), category2)
+            () -> assertEquals(categoryRepository.findAll(Sort.by(Sort.Order.asc("name").ignoreCase())).size(), 3),
+            () -> assertEquals(categoryRepository.findAll(Sort.by(Sort.Order.asc("name").ignoreCase())), categories)
         );
     }
 
     @Test
-    public void givenNothing_whenFindCategoryById_thenResultIsNull() {
+    public void givenNothing_whenFindCategoryById_thenResultIsEmpty() {
         assertTrue(categoryRepository.findById(1L).isEmpty());
     }
 

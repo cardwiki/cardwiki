@@ -3,6 +3,7 @@ package at.ac.tuwien.sepm.groupphase.backend.integrationtest;
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategoryInputDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategorySimpleDto;
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.CategoryMapper;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CategoryRepository;
@@ -50,7 +51,6 @@ public class CategoryEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    @Transactional
     public void createCategoryReturnsCategoryDetails() throws Exception {
         Category category = givenCategory();
         User user = givenApplicationUser();
@@ -74,9 +74,7 @@ public class CategoryEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    @Transactional
     public void createCategoryWithNonExistentParentThrowsBadRequest() throws Exception {
-        givenCategory();
         User user = givenApplicationUser();
         CategoryInputDto categoryInputDto = new CategoryInputDto();
         categoryInputDto.setName("blubb");
@@ -93,14 +91,13 @@ public class CategoryEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    @Transactional
     public void createCategoryWithParentWithoutIdThrowsBadRequest() throws Exception {
-        givenCategory();
-        User user = givenApplicationUser();
+        Category category = givenCategory();
+        User user = getSampleUser();
         CategoryInputDto categoryInputDto = new CategoryInputDto();
         categoryInputDto.setName("blubb");
         CategorySimpleDto parent = new CategorySimpleDto();
-        parent.setName("blubb parent");
+        parent.setName(category.getName());
         parent.setId(null);
         categoryInputDto.setParent(parent);
 
@@ -114,10 +111,11 @@ public class CategoryEndpointTest extends TestDataGenerator {
     @Test
     @Transactional
     public void createCategoryWithDuplicateNameThrowsBadRequest() throws Exception {
-        givenCategory();
+        Category category = givenCategory();
         User user = givenApplicationUser();
         CategoryInputDto categoryInputDto = new CategoryInputDto();
-        categoryInputDto.setName("category");
+        categoryInputDto.setName(category.getName());
+        categoryInputDto.setParent(null);
 
         mvc.perform(post("/api/v1/categories")
             .with(mockLogin(USER_ROLES, user.getAuthId()))
@@ -129,9 +127,10 @@ public class CategoryEndpointTest extends TestDataGenerator {
     @Test
     @Transactional
     public void createCategoryWithBlankNameStringThrowsBadRequest() throws Exception {
-        User user = givenApplicationUser();
+        User user = getSampleUser();
         CategoryInputDto categoryInputDto = new CategoryInputDto();
         categoryInputDto.setName("   ");
+        categoryInputDto.setParent(null);
 
         mvc.perform(post("/api/v1/categories")
             .with(mockLogin(USER_ROLES, user.getAuthId()))
@@ -141,7 +140,6 @@ public class CategoryEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    @Transactional
     public void getCategoryReturnsCategoryDetails() throws Exception {
         Category category = givenCategory();
 
@@ -165,13 +163,13 @@ public class CategoryEndpointTest extends TestDataGenerator {
     public void updateCategoryWithValidDataReturnsUpdatedCategoryDetails() throws Exception {
         Category category = givenCategory();
         User user = givenApplicationUser();
-        Category newParent = getCategoryRepository().save(new Category("bla", null));
+        Category parent = getCategoryRepository().save(new Category("valid name", null));
         CategoryInputDto categoryInputDto = new CategoryInputDto();
         categoryInputDto.setName("blubb");
-        CategorySimpleDto parent = new CategorySimpleDto();
-        parent.setName(newParent.getName());
-        parent.setId(newParent.getId());
-        categoryInputDto.setParent(parent);
+        CategorySimpleDto parentDto = new CategorySimpleDto();
+        parentDto.setName(parent.getName());
+        parentDto.setId(parent.getId());
+        categoryInputDto.setParent(parentDto);
 
         mvc.perform(put("/api/v1/categories/{id}", category.getId())
             .with(mockLogin(USER_ROLES, user.getAuthId()))
@@ -180,12 +178,11 @@ public class CategoryEndpointTest extends TestDataGenerator {
             .andExpect(status().is(200))
             .andExpect(jsonPath("$.name").value("blubb"))
             .andExpect(jsonPath("$.id").isNumber())
-            .andExpect(jsonPath("$.parent.id").value(newParent.getId()))
-            .andExpect(jsonPath("$.parent.name").value(newParent.getName()));
+            .andExpect(jsonPath("$.parent.id").value(parent.getId()))
+            .andExpect(jsonPath("$.parent.name").value(parent.getName()));
     }
 
     @Test
-    @Transactional
     public void updateCategoryWithParentWhichIsAlsoChildThrowsBadRequest() throws Exception {
         Category category = givenCategory();
         User user = givenApplicationUser();
@@ -204,10 +201,9 @@ public class CategoryEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    @Transactional
     public void updateCategoryWithSelfAsParentThrowsBadRequest() throws Exception {
         Category category = givenCategory();
-        User user = givenApplicationUser();
+        User user = getUnconnectedSampleUser();
         CategoryInputDto categoryInputDto = new CategoryInputDto();
         categoryInputDto.setName("blubb");
         CategorySimpleDto parent = new CategorySimpleDto();
@@ -223,16 +219,11 @@ public class CategoryEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    @Transactional
     public void updateCategoryWhichDoesNotExistThrowsNotFound() throws Exception {
-        Category category = givenCategory();
-        User user = givenApplicationUser();
+        User user = getSampleUser();
         CategoryInputDto categoryInputDto = new CategoryInputDto();
         categoryInputDto.setName("blubb");
-        CategorySimpleDto parent = new CategorySimpleDto();
-        parent.setName(category.getParent().getName());
-        parent.setId(category.getParent().getId());
-        categoryInputDto.setParent(parent);
+        categoryInputDto.setParent(null);
 
         mvc.perform(put("/api/v1/categories/{id}", 0L)
             .with(mockLogin(USER_ROLES, user.getAuthId()))
@@ -242,9 +233,8 @@ public class CategoryEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    @Transactional
     public void updateCategoryWithBlankNameStringThrowsBadRequest() throws Exception {
-        Category category = givenCategory();
+        Category category = getSampleCategoryWithoutParent();
         User user = givenApplicationUser();
         CategoryInputDto categoryInputDto = new CategoryInputDto();
         categoryInputDto.setName("    ");
@@ -257,10 +247,9 @@ public class CategoryEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    @Transactional
     public void updateCategoryWithDuplicateNameThrowsBadRequest() throws Exception {
         Category category = givenCategory();
-        User user = givenApplicationUser();
+        User user = getSampleUser();
         CategoryInputDto categoryInputDto = new CategoryInputDto();
         categoryInputDto.setName(category.getParent().getName());
 

@@ -6,7 +6,6 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -101,6 +100,8 @@ public abstract class TestDataGenerator {
     Long CARD_ID = 1L;
     Long REVISION_ID = 2L;
     Long REVISION_EDIT_ID = 3L;
+    Long CATEGORY_ID = 4L;
+    Long CATEGORY_2_ID = 5L;
     LocalDateTime CREATED_AT = LocalDateTime.now();
     LocalDateTime UPDATED_AT = LocalDateTime.now();
 
@@ -148,6 +149,24 @@ public abstract class TestDataGenerator {
         return revisionEdit;
     }
 
+    public Category getUnconnectedSampleCategory() {
+        Category category = new Category();
+        category.setId(CATEGORY_ID);
+        category.setName("category name");
+        category.setCreatedAt(CREATED_AT);
+        category.setUpdatedAt(UPDATED_AT);
+        return category;
+    }
+
+    public Category getUnconnectedSampleCategory2() {
+        Category parent = new Category();
+        parent.setId(CATEGORY_2_ID);
+        parent.setName("Parent category name");
+        parent.setCreatedAt(CREATED_AT);
+        parent.setUpdatedAt(UPDATED_AT);
+        return parent;
+    }
+
     public User getSampleUser() {
         return getUnconnectedSampleUser();
     }
@@ -180,6 +199,22 @@ public abstract class TestDataGenerator {
         revisionEdit.setRevision(getSampleRevision());
         revisionEdit.getRevision().setRevisionEdit(revisionEdit);
         return revisionEdit;
+    }
+
+    public Category getSampleCategoryWithoutParent() {
+        Category category = getUnconnectedSampleCategory();
+        category.setCreatedBy(getSampleUser());
+        category.setParent(null);
+        return category;
+    }
+
+    public Category getSampleCategoryWithParent() {
+        Category category = getSampleCategoryWithoutParent();
+        Category parent = getUnconnectedSampleCategory2();
+        parent.setCreatedBy(getSampleUser());
+        category.setParent(parent);
+        parent.getChildren().add(category);
+        return category;
     }
 
     public Matcher<String> validIsoDateTime() {
