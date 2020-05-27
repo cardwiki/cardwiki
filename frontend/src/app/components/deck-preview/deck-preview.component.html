@@ -20,7 +20,7 @@
     <div class="card-header">
       Preview ({{flipped ? "Back" : "Front"}})
     </div>
-    <div class="card-body card-content d-flex justify-content-center" (click)="flip(!this.flipped)" style="min-height: 300px">
+    <div class="card-body card-content d-flex justify-content-center" (click)="flip()" style="min-height: 300px">
       <h5 class="card-title my-3 align-self-center" *ngIf="!flipped" [innerHtml]="currentcard.textFront | md2html"></h5>
       <h5 class="card-title my-3 align-self-center" *ngIf="flipped" [innerHtml]="currentcard.textBack | md2html"></h5>
     </div>
