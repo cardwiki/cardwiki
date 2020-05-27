@@ -57,7 +57,16 @@ export class LearnDeckComponent implements OnInit {
   getNextCard(deckId: number) {
    this.learnService.getNextCard(deckId)
       .subscribe(cardDetails => {
-        this.card = new CardSimple(cardDetails[0].id, cardDetails[0].textFront, cardDetails[0].textBack);
+        console.log('list: ', cardDetails);
+        if (!(cardDetails instanceof Array) || cardDetails.length < 1) {
+          this.card = new CardSimple(
+            0,
+            'There are no more cards to learn at the moment.',
+            'There are no more cards to learn at the moment.'
+          );
+        } else {
+          this.card = new CardSimple(cardDetails[0].id, cardDetails[0].textFront, cardDetails[0].textBack);
+        }
       },
         error => {
         console.log(error);
@@ -75,17 +84,18 @@ export class LearnDeckComponent implements OnInit {
     console.log('Attempting to submit status: ' + status);
     await this.triggerNext(status);
     this.getNextCard(this.deck.id);
-
   }
 
   async triggerNext(status: string) {
-    console.log(status);
-    await this.learnService.sendAttemptStatus(new LearnAttempt(this.card.id, status))
-      .subscribe(() => {
-        console.log('Status ' + status + ' successfully submitted.');
-        },
-        error => {
-        console.log(error);
-        });
+    console.log('Submitted status: ' + status);
+    if (this.card.id > 0) {
+      await this.learnService.sendAttemptStatus(new LearnAttempt(this.card.id, status))
+        .subscribe(() => {
+            console.log('Status ' + status + ' successfully submitted.');
+          },
+          error => {
+            console.log(error);
+          });
     }
+  }
 }

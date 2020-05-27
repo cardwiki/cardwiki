@@ -1,31 +1,31 @@
-<div class="container mt-5 mb-5 flex-grow-1" *ngIf="deck && card">
+<div class="container mt-5 mb-5 flex-grow-1" id="body" *ngIf="deck && card">
   <div class="row">
     <div class="col">
       <p class="heading">Learn Deck</p>
     </div>
   </div>
   <div class="row ml-0 mr-0 mb-2">
-    <div class="col-md-12 d-md-inline-block">
+    <div class="col-md-12 d-md-inline-block justify-content-center">
       <div class="col" id="heading">
         <span class="header" id="heading-text">
           {{deck.name}}
           </span>
         <span>
-          <button routerLink="/decks/{{deck.id}}" class="btn-sm btn-outline-secondary align-text-bottom"id="detailsButton">
+          <button routerLink="/decks/{{deck.id}}" class="btn-sm btn-outline-secondary align-text-bottom" id="detailsButton">
             View details
           </button>
         </span>
       </div>
     </div>
   </div>
-  <div class="row ml-0 justify-content-center">
+  <div class="row ml-0 mr-0 justify-content-center">
       <div
-        class="card card-deck rounded ml-5"
+        class="card card-deck rounded ml-0 mr-0"
         (click)="onFlip()"
         id="learnCard"
       >
-        <div *ngIf="!backside" class="card-header pt-0 mb-3 mr-3"><i id="questionMark" class="fas fa-question-circle"></i></div>
-        <div *ngIf="backside" class="card-header pt-0 mb-3 mr-3"><i id="finger" class="far fa-hand-point-down"></i></div>
+        <div *ngIf="!backside" class="card-header pt-0 mb-3 mr-3"><i id="iconFront" class="fas fa-question"></i></div>
+        <div *ngIf="backside" class="card-header pt-0 mb-3 mr-3"><i id="iconBack" class="far fa-hand-point-right"></i></div>
         <div class="card-body justify-content-center align-content-center">
         <app-card-view class="text-center" [card]="card" side="{{backside ? 'back' : 'front'}}"></app-card-view>
       </div>
@@ -33,7 +33,7 @@
   </div>
 </div>
 
-<div *ngIf="flipped" class="container mt-5 mb-5">
+<div *ngIf="flipped" class="container mt-5 mb-5 flex-grow-1">
   <div class="row justify-content-center  mr-0">
     <div class="btn-group justify-content-center">
       <div class="col-md-3 text-center" id="button1">

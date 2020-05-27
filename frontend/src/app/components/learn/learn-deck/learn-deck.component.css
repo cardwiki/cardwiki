@@ -1,64 +1,51 @@
 #heading-text {
-  font-size: 4vw;
+  font-size: min(max(4vw, 20px), 48px);
   margin-right: 3vw;
   width: 72vw;
 }
 
 #heading {
-  margin-left: 4vw;
+  margin-left: 2vw;
   border-left: solid lightskyblue 1vw;
+  min-width: 200px;
 }
 
-@media screen and (min-width: 1200px) {
-  #heading-text {
-    font-size: 48px;
-  }
+container {
+  width: 70vw;
+  min-width: 350px;
 }
 
-@media screen and (max-width: 575px) {
-  #heading-text {
-    font-size: 20px;
-  }
+#iconFront {
+  font-size: min(max(4.5vw, 23px), 40px);
+  color: #CF9500;
+  margin-top: calc(min(max(1vw, 7px), 15px));
+  margin-left: calc(min(max(1vw, 2px), 15px) - 15px);
 }
 
-@media screen and (min-width: 900px) {
-  #learnCard {
-    width: 700px;
-  }
-}
-
-#questionMark {
-  color: Tomato;
-}
-
-#finger {
+#iconBack {
+  font-size: min(max(4vw, 21px), 40px);
   color: green;
+  margin-top: calc(min(max(1.5vw, 10px), 17px));
+  margin-left: calc(min(max(1.5vw, 12px), 23px) - 22px);
 }
 
 #learnCard {
-  height: 40vh;
-
-  padding: 3vh 3vw;
+  height: fit-content;
+  width: 70%;
+  min-width: 200px;
+  max-width: 700px;
+  min-height: min(25vw, 300px);
+  padding: 0;
   background-color: #E8E8FF;
-  margin-right: 70px;
+  margin-right: 10vw;
 }
 
 
 .card-header {
+  background-color: rgba(0, 0, 0, 0);
   height: 1vh;
-  width: 100%;
   border: none;
-  margin-left: -30px;
-  margin-top: -20px;
-  font-size: 50px;
-}
-
-.card {
-
-}
-
-.card-body {
-
+  width: 95%;
 }
 
 #button1, #button2, #button3 {
