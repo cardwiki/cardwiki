@@ -104,7 +104,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     private String handleDataIntegrityViolationException (DataIntegrityViolationException e) {
         if (e.getCause() instanceof ConstraintViolationException) {
-            LOGGER.info(e.getMessage());
             String cause = ((ConstraintViolationException) e.getCause()).getConstraintName().toLowerCase();
             if (cause.contains("name_unique")) {
                 return "A category with that name already exists.";
