@@ -10,7 +10,9 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
+import java.util.Scanner;
 
 @Profile("generateData")
 @Component
@@ -31,21 +33,30 @@ public class CardDataGenerator {
 
     @PostConstruct
     private void generateCards() {
+        generateDeck(0, "Hauptstädte Europas", "capitals.csv");
+        generateDeck(1, "Mathematik Demo", "math.csv");
+    }
+
+    private void generateDeck(int id, String name, String filename) {
         User user = new User();
-        user.setAuthId("fake id");
+        user.setAuthId("fake id" + id);
         user.setDescription("test user");
         user.setAdmin(false);
         user.setEnabled(false);
-        user.setUsername("crashtestdummy");
+        user.setUsername("crashtestdummy" + id);
         userRepository.saveAndFlush(user);
         Deck deck = new Deck();
-        deck.setName("Test Deck");
+        deck.setName(name);
         deck.setCreatedBy(user);
         deckRepository.saveAndFlush(deck);
 
         long countCards = cardRepository.count();
-        for (int i = (int)countCards; i < NUMBER_OF_CARDS_TO_GENERATE; i++) {
-            LOGGER.info("Creating card {}", i);
+
+        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+        InputStream is = classloader.getResourceAsStream(filename);
+        Scanner scanner = new Scanner(is);
+        while (scanner.hasNextLine()){
+            String[] parts = scanner.nextLine().split(",", 2);
             Card card = new Card();
             Revision revision = new Revision();
 
@@ -54,7 +65,7 @@ public class CardDataGenerator {
 
             card.setLatestRevision(revision);
             revision.setCard(card);
-            revision.setMessage("Test Revision " + i);
+            revision.setMessage("Test Revision ");
             revision.setCreatedBy(user);
             user.getRevisions().add(revision);
 
@@ -62,25 +73,13 @@ public class CardDataGenerator {
 
             // Add content
             RevisionEdit edit = new RevisionEdit();
-            edit.setTextFront("Front Text " + i);
-            edit.setTextBack("Back Text " + i);
+            edit.setTextFront(parts[0]);
+            edit.setTextBack(parts[1]);
 
             revision.setRevisionEdit(edit);
             edit.setRevision(revision);
 
             card = cardRepository.save(card);
-
-            if (i % 2 == 1) {
-                // Add Delete-Revision
-                revision = new Revision();
-                revision.setCard(card);
-                revision.setMessage("Deleted " + i);
-                card.setLatestRevision(revision);
-                revision.setCreatedBy(user);
-                user.getRevisions().add(revision);
-
-                cardRepository.save(card);
-            }
         }
     }
 

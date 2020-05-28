@@ -1,0 +1,4 @@
+Partielle Integration, $\int u(x)\;v'(x)=u(x)v(x)-\int u'(x)v(x)$
+Substitutionsregel, $\int f\bigl(u(x)\bigr)\;u'(x)\;dx=\int f(u)\;du$
+Hamilton'sche Linie, Eine Kantenfolge in einem Graphen die jeden Knoten genau einmal enthält. Man unterscheidet zwischen geschlossen und offen. Ein hamilton'sche Graph ist ein Graph der eine hamilton'sche Linie besitzt.
+Äquivalenzrelation, Symmetrie, Transitivität und Reflexivität, eine Äquivalenzklasse ist eine von einem Element a erzeugte Menge aus bs, in der alle as in Relation zu b stehen wobei die Relation eine Äquivalenzrelation ist.
