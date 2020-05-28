@@ -86,7 +86,7 @@ public class CategoryServiceImpl implements CategoryService {
                 throw new IllegalArgumentException("Category cannot be its own parent.");
             }
             if (categoryRepository.ancestorExistsWithId(id, newParent.getId())) {
-                throw new IllegalArgumentException("Circular Child-Parent relation.");
+                throw new IllegalArgumentException("Circular child-parent relation.");
             }
             parent = findOneById(newParent.getId());
         }
@@ -104,6 +104,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     private String handleDataIntegrityViolationException (DataIntegrityViolationException e) {
         if (e.getCause() instanceof ConstraintViolationException) {
+            LOGGER.info(e.getMessage());
             String cause = ((ConstraintViolationException) e.getCause()).getConstraintName().toLowerCase();
             if (cause.contains("name_unique")) {
                 return "A category with that name already exists.";
