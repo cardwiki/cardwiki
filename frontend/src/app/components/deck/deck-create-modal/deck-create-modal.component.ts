@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {DeckService} from '../../../services/deck.service';
 import {FormBuilder, Validators} from '@angular/forms';
-import {DeckSimple} from '../../../dtos/deck-simple';
+import {DeckSimple} from '../../../dtos/deckSimple';
 
 @Component({
   selector: 'app-deck-create',
@@ -27,7 +27,7 @@ export class DeckCreateModalComponent implements OnInit {
 
   createDeck(): void {
     this.activeModal.close(
-      this.deckService.create(new DeckSimple(this.deckForm.value.name))
+      this.deckService.create(new DeckSimple(null, this.deckForm.value.name))
     );
   }
 }

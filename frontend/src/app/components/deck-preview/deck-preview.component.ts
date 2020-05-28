@@ -1,6 +1,6 @@
 import {Component, HostListener, OnInit} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import {Deck} from "../../dtos/deck";
+import {DeckDetails} from "../../dtos/deckDetails";
 import {CardSimple} from "../../dtos/cardSimple";
 import {DeckService} from "../../services/deck.service";
 import {CardService} from "../../services/card.service";
@@ -22,7 +22,7 @@ export class DeckPreviewComponent implements OnInit {
     else if (event.key === ' ') this.flip();
   }
 
-  deck: Deck;
+  deck: DeckDetails;
   cards: CardSimple[];
   currentcard: CardSimple;
   flipped: boolean = false;

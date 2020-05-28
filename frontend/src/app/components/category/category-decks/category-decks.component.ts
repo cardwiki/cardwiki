@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {Category} from '../../../dtos/category';
+import {CategoryDetails} from '../../../dtos/categoryDetails';
 import {ActivatedRoute, Router} from '@angular/router';
 import {CategoryService} from '../../../services/category.service';
 import {DeckSimple} from '../../../dtos/deckSimple';
@@ -12,7 +12,7 @@ import {map} from 'rxjs/operators';
   styleUrls: ['./category-decks.component.css']
 })
 export class CategoryDecksComponent implements OnInit {
-  category: Category;
+  category: CategoryDetails;
   error: boolean;
   errorMessage: string;
   filter: string;

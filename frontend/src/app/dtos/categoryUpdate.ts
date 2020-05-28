@@ -1,8 +1,8 @@
 import { CategorySimple } from './categorySimple';
 
-export class DeckUpdate {
+export class CategoryUpdate {
   constructor(
     public name: string,
-    public categories: CategorySimple[]) {
+    public parent: CategorySimple) {
   }
 }

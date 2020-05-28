@@ -1,14 +1,14 @@
 import { RevisionSimple } from './revisionSimple';
 import { DeckSimple } from './deckSimple';
-import { CardContent } from './cardContent';
+import { CardSimple } from './cardSimple';
 
-export class CardDetails extends CardContent {
+export class CardDetails extends CardSimple {
   constructor(
     public id: number,
     public deck: DeckSimple,
     public textFront: string,
     public textBack: string,
     public revisions: RevisionSimple[]) {
-      super(textFront, textBack);
+      super(id, deck, textFront, textBack);
   }
 }
