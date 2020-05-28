@@ -1,5 +1,7 @@
 package at.ac.tuwien.sepm.groupphase.backend.integrationtest;
 
+import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
+import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-public class AuthEndpointTest {
+public class AuthEndpointTest extends TestDataGenerator {
     @Autowired
     private MockMvc mvc;
 
@@ -34,30 +36,35 @@ public class AuthEndpointTest {
         .andExpect(status().is(200))
         .andExpect(jsonPath("$.authId").value(IsNull.nullValue()))
         .andExpect(jsonPath("$.hasAccount").value(false))
-        .andExpect(jsonPath("$.admin").value(false));
+        .andExpect(jsonPath("$.admin").value(false))
+        .andExpect(jsonPath("$.userId").value(IsNull.nullValue()));
     }
 
     @Test
     public void whoAmIUser() throws Exception {
+        User user = givenApplicationUser();
         mvc.perform(
             get("/api/v1/auth/whoami")
-            .with(mockLogin(USER_ROLES, "foo:123"))
+            .with(mockLogin(USER_ROLES, user.getAuthId()))
         )
             .andExpect(status().is(200))
-            .andExpect(jsonPath("$.authId").value("foo:123"))
+            .andExpect(jsonPath("$.authId").value(user.getAuthId()))
             .andExpect(jsonPath("$.hasAccount").value(true))
-            .andExpect(jsonPath("$.admin").value(false));
+            .andExpect(jsonPath("$.admin").value(false))
+            .andExpect(jsonPath("$.userId").value(user.getId()));
     }
 
     @Test
     public void whoAmIAdmin() throws Exception {
+        User user = givenApplicationUser();
         mvc.perform(
             get("/api/v1/auth/whoami")
-                .with(mockLogin(ADMIN_ROLES, "foo:123"))
+                .with(mockLogin(ADMIN_ROLES, user.getAuthId()))
         )
             .andExpect(status().is(200))
-            .andExpect(jsonPath("$.authId").value("foo:123"))
+            .andExpect(jsonPath("$.authId").value(user.getAuthId()))
             .andExpect(jsonPath("$.hasAccount").value(true))
-            .andExpect(jsonPath("$.admin").value(true));
+            .andExpect(jsonPath("$.admin").value(true))
+            .andExpect(jsonPath("$.userId").value(user.getId()));
     }
 }

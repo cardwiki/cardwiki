@@ -7,4 +7,5 @@ public class WhoAmIDto {
     private String authId;
     private boolean hasAccount;
     private boolean isAdmin;
+    private Long userId;
 }
