@@ -1,9 +1,19 @@
+.lgfont {
+	font-size: 2em;
+}
+.card-container {
+	width: 100%;
+	display: flex;
+	align-content: center;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+}
 .scene {
 	width: 100%;
 	max-width: 700px;
 	height: 300px;
 	perspective: 600px;
-	font-size: 2em;
 }
 .flip-card {
 	width: 100%;
@@ -17,7 +27,6 @@
 	height: 100%;
 	width: 100%;
 	backface-visibility: hidden;
-	box-shadow: 0 .3rem 1.3rem 0 rgba(0,0,0,.25);
 	position: absolute;
 
 	display: flex;
@@ -29,6 +38,7 @@
 
 .flip-card-face-back {
 	transform: rotateX( 180deg );
+	box-shadow: 0 .5rem 1.3rem 0 rgba(0,0,0,.25);
 }
 .flipped {
 	transform: rotateX(180deg);

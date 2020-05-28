@@ -15,7 +15,6 @@ export class LearnDeckComponent implements OnInit {
 
   deck: DeckSimple;
   card: CardSimple;
-  backside: boolean;
   flipped: boolean;
 
   constructor(private deckService: DeckService, private learnService: LearnService, private route: ActivatedRoute) { }
@@ -75,12 +74,10 @@ export class LearnDeckComponent implements OnInit {
 
   onFlip() {
     this.flipped = true;
-    this.backside = !this.backside;
   }
 
   async onNext(status: string) {
     this.flipped = false;
-    this.backside = false;
     console.log('Attempting to submit status: ' + status);
     await this.triggerNext(status);
     this.getNextCard(this.deck.id);
