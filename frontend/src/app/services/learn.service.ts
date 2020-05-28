@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {Globals} from '../global/globals';
 import {Observable} from 'rxjs';
-import {CardDetails} from '../dtos/cardDetails';
 import {LearnAttempt} from '../dtos/learnAttempt';
+import { CardSimple } from '../dtos/cardSimple';
 
 @Injectable({
   providedIn: 'root'
@@ -16,13 +16,13 @@ export class LearnService {
   }
 
   /**
-   * Loads the next card to learn for a specific deck from the backend
-   * @param id of deck to learn
+   * Loads the next cards to learn for a specific deck from the backend
+   * @param deckId id of deck to learn
    */
-  getNextCard(deckId: number): Observable<CardDetails> {
-    console.log('Get next Card of Deck with id ' + deckId);
+  getNextCards(deckId: number): Observable<CardSimple[]> {
+    console.log('Get next cards of Deck with id ' + deckId);
     const params = new HttpParams().append('deckId', String(deckId));
-    return this.httpClient.get<CardDetails>(this.learnBaseUri + '/next', { params });
+    return this.httpClient.get<CardSimple[]>(this.learnBaseUri + '/next', { params });
   }
 
   /**
