@@ -15,7 +15,9 @@
         [pageSize]=specs.pageSize
         [collectionSize]="list.length"
         size="sm"
-      ></ngb-pagination>
+        *ngIf="list.length > specs.pageSize"
+      >
+      </ngb-pagination>
     </div>
   </div>
   <div *ngIf="list.length === 0" class="row pl-4 ml-0">None found.</div>
