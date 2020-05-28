@@ -25,7 +25,6 @@ import { SearchComponent } from './components/search/search.component';
 import { AboutComponent } from './components/about/about.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
-import { LearnComponent } from './components/learn/learn.component';
 import { DeckPreviewComponent } from './components/deck-preview/deck-preview.component';
 import { CategoryListComponent } from './components/category/category-list/category-list.component';
 import { ListComponent } from './components/category/list/list.component';
@@ -36,7 +35,7 @@ import { CategoryDecksComponent } from './components/category/category-decks/cat
 import { Md2htmlPipe } from './pipes/md2html.pipe';
 import { MarkdownSyntaxComponent } from './components/help/markdown-syntax/markdown-syntax.component';
 import { ErrorComponent } from './components/error/error.component';
-import { LearnDeckComponent } from './components/learn/learn-deck/learn-deck.component';
+import { LearnDeckComponent } from './components/learn-deck/learn-deck.component';
 
 @NgModule({
   declarations: [
@@ -58,7 +57,6 @@ import { LearnDeckComponent } from './components/learn/learn-deck/learn-deck.com
     AboutComponent,
     DashboardComponent,
     PageNotFoundComponent,
-    LearnComponent,
     DeckPreviewComponent,
     CategoryListComponent,
     ListComponent,

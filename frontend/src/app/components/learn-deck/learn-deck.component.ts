@@ -1,10 +1,10 @@
 import {Component, HostListener, OnInit} from '@angular/core';
-import {CardSimple} from '../../../dtos/cardSimple';
-import {DeckService} from '../../../services/deck.service';
+import {CardSimple} from '../../dtos/cardSimple';
+import {DeckService} from '../../services/deck.service';
 import {ActivatedRoute} from '@angular/router';
-import {DeckSimple} from '../../../dtos/deckSimple';
-import {LearnService} from '../../../services/learn.service';
-import {LearnAttempt} from '../../../dtos/learnAttempt';
+import {DeckSimple} from '../../dtos/deckSimple';
+import {LearnService} from '../../services/learn.service';
+import {LearnAttempt} from '../../dtos/learnAttempt';
 
 @Component({
   selector: 'app-learn-deck',
