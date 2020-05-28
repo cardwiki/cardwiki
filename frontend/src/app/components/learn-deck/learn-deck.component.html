@@ -5,7 +5,7 @@
 			<div class=lgfont [innerHtml]="card.textFront | md2html"></div>
 			<div class="scene text-center" (click)="onFlip()">
 				<div class=flip-card [ngClass]="flipped ? 'flipped' : ''">
-					<div class="flip-card-face">flip backside by clicking here or pressing spacebar</div>
+					<div class="flip-card-face please-flip">flip backside by clicking here or pressing spacebar</div>
 					<div class="flip-card-face lgfont flip-card-face-back" [innerHtml]="card.textBack  | md2html"></div>
 				</div>
 			</div>
