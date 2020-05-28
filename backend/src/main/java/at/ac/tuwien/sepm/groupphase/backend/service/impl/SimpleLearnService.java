@@ -40,6 +40,7 @@ public class SimpleLearnService implements LearnService {
         LOGGER.debug("Get next card for deck with id {}", deckId);
         return progressRepository.findNextCards(deckId, userService.loadCurrentUser().getId(), pageable).stream()
             .peek((x) -> x.setDeck(null))
+            .filter(card -> card.getLatestRevision().getRevisionEdit() != null) // TODO: do this in the SQL query
             .collect(Collectors.toList());
     }
 

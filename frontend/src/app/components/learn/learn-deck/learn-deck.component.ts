@@ -58,11 +58,7 @@ export class LearnDeckComponent implements OnInit {
       .subscribe(cardDetails => {
         console.log('list: ', cardDetails);
         if (!(cardDetails instanceof Array) || cardDetails.length < 1) {
-          this.card = new CardSimple(
-            0,
-            'There are no more cards to learn at the moment.',
-            'There are no more cards to learn at the moment.'
-          );
+          this.card = null;
         } else {
           this.card = new CardSimple(cardDetails[0].id, cardDetails[0].textFront, cardDetails[0].textBack);
         }

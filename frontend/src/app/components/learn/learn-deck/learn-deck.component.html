@@ -1,6 +1,6 @@
-<div class="container mt-5 d-flex flex-column" *ngIf="deck && card">
-	<p>Learning deck <a routerLink="/decks/{{deck.id}}">{{deck.name}}</a></p>
-	<div class="d-flex align-items-center flex-column wrapper">
+<div class="container mt-5 d-flex flex-column" *ngIf="deck">
+	<p><button class="btn btn-link" routerLink="/decks/{{deck.id}}">back to deck {{deck.name}}</button></p>
+	<div class="d-flex align-items-center flex-column wrapper" *ngIf=card>
 		<div class=card-container>
 			<div class=lgfont [innerHtml]="card.textFront | md2html"></div>
 			<div class="scene text-center" (click)="onFlip()">
@@ -21,4 +21,7 @@
 			</tr>
 		</table>
 	</div>
+	<p *ngIf=!card class="text-center lgfont">
+	There are no more cards to learn at the moment.
+	</p>
 </div>
