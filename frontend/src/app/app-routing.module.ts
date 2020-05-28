@@ -11,7 +11,6 @@ import {DeckEditComponent} from './components/deck/deck-edit/deck-edit.component
 import { SearchComponent } from './components/search/search.component';
 import { AboutComponent } from './components/about/about.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
-import { LearnComponent } from './components/learn/learn.component';
 import { DeckPreviewComponent } from './components/deck-preview/deck-preview.component';
 import {CategoryUpdateComponent} from './components/category/category-update/category-update.component';
 import {CategoryListComponent} from './components/category/category-list/category-list.component';
@@ -20,6 +19,7 @@ import {CategorySubcategoriesComponent} from './components/category/category-sub
 import {CategoryDecksComponent} from './components/category/category-decks/category-decks.component';
 
 import { MarkdownSyntaxComponent } from './components/help/markdown-syntax/markdown-syntax.component';
+import {LearnDeckComponent} from './components/learn-deck/learn-deck.component';
 
 
 const routes: Routes = [
@@ -28,14 +28,13 @@ const routes: Routes = [
   {path: 'search', component: SearchComponent},
   {path: 'login', component: LoginComponent},
   {path: 'decks/:deckId/cards/:cardId/edit', component: CardEditComponent},
-  {path: 'learn', canActivate: [AuthGuard], component: LearnComponent},
-  {path: 'learn/:id', component: DeckPreviewComponent},
+  {path: 'learn/:id', canActivate: [AuthGuard], component: LearnDeckComponent},
   {path: 'decks/:id/cards/new', canActivate: [AuthGuard], component: CardCreateComponent},
   {path: 'decks/:id', component: DeckViewComponent},
   {path: 'decks/:id/edit', component: DeckEditComponent},
   {path: 'decks/:id/preview', component: DeckPreviewComponent},
   {path: 'categories', component: CategoryListComponent},
-  {path: 'categories/new', canActivate: [AuthGuard], component: CategoryCreateComponent}, //TODO duplicate?
+  {path: 'categories/new', canActivate: [AuthGuard], component: CategoryCreateComponent},
   {path: 'categories/:id', component: CategoryDetailsComponent},
   {path: 'categories/:id/edit', canActivate: [AuthGuard], component: CategoryUpdateComponent},
   {path: 'categories/:id/subcategories', component: CategorySubcategoriesComponent},
