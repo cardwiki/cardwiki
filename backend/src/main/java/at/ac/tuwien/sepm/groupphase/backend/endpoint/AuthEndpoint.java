@@ -51,7 +51,7 @@ public class AuthEndpoint {
             dto.setAuthId(auth.getName());
             dto.setHasAccount(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER")));
             dto.setAdmin(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")));
-            dto.setUserId(userService.loadUserByAuthId(auth.getName()).getId());
+            dto.setUserId(userService.loadUserByAuthId(auth.getName()).map(u -> u.getId()).orElse(null));
         }
         return dto;
     }

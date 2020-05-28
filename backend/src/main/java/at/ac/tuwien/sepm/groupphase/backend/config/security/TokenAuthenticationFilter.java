@@ -57,15 +57,13 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             Collection<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS");
 
             if (claims != null){
-                try {
-                    User u = userService.loadUserByAuthId(claims.getSubject());
+                userService.loadUserByAuthId(claims.getSubject()).ifPresent(user -> {
                     // TODO: check u.isEnabled()
                     authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 
-                    if (u.isAdmin())
+                    if (user.isAdmin())
                         authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-                } catch (NotFoundException e){
-                }
+                });
             }
 
             SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(claims.getSubject(), null, authorities));
