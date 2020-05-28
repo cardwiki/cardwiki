@@ -4,6 +4,7 @@ import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.AttemptInputDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Progress;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
+import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.ProgressRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.LearnService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
@@ -12,10 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDateTime;
@@ -27,20 +26,27 @@ public class SimpleLearnService implements LearnService {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final ProgressRepository progressRepository;
+    private final DeckRepository deckRepository;
     private final UserService userService;
 
     @Autowired
-    public SimpleLearnService(ProgressRepository progressRepository, UserService userService) {
+    public SimpleLearnService(ProgressRepository progressRepository, DeckRepository deckRepository, UserService userService) {
         this.progressRepository = progressRepository;
+        this.deckRepository = deckRepository;
         this.userService = userService;
     }
 
     @Override
     public List<Card> findNextCardsByDeckId(Long deckId, Pageable pageable) {
         LOGGER.debug("Get next card for deck with id {}", deckId);
+
+        if (!deckRepository.existsById(deckId)){
+            throw new IllegalArgumentException("deckId does not exist");
+        }
+
         return progressRepository.findNextCards(deckId, userService.loadCurrentUser().getId(), pageable).stream()
             .peek((x) -> x.setDeck(null))
-            .filter(card -> card.getLatestRevision().getRevisionEdit() != null) // TODO: do this in the SQL query
+            .filter(card -> card.getLatestRevision() != null && card.getLatestRevision().getRevisionEdit() != null) // TODO: do this in the SQL query
             .collect(Collectors.toList());
     }
 
