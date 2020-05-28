@@ -44,7 +44,7 @@ public class CategoryServiceTest extends TestDataGenerator {
 
 
     @Test
-    public void givenTwoCategories_whenFindAll_thenReturndOrderedListWithTwoElements() {
+    public void givenTwoCategories_whenFindAll_thenReturnOrderedListWithTwoElements() {
         Category category = getSampleCategoryWithParent();
         category.getDecks().add(getSampleDeck());
         List<Category> categories = new ArrayList<>();
@@ -52,21 +52,16 @@ public class CategoryServiceTest extends TestDataGenerator {
         categories.add(category);
 
         when(categoryRepository.findAll(any(Sort.class))).thenAnswer(i -> {
+            List<Category> result = new ArrayList<>();
+            result.addAll(categories);
             if (i.getArgument(0).equals(Sort.by(Sort.Order.asc("name").ignoreCase()))) {
-                categories.sort(Comparator.comparing(cat -> cat.getName(), String.CASE_INSENSITIVE_ORDER));
+                result.sort(Comparator.comparing(cat -> cat.getName(), String.CASE_INSENSITIVE_ORDER));
             }
-            return categories;
+            return result;
         });
         when(categoryRepository.findAll()).thenReturn(categories);
 
         List<Category> result = categoryService.findAll();
-        ArgumentCaptor<Sort> captor = ArgumentCaptor.forClass(Sort.class);
-        verify(categoryRepository, atLeast(0)).findAll(captor.capture());
-        if (captor.getAllValues().isEmpty()) {
-            verify(categoryRepository, times(1)).findAll();
-        } else {
-            verify(categoryRepository, times(1)).findAll(any(Sort.class));
-        }
 
         categories.sort(Comparator.comparing(Category::getName, String.CASE_INSENSITIVE_ORDER));
         assertAll(
@@ -118,9 +113,7 @@ public class CategoryServiceTest extends TestDataGenerator {
     @Test
     public void givenNothing_whenFindOneByIdNonExistentCategory_thenThrowsCategoryNotFoundException() {
         when(categoryRepository.findCategoryById(any(Long.class))).thenReturn(Optional.empty());
-
-        Exception e = assertThrows(CategoryNotFoundException.class, () -> categoryService.findOneById(1L));
-        assertEquals(e.getMessage(),"Category not found.");
+        assertThrows(CategoryNotFoundException.class, () -> categoryService.findOneById(1L));
     }
 
     @Test
@@ -130,23 +123,7 @@ public class CategoryServiceTest extends TestDataGenerator {
         when(categoryRepository.findCategoryById(category.getId())).thenReturn(Optional.of(category));
         when(categoryRepository.findCategoryById(category.getParent().getId())).thenReturn(Optional.empty());
 
-        Exception e = assertThrows(CategoryNotFoundException.class, () -> categoryService.findOneById(category.getId()));
-        assertEquals(e.getMessage(),"Invalid parent reference.");
-    }
-
-    @Test
-    public void givenCategoryWithoutParentOrChildren_whenFindOneById_thenReturnsCategoryWithoutParentOrChildren() {
-        Category category = getSampleCategoryWithoutParent();
-
-        when(categoryRepository.findCategoryById(category.getId())).thenReturn(Optional.of(category));
-        when(categoryRepository.findChildren(category.getId())).thenReturn(Collections.emptyList());
-
-        Category result = categoryService.findOneById(category.getId());
-        assertAll(
-            () -> assertEquals(category, result),
-            () -> assertTrue(result.getParent() == null),
-            () -> assertTrue(result.getChildren().isEmpty())
-        );
+        assertThrows(CategoryNotFoundException.class, () -> categoryService.findOneById(category.getId()));
     }
 
     @Test
@@ -188,7 +165,6 @@ public class CategoryServiceTest extends TestDataGenerator {
         category.setName("  category   x   ");
 
         when(categoryRepository.saveAndFlush(category)).thenReturn(category);
-
         assertEquals(categoryService.createCategory(category).getName(), "category x");
     }
 
@@ -221,9 +197,7 @@ public class CategoryServiceTest extends TestDataGenerator {
     @Test
     public void givenNothing_whenUpdateNonExistentCategory_thenThrowsCategoryNotFoundException() {
         when(categoryRepository.findCategoryById(any(Long.class))).thenReturn(Optional.empty());
-
         Exception e = assertThrows(CategoryNotFoundException.class, () -> categoryService.updateCategory(1L, null));
-        assertEquals(e.getMessage(),"Category not found.");
     }
 
     @Test
@@ -268,6 +242,7 @@ public class CategoryServiceTest extends TestDataGenerator {
         when(categoryRepository.save(any(Category.class))).thenThrow(e);
         when(categoryRepository.findCategoryById(category.getId())).thenReturn(Optional.of(category));
         when(categoryRepository.ancestorExistsWithId(any(Long.class), any(Long.class))).thenReturn(false);
+
         Exception ex = assertThrows(RuntimeException.class, () -> categoryService.updateCategory(
             category.getId(), new Category(category.getName(), null))
         );
