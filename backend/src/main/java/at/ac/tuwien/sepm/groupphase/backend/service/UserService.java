@@ -4,6 +4,7 @@ import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
 
@@ -23,9 +24,8 @@ public interface UserService {
      * Loads an user for an Auth ID.
      * @param authId
      * @return the user entity
-     * @throws UserNotFoundException if the specified user does not exist
      */
-    User loadUserByAuthId(String authId);
+    Optional<User> loadUserByAuthId(String authId);
 
     /**
      * Loads the currently authenticated user.

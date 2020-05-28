@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SimpleUserService implements UserService {
@@ -31,15 +32,15 @@ public class SimpleUserService implements UserService {
     }
 
     @Override
-    public User loadUserByAuthId(String authId) {
+    public Optional<User> loadUserByAuthId(String authId) {
         LOGGER.debug("Load user by AuthId {}",  authId);
-        return userRepository.findByAuthId(authId).orElseThrow(UserNotFoundException::new);
+        return userRepository.findByAuthId(authId);
     }
 
     @Override
     public User loadCurrentUser() {
         LOGGER.debug("Load current user");
-        return loadUserByAuthId(SecurityContextHolder.getContext().getAuthentication().getName());
+        return loadUserByAuthId(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow(UserNotFoundException::new);
     }
 
     @Override
