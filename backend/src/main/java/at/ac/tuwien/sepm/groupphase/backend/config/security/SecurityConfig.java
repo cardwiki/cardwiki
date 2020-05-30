@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -18,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -29,6 +31,7 @@ import java.util.*;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled=true)
+@Order(2)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -62,8 +65,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // the API is open for all
         httpSecurity.cors().configurationSource(allowAllCors());
 
-        // required for h2-console
-        httpSecurity.headers().frameOptions().sameOrigin();
+        // lock down CSP
+        httpSecurity.headers().addHeaderWriter(new StaticHeadersWriter("content-security-policy", "default-src 'none';"))
+            .frameOptions().deny();
 
         // on authentication failure don't redirect to /login but return 403
         httpSecurity.exceptionHandling().defaultAuthenticationEntryPointFor(new Http403ForbiddenEntryPoint(), new AntPathRequestMatcher("/**"));
@@ -107,5 +111,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             config.addAllowedOrigin("*");
             return config;
         };
+    }
+}
+
+@Configuration
+@Order(1)
+class H2SecurityConfig extends WebSecurityConfigurerAdapter {
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.antMatcher("/h2-console/**");
+        http.csrf().disable();
+        http.headers().frameOptions().sameOrigin();
+    }
+}
+
+@Configuration
+@Order(0)
+class SwaggerUISecurityConfig extends WebSecurityConfigurerAdapter {
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.antMatcher("/swagger-ui.html")
+            .headers().addHeaderWriter(new StaticHeadersWriter("content-security-policy", "script-src 'self'; object-src 'none';"));
     }
 }
