@@ -1,6 +1,7 @@
 export class CardContent {
   constructor(
-    public textFront: string = null,
-    public textBack: string = null) {
+    public id: number,
+    public textFront: string,
+    public textBack: string) {
   }
 }

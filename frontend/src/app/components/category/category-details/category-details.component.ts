@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {Category} from '../../../dtos/category';
+import {CategoryDetails} from '../../../dtos/categoryDetails';
 import {CategoryService} from '../../../services/category.service';
 
 @Component({
@@ -9,7 +9,7 @@ import {CategoryService} from '../../../services/category.service';
   styleUrls: ['./category-details.component.css']
 })
 export class CategoryDetailsComponent implements OnInit {
-  result: { category: Category, error: boolean, errorMessage: string };
+  result: { category: CategoryDetails, error: boolean, errorMessage: string };
   messages: { header: string, success: string, error: string };
 
   constructor(private route: ActivatedRoute, private categoryService: CategoryService) {

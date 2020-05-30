@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {Deck} from '../../../dtos/deck';
+import {DeckDetails} from '../../../dtos/deckDetails';
 import {DeckService} from '../../../services/deck.service';
 import {ActivatedRoute} from '@angular/router';
 import {CardService} from '../../../services/card.service';
@@ -12,7 +12,7 @@ import {CardSimple} from '../../../dtos/cardSimple';
 })
 export class DeckViewComponent implements OnInit {
 
-  deck: Deck;
+  deck: DeckDetails;
   cards: CardSimple[];
 
   constructor(private deckService: DeckService, private cardService: CardService, private route: ActivatedRoute) { }

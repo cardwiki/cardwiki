@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CategoryService } from '../../../services/category.service';
-import { Category } from '../../../dtos/category';
+import { CategoryDetails } from '../../../dtos/categoryDetails';
 
 @Component({
   selector: 'app-category-update',
@@ -10,7 +10,7 @@ import { Category } from '../../../dtos/category';
 })
 export class CategoryUpdateComponent implements OnInit {
   editCategoryMode: string = 'Update';
-  result: { category: Category, error: boolean, errorMessage: string };
+  result: { category: CategoryDetails, error: boolean, errorMessage: string };
   messages: { header: string, success: string, error: string };
 
   constructor(private route: ActivatedRoute, private categoryService: CategoryService) {

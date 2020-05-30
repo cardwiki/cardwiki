@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import {Category} from '../../../dtos/category';
+import {CategoryDetails} from '../../../dtos/categoryDetails';
 import {ActivatedRoute, Router} from '@angular/router';
 import {CategoryService} from '../../../services/category.service';
 import {combineLatest} from 'rxjs';
 import {map} from 'rxjs/operators';
+import { CategorySimple } from 'src/app/dtos/categorySimple';
 
 @Component({
   selector: 'app-category-subcategories',
@@ -11,11 +12,11 @@ import {map} from 'rxjs/operators';
   styleUrls: ['./category-subcategories.component.css']
 })
 export class CategorySubcategoriesComponent implements OnInit {
-  category: Category;
+  category: CategoryDetails;
   error: boolean;
   errorMessage: string;
   filter: string;
-  filteredList: Category[];
+  filteredList: CategorySimple[];
   specs: { listSize: number, pageSize: number, page: number };
 
   constructor(private route: ActivatedRoute, private categoryService: CategoryService, private router: Router) {
@@ -43,14 +44,10 @@ export class CategorySubcategoriesComponent implements OnInit {
 
   applyFilter(): void {
     if (this.category) {
-      let filteredList = [];
-      this.category.children.forEach((item) => {
-        if (!this.filter) {
-          filteredList = this.category.children;
-        } else if (item.name.toLowerCase().includes(this.filter.toLowerCase())) {
-          filteredList.push(item);
-        }
-      });
+      const filteredList = this.category.children.filter(
+        item => !this.filter ||
+        item.name.toLowerCase().includes(this.filter.toLowerCase())
+      );
       this.specs = {
         listSize: filteredList.length,
         pageSize: this.specs ? this.specs.pageSize : 20,
