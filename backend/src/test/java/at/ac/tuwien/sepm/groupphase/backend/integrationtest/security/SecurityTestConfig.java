@@ -37,7 +37,7 @@ import java.util.Set;
 @EnableWebSecurity
 @Configuration
 @ActiveProfiles("test")
-@Order(0)
+@Order(-1)
 public class SecurityTestConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private SecurityProps securityProps;
