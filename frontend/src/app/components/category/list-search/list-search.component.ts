@@ -55,7 +55,7 @@ export class ListSearchComponent implements OnInit {
       .then(() => (console.log('x')));
   }
 
-  keyDownFunction(event) {
+  keyDownFunction(event: KeyboardEvent) {
     if (event.key === 'Enter') {
       this.searchChild.nativeElement.blur();
       if (this.id) {

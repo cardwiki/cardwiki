@@ -37,7 +37,7 @@ export class CategoryService {
    * @return object containing the Category found or the error thrown
    */
   doSearch(id: number, filter: string = null) {
-    const result = { category: null, error: false, errorMessage: '' };
+    const result = { category: null as CategoryDetails, error: false, errorMessage: '' };
     this.getCategoryById(id)
       .subscribe((category) => {
           category.id = id;
@@ -56,7 +56,7 @@ export class CategoryService {
    * @param error returned
    * @return string containing the error message
    */
-  handleError(error): string {
+  handleError(error: any): string {
       if (error.status === 500 || error.status === 0) {
         return 'Something went wrong while processing your request.'  ;
       }
