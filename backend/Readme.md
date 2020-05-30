@@ -9,3 +9,7 @@
 If the database is not clean, the test data won't be inserted
 
 `mvn spring-boot:run -Dspring-boot.run.profiles=generateData`
+
+## Deployment
+
+Configure `src/main/resources/application-prod.yml` and run it with `-Dspring-boot.run.profiles=prod`.

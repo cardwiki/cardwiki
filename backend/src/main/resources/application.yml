@@ -47,7 +47,9 @@ spring:
             user-name-attribute: sub
             jwk-set-uri: https://gitlab.com/oauth/discovery/keys
 
-jwt:
-  secret: 72d76704e150c907dc05bb7f3dd96f5f2a10479ac54e6961bb7423a89243367d
+cawi:
+  jwt-secret: 72d76704e150c907dc05bb7f3dd96f5f2a10479ac54e6961bb7423a89243367d
   # 12 hours in milliseconds
-  expiration-time: 43200000
+  jwt-expiration-time: 43200000
+
+  secure-cookie: false

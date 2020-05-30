@@ -92,6 +92,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // We pass the token with a cookie so that it is not stored in the browser history.
                 Cookie tokenCookie = new Cookie("token", token);
                 tokenCookie.setPath("/");
+                tokenCookie.setSecure(securityProps.cookiesAreSecure());
                 response.addCookie(tokenCookie);
 
                 // TODO: support multiple frontends

@@ -5,11 +5,14 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class SecurityProps {
-    @Value("${jwt.secret}")
+    @Value("${cawi.jwt-secret}")
     private String secret;
 
-    @Value("${jwt.expiration-time}")
+    @Value("${cawi.jwt-expiration-time}")
     private int expirationTime;
+
+    @Value("${cawi.secure-cookie}")
+    private boolean secureCookies;
 
     public byte[] getSecret() {
         return secret.getBytes();
@@ -17,5 +20,9 @@ public class SecurityProps {
 
     public int getExpirationTime() {
         return expirationTime;
+    }
+
+    public boolean cookiesAreSecure() {
+        return secureCookies;
     }
 }
