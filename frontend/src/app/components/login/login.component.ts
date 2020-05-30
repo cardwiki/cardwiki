@@ -20,7 +20,7 @@ export class LoginComponent implements OnInit {
   registerForm: FormGroup;
   username: string;
 
-  constructor(private formBuilder: FormBuilder, private authService: AuthService, private router: Router, private route: ActivatedRoute) {
+  constructor(private formBuilder: FormBuilder, public authService: AuthService, private router: Router, private route: ActivatedRoute) {
     this.registerForm = new FormGroup({
       'username': new FormControl(this.username, [
         Validators.required,

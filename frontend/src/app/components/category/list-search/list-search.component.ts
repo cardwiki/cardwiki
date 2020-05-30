@@ -1,6 +1,7 @@
 import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
+import { CategorySimple } from 'src/app/dtos/categorySimple';
 
 @Component({
   selector: 'app-list-search',
@@ -10,11 +11,11 @@ import {Router} from '@angular/router';
 export class ListSearchComponent implements OnInit {
 
   @Input() id: number;
-  @Input() list: { name, id }[];
+  @Input() list: CategorySimple[];
   @Input() specs: { listSize: number, pageSize: number, page: number };
   @Input() path: string;
   @Input() messages: { header: string, success: string, error: string };
-  filteredList: object[];
+  filteredList: CategorySimple[];
   error: boolean = false;
   errorMessage: string = null;
   searchForm: FormGroup;

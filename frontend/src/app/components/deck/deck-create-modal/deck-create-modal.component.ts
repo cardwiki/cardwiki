@@ -13,7 +13,7 @@ export class DeckCreateModalComponent implements OnInit {
   deckForm;
 
   constructor(
-    private activeModal: NgbActiveModal,
+    public activeModal: NgbActiveModal,
     private deckService: DeckService,
     private formBuilder: FormBuilder,
   ) {
