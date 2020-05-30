@@ -1,31 +1,33 @@
 package at.ac.tuwien.sepm.groupphase.backend.config.security;
 
-import com.nimbusds.jose.*;
-import com.nimbusds.jose.crypto.DirectDecrypter;
-import com.nimbusds.jose.crypto.DirectEncrypter;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
-import org.springframework.util.SerializationUtils;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Map;
 
 public class HttpCookieOAuth2AuthorizationRequestRepository implements AuthorizationRequestRepository<OAuth2AuthorizationRequest> {
-    public static final String COOKIE_NAME = "auth";
+    // Spring does not yet provide a Cookie implementation of AuthorizationRequestRepository
+    // https://github.com/spring-projects/spring-security/issues/6374
+    private static final String COOKIE_NAME = "auth";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final byte[] secret;
+    private ObjectMapper objectMapper;
 
-    public HttpCookieOAuth2AuthorizationRequestRepository(SecurityProps props){
-        secret = props.getSecret();
+    public HttpCookieOAuth2AuthorizationRequestRepository(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -37,14 +39,18 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
             .findFirst()
             .map(cookie -> {
                 try {
-                    JWEObject obj = JWEObject.parse(cookie.getValue());
-                    obj.decrypt(new DirectDecrypter(secret));
-                    return (OAuth2AuthorizationRequest) SerializationUtils.deserialize(Base64.getUrlDecoder().decode(obj.getPayload().toString()));
-                } catch (ParseException e) {
-                    LOGGER.error("Could not parse cookie value: {}", e.getMessage());
-                    return null;
-                } catch (JOSEException e) {
-                    LOGGER.error("Could not decrypt cookie: {}", e.getMessage());
+                    // We do not use (de)serialization for untrusted data because that can lead to security vulnerabilities.
+                    JsonNode node = objectMapper.reader().readTree(Base64.getDecoder().decode(cookie.getValue().getBytes()));
+
+                    return OAuth2AuthorizationRequest
+                        .authorizationCode().authorizationUri(node.get("authorizationUri").asText())
+                        .clientId(node.get("clientId").asText())
+                        .redirectUri(node.get("redirectUri").asText())
+                        .state(node.get("state").asText())
+                        .attributes(Map.of("registration_id", node.get("registrationId").asText()))
+                        .build();
+                } catch (IOException e) {
+                    LOGGER.error("IO Exception: {}", e.getMessage());
                     return null;
                 }
             }).orElse(null);
@@ -52,16 +58,20 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
 
     @Override
     public void saveAuthorizationRequest(OAuth2AuthorizationRequest oAuth2AuthorizationRequest, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        JWEObject jweObject = new JWEObject(new JWEHeader(JWEAlgorithm.DIR, EncryptionMethod.A256CBC_HS512),
-            new Payload(Base64.getUrlEncoder().encodeToString(SerializationUtils.serialize(oAuth2AuthorizationRequest))));
-        try {
-            jweObject.encrypt(new DirectEncrypter(secret));
-        } catch (JOSEException e) {
-            LOGGER.error("Could not encrypt cookie: {}", e.getMessage());
-        }
+        ObjectNode node = objectMapper.createObjectNode();
+        node.put("authorizationUri", oAuth2AuthorizationRequest.getAuthorizationUri());
+        // not putting in grantType because it's always authorization_code
+        node.put("clientId", oAuth2AuthorizationRequest.getClientId());
+        node.put("redirectUri", oAuth2AuthorizationRequest.getRedirectUri());
+        ArrayNode scopeArrayNode = node.putArray("scopes");
+        oAuth2AuthorizationRequest.getScopes().forEach(scopeArrayNode::add);
+        node.put("state", oAuth2AuthorizationRequest.getState());
+        node.put("registrationId", (String) oAuth2AuthorizationRequest.getAttributes().get("registration_id"));
+        // additionalParameters and attributes are not added because they contain java.lang.Object
 
-        Cookie cookie = new Cookie(COOKIE_NAME, jweObject.serialize());
+        Cookie cookie = new Cookie(COOKIE_NAME, Base64.getEncoder().encodeToString(node.toString().getBytes()));
         cookie.setPath("/");
+        cookie.setMaxAge(120); // expire after two minutes
         httpServletResponse.addCookie(cookie);
     }
 

@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepm.groupphase.backend.config.security;
 
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -37,16 +38,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @Override
     public void configure(HttpSecurity httpSecurity) throws Exception {
-        staticConfigure(httpSecurity, userService, securityProps);
+        staticConfigure(httpSecurity, userService, securityProps, objectMapper);
     }
 
     /**
      * Meant to be called from WebSecurityConfigurerAdapter.configure()
      * This method is static so that it can also be easily used from the SecurityTestConfig.
      */
-    public static void staticConfigure(HttpSecurity httpSecurity, UserService userService, SecurityProps securityProps) throws Exception {
+    public static void staticConfigure(HttpSecurity httpSecurity, UserService userService, SecurityProps securityProps, ObjectMapper objectMapper) throws Exception {
         // stateless sessions scale better, are better for user privacy,
         // make sessions persist restarts and make the backend easier to test.
         httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
@@ -68,7 +72,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity.oauth2Login()
             .authorizationEndpoint()
                 .baseUri("/api/v1/auth/providers")
-                .authorizationRequestRepository(new HttpCookieOAuth2AuthorizationRequestRepository(securityProps));
+                .authorizationRequestRepository(new HttpCookieOAuth2AuthorizationRequestRepository(objectMapper));
 
         // on success we pass a JWT token to the frontend
         httpSecurity.oauth2Login()
@@ -85,11 +89,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 Cookie tokenCookie = new Cookie("token", token);
                 tokenCookie.setPath("/");
                 response.addCookie(tokenCookie);
-
-                Cookie authCookie = new Cookie(HttpCookieOAuth2AuthorizationRequestRepository.COOKIE_NAME, "deleted");
-                authCookie.setPath("/");
-                authCookie.setMaxAge(0);
-                response.addCookie(authCookie);
 
                 // TODO: support multiple frontends
                 response.sendRedirect("http://localhost:4200/login?success");

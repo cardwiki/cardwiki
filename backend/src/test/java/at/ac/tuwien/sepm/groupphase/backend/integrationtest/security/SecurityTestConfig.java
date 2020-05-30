@@ -3,6 +3,7 @@ package at.ac.tuwien.sepm.groupphase.backend.integrationtest.security;
 import at.ac.tuwien.sepm.groupphase.backend.config.security.SecurityConfig;
 import at.ac.tuwien.sepm.groupphase.backend.config.security.SecurityProps;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,9 +45,12 @@ public class SecurityTestConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        SecurityConfig.staticConfigure(http, userService, securityProps);
+        SecurityConfig.staticConfigure(http, userService, securityProps, objectMapper);
         http.oauth2Login()
             .tokenEndpoint().accessTokenResponseClient(this.mockAccessTokenResponseClient()).and()
             .userInfoEndpoint().userService(this.mockUserService());
