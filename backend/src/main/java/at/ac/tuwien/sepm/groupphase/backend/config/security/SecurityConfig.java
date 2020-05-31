@@ -76,7 +76,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity.oauth2Login()
             .authorizationEndpoint()
                 .baseUri("/api/v1/auth/providers")
-                .authorizationRequestRepository(new HttpCookieOAuth2AuthorizationRequestRepository(objectMapper));
+                .authorizationRequestRepository(new HttpCookieOAuth2AuthorizationRequestRepository(objectMapper, securityProps.cookiesAreSecure()));
 
         // on success we pass a JWT token to the frontend
         httpSecurity.oauth2Login()

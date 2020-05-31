@@ -26,8 +26,11 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
 
     private ObjectMapper objectMapper;
 
-    public HttpCookieOAuth2AuthorizationRequestRepository(ObjectMapper objectMapper) {
+    private boolean secureCookie;
+
+    public HttpCookieOAuth2AuthorizationRequestRepository(ObjectMapper objectMapper, boolean secureCookie) {
         this.objectMapper = objectMapper;
+        this.secureCookie = secureCookie;
     }
 
     @Override
@@ -72,6 +75,8 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
         Cookie cookie = new Cookie(COOKIE_NAME, Base64.getEncoder().encodeToString(node.toString().getBytes()));
         cookie.setPath("/");
         cookie.setMaxAge(120); // expire after two minutes
+        cookie.setHttpOnly(true);
+        cookie.setSecure(secureCookie);
         httpServletResponse.addCookie(cookie);
     }
 
