@@ -35,7 +35,6 @@ public class UserEndpointTest extends TestDataGenerator {
         ObjectNode input = objectMapper.createObjectNode();
         input.put("username", "test");
         input.put("description", "example");
-        input.put("admin", false);
 
         mvc.perform(post("/api/v1/users")
             .with(mockLogin(USER_ROLES, "foo:123"))
@@ -54,7 +53,6 @@ public class UserEndpointTest extends TestDataGenerator {
         ObjectNode input = objectMapper.createObjectNode();
         input.put("username", "test");
         input.put("description", "example");
-        input.put("admin", false);
 
         mvc.perform(post("/api/v1/users")
             .with(mockLogin(USER_ROLES, user.getAuthId()))
@@ -66,7 +64,6 @@ public class UserEndpointTest extends TestDataGenerator {
     public void createUserNoUsername() throws Exception {
         ObjectNode input = objectMapper.createObjectNode();
         input.put("description", "example");
-        input.put("admin", false);
 
         mvc.perform(post("/api/v1/users")
             .with(mockLogin(USER_ROLES, "foo:123"))
@@ -79,7 +76,6 @@ public class UserEndpointTest extends TestDataGenerator {
         ObjectNode input = objectMapper.createObjectNode();
         input.put("username", "foo bar");
         input.put("description", "example");
-        input.put("admin", false);
 
         mvc.perform(post("/api/v1/users")
             .with(mockLogin(USER_ROLES, "foo:123"))
@@ -92,7 +88,6 @@ public class UserEndpointTest extends TestDataGenerator {
         ObjectNode input = objectMapper.createObjectNode();
         input.put("username", "a".repeat(21));
         input.put("description", "example");
-        input.put("admin", false);
 
         mvc.perform(post("/api/v1/users")
             .with(mockLogin(USER_ROLES, "foo:123"))
@@ -105,7 +100,6 @@ public class UserEndpointTest extends TestDataGenerator {
         ObjectNode input = objectMapper.createObjectNode();
         input.put("username", "a".repeat(5001));
         input.put("description", "example");
-        input.put("admin", false);
 
         mvc.perform(post("/api/v1/users")
             .with(mockLogin(USER_ROLES, "foo:123"))

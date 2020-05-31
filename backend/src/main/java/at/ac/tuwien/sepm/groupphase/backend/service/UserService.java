@@ -45,4 +45,13 @@ public interface UserService {
      * @return all users
      */
     List<User> getAll();
+
+    /**
+     * Updates a user.
+     *
+     * @param id of the user to be updated.
+     * @param user containing the data to update the category with
+     * @return the updated user
+     */
+    User updateUser(Long id, User user);
 }

@@ -54,4 +54,9 @@ public class SimpleUserService implements UserService {
     public List<User> getAll() {
         return userRepository.findAll();
     }
+
+    @Override
+    public User updateUser(Long id, User user) {
+        return userRepository.saveAndFlush(user);
+    }
 }
