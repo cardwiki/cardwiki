@@ -33,8 +33,16 @@ public class UserEndpoint {
     public UserOutputDto register(Authentication token, @Valid @RequestBody UserInputDto userInputDto) {
         if (token == null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not authenticated");
+
+        String authId = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        userService.loadUserByAuthId(authId).ifPresent(user -> {
+            throw new IllegalArgumentException("authId already registered");
+        });
+
         User u = userMapper.userInputDtoToUser(userInputDto);
-        u.setAuthId(SecurityContextHolder.getContext().getAuthentication().getName());
+        u.setAuthId(authId);
+        u.setEnabled(true);
         u = userService.createUser(u);
         return userMapper.userToUserOutputDto(u);
     }

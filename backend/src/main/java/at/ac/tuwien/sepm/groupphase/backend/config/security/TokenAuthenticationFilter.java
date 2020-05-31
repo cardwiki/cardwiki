@@ -42,7 +42,6 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = request.getHeader("Authorization");
         if (token != null && token.startsWith(PREFIX)){
-            LOGGER.info("got token: {}", token);
             JwtParser jwtParser = Jwts.parserBuilder().setSigningKey(securityProps.getSecret()).build();
             Claims claims;
             try {
@@ -58,11 +57,12 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
             if (claims != null){
                 userService.loadUserByAuthId(claims.getSubject()).ifPresent(user -> {
-                    // TODO: check u.isEnabled()
-                    authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+                    if (user.isEnabled()){
+                        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 
-                    if (user.isAdmin())
-                        authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+                        if (user.isAdmin())
+                            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+                    }
                 });
             }
 
