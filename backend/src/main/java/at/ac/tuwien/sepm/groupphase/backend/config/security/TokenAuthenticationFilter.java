@@ -1,7 +1,5 @@
 package at.ac.tuwien.sepm.groupphase.backend.config.security;
 
-import at.ac.tuwien.sepm.groupphase.backend.entity.User;
-import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -48,7 +46,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             try {
                 claims = jwtParser.parseClaimsJws(token.substring(PREFIX.length())).getBody();
             } catch (JwtException e){
-                LOGGER.debug("Invalid authorization attempt: {}", e.getMessage());
+                LOGGER.info("Invalid authorization attempt: {}", e.getMessage());
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().write("Invalid authorization token");
                 return;

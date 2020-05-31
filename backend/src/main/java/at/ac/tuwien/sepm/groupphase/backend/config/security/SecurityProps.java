@@ -1,18 +1,28 @@
 package at.ac.tuwien.sepm.groupphase.backend.config.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class SecurityProps {
-    @Value("${cawi.jwt-secret}")
-    private String secret;
+    private final String secret;
 
-    @Value("${cawi.jwt-expiration-time}")
-    private int expirationTime;
+    private final int expirationTime;
 
-    @Value("${cawi.secure-cookie}")
-    private boolean secureCookies;
+    private final boolean secureCookies;
+
+    @Autowired
+    public SecurityProps(
+        @Value("${cawi.jwt-secret}") String secret,
+        @Value("${cawi.jwt-expiration-time}") int expirationTime,
+        @Value("${cawi.secure-cookie}") boolean secureCookies
+    ){
+        this.secret = secret;
+        this.expirationTime = expirationTime;
+        this.secureCookies = secureCookies;
+    }
+
 
     public byte[] getSecret() {
         return secret.getBytes();
