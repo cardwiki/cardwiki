@@ -47,7 +47,7 @@ public class UserEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    public void createUserAlreadyExists() throws Exception {
+    public void cannotRegisterIfAccountExists() throws Exception {
         User user = givenApplicationUser();
 
         ObjectNode input = objectMapper.createObjectNode();
@@ -61,7 +61,7 @@ public class UserEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    public void createUserNoUsername() throws Exception {
+    public void cannotRegisterWithoutUsername() throws Exception {
         ObjectNode input = objectMapper.createObjectNode();
         input.put("description", "example");
 
@@ -72,7 +72,7 @@ public class UserEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    public void createUserInvalidUsername() throws Exception {
+    public void cannotRegisterInvalidUsername() throws Exception {
         ObjectNode input = objectMapper.createObjectNode();
         input.put("username", "foo bar");
         input.put("description", "example");
@@ -84,7 +84,7 @@ public class UserEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    public void createUserTooLongUsername() throws Exception {
+    public void cannotRegisterTooLongUsername() throws Exception {
         ObjectNode input = objectMapper.createObjectNode();
         input.put("username", "a".repeat(21));
         input.put("description", "example");
@@ -96,7 +96,7 @@ public class UserEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    public void createUserTooLongDescription() throws Exception {
+    public void cannotRegisterTooLongDescription() throws Exception {
         ObjectNode input = objectMapper.createObjectNode();
         input.put("username", "a".repeat(5001));
         input.put("description", "example");
