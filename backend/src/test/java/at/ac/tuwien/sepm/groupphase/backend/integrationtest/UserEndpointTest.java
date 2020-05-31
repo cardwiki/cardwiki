@@ -95,12 +95,42 @@ public class UserEndpointTest extends TestDataGenerator {
     @Test
     public void cannotRegisterTooLongDescription() throws Exception {
         ObjectNode input = objectMapper.createObjectNode();
-        input.put("username", "a".repeat(5001));
-        input.put("description", "example");
+        input.put("username", "test");
+        input.put("description", "a".repeat(5001));
 
         mvc.perform(post("/api/v1/users")
             .with(mockLogin(USER_ROLES, "foo:123"))
             .contentType("application/json").content(input.toString()))
             .andExpect(status().is(400));
+    }
+
+    @Test
+    public void cannotRegisterDuplicateUsername() throws Exception {
+        User user = givenApplicationUser();
+
+        ObjectNode input = objectMapper.createObjectNode();
+        input.put("username", user.getUsername());
+        input.put("description", "example");
+
+        mvc.perform(post("/api/v1/users")
+            .with(login("foo:123"))
+            .contentType("application/json").content(input.toString()))
+            .andExpect(status().is(400));
+
+    }
+
+    @Test
+    public void cannotRegisterDuplicateAuthId() throws Exception {
+        User user = givenApplicationUser();
+
+        ObjectNode input = objectMapper.createObjectNode();
+        input.put("username", "some-username");
+        input.put("description", "example");
+
+        mvc.perform(post("/api/v1/users")
+            .with(login(user.getAuthId()))
+            .contentType("application/json").content(input.toString()))
+            .andExpect(status().is(400));
+
     }
 }

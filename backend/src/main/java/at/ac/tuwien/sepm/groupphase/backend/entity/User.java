@@ -11,19 +11,28 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users",
+    uniqueConstraints = {@UniqueConstraint(
+        columnNames = "username",
+        name = User.CONSTRAINT_USERNAME_UNIQUE
+    ), @UniqueConstraint(
+        columnNames = "authId",
+        name = User.CONSTRAINT_AUTHID_UNIQUE
+    )})
 public class User {
     public static final int MAX_USERNAME_LENGTH = 20;
     public static final int MAX_DESCRIPTION_LENGTH = 5000;
+    public static final String CONSTRAINT_USERNAME_UNIQUE = "USERNAME_UNIQUE";
+    public static final String CONSTRAINT_AUTHID_UNIQUE = "AUTHID_UNIQUE";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column
     private String authId;
 
-    @Column(nullable = false, unique = true, length = MAX_USERNAME_LENGTH)
+    @Column(nullable = false, length = MAX_USERNAME_LENGTH)
     private String username;
 
     @Column(nullable = false)

@@ -1,12 +1,15 @@
 package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 
+import at.ac.tuwien.sepm.groupphase.backend.entity.Progress;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
+import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -47,7 +50,20 @@ public class SimpleUserService implements UserService {
     public User createUser(User user) {
         // TODO: only admins can create admin users
         // TODO: return proper error message if username is duplicate
-        return userRepository.save(user);
+        try {
+            return userRepository.save(user);
+        } catch (DataIntegrityViolationException e) {
+            if (e.getCause().getClass() == ConstraintViolationException.class) {
+                ConstraintViolationException cve = (ConstraintViolationException) e.getCause();
+                // TODO: change contains to equals after hibernate version contains
+                //  https://github.com/hibernate/hibernate-orm/pull/3417
+                if (cve.getConstraintName().contains(User.CONSTRAINT_USERNAME_UNIQUE))
+                    throw new IllegalArgumentException("username already registered");
+                else if (cve.getConstraintName().contains(User.CONSTRAINT_AUTHID_UNIQUE))
+                    throw new IllegalArgumentException("authId already registered");
+            }
+            throw e;
+        }
     }
 
     @Override

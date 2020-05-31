@@ -34,14 +34,8 @@ public class UserEndpoint {
         if (token == null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not authenticated");
 
-        String authId = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        userService.loadUserByAuthId(authId).ifPresent(user -> {
-            throw new IllegalArgumentException("authId already registered");
-        });
-
         User u = userMapper.userInputDtoToUser(userInputDto);
-        u.setAuthId(authId);
+        u.setAuthId(SecurityContextHolder.getContext().getAuthentication().getName());
         u.setEnabled(true);
         u = userService.createUser(u);
         return userMapper.userToUserOutputDto(u);
