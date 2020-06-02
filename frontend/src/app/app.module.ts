@@ -34,7 +34,7 @@ import { CategorySubcategoriesComponent } from './components/category/category-s
 import { CategoryDecksComponent } from './components/category/category-decks/category-decks.component';
 import { Md2htmlPipe } from './pipes/md2html.pipe';
 import { MarkdownSyntaxComponent } from './components/help/markdown-syntax/markdown-syntax.component';
-import { ErrorComponent } from './components/error/error.component';
+import { ToastsContainerComponent } from './components/toasts-container/toasts-container.component';
 import { LearnDeckComponent } from './components/learn-deck/learn-deck.component';
 
 @NgModule({
@@ -67,7 +67,7 @@ import { LearnDeckComponent } from './components/learn-deck/learn-deck.component
     CategoryDecksComponent,
     Md2htmlPipe,
     MarkdownSyntaxComponent,
-    ErrorComponent,
+    ToastsContainerComponent,
     LearnDeckComponent,
   ],
   imports: [

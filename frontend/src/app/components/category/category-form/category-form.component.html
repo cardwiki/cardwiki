@@ -1,5 +1,4 @@
-<app-error *ngIf="error" [errorMessage]="errorMessage" (buttonClick)="vanishResult()"></app-error>
-<div *ngIf="!error && submitted" class="alert alert-success alert-dismissible fade show" role="alert">
+<div *ngIf="submitted" class="alert alert-success alert-dismissible fade show" role="alert">
   <strong>{{messages.success}}: {{result.name}}</strong>
   <div>
     <a routerLink="/categories/{{result.id}}">

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {CategoryDetails} from '../../../dtos/categoryDetails';
 import {CategoryService} from '../../../services/category.service';
@@ -8,27 +8,20 @@ import {CategoryService} from '../../../services/category.service';
   templateUrl: './category-details.component.html',
   styleUrls: ['./category-details.component.css']
 })
-export class CategoryDetailsComponent implements OnInit {
-  result: { category: CategoryDetails, error: boolean, errorMessage: string };
-  messages: { header: string, success: string, error: string };
+export class CategoryDetailsComponent {
+  category: CategoryDetails;
+  messages = { header: 'Subcategories', success: 'Success', error: 'Error' };
 
   constructor(private route: ActivatedRoute, private categoryService: CategoryService) {
-    this.route.params.subscribe((params) => this.doSearch(params['id']));
+    this.route.params.subscribe((params) => {
+      this.category = null
+      this.doSearch(params['id'])
+    });
   }
 
   doSearch(id: number) {
-    this.result = this.categoryService.doSearch(id);
+    this.categoryService.getCategoryById(id).subscribe(
+      category => this.category = category
+    );
   }
-
-  /**
-   * Hides the error screen
-   */
-  vanishError() {
-    this.result.error = false;
-  }
-
-  ngOnInit(): void {
-    this.messages = { header: 'Subcategories', success: 'Success', error: 'Error' };
-  }
-
 }

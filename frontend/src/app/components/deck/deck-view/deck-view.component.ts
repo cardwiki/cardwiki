@@ -4,6 +4,7 @@ import {DeckService} from '../../../services/deck.service';
 import {ActivatedRoute} from '@angular/router';
 import {CardService} from '../../../services/card.service';
 import {CardSimple} from '../../../dtos/cardSimple';
+import { NotificationService } from 'src/app/services/notification.service';
 
 @Component({
   selector: 'app-deck-view',
@@ -15,7 +16,7 @@ export class DeckViewComponent implements OnInit {
   deck: DeckDetails;
   cards: CardSimple[];
 
-  constructor(private deckService: DeckService, private cardService: CardService, private route: ActivatedRoute) { }
+  constructor(private deckService: DeckService, private cardService: CardService, private route: ActivatedRoute, private notificationService: NotificationService) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
@@ -32,10 +33,8 @@ export class DeckViewComponent implements OnInit {
 
   removeCard(event, card) {
     this.cardService.removeCardFromDeck(this.deck.id, card.id).subscribe(() => {
-      const index: number = this.cards.indexOf(card);
-      if (index !== -1) {
-        this.cards.splice(index, 1);
-      }
+      this.cards = this.cards.filter(c => c !== card)
+      this.notificationService.success('Deleted Card')
     });
   }
 }

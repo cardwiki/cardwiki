@@ -7,6 +7,7 @@ import {Globals} from '../global/globals';
 import { OAuth2ProviderDto } from '../dtos/oAuth2Provider';
 import { WhoAmI } from '../dtos/whoAmI';
 import { UserRegistration } from '../dtos/userRegistration';
+import { ErrorHandlerService } from './error-handler.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,18 +16,20 @@ export class AuthService {
 
   private baseUri: string = this.globals.backendUri + '/auth';
 
-  constructor(private httpClient: HttpClient, private globals: Globals) {
+  constructor(private httpClient: HttpClient, private globals: Globals, private errorHandler: ErrorHandlerService) {
   }
 
   getAuthProviders(): Observable<OAuth2ProviderDto[]> {
-    return this.httpClient.get<OAuth2ProviderDto[]>(this.baseUri + '/providers');
+    return this.httpClient.get<OAuth2ProviderDto[]>(this.baseUri + '/providers')
+      .pipe(tap(null, this.errorHandler.handleError('Could not fetch Login Providers')))
   }
 
   whoAmI(): Observable<WhoAmI> {
     return this.httpClient.get<WhoAmI>(this.baseUri + '/whoami')
-    .pipe(tap(res => {
-       localStorage.setItem('hasAccount', String(res.hasAccount));
-    }));
+      .pipe(
+        tap(null, this.errorHandler.handleError('Could not fetch user info')),
+        tap(res => localStorage.setItem('hasAccount', String(res.hasAccount)))
+      )
   }
 
   getProviderUrl(provider): string {
@@ -35,9 +38,10 @@ export class AuthService {
 
   register(username): Observable<UserRegistration> {
     return this.httpClient.post<UserRegistration>(this.globals.backendUri + '/users', {username: username, description: ''})
-      .pipe(tap(res => {
-        localStorage.setItem('hasAccount', 'true');
-      }));
+      .pipe(
+        tap(null, this.errorHandler.handleError('Could not register')),
+        tap(res => localStorage.setItem('hasAccount', 'true'))
+      )
   }
 
   getToken(): string {

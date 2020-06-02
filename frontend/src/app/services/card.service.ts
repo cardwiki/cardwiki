@@ -5,13 +5,15 @@ import {Observable} from 'rxjs';
 import { CardContent } from '../dtos/cardContent';
 import { CardDetails } from '../dtos/cardDetails';
 import {CardSimple} from '../dtos/cardSimple';
+import { ErrorHandlerService } from './error-handler.service';
+import { tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CardService {
 
-  constructor(private httpClient: HttpClient, private globals: Globals) {
+  constructor(private httpClient: HttpClient, private globals: Globals, private errorHandler: ErrorHandlerService) {
   }
 
   /**
@@ -20,7 +22,8 @@ export class CardService {
    */
   createCard(deckId: number, card: CardContent): Observable<CardDetails> {
     console.log('create card', deckId, card);
-    return this.httpClient.post<CardDetails>(this.getCardUri(deckId), card);
+    return this.httpClient.post<CardDetails>(this.getCardUri(deckId), card)
+      .pipe(tap(null, this.errorHandler.handleError('Could not create Card')))
   }
 
   /**
@@ -29,7 +32,8 @@ export class CardService {
    */
   getCardsByDeckId(deckId: number): Observable<CardSimple[]> {
     console.log('get cards for deck with id ' + deckId);
-    return this.httpClient.get<CardSimple[]>(this.getCardUri(deckId));
+    return this.httpClient.get<CardSimple[]>(this.getCardUri(deckId))
+      .pipe(tap(null, this.errorHandler.handleError('Could not fetch Cards')))
   }
 
   /**
@@ -39,17 +43,20 @@ export class CardService {
    */
   removeCardFromDeck(deckId: number, cardId: number): Observable<CardSimple> {
     console.log(`remove card with id ${cardId} from deck ${deckId}`);
-    return this.httpClient.delete<CardSimple>(this.getCardUri(deckId, cardId));
+    return this.httpClient.delete<CardSimple>(this.getCardUri(deckId, cardId))
+      .pipe(tap(null, this.errorHandler.handleError('Could not remove Card')))
   }
 
   editCard(deckId: number, cardId: number, card: CardContent): Observable<CardDetails> {
     console.log(`edit card with id ${cardId} from deck ${deckId}: ${card}`);
-    return this.httpClient.patch<CardDetails>(this.getCardUri(deckId, cardId), card);
+    return this.httpClient.patch<CardDetails>(this.getCardUri(deckId, cardId), card)
+      .pipe(tap(null, this.errorHandler.handleError('Could not edit Card')))
   }
 
   fetchCard(deckId: number, cardId: number): Observable<CardDetails> {
     console.log(`fetch card with id ${cardId} from deck ${deckId}`);
-    return this.httpClient.get<CardDetails>(this.getCardUri(deckId, cardId));
+    return this.httpClient.get<CardDetails>(this.getCardUri(deckId, cardId))
+      .pipe(tap(null, this.errorHandler.handleError('Could not fetch Card')))
   }
 
   private getCardUri(deckId: number, cardId?: number) {
