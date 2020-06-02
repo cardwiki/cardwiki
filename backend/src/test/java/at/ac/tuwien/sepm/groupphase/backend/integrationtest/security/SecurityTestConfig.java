@@ -39,7 +39,7 @@ import java.util.Set;
 @ActiveProfiles("test")
 @Order(-1)
 public class SecurityTestConfig extends WebSecurityConfigurerAdapter {
-    public static final SecurityProps securityProps = new SecurityProps("CardWikiIsAmazingAndThisSecretIsTotallySuperSecureAndUnguessable", 60-000, false);
+    public static final SecurityProps securityProps = new SecurityProps("CardWikiIsAmazingAndThisSecretIsTotallySuperSecureAndUnguessable", 60-000);
 
     @Autowired
     private UserService userService;

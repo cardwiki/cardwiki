@@ -33,13 +33,7 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private final boolean secureCookie;
-
     private final ConversionService conversionService = new DefaultConversionService();
-
-    public HttpCookieOAuth2AuthorizationRequestRepository(boolean secureCookie) {
-        this.secureCookie = secureCookie;
-    }
 
     @Override
     public OAuth2AuthorizationRequest loadAuthorizationRequest(HttpServletRequest request) {
@@ -86,7 +80,7 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
         Assert.notNull(response, "response cannot be null");
 
         if (authorizationRequest == null){
-            response.addCookie(expiredCookie());
+            response.addCookie(expiredCookie(request));
             return;
         }
 
@@ -108,20 +102,20 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
         authorizationRequest.getAdditionalParameters().forEach((key, value) -> {
             additionalParamsNode.put(key, conversionService.convert(value, String.class));
         });
-        response.addCookie(buildCookie(Base64.getEncoder().encodeToString(node.toString().getBytes())));
+        response.addCookie(buildCookie(Base64.getEncoder().encodeToString(node.toString().getBytes()), request));
     }
 
-    private Cookie buildCookie(String value){
+    private Cookie buildCookie(String value, HttpServletRequest request){
         Cookie cookie = new Cookie(COOKIE_NAME, value);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
-        cookie.setSecure(secureCookie);
+        cookie.setSecure(request.isSecure());
         cookie.setMaxAge(120); // expire after two minutes
         return cookie;
     }
 
-    private Cookie expiredCookie(){
-        Cookie cookie = buildCookie("");
+    private Cookie expiredCookie(HttpServletRequest request){
+        Cookie cookie = buildCookie("", request);
         cookie.setMaxAge(0);
         return cookie;
     }
@@ -130,7 +124,7 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
     public OAuth2AuthorizationRequest removeAuthorizationRequest(HttpServletRequest request, HttpServletResponse response) {
         Assert.notNull(request, "request cannot be null");
         Assert.notNull(response, "response cannot be null");
-        response.addCookie(expiredCookie());
+        response.addCookie(expiredCookie(request));
         return loadAuthorizationRequest(request);
     }
 

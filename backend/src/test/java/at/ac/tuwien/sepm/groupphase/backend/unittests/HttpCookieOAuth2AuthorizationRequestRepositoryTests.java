@@ -10,6 +10,7 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 
+import javax.servlet.http.Cookie;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,10 +23,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @RunWith(MockitoJUnitRunner.class)
 public class HttpCookieOAuth2AuthorizationRequestRepositoryTests {
     private HttpCookieOAuth2AuthorizationRequestRepository authorizationRequestRepository =
-        new HttpCookieOAuth2AuthorizationRequestRepository(true);
-
-    private String cookieName = HttpCookieOAuth2AuthorizationRequestRepository.class.getName() +
-        ".AUTHORIZATION_REQUEST";
+        new HttpCookieOAuth2AuthorizationRequestRepository();
 
     @Test(expected = IllegalArgumentException.class)
     public void loadAuthorizationRequestWhenHttpServletRequestIsNullThenThrowIllegalArgumentException() {
@@ -97,7 +95,35 @@ public class HttpCookieOAuth2AuthorizationRequestRepositoryTests {
     }
 
     @Test
-    public void saveAuthorizationRequestWhenNullThenCookieRemoved() {
+    public void saveAuthorizationRequestWhenRequestInsecureThenCookiesInsecure(){
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        request.setSecure(false);
+
+        OAuth2AuthorizationRequest authorizationRequest = createAuthorizationRequest().build();
+        this.authorizationRequestRepository.saveAuthorizationRequest(
+            authorizationRequest, request, response);
+        for (Cookie cookie: response.getCookies()){
+            assertThat(!cookie.getSecure());
+        }
+    }
+
+    @Test
+    public void saveAuthorizationRequestWhenRequestSecureThenCookiesSecure(){
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        request.setSecure(true);
+
+        OAuth2AuthorizationRequest authorizationRequest = createAuthorizationRequest().build();
+        this.authorizationRequestRepository.saveAuthorizationRequest(
+            authorizationRequest, request, response);
+        for (Cookie cookie: response.getCookies()){
+            assertThat(cookie.getSecure());
+        }
+    }
+
+    @Test
+    public void saveAuthorizationRequestWhenNullThenCookiesExpired() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
 
@@ -106,7 +132,9 @@ public class HttpCookieOAuth2AuthorizationRequestRepositoryTests {
         this.authorizationRequestRepository.saveAuthorizationRequest(
             null, request, response);
 
-        assertThat(response.getCookie(cookieName).getMaxAge()).isEqualTo(0);
+        assertThat(response.getCookies().length).isGreaterThanOrEqualTo(1);
+        for (Cookie cookie : response.getCookies())
+            assertThat(cookie.getMaxAge()).isEqualTo(0);
     }
 
     @Test

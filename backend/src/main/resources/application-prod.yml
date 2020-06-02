@@ -1,2 +1,5 @@
-cawi:
-  secure-cookie: true
+server:
+  servlet:
+    session:
+      cookie:
+        secure=true:

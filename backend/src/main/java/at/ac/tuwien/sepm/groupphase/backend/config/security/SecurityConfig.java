@@ -1,7 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.config.security;
 
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -73,7 +72,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity.oauth2Login()
             .authorizationEndpoint()
                 .baseUri("/api/v1/auth/providers")
-                .authorizationRequestRepository(new HttpCookieOAuth2AuthorizationRequestRepository(securityProps.cookiesAreSecure()));
+                .authorizationRequestRepository(new HttpCookieOAuth2AuthorizationRequestRepository());
 
         // on success we pass a JWT token to the frontend
         httpSecurity.oauth2Login()
@@ -89,7 +88,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // We pass the token with a cookie so that it is not stored in the browser history.
                 Cookie tokenCookie = new Cookie("token", token);
                 tokenCookie.setPath("/");
-                tokenCookie.setSecure(securityProps.cookiesAreSecure());
+                tokenCookie.setSecure(request.isSecure());
                 response.addCookie(tokenCookie);
 
                 // TODO: support multiple frontends

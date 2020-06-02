@@ -10,17 +10,13 @@ public class SecurityProps {
 
     private final int expirationTime;
 
-    private final boolean secureCookies;
-
     @Autowired
     public SecurityProps(
         @Value("${cawi.jwt-secret}") String secret,
-        @Value("${cawi.jwt-expiration-time}") int expirationTime,
-        @Value("${cawi.secure-cookie}") boolean secureCookies
+        @Value("${cawi.jwt-expiration-time}") int expirationTime
     ){
         this.secret = secret;
         this.expirationTime = expirationTime;
-        this.secureCookies = secureCookies;
     }
 
 
@@ -30,9 +26,5 @@ public class SecurityProps {
 
     public int getExpirationTime() {
         return expirationTime;
-    }
-
-    public boolean cookiesAreSecure() {
-        return secureCookies;
     }
 }
