@@ -44,12 +44,9 @@ public class SecurityTestConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        SecurityConfig.staticConfigure(http, userService, securityProps, objectMapper);
+        SecurityConfig.staticConfigure(http, userService, securityProps);
         http.oauth2Login()
             .tokenEndpoint().accessTokenResponseClient(this.mockAccessTokenResponseClient()).and()
             .userInfoEndpoint().userService(this.mockUserService());

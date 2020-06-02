@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import javax.servlet.http.Cookie;
@@ -15,6 +17,7 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.Map;
 
 public class HttpCookieOAuth2AuthorizationRequestRepository implements AuthorizationRequestRepository<OAuth2AuthorizationRequest> {
@@ -24,12 +27,13 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private boolean secureCookie;
+    private final boolean secureCookie;
 
-    public HttpCookieOAuth2AuthorizationRequestRepository(ObjectMapper objectMapper, boolean secureCookie) {
-        this.objectMapper = objectMapper;
+    private final ConversionService conversionService = new DefaultConversionService();
+
+    public HttpCookieOAuth2AuthorizationRequestRepository(boolean secureCookie) {
         this.secureCookie = secureCookie;
     }
 
@@ -43,14 +47,25 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
             .map(cookie -> {
                 try {
                     // We do not use (de)serialization for untrusted data because that can lead to security vulnerabilities.
+
                     JsonNode node = objectMapper.reader().readTree(Base64.getDecoder().decode(cookie.getValue().getBytes()));
+
+                    Map<String,Object> attributesMap = new HashMap<>();
+                    node.get("attributes").fields().forEachRemaining(entry -> {
+                        attributesMap.put(entry.getKey(), conversionService.convert(entry.getValue().asText(), Object.class));
+                    });
+                    Map<String,Object> additionalParamsMap = new HashMap<>();
+                    node.get("additionalParams").fields().forEachRemaining(entry -> {
+                        additionalParamsMap.put(entry.getKey(), conversionService.convert(entry.getValue().asText(), Object.class));
+                    });
 
                     return OAuth2AuthorizationRequest
                         .authorizationCode().authorizationUri(node.get("authorizationUri").asText())
                         .clientId(node.get("clientId").asText())
                         .redirectUri(node.get("redirectUri").asText())
                         .state(node.get("state").asText())
-                        .attributes(Map.of("registration_id", node.get("registrationId").asText()))
+                        .attributes(attributesMap)
+                        .additionalParameters(additionalParamsMap)
                         .build();
                 } catch (IOException e) {
                     LOGGER.error("IO Exception: {}", e.getMessage());
@@ -69,8 +84,16 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
         ArrayNode scopeArrayNode = node.putArray("scopes");
         oAuth2AuthorizationRequest.getScopes().forEach(scopeArrayNode::add);
         node.put("state", oAuth2AuthorizationRequest.getState());
-        node.put("registrationId", (String) oAuth2AuthorizationRequest.getAttributes().get("registration_id"));
-        // additionalParameters and attributes are not added because they contain java.lang.Object
+
+        ObjectNode attributesNode = node.putObject("attributes");
+        oAuth2AuthorizationRequest.getAttributes().forEach((key, value) -> {
+            attributesNode.put(key, conversionService.convert(value, String.class));
+        });
+
+        ObjectNode additionalParamsNode = node.putObject("additionalParams");
+        oAuth2AuthorizationRequest.getAdditionalParameters().forEach((key, value) -> {
+            additionalParamsNode.put(key, conversionService.convert(value, String.class));
+        });
 
         Cookie cookie = new Cookie(COOKIE_NAME, Base64.getEncoder().encodeToString(node.toString().getBytes()));
         cookie.setPath("/");

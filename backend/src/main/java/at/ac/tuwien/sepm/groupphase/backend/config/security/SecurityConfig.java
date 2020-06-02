@@ -41,19 +41,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @Override
     public void configure(HttpSecurity httpSecurity) throws Exception {
-        staticConfigure(httpSecurity, userService, securityProps, objectMapper);
+        staticConfigure(httpSecurity, userService, securityProps);
     }
 
     /**
      * Meant to be called from WebSecurityConfigurerAdapter.configure()
      * This method is static so that it can also be easily used from the SecurityTestConfig.
      */
-    public static void staticConfigure(HttpSecurity httpSecurity, UserService userService, SecurityProps securityProps, ObjectMapper objectMapper) throws Exception {
+    public static void staticConfigure(HttpSecurity httpSecurity, UserService userService, SecurityProps securityProps) throws Exception {
         // stateless sessions scale better, are better for user privacy,
         // make sessions persist restarts and make the backend easier to test.
         httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
@@ -76,7 +73,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity.oauth2Login()
             .authorizationEndpoint()
                 .baseUri("/api/v1/auth/providers")
-                .authorizationRequestRepository(new HttpCookieOAuth2AuthorizationRequestRepository(objectMapper, securityProps.cookiesAreSecure()));
+                .authorizationRequestRepository(new HttpCookieOAuth2AuthorizationRequestRepository(securityProps.cookiesAreSecure()));
 
         // on success we pass a JWT token to the frontend
         httpSecurity.oauth2Login()
