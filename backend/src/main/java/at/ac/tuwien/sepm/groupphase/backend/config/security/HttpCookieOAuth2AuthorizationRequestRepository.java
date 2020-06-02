@@ -17,10 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /** Spring does not yet provide a Cookie implementation of AuthorizationRequestRepository
  *  https://github.com/spring-projects/spring-security/issues/6374
@@ -52,18 +49,22 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
 
                     Map<String,Object> attributesMap = new HashMap<>();
                     node.get("attributes").fields().forEachRemaining(entry -> {
-                        attributesMap.put(entry.getKey(), conversionService.convert(entry.getValue().asText(), Object.class));
+                        attributesMap.put(entry.getKey(), conversionService.convert(entry.getValue().textValue(), Object.class));
                     });
                     Map<String,Object> additionalParamsMap = new HashMap<>();
                     node.get("additionalParams").fields().forEachRemaining(entry -> {
-                        additionalParamsMap.put(entry.getKey(), conversionService.convert(entry.getValue().asText(), Object.class));
+                        additionalParamsMap.put(entry.getKey(), conversionService.convert(entry.getValue().textValue(), Object.class));
                     });
+                    Set<String> scopes = new HashSet<>();
+                    node.withArray("scopes").forEach(scopeNode -> scopes.add(scopeNode.textValue()));
 
                     return OAuth2AuthorizationRequest
-                        .authorizationCode().authorizationUri(node.get("authorizationUri").asText())
-                        .clientId(node.get("clientId").asText())
-                        .redirectUri(node.get("redirectUri").asText())
-                        .state(node.get("state").asText())
+                        .authorizationCode().authorizationUri(node.get("authorizationUri").textValue())
+                        .authorizationRequestUri(node.get("authorizationRequestUri").textValue())
+                        .clientId(node.get("clientId").textValue())
+                        .redirectUri(node.get("redirectUri").textValue())
+                        .state(node.get("state").textValue())
+                        .scopes(scopes)
                         .attributes(attributesMap)
                         .additionalParameters(additionalParamsMap)
                         .build();
@@ -86,6 +87,7 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
 
         ObjectNode node = objectMapper.createObjectNode();
         node.put("authorizationUri", authorizationRequest.getAuthorizationUri());
+        node.put("authorizationRequestUri", authorizationRequest.getAuthorizationRequestUri());
         // not putting in grantType because it's always authorization_code
         node.put("clientId", authorizationRequest.getClientId());
         node.put("redirectUri", authorizationRequest.getRedirectUri());

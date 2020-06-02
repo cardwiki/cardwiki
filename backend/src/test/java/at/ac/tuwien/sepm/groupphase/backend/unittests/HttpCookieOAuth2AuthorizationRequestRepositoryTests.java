@@ -4,6 +4,8 @@ import at.ac.tuwien.sepm.groupphase.backend.config.security.HttpCookieOAuth2Auth
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
@@ -83,15 +85,15 @@ public class HttpCookieOAuth2AuthorizationRequestRepositoryTests {
         OAuth2AuthorizationRequest loadedAuthorizationRequest =
             this.authorizationRequestRepository.loadAuthorizationRequest(request);
 
-        loadedAuthorizationRequest.getAttributes().equals(authorizationRequest.getAttributes());
-        loadedAuthorizationRequest.getAdditionalParameters().equals(authorizationRequest.getAdditionalParameters());
-        loadedAuthorizationRequest.getAuthorizationRequestUri().equals(authorizationRequest.getAuthorizationRequestUri());
-        loadedAuthorizationRequest.getAuthorizationUri().equals(authorizationRequest.getAuthorizationUri());
-        loadedAuthorizationRequest.getGrantType().equals(authorizationRequest.getGrantType());
-        loadedAuthorizationRequest.getRedirectUri().equals(authorizationRequest.getRedirectUri());
-        loadedAuthorizationRequest.getScopes().equals(authorizationRequest.getScopes());
-        loadedAuthorizationRequest.getState().equals(authorizationRequest.getScopes());
-        loadedAuthorizationRequest.getClientId().equals(authorizationRequest.getClientId());
+        assertThat(loadedAuthorizationRequest.getAttributes()).isEqualTo(authorizationRequest.getAttributes());
+        assertThat(loadedAuthorizationRequest.getAdditionalParameters()).isEqualTo(authorizationRequest.getAdditionalParameters());
+        assertThat(loadedAuthorizationRequest.getAuthorizationRequestUri()).isEqualTo(authorizationRequest.getAuthorizationRequestUri());
+        assertThat(loadedAuthorizationRequest.getAuthorizationUri()).isEqualTo(authorizationRequest.getAuthorizationUri());
+        assertThat(loadedAuthorizationRequest.getGrantType()).isEqualTo(authorizationRequest.getGrantType());
+        assertThat(loadedAuthorizationRequest.getRedirectUri()).isEqualTo(authorizationRequest.getRedirectUri());
+        assertThat(loadedAuthorizationRequest.getScopes()).isEqualTo(authorizationRequest.getScopes());
+        assertThat(loadedAuthorizationRequest.getState()).isEqualTo(authorizationRequest.getState());
+        assertThat(loadedAuthorizationRequest.getClientId()).isEqualTo(authorizationRequest.getClientId());
     }
 
     @Test
@@ -126,8 +128,6 @@ public class HttpCookieOAuth2AuthorizationRequestRepositoryTests {
     public void saveAuthorizationRequestWhenNullThenCookiesExpired() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
-
-        OAuth2AuthorizationRequest authorizationRequest = createAuthorizationRequest().build();
 
         this.authorizationRequestRepository.saveAuthorizationRequest(
             null, request, response);
@@ -178,8 +178,8 @@ public class HttpCookieOAuth2AuthorizationRequestRepositoryTests {
             .authorizationRequestUri("http://example.com/example")
             .scope("one", "two", "three")
             .clientId("client-id-1234")
-            .additionalParameters(Map.of("param1", "parameter", "param2", 123))
-            .attributes(Map.of("param1", "test", "param2", 123))
+            .additionalParameters(Map.of("param1", "parameter", "param2", "bar"))
+            .attributes(Map.of("param1", "test", "param2", "foo"))
             .state("state-1234");
     }
 }
