@@ -117,9 +117,9 @@ public class HttpCookieOAuth2AuthorizationRequestRepositoryTests {
         OAuth2AuthorizationRequest authorizationRequest = createAuthorizationRequest().build();
         this.authorizationRequestRepository.saveAuthorizationRequest(
             authorizationRequest, request, response);
-        for (Cookie cookie: response.getCookies()){
-            assertThat(cookie.getSecure());
-        }
+
+        assertThat(response.getCookies().length).isEqualTo(1);
+        assertThat(response.getCookies()[0].getSecure());
     }
 
     @Test
@@ -132,9 +132,19 @@ public class HttpCookieOAuth2AuthorizationRequestRepositoryTests {
         this.authorizationRequestRepository.saveAuthorizationRequest(
             null, request, response);
 
-        assertThat(response.getCookies().length).isGreaterThanOrEqualTo(1);
-        for (Cookie cookie : response.getCookies())
-            assertThat(cookie.getMaxAge()).isEqualTo(0);
+        assertThat(response.getCookies().length).isEqualTo(1);
+        assertThat(response.getCookies()[0].getMaxAge()).isEqualTo(0);
+    }
+
+    @Test
+    public void removeAuthorizationRequestWhenNotNullThenCookiesExpired() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        this.authorizationRequestRepository.removeAuthorizationRequest(request, response);
+
+        assertThat(response.getCookies().length).isEqualTo(1);
+        assertThat(response.getCookies()[0].getMaxAge()).isEqualTo(0);
     }
 
     @Test
