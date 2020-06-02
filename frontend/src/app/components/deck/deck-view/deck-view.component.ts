@@ -1,9 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Injector, OnInit} from '@angular/core';
 import {DeckDetails} from '../../../dtos/deckDetails';
 import {DeckService} from '../../../services/deck.service';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {CardService} from '../../../services/card.service';
 import {CardSimple} from '../../../dtos/cardSimple';
+import {DeckForkModalComponent} from '../deck-fork-modal/deck-fork-modal.component';
+import {Observable} from 'rxjs';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-deck-view',
@@ -15,7 +18,8 @@ export class DeckViewComponent implements OnInit {
   deck: DeckDetails;
   cards: CardSimple[];
 
-  constructor(private deckService: DeckService, private cardService: CardService, private route: ActivatedRoute) { }
+  constructor(private deckService: DeckService, private cardService: CardService, private route: ActivatedRoute,
+              private router: Router, private modalService: NgbModal) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
@@ -37,5 +41,16 @@ export class DeckViewComponent implements OnInit {
         this.cards.splice(index, 1);
       }
     });
+  }
+
+  openForkModal() {
+    const modalRef = this.modalService.open(DeckForkModalComponent);
+    modalRef.componentInstance.deck = this.deck;
+
+    modalRef.result.then(
+      (res: Observable<DeckDetails>) => res.subscribe(
+        (deck: DeckDetails) => this.router.navigate(['decks', deck.id])
+      )
+    ).catch(() => {});
   }
 }

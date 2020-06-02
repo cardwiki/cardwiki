@@ -36,6 +36,7 @@ import { Md2htmlPipe } from './pipes/md2html.pipe';
 import { MarkdownSyntaxComponent } from './components/help/markdown-syntax/markdown-syntax.component';
 import { ErrorComponent } from './components/error/error.component';
 import { LearnDeckComponent } from './components/learn-deck/learn-deck.component';
+import { DeckForkModalComponent } from './components/deck/deck-fork-modal/deck-fork-modal.component';
 
 @NgModule({
   declarations: [
@@ -69,6 +70,7 @@ import { LearnDeckComponent } from './components/learn-deck/learn-deck.component
     MarkdownSyntaxComponent,
     ErrorComponent,
     LearnDeckComponent,
+    DeckForkModalComponent,
   ],
   imports: [
     BrowserModule,

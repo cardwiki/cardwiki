@@ -87,10 +87,11 @@ public class DeckEndpoint {
         }
     }
 
+    @Secured("ROLE_USER")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/{id}/copy")
-    @ApiOperation(value = "Copy a deck")
-    public DeckDto copyDeck(@PathVariable Long id, @Valid @RequestBody DeckInputDto deckInputDto) {
+    @ApiOperation(value = "Copy a deck", authorizations = @Authorization("ROLE_USER"))
+    public DeckDto copy(@PathVariable Long id, @Valid @RequestBody DeckInputDto deckInputDto) {
         LOGGER.info("Post /api/v1/decks/{id}/copy body={}", id, deckInputDto);
         return deckMapper.deckToDeckDto(deckService.copy(id, deckMapper.deckInputDtoToDeck(deckInputDto)));
     }
