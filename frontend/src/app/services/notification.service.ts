@@ -1,17 +1,18 @@
-import { Injectable, ApplicationRef } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { distinctUntilChanged } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
-  private _toasts: Toast[] = [];
+  public readonly toasts$: Observable<Toast[]>
 
-  constructor(private applicationRef: ApplicationRef) {
-  }
+  private toasts: Toast[];
+  private readonly toastsSubject: BehaviorSubject<Toast[]>
 
-  /**
-   * Get visible toasts
-   */
-  get toasts() {
-    return [...this._toasts]
+  constructor() {
+    this.toasts = []
+    this.toastsSubject = new BehaviorSubject([])
+    this.toasts$ = this.toastsSubject.pipe(distinctUntilChanged())
   }
 
   /**
@@ -65,8 +66,8 @@ export class NotificationService {
    * @param toast toast to be removed
    */
   remove(toast: Toast) {
-    this._toasts = this._toasts.filter(t => t !== toast)
-    this.triggerChangeDetection()
+    this.toasts = this.toasts.filter(t => t !== toast)
+    this.updateObservable()
   }
 
   /**
@@ -81,13 +82,12 @@ export class NotificationService {
       classname: '',
     }
     options = { ...defaultOptions, ...options }
-    this._toasts.push({ message, options })
-    this.triggerChangeDetection()
+    this.toasts.push({ message, options })
+    this.updateObservable()
   }
 
-  // workaround for *ngFor not updating in some components (e.g. deck-view)
-  private triggerChangeDetection() {
-    this.applicationRef.tick()
+  private updateObservable() {
+    this.toastsSubject.next([...this.toasts])
   }
 }
 

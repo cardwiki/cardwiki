@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
 
 import {NotificationService, Toast} from '../../services/notification.service';
+import { Observable } from 'rxjs';
 
 
 @Component({
@@ -10,10 +11,10 @@ import {NotificationService, Toast} from '../../services/notification.service';
   host: {'[class.ngb-toasts]': 'true'}
 })
 export class ToastsContainerComponent {
-  constructor(private notificationService: NotificationService) {}
+  public toasts$: Observable<Toast[]>
 
-  get toasts() {
-    return this.notificationService.toasts
+  constructor(private notificationService: NotificationService) {
+    this.toasts$ = notificationService.toasts$
   }
 
   remove(toast: Toast) {

@@ -1,4 +1,4 @@
-<ngb-toast *ngFor="let toast of toasts"
+<ngb-toast *ngFor="let toast of toasts$ | async"
     [class]="toast.options.classname"
     [autohide]="toast.options.autohide"
     [delay]="toast.options.delay"
