@@ -9,15 +9,13 @@ import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.invoke.MethodHandles;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class SimpleDeckService implements DeckService {
@@ -27,7 +25,7 @@ public class SimpleDeckService implements DeckService {
     private final CategoryService categoryService;
     private final CardRepository cardRepository;
 
-
+    @Autowired
     public SimpleDeckService(DeckRepository deckRepository, UserService userService, CategoryService categoryService,
                              CardRepository cardRepository) {
         this.deckRepository = deckRepository;
@@ -93,41 +91,17 @@ public class SimpleDeckService implements DeckService {
     @Override
     public Deck copy(Long id, Deck newDeck) {
         LOGGER.debug("Copy deck with id: {}", id);
-        Deck deck = findOne(id);
-        User currentUser = userService.loadUserByUsername("leo");
+        List<RevisionEdit> revisionEdits = deckRepository.getRevisionEditsByDeckId(id);
+        User currentUser = userService.loadCurrentUser();
 
         Deck deckCopy = new Deck();
-        deckCopy.setCreatedBy(currentUser);
         deckCopy.setName(newDeck.getName());
-        deckCopy.getCategories().addAll(deck.getCategories());
+        deckCopy.setCreatedBy(currentUser);
         deckCopy = deckRepository.saveAndFlush(deckCopy);
+        deckRepository.copyCategoriesOfDeck(id, deckCopy.getId());
 
-        for (Card card : deck.getCards()) {
-            if (card.getLatestRevision().getRevisionEdit() != null) {
-                // Copy content
-                RevisionEdit revisionEdit = new RevisionEdit();
-                revisionEdit.setTextFront(card.getLatestRevision().getRevisionEdit().getTextFront());
-                revisionEdit.setTextBack(card.getLatestRevision().getRevisionEdit().getTextBack());
+        deckRepository.addCardCopiesToDeckCopy(deckCopy.getId(), revisionEdits , currentUser);
 
-                // Save Card with initial revision
-                Card cardToAdd = new Card();
-                cardToAdd.setDeck(deckCopy);
-
-                Revision revision = new Revision();
-                revision.setMessage(String.format("Copied from deck %s.", deck.getId()));
-                cardToAdd.setLatestRevision(revision);
-                revision.setCard(cardToAdd);
-                revision.setCreatedBy(currentUser);
-
-                cardToAdd = cardRepository.save(cardToAdd);
-
-                // Add content
-                revision.setRevisionEdit(revisionEdit);
-                revisionEdit.setRevision(revision);
-                cardToAdd = cardRepository.saveAndFlush(cardToAdd);
-                deckCopy.getCards().add(cardToAdd);
-            }
-        }
-        return deckRepository.saveAndFlush(deckCopy);
+        return findOne(deckCopy.getId());
     }
 }
