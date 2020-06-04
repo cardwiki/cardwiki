@@ -11,12 +11,12 @@ export class ErrorHandlerService {
 
   private readonly httpErrorMessages: { [status: string]: (err: HttpErrorResponse) => string } = {
     0: () => 'Could not connect to server',
-    400: err => err.error,
+    400: err => this.getValidationMessage(err),
     401: () => 'Not authenticated. Please login and try again',
     403: () => 'Invalid authorization. Please try to logout and login if you should have access to this ressource',
     404: () => 'Could not find this ressource',
-    409: err => err.error,
-    422: err => err.error,
+    409: err => this.getValidationMessage(err),
+    422: err => this.getValidationMessage(err),
     500: () => 'An internal server error occured',
     503: () => 'Service currently unavailable. Please try again later',
   }
@@ -75,4 +75,37 @@ export class ErrorHandlerService {
     }
     return `Unexpected error: ${httpError.message}`
   }
+
+  /**
+   * Get a user friendly description of validation errors
+   * 
+   * @param httpError error containing validation errors
+   */
+  private getValidationMessage(httpError: HttpErrorResponse) {
+    // Fallback message
+    let description = String(httpError.error)
+
+    // Validation error scheme specified in backend
+    if (this.isValidationError(httpError.error)) {
+      const validationError = httpError.error as ValidationError
+      description = validationError.validation
+        .map(err => Object.entries(err).map(([fieldName, description]) => `${fieldName}: ${description}`).join('\n'))
+        .join('\n')
+    }
+    return `Invalid Data\n${description}`
+  }
+
+  /**
+   * Check if error is a ValidationError
+   * @param httpError
+   */
+  private isValidationError(error: any) {
+    return typeof error === 'object' &&
+      Array.isArray(error.validation) &&
+      error.validation.every(err => typeof err === 'object')
+  }
+}
+
+interface ValidationError {
+  validation: { [fieldName: string]: string }[]
 }
