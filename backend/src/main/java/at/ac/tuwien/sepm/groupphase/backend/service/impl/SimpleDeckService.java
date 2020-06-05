@@ -89,19 +89,13 @@ public class SimpleDeckService implements DeckService {
 
     @Transactional
     @Override
-    public Deck copy(Long id, Deck newDeck) {
+    public Deck copy(Long id, Deck deckCopy) {
         LOGGER.debug("Copy deck with id: {}", id);
-        List<RevisionEdit> revisionEdits = deckRepository.getRevisionEditsByDeckId(id);
+        if (!deckRepository.existsById(id)) {
+            throw new DeckNotFoundException("The deck you tried to copy could not be found.");
+        }
         User currentUser = userService.loadCurrentUser();
-
-        Deck deckCopy = new Deck();
-        deckCopy.setName(newDeck.getName());
-        deckCopy.setCreatedBy(currentUser);
-        deckCopy = deckRepository.saveAndFlush(deckCopy);
-        deckRepository.copyCategoriesOfDeck(id, deckCopy.getId());
-
-        deckRepository.addCardCopiesToDeckCopy(deckCopy.getId(), revisionEdits , currentUser);
-
-        return findOne(deckCopy.getId());
+        Long deckCopyId = deckRepository.createDeckCopy(id, currentUser, deckCopy);
+        return findOne(deckCopyId);
     }
 }

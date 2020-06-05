@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.math.BigInteger;
-
 import java.time.LocalDateTime;
 
 import java.util.*;
@@ -23,61 +22,36 @@ public class DeckRepositoryImpl implements DeckRepositoryCustom {
 
     @Override
     @Transactional
-    public List<RevisionEdit> getRevisionEditsByDeckId(Long deckId) {
-       List<Object[]> result = entityManager.createNativeQuery(
-            "SELECT * FROM revision_edits" +
-                " WHERE REVISION_ID IN (" +
-                " SELECT LATEST_REVISION FROM cards" +
-                " WHERE DECK_ID=:deckId)"
-        )
-            .setParameter("deckId", deckId)
-            .getResultList();
-
-        List<RevisionEdit> revisionEdits = new ArrayList<>(result.size());
-        for (Object[] item : result) {
-            RevisionEdit revisionEdit = new RevisionEdit();
-            BigInteger id = (BigInteger)item[0];
-            revisionEdit.setId(id.longValue());
-            revisionEdit.setTextFront((String) item[1]);
-            revisionEdit.setTextBack((String) item[2]);
-            revisionEdits.add(revisionEdit);
-        }
-        return revisionEdits;
-    }
-
-    @Override
-    @Transactional
-    public void copyCategoriesOfDeck(Long deckId, Long copyId) {
+    public Long createDeckCopy(Long deckId, User user, Deck deckCopy) {
+        // get revisionEdits of latestRevisions
         List<Object[]> result = entityManager.createNativeQuery(
-            "SELECT * FROM categories" +
-                " WHERE id IN (" +
-                " SELECT category_id FROM category_deck" +
-                " WHERE deck_id=:deckId)"
+            "SELECT r.TEXT_FRONT, r.TEXT_BACK FROM revision_edits r" +
+                " INNER JOIN cards c ON r.REVISION_ID=c.LATEST_REVISION" +
+                " WHERE c.DECK_ID=:deckId" +
+                " ORDER BY c.ID ASC"
         )
             .setParameter("deckId", deckId)
             .getResultList();
 
-        for (Object[] item : result) {
-            entityManager.createNativeQuery(
-                "INSERT INTO category_deck(category_id, deck_id)" +
-                    " VALUES(:categoryId, :deckId)"
-            )
-                .setParameter("categoryId", item[0])
-                .setParameter("deckId", copyId)
-                .executeUpdate();
-        }
-    }
+        // create new deck
+        entityManager.createNativeQuery("INSERT INTO DECKS(created_at, name, updated_at, created_by)" +
+            " VALUES(:now, :name, :now, :createdBy)"
+        )
+            .setParameter("now", LocalDateTime.now())
+            .setParameter("name", deckCopy.getName())
+            .setParameter("createdBy", user.getId())
+            .executeUpdate();
 
-    @Override
-    @Transactional
-    public void addCardCopiesToDeckCopy(Long deckId, List<RevisionEdit> revisionEdits, User user) {
-        for (RevisionEdit revisionEdit : revisionEdits) {
+        BigInteger deckCopyId = (BigInteger) entityManager.createNativeQuery("SELECT scope_identity()").getSingleResult();
+
+        for (Object[] revisionEditResult : result) {
+            // create card and initial revision
             entityManager.createNativeQuery(
                 "INSERT INTO cards(created_at, deck_id)" +
-                    " VALUES(:now, :deckId)"
+                    " VALUES(:now, :deckCopyId)"
             )
                 .setParameter("now", LocalDateTime.now())
-                .setParameter("deckId", deckId)
+                .setParameter("deckCopyId", deckCopyId)
                 .executeUpdate();
 
             BigInteger cardId = (BigInteger) entityManager.createNativeQuery("SELECT scope_identity()").getSingleResult();
@@ -89,7 +63,7 @@ public class DeckRepositoryImpl implements DeckRepositoryCustom {
                 .setParameter("now", LocalDateTime.now())
                 .setParameter("message", String.format("Copied from deck %s.", deckId))
                 .setParameter("cardId", cardId)
-                .setParameter("createdBy", user)
+                .setParameter("createdBy", user.getId())
                 .executeUpdate();
 
             BigInteger revisionId = (BigInteger) entityManager.createNativeQuery("SELECT scope_identity()").getSingleResult();
@@ -99,14 +73,27 @@ public class DeckRepositoryImpl implements DeckRepositoryCustom {
                 .setParameter("cardId", cardId)
                 .executeUpdate();
 
+            // add revisionEdit
             entityManager.createNativeQuery(
                 "INSERT INTO revision_edits(revision_id, text_front, text_back)" +
                     " VALUES(:revisionId, :textFront, :textBack)"
             )
                 .setParameter("revisionId", revisionId)
-                .setParameter("textFront", revisionEdit.getTextFront())
-                .setParameter("textBack", revisionEdit.getTextBack())
+                .setParameter("textFront", revisionEditResult[0])
+                .setParameter("textBack", revisionEditResult[1])
                 .executeUpdate();
         }
+
+        // add categories
+        entityManager.createNativeQuery(
+            "INSERT INTO category_deck" +
+                " SELECT category_id, :deckCopyId FROM category_deck"+
+                " WHERE deck_id=:deckId"
+        )
+            .setParameter("deckCopyId", deckCopyId)
+            .setParameter("deckId", deckId)
+            .executeUpdate();
+
+        return deckCopyId.longValue();
     }
 }
