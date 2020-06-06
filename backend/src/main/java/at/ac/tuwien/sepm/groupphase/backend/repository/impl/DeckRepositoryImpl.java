@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 
 import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.IntStream;
 
 
 @Repository
@@ -35,7 +36,7 @@ public class DeckRepositoryImpl implements DeckRepositoryCustom {
             .setParameter("deckId", deckId)
             .getResultList();
 
-        // create new deck
+            // create new deck
         entityManager.createNativeQuery("INSERT INTO DECKS(created_at, name, updated_at, created_by)" +
             " VALUES(:now, :name, :now, :createdBy)"
         )
@@ -46,45 +47,55 @@ public class DeckRepositoryImpl implements DeckRepositoryCustom {
 
         BigInteger deckCopyId = (BigInteger) entityManager.createNativeQuery("SELECT scope_identity()").getSingleResult();
 
-        for (Object[] revisionEditResult : result) {
-            // create card and initial revision
-            entityManager.createNativeQuery(
-                "INSERT INTO cards(created_at, deck_id)" +
-                    " VALUES(:now, :deckCopyId)"
-            )
-                .setParameter("now", LocalDateTime.now())
-                .setParameter("deckCopyId", deckCopyId)
-                .executeUpdate();
+        entityManager.createNativeQuery(
+            "INSERT INTO cards(created_at, deck_id)" +
+                " SELECT current_timestamp, :deckCopyId FROM cards c" +
+                " WHERE c.DECK_ID=:deckId"
+        )
+            .setParameter("deckCopyId", deckCopyId)
+            .setParameter("deckId", deckId)
+            .executeUpdate();
 
-            BigInteger cardId = (BigInteger) entityManager.createNativeQuery("SELECT scope_identity()").getSingleResult();
+        entityManager.createNativeQuery(
+            "INSERT INTO revisions(created_at, message, created_by, card_id)" +
+                " SELECT current_timestamp, :message, :createdBy, c.ID FROM cards c" +
+                " WHERE DECK_ID=:deckCopyId"
+        )
+            .setParameter("message", String.format("Copied from deck %s.", deckId))
+            .setParameter("createdBy", user.getId())
+            .setParameter("deckCopyId", deckCopyId)
+            .executeUpdate();
 
-            entityManager.createNativeQuery(
-                "INSERT INTO revisions(created_at, message, card_id, created_by)" +
-                    " VALUES(:now, :message, :cardId, :createdBy)"
-            )
-                .setParameter("now", LocalDateTime.now())
-                .setParameter("message", String.format("Copied from deck %s.", deckId))
-                .setParameter("cardId", cardId)
-                .setParameter("createdBy", user.getId())
-                .executeUpdate();
+        entityManager.createNativeQuery("UPDATE cards AS c SET LATEST_REVISION=(" +
+            "SELECT ID FROM revisions WHERE CARD_ID=c.ID)" +
+            " WHERE c.DECK_ID=:deckCopyId")
+            .setParameter("deckCopyId", deckCopyId)
+            .executeUpdate();
 
-            BigInteger revisionId = (BigInteger) entityManager.createNativeQuery("SELECT scope_identity()").getSingleResult();
+        entityManager.createNativeQuery(
+            "INSERT INTO revision_edits(revision_id, text_front, text_back)" +
+                " SELECT r.ID, 'dummy', 'dummy' FROM revisions r" +
+                " INNER JOIN cards c ON r.ID=c.LATEST_REVISION" +
+                " WHERE c.DECK_ID=:deckCopyId" +
+                " ORDER BY c.ID ASC"
+        )
+            .setParameter("deckCopyId", deckCopyId)
+            .executeUpdate();
 
-            entityManager.createNativeQuery("UPDATE cards SET latest_revision=:latestRevision WHERE id=:cardId")
-                .setParameter("latestRevision", revisionId)
-                .setParameter("cardId", cardId)
-                .executeUpdate();
+        List<BigInteger> revisionIds = entityManager.createNativeQuery(
+            "SELECT LATEST_REVISION FROM cards WHERE DECK_ID=:deckCopyId"
+        )
+            .setParameter("deckCopyId", deckCopyId)
+            .getResultList();
 
-            // add revisionEdit
-            entityManager.createNativeQuery(
-                "INSERT INTO revision_edits(revision_id, text_front, text_back)" +
-                    " VALUES(:revisionId, :textFront, :textBack)"
-            )
-                .setParameter("revisionId", revisionId)
-                .setParameter("textFront", revisionEditResult[0])
-                .setParameter("textBack", revisionEditResult[1])
-                .executeUpdate();
-        }
+        IntStream.range(0, revisionIds.size())
+            .forEach(i -> entityManager.createNativeQuery("UPDATE revision_edits r SET TEXT_FRONT=:textFront, TEXT_BACK=:textBack" +
+                " WHERE r.REVISION_ID=:revisionId")
+                .setParameter("textFront", result.get(i)[0])
+                .setParameter("textBack", result.get(i)[1])
+                .setParameter("revisionId", revisionIds.get(i))
+                .executeUpdate()
+        );
 
         // add categories
         entityManager.createNativeQuery(

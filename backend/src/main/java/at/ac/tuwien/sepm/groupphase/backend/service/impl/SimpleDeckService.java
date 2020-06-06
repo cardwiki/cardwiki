@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.invoke.MethodHandles;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 public class SimpleDeckService implements DeckService {
@@ -92,9 +94,10 @@ public class SimpleDeckService implements DeckService {
     public Deck copy(Long id, Deck deckCopy) {
         LOGGER.debug("Copy deck with id: {}", id);
         if (!deckRepository.existsById(id)) {
-            throw new DeckNotFoundException("The deck you tried to copy could not be found.");
+            throw new DeckNotFoundException(String.format("Deck with %s not found.", id));
         }
         User currentUser = userService.loadCurrentUser();
+
         return deckRepository.createDeckCopy(id, currentUser, deckCopy);
     }
 }
