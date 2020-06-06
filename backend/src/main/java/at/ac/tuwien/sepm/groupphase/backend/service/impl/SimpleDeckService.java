@@ -95,7 +95,6 @@ public class SimpleDeckService implements DeckService {
             throw new DeckNotFoundException("The deck you tried to copy could not be found.");
         }
         User currentUser = userService.loadCurrentUser();
-        Long deckCopyId = deckRepository.createDeckCopy(id, currentUser, deckCopy);
-        return findOne(deckCopyId);
+        return deckRepository.createDeckCopy(id, currentUser, deckCopy);
     }
 }

@@ -19,7 +19,8 @@ import java.util.Scanner;
 public class CardDataGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    private static final int NUMBER_OF_CARDS_TO_GENERATE = 3;
+    private static final int SIZE_OF_LARGE_TEST_DECK = 1000;
+    private static final int SIZE_OF_SUPER_LARGE_TEST_DECK = 5000;
 
     private final UserRepository userRepository;
     private final CardRepository cardRepository;
@@ -81,6 +82,74 @@ public class CardDataGenerator {
 
             card = cardRepository.save(card);
         }
+    }
+
+    @PostConstruct
+    private void generateLargeTestDeck() {
+        User user = new User();
+        user.setAuthId("real id");
+        user.setDescription("test user3");
+        user.setAdmin(false);
+        user.setEnabled(false);
+        user.setUsername("NutCase");
+        userRepository.saveAndFlush(user);
+
+        Deck deck = new Deck();
+        deck.setName("large test deck");
+        deck.setCreatedBy(user);
+        deckRepository.saveAndFlush(deck);
+
+        LOGGER.info("Creating {}({} cards)", deck.getName(), SIZE_OF_LARGE_TEST_DECK);
+        for (int i = 0; i < SIZE_OF_LARGE_TEST_DECK; i++) {
+            generateCard(deck, user, i, "large");
+        }
+    }
+
+    @PostConstruct
+    private void generateSuperLargeTestDeck() {
+        User user = new User();
+        user.setAuthId("unreal id");
+        user.setDescription("test user4");
+        user.setAdmin(false);
+        user.setEnabled(false);
+        user.setUsername("CamelCase");
+        userRepository.saveAndFlush(user);
+
+        Deck deck = new Deck();
+        deck.setName("super large test deck");
+        deck.setCreatedBy(user);
+        deckRepository.saveAndFlush(deck);
+
+        LOGGER.info("Creating {}({} cards)", deck.getName(), SIZE_OF_SUPER_LARGE_TEST_DECK);
+        for (int i = 0; i < SIZE_OF_SUPER_LARGE_TEST_DECK; i++) {
+            generateCard(deck, user, i, "super large");
+        }
+    }
+
+    private void generateCard(Deck deck, User user, int index, String deckSize) {
+        Card card = new Card();
+        Revision revision = new Revision();
+
+        card.setDeck(deck);
+        deck.getCards().add(card);
+
+        card.setLatestRevision(revision);
+        revision.setCard(card);
+        revision.setMessage(deckSize + " test set revision - card " + index);
+        revision.setCreatedBy(user);
+        user.getRevisions().add(revision);
+
+        card = cardRepository.save(card);
+
+        // Add content
+        RevisionEdit edit = new RevisionEdit();
+        edit.setTextFront(deckSize + " test set card " + index + " front");
+        edit.setTextBack(deckSize + " test set card " + index + " back");
+
+        revision.setRevisionEdit(edit);
+        edit.setRevision(revision);
+
+        cardRepository.save(card);
     }
 
 }

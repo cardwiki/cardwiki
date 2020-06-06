@@ -191,4 +191,63 @@ public class DeckEndpointTest extends TestDataGenerator {
             .andExpect(status().isOk())
             .andExpect(content().json(objectMapper.writeValueAsString(Collections.singletonList(response))));
     }
+    @Test
+    public void givenAuthenticatedUser_whenCopyDeck_thenReturnDeckCopy() throws Exception {
+        Deck deck = givenDeck();
+        User user = givenApplicationUser();
+        String deckName = "copy dummy";
+        ObjectNode input = objectMapper.createObjectNode();
+        input.put("name", deckName);
+
+        mvc.perform(
+            post("/api/v1/decks/{id}/copy", deck.getId())
+                .with(mockLogin(USER_ROLES, user.getAuthId()))
+                .contentType("application/json")
+                .content(input.toString())
+        )
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.id").isNumber())
+            .andExpect(jsonPath("$.createdAt").value(validIsoDateTime()))
+            .andExpect(jsonPath("$.updatedAt").value(validIsoDateTime()))
+            .andExpect(jsonPath("$.name").value(deckName))
+            .andExpect(jsonPath("$.createdBy").value(user.getId()))
+            .andExpect(jsonPath("$.categories").value(deck.getCategories().stream()
+                .map((x) -> {
+                    CategorySimpleDto category = new CategorySimpleDto();
+                    category.setName(x.getName());
+                    category.setId(x.getId());
+                    return category;
+                }).collect(Collectors.toList())));
+
+    }
+
+    @Test
+    public void givenAuthenticatedUser_whenCopyDeckBlankName_thenThrowBadRequest() throws Exception {
+        Deck deck = givenDeck();
+        User user = givenApplicationUser();
+        ObjectNode input = objectMapper.createObjectNode();
+        input.put("name", " \t");
+
+        mvc.perform(
+            post("/api/v1/decks/{id}/copy", deck.getId())
+                .with(mockLogin(USER_ROLES, user.getAuthId()))
+                .contentType("application/json")
+                .content(input.toString())
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void givenNothing_whenCopyNonexistentDeck_thenThrowNotFound() throws Exception {
+        User user = givenApplicationUser();
+        ObjectNode input = objectMapper.createObjectNode();
+        input.put("name", "blubb");
+
+        mvc.perform(
+            post("/api/v1/decks/{id}/copy", 0L)
+                .with(mockLogin(USER_ROLES, user.getAuthId()))
+                .contentType("application/json")
+                .content(input.toString())
+        ).andExpect(status().isNotFound());
+    }
+
 }

@@ -9,8 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.math.BigInteger;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
+import java.time.ZoneId;
 import java.util.*;
 
 
@@ -22,7 +24,7 @@ public class DeckRepositoryImpl implements DeckRepositoryCustom {
 
     @Override
     @Transactional
-    public Long createDeckCopy(Long deckId, User user, Deck deckCopy) {
+    public Deck createDeckCopy(Long deckId, User user, Deck deckCopy) {
         // get revisionEdits of latestRevisions
         List<Object[]> result = entityManager.createNativeQuery(
             "SELECT r.TEXT_FRONT, r.TEXT_BACK FROM revision_edits r" +
@@ -87,13 +89,38 @@ public class DeckRepositoryImpl implements DeckRepositoryCustom {
         // add categories
         entityManager.createNativeQuery(
             "INSERT INTO category_deck" +
-                " SELECT category_id, :deckCopyId FROM category_deck"+
+                " SELECT category_id, :deckCopyId FROM category_deck" +
                 " WHERE deck_id=:deckId"
         )
             .setParameter("deckCopyId", deckCopyId)
             .setParameter("deckId", deckId)
             .executeUpdate();
 
-        return deckCopyId.longValue();
+        // query result
+        Deck deck = new Deck();
+        deck.setId(deckCopyId.longValue());
+
+        List<Object[]> deckResult = entityManager.createNativeQuery(
+            "SELECT NAME, CREATED_BY, CREATED_AT, UPDATED_AT FROM decks WHERE ID=:deckCopyId")
+            .setParameter("deckCopyId", deckCopyId)
+            .getResultList();
+
+        deck.setName((String) deckResult.get(0)[0]);
+        BigInteger createdById = (BigInteger)deckResult.get(0)[1];
+        deck.setCreatedBy(entityManager.createQuery("SELECT u FROM User u WHERE u.id=:userId", User.class)
+            .setParameter("userId", createdById.longValue())
+            .getResultList().get(0)
+        );
+        Timestamp createdAt = (Timestamp) deckResult.get(0)[2];
+        deck.setCreatedAt(createdAt.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+        Timestamp updatedAt = (Timestamp) deckResult.get(0)[3];
+        deck.setUpdatedAt(updatedAt.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+        deck.setCategories(new HashSet<>());
+        deck.getCategories().addAll(entityManager.createQuery(
+            "SELECT c FROM Category c INNER JOIN c.decks d WHERE d.id=:deckCopyId")
+            .setParameter("deckCopyId", deckCopyId.longValue())
+            .getResultList());
+
+        return deck;
     }
 }

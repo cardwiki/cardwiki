@@ -1,8 +1,11 @@
 package at.ac.tuwien.sepm.groupphase.backend.unittests;
 
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
+import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
+import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
+import org.hibernate.Hibernate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +14,12 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.xml.bind.annotation.XmlType;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -78,5 +84,21 @@ public class DeckRepositoryTest extends TestDataGenerator {
 
     @Test void givenNothing_whenFindById_thenResultIsNull() {
         assertTrue(deckRepository.findById(1L).isEmpty());
+    }
+
+    @Test
+    public void givenDeck_whenCreateDeckCopy_thenCopyDeck() {
+        Card card = givenCard();
+        Deck deck = card.getDeck();
+        User user = givenApplicationUser();
+        Deck deckCopy = getSampleDeck();
+
+        Deck returnedDeck = deckRepository.createDeckCopy(deck.getId(), user, deckCopy);
+
+        assertAll(
+            () -> assertNotEquals(returnedDeck.getId(), deck.getId()),
+            () -> assertEquals(returnedDeck.getCreatedBy(), user),
+            () -> assertEquals(returnedDeck.getName(), deckCopy.getName())
+        );
     }
 }

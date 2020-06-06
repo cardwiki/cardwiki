@@ -13,5 +13,5 @@ public interface DeckRepositoryCustom {
      * @param deckCopy deck containing data needed for the copy to be created
      * @return id of the copy created
      */
-    Long createDeckCopy(Long deckId, User user, Deck deckCopy);
+    Deck createDeckCopy(Long deckId, User user, Deck deckCopy);
 }
