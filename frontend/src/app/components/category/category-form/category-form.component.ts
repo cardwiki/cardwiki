@@ -1,5 +1,5 @@
 import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators, ValidationErrors} from '@angular/forms';
 import {CategoryDetails} from '../../../dtos/categoryDetails';
 import {CategoryService} from '../../../services/category.service';
 import { Location } from '@angular/common';
@@ -114,7 +114,7 @@ export class CategoryFormComponent implements OnInit {
     return null;
   }
 
-  checkCommonErrors(errors) {
+  checkCommonErrors(errors: ValidationErrors) {
     if (errors.maxlength) {
       return 'Maximum length exceeded.';
     }

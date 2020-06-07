@@ -29,11 +29,11 @@ export class AuthService {
     }));
   }
 
-  getProviderUrl(provider): string {
+  getProviderUrl(provider: string): string {
     return this.baseUri + '/providers/' + provider;
   }
 
-  register(username): Observable<UserRegistration> {
+  register(username: string): Observable<UserRegistration> {
     return this.httpClient.post<UserRegistration>(this.globals.backendUri + '/users', {username: username, description: ''})
       .pipe(tap(res => {
         localStorage.setItem('hasAccount', 'true');

@@ -30,7 +30,7 @@ export class DeckViewComponent implements OnInit {
     });
   }
 
-  removeCard(event, card) {
+  removeCard(card: CardSimple) {
     this.cardService.removeCardFromDeck(this.deck.id, card.id).subscribe(() => {
       const index: number = this.cards.indexOf(card);
       if (index !== -1) {

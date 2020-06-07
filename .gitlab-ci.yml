@@ -20,5 +20,5 @@ frontend test:
   script:
     - cd frontend/
     - npm ci
-    - npx tsc
+    - npx ng build --prod
 

@@ -17,7 +17,7 @@ export class DeckEditComponent implements OnInit {
   deckId: number;
   deck: DeckUpdate;
   categories: CategorySimple[];
-  selectedCategory;
+  selectedCategory: CategorySimple;
 
   constructor(
     private deckService: DeckService,
@@ -50,7 +50,7 @@ export class DeckEditComponent implements OnInit {
     }
   }
 
-  removeCategory(event, category): void {
+  removeCategory(category: CategorySimple): void {
     const index = this.deck.categories.indexOf(category, 0);
     if (index > -1) {
       this.deck.categories.splice(index, 1);

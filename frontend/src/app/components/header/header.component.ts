@@ -14,7 +14,7 @@ import { SearchQueryParams } from 'src/app/interfaces/search-query-params';
 })
 export class HeaderComponent implements OnInit {
 
-  private searchTerm = ''
+  public searchTerm = ''
 
   constructor(public authService: AuthService, private router: Router, private modalService: NgbModal) { }
 
