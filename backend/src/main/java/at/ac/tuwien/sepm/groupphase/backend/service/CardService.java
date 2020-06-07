@@ -24,22 +24,20 @@ public interface CardService {
     /**
      * Find a single card by id.
      *
-     * @param deckId id of the deck the card belongs to
      * @param cardId id of the card
      * @return the card entry
      */
-    Card findOne(Long deckId, Long cardId);
+    Card findOne(Long cardId);
 
 
     /**
      * Edit a card in an existing deck
      *
      * @param revisionEdit new data of the card
-     * @param deckId id of the deck the card belongs to
      * @param cardId id of the card
      * @return edited card
      */
-    Card editCardInDeck(Long deckId, Long cardId, RevisionEdit revisionEdit);
+    Card editCardInDeck(Long cardId, RevisionEdit revisionEdit);
 
     /**
      * Get all cards for a specific deck
@@ -52,9 +50,8 @@ public interface CardService {
     /**
      * Add delete-revision to card
      *
-     * @param deckId of the card's deck
      * @param cardId of the card to which the delete-revision will be added
      * @return card with added delete-revision
      */
-    Card addDeleteRevisionToCard(Long deckId, Long cardId);
+    Card addDeleteRevisionToCard(Long cardId);
 }

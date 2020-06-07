@@ -18,7 +18,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/v1/decks/{deckId}/cards")
+@RequestMapping(value = "/api/v1")
 public class CardEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -33,7 +33,7 @@ public class CardEndpoint {
 
     @Secured("ROLE_USER")
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping
+    @PostMapping(value = "/decks/{deckId}/cards")
     @ApiOperation(value = "Create a new card", authorizations = {@Authorization(value = "ROLE_USER")})
     public CardDetailsDto create(@Valid  @RequestBody RevisionEditInquiryDto revisionEditInquiryDto, @PathVariable Long deckId) {
         LOGGER.info("POST /api/v1/decks/{}/cards body: {}", deckId, revisionEditInquiryDto);
@@ -41,37 +41,37 @@ public class CardEndpoint {
         return cardMapper.cardToCardDetailsDto(cardService.addCardToDeck(deckId, revisionEdit));
     }
 
-    @GetMapping(value = "/{cardId}")
-    @ApiOperation(value = "Get information about a specific card in deck")
-    public CardSimpleDto findOne(@PathVariable Long deckId, @PathVariable Long cardId) {
-        LOGGER.info("GET /api/v1/decks/{}/cards/{}", deckId, cardId);
-        return cardMapper.cardToCardSimpleDto(cardService.findOne(deckId, cardId));
-    }
-
-    @Secured("ROLE_USER")
     @ResponseStatus(HttpStatus.OK)
-    @PatchMapping(value = "/{cardId}")
-    @ApiOperation(value = "Edit a specific card in a deck", authorizations = {@Authorization(value = "ROLE_USER")})
-    public CardDetailsDto edit(@Valid  @RequestBody RevisionEditInquiryDto revisionEditInquiryDto, @PathVariable Long deckId, @PathVariable Long cardId) {
-        LOGGER.info("PATCH /api/v1/decks/{}/cards/{} body: {}", deckId, cardId, revisionEditInquiryDto);
-        RevisionEdit revisionEdit = cardMapper.revisionEditInquiryDtoToRevisionEdit(revisionEditInquiryDto);
-        return cardMapper.cardToCardDetailsDto(cardService.editCardInDeck(deckId, cardId, revisionEdit));
-    }
-
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping
+    @GetMapping(value = "/decks/{deckId}/cards")
     @ApiOperation(value = "Get all cards for a specific deck")
     public List<CardContentDto> getCardsByDeckId(@PathVariable Long deckId) {
         LOGGER.info("GET /api/v1/decks/{}/cards", deckId);
         return cardMapper.cardToCardContentDto(cardService.findCardsByDeckId(deckId));
     }
 
+    @GetMapping(value = "/cards/{cardId}")
+    @ApiOperation(value = "Get information about a specific card in deck")
+    public CardSimpleDto findOne(@PathVariable Long cardId) {
+        LOGGER.info("GET /api/v1/cards/{}", cardId);
+        return cardMapper.cardToCardSimpleDto(cardService.findOne(cardId));
+    }
+
     @Secured("ROLE_USER")
     @ResponseStatus(HttpStatus.OK)
-    @DeleteMapping(value = "/{cardId}")
+    @PatchMapping(value = "/cards/{cardId}")
+    @ApiOperation(value = "Edit a specific card in a deck", authorizations = {@Authorization(value = "ROLE_USER")})
+    public CardDetailsDto edit(@Valid  @RequestBody RevisionEditInquiryDto revisionEditInquiryDto, @PathVariable Long cardId) {
+        LOGGER.info("PATCH /api/v1/cards/{} body: {}", cardId, revisionEditInquiryDto);
+        RevisionEdit revisionEdit = cardMapper.revisionEditInquiryDtoToRevisionEdit(revisionEditInquiryDto);
+        return cardMapper.cardToCardDetailsDto(cardService.editCardInDeck(cardId, revisionEdit));
+    }
+
+    @Secured("ROLE_USER")
+    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping(value = "/cards/{cardId}")
     @ApiOperation(value = "Removes card from deck", authorizations = {@Authorization(value = "ROLE_USER")})
-    public CardContentDto addDeleteRevisionToCard(@PathVariable Long deckId, @PathVariable Long cardId) {
-        LOGGER.info("DELETE /api/v1/decks/{}/cards/{}", deckId, cardId);
-        return cardMapper.cardToCardContentDto(cardService.addDeleteRevisionToCard(deckId, cardId));
+    public CardContentDto addDeleteRevisionToCard(@PathVariable Long cardId) {
+        LOGGER.info("DELETE /api/v1/cards/{}", cardId);
+        return cardMapper.cardToCardContentDto(cardService.addDeleteRevisionToCard(cardId));
     }
 }

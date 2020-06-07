@@ -13,20 +13,18 @@ import { NotificationService } from 'src/app/services/notification.service';
 export class CardEditComponent implements OnInit {
   
   public card = new CardContent(null, '', '');
-  private deckId: number;
   private cardId: number;
 
   constructor(private cardService: CardService, private route: ActivatedRoute, private location: Location, private notificationService: NotificationService) { }
 
   ngOnInit(): void {
-    this.deckId = Number(this.route.snapshot.paramMap.get('deckId'));
     this.cardId = Number(this.route.snapshot.paramMap.get('cardId'));
     this.fetchCardContent();
   }
 
   fetchCardContent(): void {
-    console.log('CardEditComponent.fetchCardContent', this.deckId, this.cardId);
-    this.cardService.fetchCard(this.deckId, this.cardId)
+    console.log('CardEditComponent.fetchCardContent', this.cardId);
+    this.cardService.fetchCard(this.cardId)
       .subscribe(cardDetails => {
         console.log('fetched card', cardDetails);
         this.card = cardDetails;
@@ -34,8 +32,8 @@ export class CardEditComponent implements OnInit {
   }
 
   cardSubmit(): void {
-    console.log('CardEditComponent.onSubmit', this.deckId, this.cardId, this.card);
-    this.cardService.editCard(this.deckId, this.cardId, this.card)
+    console.log('CardEditComponent.onSubmit', this.cardId, this.card);
+    this.cardService.editCard(this.cardId, this.card)
       .subscribe(cardDetails => {
         console.log('edited card', cardDetails);
         this.notificationService.success('Updated Card')
