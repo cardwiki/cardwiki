@@ -31,13 +31,4 @@ public class ImageEndpoint {
         LOGGER.info("POST api/v1/images");
         return imageService.save(image);
     }
-
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping(value = "/{filename}")
-    @ApiOperation(value = "Get an image")
-    public ResponseEntity<byte[]> getImage(@PathVariable String filename) {
-        LOGGER.info("GET api/v1/images/{}", filename);
-        byte[] image = imageService.getImage(filename);
-        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(image);
-    }
 }
