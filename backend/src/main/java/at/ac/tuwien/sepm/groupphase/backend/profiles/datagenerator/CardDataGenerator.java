@@ -133,32 +133,24 @@ public class CardDataGenerator {
         Card card = new Card();
         card.setDeck(deck);
         deck.getCards().add(card);
-        card.setRevisions(new HashSet<>());
-        for (int i = 0; i < NUMBER_OF_REVISIONS; i++) {
-            Revision revision = new Revision();
+        Revision revision = new Revision();
 
-            if (i == 0) {
-                card.setLatestRevision(revision);
-            }
-            revision.setCard(card);
-            revision.setMessage(deckSize + " test set revision " + i + " - card " + index);
-            revision.setCreatedBy(user);
-            user.getRevisions().add(revision);
+        card.setLatestRevision(revision);
+        revision.setCard(card);
+        revision.setMessage(deckSize + " test set revision - card " + index);
+        revision.setCreatedBy(user);
+        user.getRevisions().add(revision);
 
-            card = cardRepository.save(card);
+        card = cardRepository.save(card);
 
-            // Add content
-            RevisionEdit edit = new RevisionEdit();
-            edit.setTextFront(deckSize + " test set card " + index + " front " + i);
-            edit.setTextBack(deckSize + " test set card " + index + " back " + i);
+        // Add content
+        RevisionEdit edit = new RevisionEdit();
+        edit.setTextFront(deckSize + " test set card " + index + " front");
+        edit.setTextBack(deckSize + " test set card " + index + " back");
+        revision.setRevisionEdit(edit);
+        edit.setRevision(revision);
 
-            revision.setRevisionEdit(edit);
-            edit.setRevision(revision);
-            card.getRevisions().add(revision);
-            card = cardRepository.save(card);
-        }
-
-
+        card = cardRepository.save(card);
     }
 
 }
