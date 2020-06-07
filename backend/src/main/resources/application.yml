@@ -21,8 +21,7 @@ spring:
     properties:
       hibernate:
         jdbc:
-          batch_size: 30
-        generate_statistics: true
+          batch_size: 20
         order_inserts: true
 
   h2:

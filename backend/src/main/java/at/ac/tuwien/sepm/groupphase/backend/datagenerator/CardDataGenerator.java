@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Scanner;
 
 @Profile("generateData")
@@ -21,6 +23,7 @@ public class CardDataGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final int SIZE_OF_LARGE_TEST_DECK = 1000;
     private static final int SIZE_OF_SUPER_LARGE_TEST_DECK = 5000;
+    private static final int NUMBER_OF_REVISIONS = 5;
 
     private final UserRepository userRepository;
     private final CardRepository cardRepository;
@@ -128,28 +131,34 @@ public class CardDataGenerator {
 
     private void generateCard(Deck deck, User user, int index, String deckSize) {
         Card card = new Card();
-        Revision revision = new Revision();
-
         card.setDeck(deck);
         deck.getCards().add(card);
+        card.setRevisions(new HashSet<>());
+        for (int i = 0; i < NUMBER_OF_REVISIONS; i++) {
+            Revision revision = new Revision();
 
-        card.setLatestRevision(revision);
-        revision.setCard(card);
-        revision.setMessage(deckSize + " test set revision - card " + index);
-        revision.setCreatedBy(user);
-        user.getRevisions().add(revision);
+            if (i == 0) {
+                card.setLatestRevision(revision);
+            }
+            revision.setCard(card);
+            revision.setMessage(deckSize + " test set revision " + i + " - card " + index);
+            revision.setCreatedBy(user);
+            user.getRevisions().add(revision);
 
-        card = cardRepository.save(card);
+            card = cardRepository.save(card);
 
-        // Add content
-        RevisionEdit edit = new RevisionEdit();
-        edit.setTextFront(deckSize + " test set card " + index + " front");
-        edit.setTextBack(deckSize + " test set card " + index + " back");
+            // Add content
+            RevisionEdit edit = new RevisionEdit();
+            edit.setTextFront(deckSize + " test set card " + index + " front " + i);
+            edit.setTextBack(deckSize + " test set card " + index + " back " + i);
 
-        revision.setRevisionEdit(edit);
-        edit.setRevision(revision);
+            revision.setRevisionEdit(edit);
+            edit.setRevision(revision);
+            card.getRevisions().add(revision);
+            card = cardRepository.save(card);
+        }
 
-        cardRepository.save(card);
+
     }
 
 }

@@ -4,10 +4,10 @@ import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
 import at.ac.tuwien.sepm.groupphase.backend.exception.DeckNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
+import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
@@ -19,15 +19,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
+import static org.mockito.Mockito.*;
+
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -35,6 +33,9 @@ import static org.mockito.Mockito.times;
 public class DeckServiceTest extends TestDataGenerator {
     @MockBean
     private DeckRepository deckRepository;
+
+    @MockBean
+    private CardRepository cardRepository;
 
     @MockBean
     private UserService userService;
@@ -111,41 +112,46 @@ public class DeckServiceTest extends TestDataGenerator {
 
     @Test
     public void givenNothing_whenCopyDeckNoCurrentUser_thenThrowIllegalState() {
-        Deck deck = getSampleDeck();
         Deck simpleDeck = new Deck();
         simpleDeck.setName("Name");
 
-        Mockito.when(deckRepository.createDeckCopy(any(Long.class), ArgumentMatchers.isNull(), any(Deck.class))).thenReturn(deck);
-        Mockito.when(userService.loadCurrentUser()).thenReturn(null);
+        when(userService.loadCurrentUser()).thenReturn(null);
         assertThrows(IllegalStateException.class, () -> deckService.create(simpleDeck));
     }
 
     @Test
     public void givenNothing_whenCopyNonExistentDeck_thenThrowDeckNotFound() {
-        assertThrows(DeckNotFoundException.class, () -> deckService.copy(null, getSampleDeck()));
+        assertThrows(DeckNotFoundException.class, () -> deckService.copy(0L, getSampleDeck()));
     }
 
     @Test
-    public void givenDeckToCopy_whenCopyDeck_thenCallCopyMethodAndReturnCopyOfDeck() {
-        Deck deck = getSampleDeck();
-        User user = getSampleUser();
+    public void givenDeckToCopy_whenCopyDeck_thenReturnCopyOfDeck() {
+        RevisionEdit revisionEdit = getSampleRevisionEdit();
+        Revision revision = revisionEdit.getRevision();
+        Card card = revision.getCard();
+        Deck deck = card.getDeck();
+        User user = getUnconnectedSampleUser();
+
+        deck.setCategories((new HashSet<>()));
+        Category category = getSampleCategoryWithoutParent();
+        category.setDecks(new HashSet<>());
+        category.getDecks().add(deck);
+        deck.getCategories().add(category);
 
         Deck deckCopy = new Deck();
         deckCopy.setName("copy");
 
-        Deck deckToReturn = new Deck();
-        deckToReturn.setName(deckCopy.getName());
-        deckToReturn.setCreatedBy(user);
-
-        Mockito.when(deckRepository.existsById(deck.getId())).thenReturn(true);
-        Mockito.when(userService.loadCurrentUser()).thenReturn(user);
-        Mockito.when(deckRepository.createDeckCopy(deck.getId(), user, deckCopy)).thenReturn(deckToReturn);
+        when(deckRepository.findById(deck.getId())).thenReturn(Optional.of(deck));
+        when(deckRepository.save(any(Deck.class))).then(returnsFirstArg());
+        when(userService.loadCurrentUser()).thenReturn(user);
+        when(cardRepository.findCardsWithContentByDeck_Id(deck.getId())).thenReturn(Arrays.asList(card));
 
         Deck resultDeck = deckService.copy(deck.getId(), deckCopy);
-        Mockito.verify(deckRepository, times(1)).createDeckCopy(any(Long.class), any(User.class), any(Deck.class));
         assertAll(
-            () -> assertEquals(resultDeck.getName(), deckToReturn.getName()),
-            () -> assertEquals(resultDeck.getCreatedBy(), deckToReturn.getCreatedBy())
+            () -> assertEquals(resultDeck.getName(), deckCopy.getName()),
+            () -> assertEquals(resultDeck.getCreatedBy(), user),
+            () -> assertEquals(resultDeck.getCards().size(), deck.getCards().size()),
+            () -> assertEquals(resultDeck.getCategories(), deck.getCategories())
         );
     }
 }

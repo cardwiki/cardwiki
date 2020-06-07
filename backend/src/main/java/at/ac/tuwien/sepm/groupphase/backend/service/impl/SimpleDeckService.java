@@ -93,11 +93,45 @@ public class SimpleDeckService implements DeckService {
     @Override
     public Deck copy(Long id, Deck deckCopy) {
         LOGGER.debug("Copy deck with id: {}", id);
-        if (!deckRepository.existsById(id)) {
-            throw new DeckNotFoundException(String.format("Deck with %s not found.", id));
-        }
         User currentUser = userService.loadCurrentUser();
+        Deck source = findOne(id);
 
-        return deckRepository.createDeckCopy(id, currentUser, deckCopy);
+        Deck deck = create(deckCopy);
+        deck.setCategories(new HashSet<>(source.getCategories()));
+        for (Category category : source.getCategories()) {
+            category.getDecks().add(deck);
+        }
+        deckRepository.save(deck);
+
+        List<Card> srcCards = cardRepository.findCardsWithContentByDeck_Id(id);
+        List<Card> destCards = srcCards.stream()
+            .map(srcCard -> {
+                Card card = new Card();
+                card.setDeck(deck);
+                Revision revision = new Revision();
+                revision.setMessage(String.format("Copied from deck %s.", id));
+                revision.setCreatedBy(currentUser);
+                revision.setCard(card);
+                card.setLatestRevision(revision);
+                return card;
+            })
+            .collect(Collectors.toList());
+        cardRepository.saveAll(destCards);
+        cardRepository.flush();
+
+        IntStream
+            .range(0, destCards.size())
+            .forEach(i -> {
+                RevisionEdit revisionEdit = new RevisionEdit();
+                revisionEdit.setTextFront(srcCards.get(i).getLatestRevision().getRevisionEdit().getTextFront());
+                revisionEdit.setTextBack(srcCards.get(i).getLatestRevision().getRevisionEdit().getTextBack());
+                destCards.get(i).getLatestRevision().setRevisionEdit(revisionEdit);
+                revisionEdit.setRevision(destCards.get(i).getLatestRevision());
+            });
+        cardRepository.saveAll(destCards);
+        cardRepository.flush();
+        deck.getCards().addAll(destCards);
+
+        return deck;
     }
 }
