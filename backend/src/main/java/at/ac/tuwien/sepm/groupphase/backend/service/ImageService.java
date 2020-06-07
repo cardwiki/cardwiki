@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepm.groupphase.backend.service;
 
-import org.springframework.web.multipart.MultipartFile;
+
+import java.io.InputStream;
 
 public interface ImageService {
 
@@ -9,13 +10,6 @@ public interface ImageService {
      *
      * @param image to save
      */
-    String save(byte[] image);
+    String save(InputStream image);
 
-    /**
-     * Get an image by filename
-     *
-     * @param filename of the image
-     * @return image
-     */
-    byte[] getImage(String filename);
 }

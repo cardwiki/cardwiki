@@ -1,47 +1,59 @@
 package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 
-import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.service.ImageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
+import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 
+import org.springframework.beans.factory.annotation.Value;
+
 @Service
 public class SimpleImageService implements ImageService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    private final Path dir = Paths.get("images");
+    private final Path path;
 
-    @Override
-    public String save(byte[] image) {
-        LOGGER.info("Save image");
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(image);
-            String hex = bytesToHex(hash);
-            Files.write(dir.resolve(hex), image);
-            return hex;
-        } catch (Exception e) {
-            throw new RuntimeException("Could not store image. Error: " + e.getMessage());
-        }
+    @Autowired
+    public SimpleImageService(@Value("${cawi.image-saved-path}") String path) {
+        this.path = Paths.get(path);
     }
 
     @Override
-    public byte[] getImage(String filename) {
-        LOGGER.info("Get image {}", filename);
-        Path path = dir.resolve(filename);
-        if (!Files.exists(path)) throw new NotFoundException("Could not find image " + filename);
-
+    public String save(InputStream inputStream) {
+        LOGGER.info("Save image");
         try {
-            return Files.readAllBytes(path);
+//            String contentType = "";
+//            ImageInputStream iis = ImageIO.createImageInputStream(inputStream);
+//            Iterator<ImageReader> imageReaders = ImageIO.getImageReaders(iis);
+//            while (imageReaders.hasNext()) {
+//                ImageReader reader = imageReaders.next();
+//                contentType = reader.getFormatName();
+//            }
+
+            byte[] bytes = inputStream.readAllBytes();
+            String contentType = URLConnection.guessContentTypeFromStream(new ByteArrayInputStream(bytes))
+                .split("/")[1];
+
+            if (!(contentType.equals("png") || contentType.equals("jpeg"))) {
+                throw new RuntimeException("Content type not supported");
+            }
+
+            byte[] hash = MessageDigest.getInstance("SHA-256").digest(bytes);
+            String filename = bytesToHex(hash) + "." + contentType;
+            Files.write(path.resolve(filename), bytes);
+            return filename;
         } catch (Exception e) {
-            throw new RuntimeException("Could not read image. Error: " + e.getMessage());
+            throw new RuntimeException("Could not store image. Error: " + e.getMessage());
         }
     }
 
@@ -54,5 +66,4 @@ public class SimpleImageService implements ImageService {
         }
         return hexString.toString();
     }
-
 }

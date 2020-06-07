@@ -6,10 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.ServletInputStream;
 import java.lang.invoke.MethodHandles;
 
 @RestController
@@ -25,10 +24,10 @@ public class ImageEndpoint {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @PostMapping(consumes = {"image/png", "image/jpg", "image/jpeg"})
+    @PostMapping(consumes = {"image/png", "image/jpeg"})
     @ApiOperation(value = "Save a new image")
-    public String upload(@RequestBody byte[] image) {
+    public String upload(ServletInputStream inputStream) {
         LOGGER.info("POST api/v1/images");
-        return imageService.save(image);
+        return imageService.save(inputStream);
     }
 }
