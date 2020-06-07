@@ -24,6 +24,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.lang.invoke.MethodHandles;
 import java.util.*;
 
@@ -77,6 +78,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // on success we pass a JWT token to the frontend
         httpSecurity.oauth2Login()
             .successHandler((request, response, authentication) -> {
+                if (request.getServletContext().getSessionCookieConfig().isSecure() && !request.isSecure()){
+                    // TODO: format error as JSON
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "HTTPS is required");
+                    return;
+                }
+
                 OAuth2AuthenticationToken auth = (OAuth2AuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
                 String token = Jwts.builder()
                     // we prefix the clientRegistrationId to prevent dangerous name collisions
@@ -88,7 +95,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // We pass the token with a cookie so that it is not stored in the browser history.
                 Cookie tokenCookie = new Cookie("token", token);
                 tokenCookie.setPath("/");
-                tokenCookie.setSecure(request.isSecure());
+                tokenCookie.setSecure(request.getServletContext().getSessionCookieConfig().isSecure());
                 response.addCookie(tokenCookie);
 
                 // TODO: support multiple frontends

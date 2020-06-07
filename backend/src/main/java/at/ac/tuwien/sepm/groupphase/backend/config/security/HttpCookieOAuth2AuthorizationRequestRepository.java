@@ -111,7 +111,7 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
         Cookie cookie = new Cookie(COOKIE_NAME, value);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
-        cookie.setSecure(request.isSecure());
+        cookie.setSecure(request.getServletContext().getSessionCookieConfig().isSecure());
         cookie.setMaxAge(120); // expire after two minutes
         return cookie;
     }

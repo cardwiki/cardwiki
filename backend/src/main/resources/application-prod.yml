@@ -2,4 +2,4 @@ server:
   servlet:
     session:
       cookie:
-        secure=true:
+        secure: true
