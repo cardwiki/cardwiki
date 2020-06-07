@@ -45,7 +45,7 @@ public class AuthEndpointTest extends TestDataGenerator {
         User user = givenApplicationUser();
         mvc.perform(
             get("/api/v1/auth/whoami")
-            .with(mockLogin(USER_ROLES, user.getAuthId()))
+            .with(login(user.getAuthId()))
         )
             .andExpect(status().is(200))
             .andExpect(jsonPath("$.authId").value(user.getAuthId()))
@@ -57,9 +57,10 @@ public class AuthEndpointTest extends TestDataGenerator {
     @Test
     public void whoAmIAdmin() throws Exception {
         User user = givenApplicationUser();
+        user.setAdmin(true);
         mvc.perform(
             get("/api/v1/auth/whoami")
-                .with(mockLogin(ADMIN_ROLES, user.getAuthId()))
+                .with(login(user.getAuthId()))
         )
             .andExpect(status().is(200))
             .andExpect(jsonPath("$.authId").value(user.getAuthId()))

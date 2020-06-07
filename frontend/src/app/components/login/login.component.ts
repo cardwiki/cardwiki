@@ -2,8 +2,9 @@ import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Router,ActivatedRoute } from '@angular/router';
 import {AuthService} from '../../services/auth.service';
-import { OAuthProviders } from 'src/app/dtos/oauthProviders';
 import {parse as parseCookie} from 'cookie';
+import { OAuth2ProviderDto } from 'src/app/dtos/oAuth2Provider';
+import { WhoAmI } from 'src/app/dtos/whoAmI';
 
 @Component({
   selector: 'app-login',
@@ -14,12 +15,12 @@ export class LoginComponent implements OnInit {
   // Error flag
   error: boolean = false;
   errorMessage: string = '';
-  authProviders: OAuthProviders;
-  oAuthInfo;
-  registerForm;
+  authProviders: OAuth2ProviderDto[];
+  oAuthInfo: WhoAmI;
+  registerForm: FormGroup;
   username: string;
 
-  constructor(private formBuilder: FormBuilder, private authService: AuthService, private router: Router, private route: ActivatedRoute) {
+  constructor(private formBuilder: FormBuilder, public authService: AuthService, private router: Router, private route: ActivatedRoute) {
     this.registerForm = new FormGroup({
       'username': new FormControl(this.username, [
         Validators.required,
@@ -70,7 +71,7 @@ export class LoginComponent implements OnInit {
   }
 
   _textValue:string;
-  ConvertToLower(evt) {
+  ConvertToLower(evt: string) {
     this._textValue = evt.toLowerCase();
   }
 

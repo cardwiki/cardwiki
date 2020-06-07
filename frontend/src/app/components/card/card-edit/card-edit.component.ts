@@ -11,7 +11,7 @@ import { Location } from '@angular/common';
 })
 export class CardEditComponent implements OnInit {
   
-  private card = new CardContent;
+  public card = new CardContent(null, '', '');
   private deckId: number;
   private cardId: number;
 
@@ -29,7 +29,7 @@ export class CardEditComponent implements OnInit {
       .subscribe(
         cardDetails => {
           console.log('fetched card', cardDetails);
-          this.card = new CardContent(cardDetails.textFront, cardDetails.textBack);
+          this.card = cardDetails;
         },
       error => {
           console.error('error fetching card', error);

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DeckService } from 'src/app/services/deck.service';
-import { Deck } from 'src/app/dtos/deck';
+import { DeckDetails } from 'src/app/dtos/deckDetails';
 import { SearchQueryParams } from 'src/app/interfaces/search-query-params';
 
 @Component({
@@ -12,13 +12,13 @@ import { SearchQueryParams } from 'src/app/interfaces/search-query-params';
 export class SearchComponent implements OnInit {
 
   private queryParams: SearchQueryParams = {}
-  private newQueryParams: SearchQueryParams = {}
+  public newQueryParams: SearchQueryParams = {}
   private page: number = 0
   private readonly limit = 10
 
-  private decks: Deck[] = []
-  private canLoadMore: boolean = false
-  private loading: boolean = false
+  public decks: DeckDetails[] = []
+  public canLoadMore: boolean = false
+  public loading: boolean = false
   
   constructor(private deckService: DeckService, private route: ActivatedRoute, private router: Router) { }
 

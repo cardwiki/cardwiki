@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {Category} from '../../../dtos/category';
+import {CategoryDetails} from '../../../dtos/categoryDetails';
 import {ActivatedRoute, Router} from '@angular/router';
 import {CategoryService} from '../../../services/category.service';
 import {DeckSimple} from '../../../dtos/deckSimple';
@@ -12,7 +12,7 @@ import {map} from 'rxjs/operators';
   styleUrls: ['./category-decks.component.css']
 })
 export class CategoryDecksComponent implements OnInit {
-  category: Category;
+  category: CategoryDetails;
   error: boolean;
   errorMessage: string;
   filter: string;
@@ -44,14 +44,10 @@ export class CategoryDecksComponent implements OnInit {
 
   applyFilter(): void {
     if (this.category) {
-      let filteredList = [];
-      this.category.decks.forEach((item) => {
-        if (!this.filter) {
-          filteredList = this.category.decks;
-        } else if (item.name.toLowerCase().includes(this.filter.toLowerCase())) {
-          filteredList.push(item);
-        }
-      });
+      const filteredList = this.category.decks.filter(
+        item => !this.filter ||
+        item.name.toLowerCase().includes(this.filter.toLowerCase())
+      );
       this.specs = {
         listSize: filteredList.length,
         pageSize: this.specs ? this.specs.pageSize : 20,

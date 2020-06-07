@@ -4,7 +4,7 @@ import {HttpClient} from '@angular/common/http';
 import {tap} from 'rxjs/operators';
 import * as jwt_decode from 'jwt-decode';
 import {Globals} from '../global/globals';
-import { OAuthProviders } from '../dtos/oauthProviders';
+import { OAuth2ProviderDto } from '../dtos/oAuth2Provider';
 import { WhoAmI } from '../dtos/whoAmI';
 import { UserRegistration } from '../dtos/userRegistration';
 
@@ -18,42 +18,42 @@ export class AuthService {
   constructor(private httpClient: HttpClient, private globals: Globals) {
   }
 
-  getAuthProviders() {
-    return this.httpClient.get<OAuthProviders>(this.baseUri + '/providers');
+  getAuthProviders(): Observable<OAuth2ProviderDto[]> {
+    return this.httpClient.get<OAuth2ProviderDto[]>(this.baseUri + '/providers');
   }
 
-  whoAmI() {
+  whoAmI(): Observable<WhoAmI> {
     return this.httpClient.get<WhoAmI>(this.baseUri + '/whoami')
     .pipe(tap(res => {
        localStorage.setItem('hasAccount', String(res.hasAccount));
     }));
   }
 
-  getProviderUrl(provider){
+  getProviderUrl(provider: string): string {
     return this.baseUri + '/providers/' + provider;
   }
 
-  register(username){
+  register(username: string): Observable<UserRegistration> {
     return this.httpClient.post<UserRegistration>(this.globals.backendUri + '/users', {username: username, description: ''})
       .pipe(tap(res => {
         localStorage.setItem('hasAccount', 'true');
       }));
   }
 
-  getToken() {
+  getToken(): string {
     return localStorage.getItem('authToken');
   }
 
   /**
    * Check if a valid JWT token is saved in the localStorage
    */
-  isLoggedIn() {
+  isLoggedIn(): boolean {
     return !!this.getToken()
       && (this.getTokenExpirationDate(this.getToken()).valueOf() > new Date().valueOf())
       && localStorage.getItem('hasAccount') == 'true';
   }
 
-  logoutUser() {
+  logoutUser(): void {
     localStorage.removeItem('authToken');
   }
 
@@ -73,7 +73,7 @@ export class AuthService {
     return 'UNDEFINED';
   }
 
-  setToken(token: string) {
+  setToken(token: string): void {
     localStorage.setItem('authToken', token);
   }
 

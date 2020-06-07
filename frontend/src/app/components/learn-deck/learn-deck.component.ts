@@ -4,7 +4,7 @@ import {DeckService} from '../../services/deck.service';
 import {ActivatedRoute} from '@angular/router';
 import {DeckSimple} from '../../dtos/deckSimple';
 import {LearnService} from '../../services/learn.service';
-import {LearnAttempt} from '../../dtos/learnAttempt';
+import {LearnAttempt, AttemptStatus } from '../../dtos/learnAttempt';
 
 @Component({
   selector: 'app-learn-deck',
@@ -32,13 +32,13 @@ export class LearnDeckComponent implements OnInit {
       this.onFlip();
     } else if (this.flipped) {
       if (event.key === '1') {
-        this.onNext('AGAIN');
+        this.onAgain();
       }
       if (event.key === '2') {
-        this.onNext('GOOD');
+        this.onGood();
       }
       if (event.key === '3') {
-        this.onNext('EASY') ;
+        this.onEasy();
       }
     }
   }
@@ -54,14 +54,10 @@ export class LearnDeckComponent implements OnInit {
   }
 
   getNextCard(deckId: number) {
-   this.learnService.getNextCard(deckId)
-      .subscribe(cardDetails => {
-        console.log('list: ', cardDetails);
-        if (!(cardDetails instanceof Array) || cardDetails.length < 1) {
-          this.card = null;
-        } else {
-          this.card = new CardSimple(cardDetails[0].id, cardDetails[0].textFront, cardDetails[0].textBack);
-        }
+   this.learnService.getNextCards(deckId)
+      .subscribe(cards => {
+        console.log('next cards list: ', cards);
+        this.card = cards.length ? cards[0] : null
       },
         error => {
         console.log(error);
@@ -72,14 +68,26 @@ export class LearnDeckComponent implements OnInit {
     this.flipped = true;
   }
 
-  async onNext(status: string) {
+  async onNext(status: AttemptStatus) {
     this.flipped = false;
     console.log('Attempting to submit status: ' + status);
     await this.triggerNext(status);
     this.getNextCard(this.deck.id);
   }
 
-  async triggerNext(status: string) {
+  onAgain() {
+    this.onNext(AttemptStatus.AGAIN)
+  }
+
+  onGood() {
+    this.onNext(AttemptStatus.GOOD)
+  }
+
+  onEasy() {
+    this.onNext(AttemptStatus.EASY)
+  }
+
+  async triggerNext(status: AttemptStatus) {
     console.log('Submitted status: ' + status);
     if (this.card.id > 0) {
       await this.learnService.sendAttemptStatus(new LearnAttempt(this.card.id, status))

@@ -1,4 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
+import { CategorySimple } from 'src/app/dtos/categorySimple';
 
 @Component({
   selector: 'app-list',
@@ -7,7 +8,7 @@ import {Component, Input, OnInit} from '@angular/core';
 })
 export class ListComponent implements OnInit {
 
-  @Input() list: { name, id }[];
+  @Input() list: CategorySimple[];
   @Input() specs: { listSize: number, pageSize: number, page: number };
   @Input() path: string;
 

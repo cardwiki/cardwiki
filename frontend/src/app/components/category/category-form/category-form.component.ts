@@ -1,10 +1,10 @@
 import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {AuthService} from '../../../services/auth.service';
-import {Router} from '@angular/router';
-import {Category} from '../../../dtos/category';
+import {FormBuilder, FormGroup, Validators, ValidationErrors} from '@angular/forms';
+import {CategoryDetails} from '../../../dtos/categoryDetails';
 import {CategoryService} from '../../../services/category.service';
 import { Location } from '@angular/common';
+import { CategoryUpdate } from 'src/app/dtos/categoryUpdate';
+import { CategorySimple } from 'src/app/dtos/categorySimple';
 
 @Component({
   selector: 'app-category-form',
@@ -13,8 +13,8 @@ import { Location } from '@angular/common';
 })
 export class CategoryFormComponent implements OnInit {
 
-  @Input() mode: String;
-  @Input() category: Category;
+  @Input() mode: 'Create' | 'Update';
+  @Input() category: CategoryDetails;
   @Input() messages: { header: string, success: string, error: string };
   @ViewChild('dismissModal') dismissModalButton: ElementRef;
   categoryForm: FormGroup;
@@ -22,8 +22,8 @@ export class CategoryFormComponent implements OnInit {
   error: boolean;
   errorMessage: string = '';
 
-  categories: Category[];
-  result: Category = new Category(null);
+  categories: CategorySimple[];
+  result: CategoryDetails = new CategoryDetails;
 
   constructor(private formBuilder: FormBuilder, private categoryService: CategoryService, private location: Location) {
     this.categoryForm = this.formBuilder.group({
@@ -42,17 +42,11 @@ export class CategoryFormComponent implements OnInit {
   submitCategoryForm() {
     this.dismissModalButton.nativeElement.click();
     console.log('submitted form values:', this.categoryForm.value);
-    let parentId;
-    for (let i = 0; i < this.categories.length; i++) {
-      if (this.categories[i].name === this.categoryForm.value.parentCategory) {
-        parentId = this.categories[i].id;
-        break;
-      }
-    }
-    const parent = parentId ? new Category(this.categoryForm.value.parentCategory, null, parentId) : null;
+    const parent = this.categories.find(category => category.name === this.categoryForm.value.parentCategory) || null
+
     if (this.mode === 'Update') {
-      const payload = new Category(this.categoryForm.value.name, parent);
-      this.categoryService.editCategory(payload, this.category.id).subscribe(
+      const payload = new CategoryUpdate(this.categoryForm.value.name, parent);
+      this.categoryService.editCategory(this.category.id, payload).subscribe(
         (categoryResult) => {
           console.log('Result:', categoryResult);
           this.result = categoryResult;
@@ -67,7 +61,7 @@ export class CategoryFormComponent implements OnInit {
         }
       );
     } else {
-      this.categoryService.createCategory(new Category(this.categoryForm.value.name, parent))
+      this.categoryService.createCategory(new CategoryUpdate(this.categoryForm.value.name, parent))
         .subscribe((categoryResult) => {
             console.log('Result:', categoryResult);
             this.result = categoryResult;
@@ -120,7 +114,7 @@ export class CategoryFormComponent implements OnInit {
     return null;
   }
 
-  checkCommonErrors(errors) {
+  checkCommonErrors(errors: ValidationErrors) {
     if (errors.maxlength) {
       return 'Maximum length exceeded.';
     }

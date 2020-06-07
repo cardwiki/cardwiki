@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Router} from '@angular/router';
-import {Category} from '../../../dtos/category';
+import {CategoryDetails} from '../../../dtos/categoryDetails';
+import { CategorySimple } from 'src/app/dtos/categorySimple';
 
 @Component({
   selector: 'app-category-create',
@@ -8,14 +9,14 @@ import {Category} from '../../../dtos/category';
   styleUrls: ['./category-create.component.css']
 })
 export class CategoryCreateComponent implements OnInit {
-  editCategoryMode: string = 'Create';
+  editCategoryMode: 'Create' = 'Create';
   messages: { header: string, success: string, error: string };
-  default: Category = new Category('');
+  default: CategoryDetails = new CategoryDetails;
 
   constructor(router: Router) {
     router.events.subscribe(e => {
       const navigation = router.getCurrentNavigation();
-      this.default.parent = new Category(navigation.extractedUrl.queryParams.parent);
+      this.default.parent = new CategorySimple(null, navigation.extractedUrl.queryParams.parent);
     });
   }
 
