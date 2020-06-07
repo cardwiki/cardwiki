@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {DeckService} from '../../../services/deck.service';
-import {FormBuilder, Validators} from '@angular/forms';
+import {FormBuilder, Validators, FormGroup} from '@angular/forms';
 import {DeckSimple} from '../../../dtos/deckSimple';
 
 @Component({
@@ -10,10 +10,10 @@ import {DeckSimple} from '../../../dtos/deckSimple';
   styleUrls: ['./deck-create-modal.component.css']
 })
 export class DeckCreateModalComponent implements OnInit {
-  deckForm;
+  deckForm: FormGroup;
 
   constructor(
-    private activeModal: NgbActiveModal,
+    public activeModal: NgbActiveModal,
     private deckService: DeckService,
     private formBuilder: FormBuilder,
   ) {

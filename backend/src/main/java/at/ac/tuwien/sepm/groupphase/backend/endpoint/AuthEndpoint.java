@@ -45,7 +45,7 @@ public class AuthEndpoint {
 
     @GetMapping("/whoami")
     @ApiOperation(value = "Returns information about the currently logged in user.")
-    public WhoAmIDto index(Authentication auth) {
+    public WhoAmIDto whoami(Authentication auth) {
         WhoAmIDto dto = new WhoAmIDto();
         if (auth != null) {
             dto.setAuthId(auth.getName());

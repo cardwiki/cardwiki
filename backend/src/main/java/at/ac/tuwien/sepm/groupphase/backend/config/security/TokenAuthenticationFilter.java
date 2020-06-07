@@ -1,7 +1,5 @@
 package at.ac.tuwien.sepm.groupphase.backend.config.security;
 
-import at.ac.tuwien.sepm.groupphase.backend.entity.User;
-import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -38,17 +36,17 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private static final String PREFIX = "Bearer ";
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = request.getHeader("Authorization");
         if (token != null && token.startsWith(PREFIX)){
-            LOGGER.info("got token: {}", token);
             JwtParser jwtParser = Jwts.parserBuilder().setSigningKey(securityProps.getSecret()).build();
             Claims claims;
             try {
                 claims = jwtParser.parseClaimsJws(token.substring(PREFIX.length())).getBody();
             } catch (JwtException e){
-                LOGGER.debug("Invalid authorization attempt: {}", e.getMessage());
+                LOGGER.info("Invalid authorization attempt: {}", e.getMessage());
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().write("Invalid authorization token");
                 return;
@@ -58,11 +56,12 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
             if (claims != null){
                 userService.loadUserByAuthId(claims.getSubject()).ifPresent(user -> {
-                    // TODO: check u.isEnabled()
-                    authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+                    if (user.isEnabled()){
+                        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 
-                    if (user.isAdmin())
-                        authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+                        if (user.isAdmin())
+                            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+                    }
                 });
             }
 

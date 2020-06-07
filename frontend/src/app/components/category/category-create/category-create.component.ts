@@ -9,7 +9,7 @@ import { CategorySimple } from 'src/app/dtos/categorySimple';
   styleUrls: ['./category-create.component.css']
 })
 export class CategoryCreateComponent implements OnInit {
-  editCategoryMode: string = 'Create';
+  editCategoryMode: 'Create' = 'Create';
   messages: { header: string, success: string, error: string };
   default: CategoryDetails = new CategoryDetails;
 

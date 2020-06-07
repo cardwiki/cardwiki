@@ -44,14 +44,10 @@ export class CategoryDecksComponent implements OnInit {
 
   applyFilter(): void {
     if (this.category) {
-      let filteredList = [];
-      this.category.decks.forEach((item) => {
-        if (!this.filter) {
-          filteredList = this.category.decks;
-        } else if (item.name.toLowerCase().includes(this.filter.toLowerCase())) {
-          filteredList.push(item);
-        }
-      });
+      const filteredList = this.category.decks.filter(
+        item => !this.filter ||
+        item.name.toLowerCase().includes(this.filter.toLowerCase())
+      );
       this.specs = {
         listSize: filteredList.length,
         pageSize: this.specs ? this.specs.pageSize : 20,
