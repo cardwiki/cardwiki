@@ -1,27 +1,4 @@
 <app-error *ngIf="error" [errorMessage]="errorMessage" (buttonClick)="vanishResult()"></app-error>
-<div *ngIf="!error && submitted" class="alert alert-success alert-dismissible fade show" role="alert">
-  <strong>{{messages.success}}: {{result.name}}</strong>
-  <div>
-    <a routerLink="/categories/{{result.id}}">
-    <button class="btn-primary">
-      Show
-    </button>
-    </a>
-    <span *ngIf="mode == 'Create'">
-      <a routerLink="/categories/new" [queryParams]="{ parent: this.categoryForm.value['name'].trim() }">
-        <button class="btn-primary" id="createSub" (click)="vanishResult()">
-          Create Subcategory
-        </button>
-      </a>
-      <a routerLink="/categories/new">
-        <button class="btn-primary" id="createNew" (click)="vanishResult()">
-          Create another category
-        </button>
-      </a>
-    </span>
-  </div>
-</div>
-
 <div *ngIf="!submitted" class="pt-5">
   <div class="col-md-6 mx-auto">
     <span class="anchor" id="formLogin"></span>
@@ -108,7 +85,7 @@
             </div>
           </div>
           <!-- buttons-->
-          <button type="button" data-toggle="modal" data-target="#modal" class="btn btn-success">
+          <button type="button" data-toggle="modal" data-target="#modal" class="btn btn-primary">
             {{mode}}
           </button>
           <button type="button" class="btn btn-outline-danger ml-2" (click)="onCancel()">Cancel</button>

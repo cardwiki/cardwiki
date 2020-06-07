@@ -1,56 +1,40 @@
 <app-error *ngIf="result.error" [errorMessage]="result.errorMessage" (click)="vanishError()"></app-error>
-<div *ngIf="result.category && !result.error" class="container-md-9 mt-4 pt-4 pb-4 pl-4 pr-4">
-  <div class="card rounded pl-3 pt-2">
-    <div class="col-md-9 mx-auto">
-      <div class="row">
-        <div>
-          <p>View Category</p>
-        </div>
+<div *ngIf="result.category && !result.error" class="container my-5">
+  <div *ngIf="result.category.name">
+	<div class="pt-3 pb-3 pr-3">
+	  <a *ngIf="result.category.parent" routerLink="/categories/{{result.category.parent.id}}">
+		<i class="fas fa-arrow-up"></i> {{result.category.parent.name}}
+	  </a>
+	  <div class=float-right>
+	    <a class="btn btn-light" routerLink="/categories/{{result.category.id}}/edit"><i class="fas fa-pencil-alt"></i> Edit</a>
       </div>
-      <div *ngIf="result.category.name" class="ml-0 pl-0">
-        <div class="className pt-3 pl-2 pb-3 pr-3">
-          <a *ngIf="result.category.parent" routerLink="/categories/{{result.category.parent.id}}"
-             class="row ml-0 pl-2">
-            {{result.category.parent.name}} ┐
-          </a>
-          <div class="row ml-0 pl-2 pr-3">
-            <h2 class="mr-4 pt-1">{{result.category.name}}</h2>
-            <div class="pt-1 mr-2">
-              <a routerLink="/categories/{{result.category.id}}/edit">
-                <button class="btn btn-outline-secondary pl-4 pr-4">Edit</button>
-              </a>
-            </div>
-            <div class="pt-1">
-              <a routerLink="/categories/new" [queryParams]="{ parent: result.category.name }">
-                <button class="btn btn-outline-secondary">Add subcategory</button>
-              </a>
-            </div>
-          </div>
-        </div>
-        <div *ngIf="result.category.children" class="row pt-3">
-          <app-list-search
-            [list]="result.category.children"
-            [specs]="{ listSize: result.category.children.length, pageSize: 7, page: 1 }"
-            [path]="'categories'"
-            [messages]="{ header: 'Subcategories', success: 'Success', error: 'Error' }"
-            [id]="result.category ? result.category.id : null"
-          >
-          </app-list-search>
-        </div>
-        <div *ngIf="result.category.decks" class="row pt-3">
-          <div>
-            <app-list-search
-              [list]="result.category.decks"
-              [specs]="{ listSize: result.category.decks.length, pageSize: 7, page: 1 }"
-              [path]="'decks'"
-              [messages]="{ header: 'Decks', success: 'Success', error: 'Error' }"
-              [id]="result.category ? result.category.id : null"
-            >
-            </app-list-search>
-          </div>
-        </div>
-      </div>
-    </div>
+	  <h1><i class="far fa-folder"></i> {{result.category.name}}</h1>
+	</div>
+	<div *ngIf="result.category.children" class=mb-3>
+	  <h2>Subcategories</h2>
+	  <app-list-search
+		[list]="result.category.children"
+		[specs]="{ listSize: result.category.children.length, pageSize: 7, page: 1 }"
+		[path]="'categories'"
+		[messages]="{ success: 'Success', error: 'Error' }"
+		[id]="result.category ? result.category.id : null"
+	  >
+	  </app-list-search>
+	  <a class="btn btn-outline-success" routerLink="/categories/new" [queryParams]="{ parent: result.category.name }">Add subcategory</a>
+	</div>
+	<div *ngIf="result.category.decks">
+	  <h2>Decks</h2>
+	  <div>
+		<app-list-search
+		  [list]="result.category.decks"
+		  [specs]="{ listSize: result.category.decks.length, pageSize: 7, page: 1 }"
+		  [path]="'decks'"
+		  [messages]="{ success: 'Success', error: 'Error' }"
+		  [id]="result.category ? result.category.id : null"
+		>
+		</app-list-search>
+	  </div>
+	</div>
   </div>
 </div>
 
