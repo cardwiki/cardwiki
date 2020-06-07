@@ -23,7 +23,6 @@ spring:
         jdbc:
           batch_size: 20
         order_inserts: true
-
   h2:
     console:
       enabled: true
