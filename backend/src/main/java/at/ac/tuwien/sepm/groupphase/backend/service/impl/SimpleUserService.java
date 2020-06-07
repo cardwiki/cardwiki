@@ -2,6 +2,7 @@ package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.Progress;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
+import at.ac.tuwien.sepm.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
@@ -48,8 +49,6 @@ public class SimpleUserService implements UserService {
 
     @Override
     public User createUser(User user) {
-        // TODO: only admins can create admin users
-        // TODO: return proper error message if username is duplicate
         try {
             return userRepository.save(user);
         } catch (DataIntegrityViolationException e) {
@@ -58,9 +57,9 @@ public class SimpleUserService implements UserService {
                 // TODO: change contains to equals after hibernate version contains
                 //  https://github.com/hibernate/hibernate-orm/pull/3417
                 if (cve.getConstraintName().contains(User.CONSTRAINT_USERNAME_UNIQUE))
-                    throw new IllegalArgumentException("username already registered");
+                    throw new ConflictException("username already registered");
                 else if (cve.getConstraintName().contains(User.CONSTRAINT_AUTHID_UNIQUE))
-                    throw new IllegalArgumentException("authId already registered");
+                    throw new ConflictException("authId already registered");
             }
             throw e;
         }

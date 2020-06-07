@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -25,7 +26,7 @@ public class UserEndpointTest extends TestDataGenerator {
     @Autowired
     private ObjectMapper objectMapper;
 
-    // TODO: test more thoroughly
+    // TODO: test user updating
 
     @Test
     public void createUser() throws Exception {
@@ -36,25 +37,11 @@ public class UserEndpointTest extends TestDataGenerator {
         mvc.perform(post("/api/v1/users")
             .with(login("foo:123"))
             .contentType("application/json").content(input.toString()))
-        .andExpect(status().is(201))
+        .andExpect(status().isCreated())
         .andExpect(jsonPath("$.username").value("test"))
         .andExpect(jsonPath("$.description").value("example"))
         .andExpect(jsonPath("$.createdAt", validIsoDateTime()))
         .andExpect(jsonPath("$.updatedAt", validIsoDateTime()));
-    }
-
-    @Test
-    public void cannotRegisterIfAccountExists() throws Exception {
-        User user = givenApplicationUser();
-
-        ObjectNode input = objectMapper.createObjectNode();
-        input.put("username", "test");
-        input.put("description", "example");
-
-        mvc.perform(post("/api/v1/users")
-            .with(mockLogin(USER_ROLES, user.getAuthId()))
-            .contentType("application/json").content(input.toString()))
-            .andExpect(status().is(400));
     }
 
     @Test
@@ -65,7 +52,7 @@ public class UserEndpointTest extends TestDataGenerator {
         mvc.perform(post("/api/v1/users")
             .with(mockLogin(USER_ROLES, "foo:123"))
             .contentType("application/json").content(input.toString()))
-            .andExpect(status().is(400));
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -77,7 +64,7 @@ public class UserEndpointTest extends TestDataGenerator {
         mvc.perform(post("/api/v1/users")
             .with(mockLogin(USER_ROLES, "foo:123"))
             .contentType("application/json").content(input.toString()))
-            .andExpect(status().is(400));
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -89,7 +76,7 @@ public class UserEndpointTest extends TestDataGenerator {
         mvc.perform(post("/api/v1/users")
             .with(mockLogin(USER_ROLES, "foo:123"))
             .contentType("application/json").content(input.toString()))
-            .andExpect(status().is(400));
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -101,7 +88,7 @@ public class UserEndpointTest extends TestDataGenerator {
         mvc.perform(post("/api/v1/users")
             .with(mockLogin(USER_ROLES, "foo:123"))
             .contentType("application/json").content(input.toString()))
-            .andExpect(status().is(400));
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -115,7 +102,7 @@ public class UserEndpointTest extends TestDataGenerator {
         mvc.perform(post("/api/v1/users")
             .with(login("foo:123"))
             .contentType("application/json").content(input.toString()))
-            .andExpect(status().is(400));
+            .andExpect(status().isConflict());
 
     }
 
@@ -130,7 +117,7 @@ public class UserEndpointTest extends TestDataGenerator {
         mvc.perform(post("/api/v1/users")
             .with(login(user.getAuthId()))
             .contentType("application/json").content(input.toString()))
-            .andExpect(status().is(400));
+            .andExpect(status().isConflict());
 
     }
 }

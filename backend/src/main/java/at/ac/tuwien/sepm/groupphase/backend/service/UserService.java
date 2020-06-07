@@ -50,7 +50,7 @@ public interface UserService {
      * Updates a user.
      *
      * @param id of the user to be updated.
-     * @param user containing the data to update the category with
+     * @param user containing the data to update the user with
      * @return the updated user
      */
     User updateUser(Long id, User user);
