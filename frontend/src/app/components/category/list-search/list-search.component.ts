@@ -14,10 +14,8 @@ export class ListSearchComponent implements OnInit {
   @Input() list: CategorySimple[];
   @Input() specs: { listSize: number, pageSize: number, page: number };
   @Input() path: string;
-  @Input() messages: { header: string, success: string, error: string };
+  @Input() messages: { success: string, error: string };
   filteredList: CategorySimple[];
-  error: boolean = false;
-  errorMessage: string = null;
   searchForm: FormGroup;
 
   @ViewChild('searchFormField') searchChild: ElementRef;

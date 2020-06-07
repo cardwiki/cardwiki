@@ -4,6 +4,7 @@ import {CategoryDetails} from '../../../dtos/categoryDetails';
 import {CategoryService} from '../../../services/category.service';
 import { Location } from '@angular/common';
 import { NotificationService } from 'src/app/services/notification.service';
+import { Router } from '@angular/router';
 import { CategoryUpdate } from 'src/app/dtos/categoryUpdate';
 import { CategorySimple } from 'src/app/dtos/categorySimple';
 
@@ -19,12 +20,12 @@ export class CategoryFormComponent implements OnInit {
   @Input() messages: { header: string, success: string, error: string };
   @ViewChild('dismissModal') dismissModalButton: ElementRef;
   categoryForm: FormGroup;
-  submitted: boolean;
 
   categories: CategorySimple[];
   result: CategoryDetails = new CategoryDetails;
 
-  constructor(private formBuilder: FormBuilder, private categoryService: CategoryService, private location: Location, private notificationService: NotificationService) {
+  constructor(private formBuilder: FormBuilder, private categoryService: CategoryService,
+              private location: Location, private router: Router, private notificationService: NotificationService) {
     this.categoryForm = this.formBuilder.group({
 
       name: ['', [Validators.required, Validators.maxLength(200), this.nameIsBlank.bind(this)]],
@@ -36,7 +37,9 @@ export class CategoryFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.vanishResult();
+    this.categoryForm.reset();
+    this.fetchCategories();
+    this.setDefaults();
   }
 
   /**
@@ -50,21 +53,16 @@ export class CategoryFormComponent implements OnInit {
     if (this.mode === 'Update') {
       const payload = new CategoryUpdate(this.categoryForm.value.name, parent);
       this.categoryService.editCategory(this.category.id, payload).subscribe(
-        (categoryResult) => {
-          console.log('Result:', categoryResult);
-          this.result = categoryResult;
-          this.submitted = true;
+        (category) => {
           this.notificationService.success('Updated Category')
-        });
+          this.router.navigate(['categories', category.id])
+      });
     } else {
       this.categoryService.createCategory(new CategoryUpdate(this.categoryForm.value.name, parent))
-        .subscribe((categoryResult) => {
-            console.log('Result:', categoryResult);
-            this.result = categoryResult;
-            this.submitted = true;
-            this.notificationService.success('Created Category')
-            this.fetchCategories();
-          });
+        .subscribe((category) => {
+          this.notificationService.success('Created Category')
+          this.router.navigate(['categories', category.id])
+      });
     }
   }
 
@@ -131,16 +129,6 @@ export class CategoryFormComponent implements OnInit {
       return this.categoryForm.controls.name.value && this.categoryForm.controls.name.value.trim() === '' ? {'nameIsBlank': true} : null;
     }
     return null;
-  }
-
-  /**
-   * Hides the result screen
-   */
-  vanishResult() {
-    this.submitted = false;
-    this.categoryForm.reset();
-    this.fetchCategories();
-    this.setDefaults();
   }
 
   onRefresh(): void {

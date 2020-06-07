@@ -24,22 +24,26 @@ import {LearnDeckComponent} from './components/learn-deck/learn-deck.component';
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
-  {path: 'about', component: AboutComponent},
-  {path: 'search', component: SearchComponent},
-  {path: 'login', component: LoginComponent},
-  {path: 'decks/:deckId/cards/:cardId/edit', component: CardEditComponent},
-  {path: 'learn/:id', canActivate: [AuthGuard], component: LearnDeckComponent},
-  {path: 'decks/:id/cards/new', canActivate: [AuthGuard], component: CardCreateComponent},
-  {path: 'decks/:id', component: DeckViewComponent},
-  {path: 'decks/:id/edit', component: DeckEditComponent},
-  {path: 'decks/:id/preview', component: DeckPreviewComponent},
   {path: 'categories', component: CategoryListComponent},
   {path: 'categories/new', canActivate: [AuthGuard], component: CategoryCreateComponent},
   {path: 'categories/:id', component: CategoryDetailsComponent},
+  {path: 'categories/:id/decks', component: CategoryDecksComponent},
   {path: 'categories/:id/edit', canActivate: [AuthGuard], component: CategoryUpdateComponent},
   {path: 'categories/:id/subcategories', component: CategorySubcategoriesComponent},
-  {path: 'categories/:id/decks', component: CategoryDecksComponent},
+  {path: 'decks/:id', component: DeckViewComponent},
+  {path: 'decks/:id/cards/new', canActivate: [AuthGuard], component: CardCreateComponent},
+  {path: 'decks/:id/edit', canActivate: [AuthGuard], component: DeckEditComponent},
+  {path: 'decks/:id/preview', component: DeckPreviewComponent},
+  {path: 'decks/:deckId/cards/:cardId/edit', canActivate: [AuthGuard], component: CardEditComponent},
+  {path: 'learn/:id', canActivate: [AuthGuard], component: LearnDeckComponent},
+  {path: 'login', component: LoginComponent},
+  {path: 'search', component: SearchComponent},
+
+  // static pages
+  {path: 'about', component: AboutComponent},
   {path: 'help/markdown-syntax', component: MarkdownSyntaxComponent},
+
+  // 404
   {path: '**', component: PageNotFoundComponent},
 ];
 
