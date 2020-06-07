@@ -64,10 +64,6 @@ export class ListSearchComponent implements OnInit {
     }
   }
 
-  onReset() {
-    this.searchForm.reset();
-  }
-
   ngOnInit() {
     this.onChanges();
   }
