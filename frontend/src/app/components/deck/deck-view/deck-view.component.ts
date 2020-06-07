@@ -31,7 +31,7 @@ export class DeckViewComponent implements OnInit {
     });
   }
 
-  removeCard(event, card) {
+  removeCard(card: CardSimple) {
     this.cardService.removeCardFromDeck(this.deck.id, card.id).subscribe(() => {
       this.cards = this.cards.filter(c => c !== card)
       this.notificationService.success('Deleted Card')

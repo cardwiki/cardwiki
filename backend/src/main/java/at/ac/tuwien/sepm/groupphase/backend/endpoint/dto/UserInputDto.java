@@ -22,6 +22,4 @@ public class UserInputDto {
     @NotNull
     @Length(max = User.MAX_DESCRIPTION_LENGTH)
     private String description;
-
-    private boolean isAdmin;
 }

@@ -3,6 +3,7 @@ package at.ac.tuwien.sepm.groupphase.backend.integrationtest.security;
 import at.ac.tuwien.sepm.groupphase.backend.config.security.SecurityConfig;
 import at.ac.tuwien.sepm.groupphase.backend.config.security.SecurityProps;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,10 +37,9 @@ import java.util.Set;
 @EnableWebSecurity
 @Configuration
 @ActiveProfiles("test")
-@Order(0)
+@Order(-1)
 public class SecurityTestConfig extends WebSecurityConfigurerAdapter {
-    @Autowired
-    private SecurityProps securityProps;
+    public static final SecurityProps securityProps = new SecurityProps("CardWikiIsAmazingAndThisSecretIsTotallySuperSecureAndUnguessable", 60-000);
 
     @Autowired
     private UserService userService;

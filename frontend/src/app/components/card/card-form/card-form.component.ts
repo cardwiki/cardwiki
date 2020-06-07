@@ -13,7 +13,7 @@ export class CardFormComponent implements OnInit {
   @Input() card: CardContent
   @Output() cardSubmit: EventEmitter<CardContent> = new EventEmitter();
   @Output() cancel: EventEmitter<void> = new EventEmitter();
-  constructor(private globals: Globals) { }
+  constructor(public globals: Globals) { }
 
   ngOnInit(): void {
   }

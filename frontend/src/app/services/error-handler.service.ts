@@ -102,7 +102,7 @@ export class ErrorHandlerService {
   private isValidationError(error: any) {
     return typeof error === 'object' &&
       Array.isArray(error.validation) &&
-      error.validation.every(err => typeof err === 'object')
+      error.validation.every((err: any) => typeof err === 'object')
   }
 }
 

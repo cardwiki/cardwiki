@@ -9,7 +9,7 @@ import { CategoryDetails } from '../../../dtos/categoryDetails';
   styleUrls: ['./category-update.component.css']
 })
 export class CategoryUpdateComponent {
-  editCategoryMode: string = 'Update';
+  editCategoryMode: 'Update' = 'Update';
   category: CategoryDetails;
   messages = { header: 'Update category', success: 'Category successfully updated', error: 'Error updating category'};
 

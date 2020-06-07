@@ -7,7 +7,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MarkdownSyntaxComponent implements OnInit {
 
-  private examples: { [key: string]: string } = {
+  public examples: { [key: string]: string } = {
     styles: `Make *italic*, **bold** or ~~strike-through~~ text by wrapping it in *, ** or ~~ respectively.`,
     structuring: `Create lists by starting lines with - or 1.
 - first

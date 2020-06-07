@@ -15,7 +15,7 @@ import { NotificationService } from 'src/app/services/notification.service';
 })
 export class HeaderComponent implements OnInit {
 
-  private searchTerm = ''
+  public searchTerm = ''
 
   constructor(public authService: AuthService, private router: Router, private modalService: NgbModal, private notificationService: NotificationService) { }
 

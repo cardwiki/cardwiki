@@ -13,7 +13,7 @@ import { NotificationService } from 'src/app/services/notification.service';
 export class CardCreateComponent implements OnInit {
 
   private deckId: number
-  private card = new CardContent(null, '', '')
+  public card = new CardContent(null, '', '')
 
   constructor(private cardService: CardService, private route: ActivatedRoute, private location: Location, private notificationService: NotificationService) { }
 

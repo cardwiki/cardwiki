@@ -6,8 +6,6 @@ import {DeckSimple} from '../../dtos/deckSimple';
 import {LearnService} from '../../services/learn.service';
 import {LearnAttempt, AttemptStatus } from '../../dtos/learnAttempt';
 
-const { AGAIN, GOOD, EASY } = AttemptStatus
-
 @Component({
   selector: 'app-learn-deck',
   templateUrl: './learn-deck.component.html',
@@ -34,13 +32,13 @@ export class LearnDeckComponent implements OnInit {
       this.onFlip();
     } else if (this.flipped) {
       if (event.key === '1') {
-        this.onNext(AGAIN);
+        this.onAgain();
       }
       if (event.key === '2') {
-        this.onNext(GOOD);
+        this.onGood();
       }
       if (event.key === '3') {
-        this.onNext(EASY);
+        this.onEasy();
       }
     }
   }
@@ -75,6 +73,18 @@ export class LearnDeckComponent implements OnInit {
     console.log('Attempting to submit status: ' + status);
     await this.triggerNext(status);
     this.getNextCard(this.deck.id);
+  }
+
+  onAgain() {
+    this.onNext(AttemptStatus.AGAIN)
+  }
+
+  onGood() {
+    this.onNext(AttemptStatus.GOOD)
+  }
+
+  onEasy() {
+    this.onNext(AttemptStatus.EASY)
   }
 
   async triggerNext(status: AttemptStatus) {

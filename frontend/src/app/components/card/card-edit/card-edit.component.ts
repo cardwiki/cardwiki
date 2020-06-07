@@ -12,7 +12,7 @@ import { NotificationService } from 'src/app/services/notification.service';
 })
 export class CardEditComponent implements OnInit {
   
-  private card = new CardContent(null, '', '');
+  public card = new CardContent(null, '', '');
   private deckId: number;
   private cardId: number;
 

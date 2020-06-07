@@ -54,7 +54,7 @@ export class DeckEditComponent implements OnInit {
     }
   }
 
-  removeCategory(event, category): void {
+  removeCategory(category: CategorySimple): void {
     this.deck.categories = this.deck.categories.filter(c => c !== category)
   }
 }
