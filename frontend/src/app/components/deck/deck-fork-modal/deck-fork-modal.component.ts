@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {DeckService} from '../../../services/deck.service';
-import {FormBuilder, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {DeckSimple} from '../../../dtos/deckSimple';
 import {DeckDetails} from '../../../dtos/deckDetails';
 
@@ -11,7 +11,7 @@ import {DeckDetails} from '../../../dtos/deckDetails';
   styleUrls: ['./deck-fork-modal.component.css']
 })
 export class DeckForkModalComponent implements OnInit {
-  deckForm;
+  deckForm: FormGroup;
   deck: DeckDetails;
 
   constructor(
