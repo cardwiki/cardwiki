@@ -48,7 +48,7 @@ public class UserEndpoint {
         u.setAuthId(SecurityContextHolder.getContext().getAuthentication().getName());
         u.setEnabled(true);
         u = userService.createUser(u);
-        return userMapper.userToUserOutputDto(u);
+        return userMapper.userToUserDetailsDto(u);
     }
 
     /*
@@ -62,24 +62,24 @@ public class UserEndpoint {
 
     @GetMapping
     @ApiOperation(value = "Search for users")
-    public List<UserOutputDto> search(@RequestParam String username, @RequestParam Integer limit, @RequestParam Integer offset) {
+    public List<UserDetailsDto> search(@RequestParam String username, @RequestParam Integer limit, @RequestParam Integer offset) {
         return userService.searchByUsername(username, PageRequest.of(offset, limit))
             .stream()
-            .map(userMapper::userToUserOutputDto)
+            .map(userMapper::userToUserDetailsDto)
             .collect(Collectors.toList());
     }
 
     @Secured("ROLE_USER")
     @GetMapping(value = "/{id}")
     @ApiOperation(value = "Get user profile of user by id")
-    public UserOutputDto getProfile(@PathVariable long id) {
-        return userMapper.userToUserOutputDto(userService.loadUserById(id));
+    public UserDetailsDto getProfile(@PathVariable long id) {
+        return userMapper.userToUserDetailsDto(userService.loadUserById(id));
     }
 
     @GetMapping(value = "/byname/{username}")
     @ApiOperation(value = "Get user profile")
-    public UserOutputDto getProfile(@PathVariable String username) {
-        return userMapper.userToUserOutputDto(userService.loadUserByUsername(username));
+    public UserDetailsDto getProfile(@PathVariable String username) {
+        return userMapper.userToUserDetailsDto(userService.loadUserByUsername(username));
     }
 
     @GetMapping(value = "/{id}/decks")
@@ -97,7 +97,7 @@ public class UserEndpoint {
     @Secured("ROLE_USER")
     @PatchMapping(value = "/{id}")
     @ApiOperation(value = "Change settings of logged in user")
-    public UserOutputDto editSettings(@PathVariable long id, @Valid @RequestBody UserEditInquiryDto userEditInquiryDto) {
-        return userMapper.userToUserOutputDto(userService.editSettings(id, userMapper.userEditInquiryDtoToUser(userEditInquiryDto)));
+    public UserDetailsDto editSettings(@PathVariable long id, @Valid @RequestBody UserEditInquiryDto userEditInquiryDto) {
+        return userMapper.userToUserDetailsDto(userService.editSettings(id, userMapper.userEditInquiryDtoToUser(userEditInquiryDto)));
     }
 }

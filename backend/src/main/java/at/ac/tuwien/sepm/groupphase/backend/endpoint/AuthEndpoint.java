@@ -2,6 +2,7 @@ package at.ac.tuwien.sepm.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.OAuth2ProviderDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.WhoAmIDto;
+import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +52,7 @@ public class AuthEndpoint {
             dto.setAuthId(auth.getName());
             dto.setHasAccount(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER")));
             dto.setAdmin(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")));
-            dto.setUserId(userService.loadUserByAuthId(auth.getName()).map(u -> u.getId()).orElse(null));
+            dto.setUserId(userService.loadUserByAuthId(auth.getName()).map(User::getId).orElse(null));
         }
         return dto;
     }
