@@ -71,4 +71,15 @@ export class DeckService {
     return this.httpClient.get<DeckDetails[]>(this.deckBaseUri, { params })
       .pipe(tap(null, this.errorHandler.handleError('Could not search for Decks')));
   }
+
+  /**
+   * Creates a new card deck.
+   *
+   * @param deck the name of the card deck.
+   */
+  copy(deckId: number, deck: DeckSimple): Observable<DeckDetails> {
+    console.log('Copy card deck with id ' + deckId);
+    return this.httpClient.post<DeckDetails>(this.deckBaseUri + '/' + deckId + '/copy', deck)
+      .pipe(tap(null, this.errorHandler.handleError('Could not fork Deck')));
+  }
 }

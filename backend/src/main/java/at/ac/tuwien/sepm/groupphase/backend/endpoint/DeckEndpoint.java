@@ -86,4 +86,13 @@ public class DeckEndpoint {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
+
+    @Secured("ROLE_USER")
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping(value = "/{id}/copy")
+    @ApiOperation(value = "Copy a deck", authorizations = @Authorization("ROLE_USER"))
+    public DeckDto copy(@PathVariable Long id, @Valid @RequestBody DeckInputDto deckInputDto) {
+        LOGGER.info("Post /api/v1/decks/{}/copy body={}", id, deckInputDto);
+        return deckMapper.deckToDeckDto(deckService.copy(id, deckMapper.deckInputDtoToDeck(deckInputDto)));
+    }
 }
