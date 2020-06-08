@@ -13,10 +13,10 @@ export class UserSearchComponent implements OnInit {
 
   USER_PAGINATION_LIMIT = 10;
 
-  private searchTerm = '';
-  private users: UserProfile[] = [];
-  private maxUsersLoaded: boolean = false;
-  private noUsersFound: boolean = false;
+  searchTerm = '';
+  users: UserProfile[] = [];
+  maxUsersLoaded: boolean = false;
+  noUsersFound: boolean = false;
 
   constructor(private route: ActivatedRoute, private router: Router, private modalService: NgbModal, private userService: UserService) {
     this.route.queryParams.subscribe(params => {
