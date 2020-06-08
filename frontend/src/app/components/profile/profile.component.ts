@@ -5,7 +5,6 @@ import {UserProfile} from "../../dtos/userProfile";
 import {DeckSimple} from "../../dtos/deckSimple";
 import {RevisionDetailed} from "../../dtos/revisionDetailed";
 import {Globals} from "../../global/globals";
-import {FormBuilder} from "@angular/forms";
 import {AuthService} from "../../services/auth.service";
 
 @Component({
@@ -36,7 +35,7 @@ export class ProfileComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       this.revisions = [];
       this.decks = [];
-      if (localStorage.getItem("whoAmI")) this.me = (params.get('username') == JSON.parse(localStorage.getItem("whoAmI")).username);
+      if (localStorage.getItem("whoami")) this.me = (params.get('username') === JSON.parse(localStorage.getItem("whoami")).username);
       this.loadProfile(params.get('username'));
     });
   }
