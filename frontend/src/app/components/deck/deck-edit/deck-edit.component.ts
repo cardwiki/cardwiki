@@ -3,8 +3,9 @@ import {DeckService} from '../../../services/deck.service';
 import {ActivatedRoute} from '@angular/router';
 import {Location} from '@angular/common';
 import {DeckUpdate} from '../../../dtos/deckUpdate';
-import {Category} from '../../../dtos/category';
+import {CategoryDetails} from '../../../dtos/categoryDetails';
 import {CategoryService} from '../../../services/category.service';
+import { CategorySimple } from 'src/app/dtos/categorySimple';
 
 @Component({
   selector: 'app-deck-edit',
@@ -13,9 +14,10 @@ import {CategoryService} from '../../../services/category.service';
 })
 export class DeckEditComponent implements OnInit {
 
+  deckId: number;
   deck: DeckUpdate;
-  categories: Category[];
-  selectedCategory;
+  categories: CategorySimple[];
+  selectedCategory: CategorySimple;
 
   constructor(
     private deckService: DeckService,
@@ -25,17 +27,21 @@ export class DeckEditComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const id = +this.route.snapshot.paramMap.get('id');
-    this.deckService.getDeckById(id).subscribe(deck => {
-      this.deck = deck;
+    this.deckId = +this.route.snapshot.paramMap.get('id');
+    this.deckService.getDeckById(this.deckId).subscribe(deck => {
+      this.deck = new DeckUpdate(deck.name, deck.categories);
       this.categoryService.getCategories().subscribe(categories => this.categories = categories);
     });
   }
 
   save(): void {
-    this.deckService.updateDeck(this.deck).subscribe(
+    this.deckService.updateDeck(this.deckId, this.deck).subscribe(
       () => this.location.back()
     );
+  }
+
+  cancel(): void {
+    this.location.back()
   }
 
   addCategory(): void {
@@ -44,7 +50,7 @@ export class DeckEditComponent implements OnInit {
     }
   }
 
-  removeCategory(event, category): void {
+  removeCategory(category: CategorySimple): void {
     const index = this.deck.categories.indexOf(category, 0);
     if (index > -1) {
       this.deck.categories.splice(index, 1);

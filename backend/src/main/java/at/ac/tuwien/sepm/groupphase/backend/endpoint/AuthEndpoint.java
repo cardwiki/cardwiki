@@ -2,6 +2,7 @@ package at.ac.tuwien.sepm.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.OAuth2ProviderDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.WhoAmIDto;
+import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ResolvableType;
@@ -25,6 +26,9 @@ public class AuthEndpoint {
     @Autowired
     private ClientRegistrationRepository clientRegistrationRepository;
 
+    @Autowired
+    private UserService userService;
+
     @GetMapping("/providers")
     @ApiOperation(value = "Returns the available Authentication Providers.")
     public List<OAuth2ProviderDto> index() {
@@ -41,12 +45,13 @@ public class AuthEndpoint {
 
     @GetMapping("/whoami")
     @ApiOperation(value = "Returns information about the currently logged in user.")
-    public WhoAmIDto index(Authentication auth) {
+    public WhoAmIDto whoami(Authentication auth) {
         WhoAmIDto dto = new WhoAmIDto();
         if (auth != null) {
             dto.setAuthId(auth.getName());
             dto.setHasAccount(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER")));
             dto.setAdmin(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")));
+            dto.setUserId(userService.loadUserByAuthId(auth.getName()).map(u -> u.getId()).orElse(null));
         }
         return dto;
     }

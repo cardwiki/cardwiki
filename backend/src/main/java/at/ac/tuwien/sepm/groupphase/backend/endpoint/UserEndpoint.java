@@ -3,6 +3,8 @@ package at.ac.tuwien.sepm.groupphase.backend.endpoint;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.*;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.DeckMapper;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.RevisionMapper;
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.UserDetailsDto;
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.UserInputDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.UserMapper;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
@@ -38,11 +40,13 @@ public class UserEndpoint {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     @ApiOperation(value = "Register the authenticated user")
-    public UserOutputDto register(Authentication token, @Valid @RequestBody UserInputDto userInputDto) {
+    public UserDetailsDto register(Authentication token, @Valid @RequestBody UserInputDto userInputDto) {
         if (token == null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not authenticated");
+
         User u = userMapper.userInputDtoToUser(userInputDto);
         u.setAuthId(SecurityContextHolder.getContext().getAuthentication().getName());
+        u.setEnabled(true);
         u = userService.createUser(u);
         return userMapper.userToUserOutputDto(u);
     }
@@ -51,7 +55,7 @@ public class UserEndpoint {
     @Secured("ROLE_USER")
     @GetMapping
     @ApiOperation(value = "List all users")
-    public List<UserOutputDto> get() {
+    public List<UserDetailsDto> get() {
         return userService.getAll().stream().map(user -> userMapper.userToUserOutputDto(user)).collect(Collectors.toList());
     }
      */

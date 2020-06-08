@@ -1,0 +1,27 @@
+<div class="container mt-5 d-flex flex-column" *ngIf="deck">
+	<p><button class="btn btn-link" routerLink="/decks/{{deck.id}}">back to deck {{deck.name}}</button></p>
+	<div class="d-flex align-items-center flex-column wrapper" *ngIf=card>
+		<div class=card-container>
+			<div class=lgfont [innerHtml]="card.textFront | md2html"></div>
+			<div class="scene text-center" (click)="onFlip()">
+				<div class=flip-card [ngClass]="flipped ? 'flipped' : ''">
+					<div class="flip-card-face please-flip">flip backside by clicking here or pressing spacebar</div>
+					<div class="flip-card-face lgfont flip-card-face-back" [innerHtml]="card.textBack  | md2html"></div>
+				</div>
+			</div>
+		</div>
+		<table *ngIf="flipped" class="text-center mt-3">
+			<tr>
+				<td><button class="btn btn-outline-info" (click)="onAgain()">Again</button></td>
+				<td><button class="btn btn-outline-info mx-3" (click)="onGood()">Good</button></td>
+				<td><button class="btn btn-outline-info" (click)="onEasy()">Easy</button></td>
+			</tr>
+			<tr>
+				<td>&lt; 1m</td><td>&lt; 10m</td><td>4d</td>
+			</tr>
+		</table>
+	</div>
+	<p *ngIf=!card class="text-center lgfont">
+	There are no more cards to learn at the moment.
+	</p>
+</div>

@@ -2,14 +2,17 @@ package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
-import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
+import at.ac.tuwien.sepm.groupphase.backend.exception.CategoryNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CategoryRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.CategoryService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 
+import org.hibernate.Hibernate;
+import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,19 +44,18 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public Category findOneById(Long id) {
         LOGGER.debug("Find category with id {}.", id);
-        Optional<Category> result = categoryRepository.findCategoryById(id);
-        Category category;
-        if (result.isPresent()) {
-            category = result.get();
-            if (category.getParent() != null) {
-                category.setParent(categoryRepository.findCategoryById(category.getParent().getId()).get());
-            }
-            if (category.getChildren() != null) {
-                category.setChildren(new LinkedHashSet<>(categoryRepository.findChildren(id)));
-            }
-        } else {
-            throw new NotFoundException("Category not found.");
+        Category category = categoryRepository.findCategoryById(id).orElseThrow(
+            () -> new CategoryNotFoundException("Category not found."));
+
+        if (category.getParent() != null) {
+            Category parent = categoryRepository.findCategoryById(category.getParent().getId()).orElseThrow(
+                () -> new CategoryNotFoundException("Invalid parent reference."));
+            category.setParent(parent);
         }
+        if (category.getChildren() != null) {
+            category.setChildren(new LinkedHashSet<>(categoryRepository.findChildren(id)));
+        }
+
         return category;
     }
 
@@ -63,25 +65,52 @@ public class CategoryServiceImpl implements CategoryService {
         LOGGER.debug("Create category {}", category);
         User user = userService.loadCurrentUser();
         category.setCreatedBy(user);
-        Category parent = category.getParent();
-        if (parent != null && !categoryRepository.existsById(parent.getId())) {
-            throw new NotFoundException("Selected parent category does not exist in Database.");
+        category.setName(category.getName().trim().replaceAll(" +", " "));
+        try {
+            return categoryRepository.saveAndFlush(category);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException(handleDataIntegrityViolationException(e));
         }
-        return categoryRepository.save(category);
     }
 
     @Override
     @Transactional
-    public Category updateCategory(Long id, Category category) {
+    public Category updateCategory(Long id, Category categoryUpdate) {
         LOGGER.debug("Update category with id {}", id);
-        if (!categoryRepository.existsById(id)) throw new NotFoundException("Category not found.");
-        if (category.getParent() != null && category.getParent().getId().equals(id)) {
-            throw new IllegalArgumentException("Category cannot be its own parent.");
+        Category category = findOneById(id);
+
+        Category parent = null;
+        Category newParent = categoryUpdate.getParent();
+        if (newParent != null) {
+            if (newParent.getId().equals(id)) {
+                throw new IllegalArgumentException("Category cannot be its own parent.");
+            }
+            if (categoryRepository.ancestorExistsWithId(id, newParent.getId())) {
+                throw new IllegalArgumentException("Circular child-parent relation.");
+            }
+            parent = findOneById(newParent.getId());
         }
-        if (category.getParent() != null && categoryRepository.parentExistsWithId(id, category.getParent().getId())) {
-           throw new IllegalArgumentException("Circular Child-Parent relation.");
+
+        category.setParent(parent);
+        category.setName(categoryUpdate.getName().trim().replaceAll(" +", " "));
+        try {
+            category = categoryRepository.saveAndFlush(category);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException(handleDataIntegrityViolationException(e));
         }
-        category.setId(id);
-        return categoryRepository.save(category);
+        Hibernate.initialize(category.getParent());
+        return category;
+    }
+
+    private String handleDataIntegrityViolationException (DataIntegrityViolationException e) {
+        if (e.getCause() instanceof ConstraintViolationException) {
+            String cause = ((ConstraintViolationException) e.getCause()).getConstraintName().toLowerCase();
+            if (cause.contains("name_unique")) {
+                return "A category with that name already exists.";
+            } else {
+                return cause;
+            }
+        }
+        return e.getMessage();
     }
 }

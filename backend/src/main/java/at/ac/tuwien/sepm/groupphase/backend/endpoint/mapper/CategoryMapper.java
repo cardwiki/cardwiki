@@ -1,7 +1,7 @@
 package at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper;
 
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategoryDetailedDto;
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategoryInquiryDto;
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategoryInputDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategorySimpleDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
 import org.mapstruct.*;
@@ -38,8 +38,5 @@ public interface CategoryMapper {
         return INSTANCE.categoryToCategorySimpleDto(parent);
     }
 
-    Category categoryInquiryDtoToCategory(CategoryInquiryDto categoryInquiryDto);
-
-
-
+     Category categoryInputDtoToCategory(CategoryInputDto categoryInputDto);
 }

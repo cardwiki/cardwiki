@@ -7,6 +7,7 @@ import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
 
@@ -35,9 +36,8 @@ public interface UserService {
      * Loads an user for an Auth ID.
      * @param authId
      * @return the user entity
-     * @throws UserNotFoundException if the specified user does not exist
      */
-    User loadUserByAuthId(String authId);
+    Optional<User> loadUserByAuthId(String authId);
 
     /**
      * Loads the currently authenticated user.
@@ -93,4 +93,13 @@ public interface UserService {
      * @return User with changed settings
      */
     User editSettings(long id, User user);
+
+    /**
+     * Updates a user.
+     *
+     * @param id of the user to be updated.
+     * @param user containing the data to update the user with
+     * @return the updated user
+     */
+    User updateUser(Long id, User user);
 }

@@ -11,35 +11,43 @@ import {DeckEditComponent} from './components/deck/deck-edit/deck-edit.component
 import { SearchComponent } from './components/search/search.component';
 import { AboutComponent } from './components/about/about.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
-import { LearnComponent } from './components/learn/learn.component';
 import { DeckPreviewComponent } from './components/deck-preview/deck-preview.component';
 import {CategoryUpdateComponent} from './components/category/category-update/category-update.component';
 import {CategoryListComponent} from './components/category/category-list/category-list.component';
 import {CategoryDetailsComponent} from './components/category/category-details/category-details.component';
+import {CategorySubcategoriesComponent} from './components/category/category-subcategories/category-subcategories.component';
+import {CategoryDecksComponent} from './components/category/category-decks/category-decks.component';
+
 import { MarkdownSyntaxComponent } from './components/help/markdown-syntax/markdown-syntax.component';
 import {ProfileComponent} from "./components/profile/profile.component";
 import {UserSearchComponent} from "./components/user-search/user-search.component";
+import {LearnDeckComponent} from './components/learn-deck/learn-deck.component';
+
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
-  {path: 'about', component: AboutComponent},
-  {path: 'search', component: SearchComponent},
-  {path: 'login', component: LoginComponent},
-  {path: 'decks/:id/cards/new', component: CardCreateComponent},
-  {path: 'decks/:deckId/cards/:cardId/edit', component: CardEditComponent},
-  {path: 'learn', canActivate: [AuthGuard], component: LearnComponent},
-  {path: 'learn/:id', component: DeckPreviewComponent},
-  {path: 'decks/:id/cards/new', canActivate: [AuthGuard], component: CardCreateComponent},
-  {path: 'createCategory', canActivate: [AuthGuard], component: CategoryCreateComponent},
-  {path: 'decks/:id', component: DeckViewComponent},
-  {path: 'decks/:id/edit', component: DeckEditComponent},
   {path: 'categories', component: CategoryListComponent},
   {path: 'categories/new', canActivate: [AuthGuard], component: CategoryCreateComponent},
   {path: 'categories/:id', component: CategoryDetailsComponent},
+  {path: 'categories/:id/decks', component: CategoryDecksComponent},
   {path: 'categories/:id/edit', canActivate: [AuthGuard], component: CategoryUpdateComponent},
-  {path: 'help/markdown-syntax', component: MarkdownSyntaxComponent},
+  {path: 'categories/:id/subcategories', component: CategorySubcategoriesComponent},
+  {path: 'decks/:id', component: DeckViewComponent},
+  {path: 'decks/:id/cards/new', canActivate: [AuthGuard], component: CardCreateComponent},
+  {path: 'decks/:id/edit', canActivate: [AuthGuard], component: DeckEditComponent},
+  {path: 'decks/:id/preview', component: DeckPreviewComponent},
+  {path: 'decks/:deckId/cards/:cardId/edit', canActivate: [AuthGuard], component: CardEditComponent},
+  {path: 'learn/:id', canActivate: [AuthGuard], component: LearnDeckComponent},
+  {path: 'login', component: LoginComponent},
+  {path: 'search', component: SearchComponent},
   {path: 'users/:username/profile', component: ProfileComponent},
   {path: 'users', component: UserSearchComponent},
+
+  // static pages
+  {path: 'about', component: AboutComponent},
+  {path: 'help/markdown-syntax', component: MarkdownSyntaxComponent},
+
+  // 404
   {path: '**', component: PageNotFoundComponent},
 ];
 

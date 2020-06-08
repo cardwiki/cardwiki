@@ -1,6 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import * as MarkdownIt from 'markdown-it'
-import * as MarkdownItTexmath from 'markdown-it-texmath'
+// @ts-ignore: Could not find a declaration file for module 'markdown-it-texmath'
+import * as MarkdownItTexmath from 'markdown-it-texmath' 
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Pipe({
@@ -14,6 +15,7 @@ export class Md2htmlPipe implements PipeTransform {
     this.converter = new MarkdownIt({
       breaks: true,
     })
+      .disable(['heading', 'lheading'])	
       .use(MarkdownItTexmath, {
         engine: 'katex',
         delimiters: 'dollars',

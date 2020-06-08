@@ -12,7 +12,8 @@ export class CardFormComponent implements OnInit {
 
   @Input() card: CardContent
   @Output() cardSubmit: EventEmitter<CardContent> = new EventEmitter();
-  constructor(private globals: Globals) { }
+  @Output() cancel: EventEmitter<void> = new EventEmitter();
+  constructor(public globals: Globals) { }
 
   ngOnInit(): void {
   }
@@ -20,5 +21,10 @@ export class CardFormComponent implements OnInit {
   onSubmit() {
     console.log('submitting card form', this.card)
     this.cardSubmit.emit(this.card)
+  }
+
+  onCancel() {
+    console.log('cancelling card form')
+    this.cancel.emit()
   }
 }

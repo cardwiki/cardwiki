@@ -25,16 +25,19 @@ import { SearchComponent } from './components/search/search.component';
 import { AboutComponent } from './components/about/about.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
-import { LearnComponent } from './components/learn/learn.component';
 import { DeckPreviewComponent } from './components/deck-preview/deck-preview.component';
 import { CategoryListComponent } from './components/category/category-list/category-list.component';
 import { ListComponent } from './components/category/list/list.component';
 import { CategoryDetailsComponent } from './components/category/category-details/category-details.component';
+import { ListSearchComponent } from './components/category/list-search/list-search.component';
+import { CategorySubcategoriesComponent } from './components/category/category-subcategories/category-subcategories.component';
+import { CategoryDecksComponent } from './components/category/category-decks/category-decks.component';
 import { Md2htmlPipe } from './pipes/md2html.pipe';
 import { MarkdownSyntaxComponent } from './components/help/markdown-syntax/markdown-syntax.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { UserSearchComponent } from './components/user-search/user-search.component';
-
+import { ErrorComponent } from './components/error/error.component';
+import { LearnDeckComponent } from './components/learn-deck/learn-deck.component';
 
 @NgModule({
   declarations: [
@@ -56,16 +59,20 @@ import { UserSearchComponent } from './components/user-search/user-search.compon
     AboutComponent,
     DashboardComponent,
     PageNotFoundComponent,
-    LearnComponent,
     DeckPreviewComponent,
     CategoryListComponent,
     ListComponent,
     CategoryDetailsComponent,
     CardEditComponent,
+    ListSearchComponent,
+    CategorySubcategoriesComponent,
+    CategoryDecksComponent,
     Md2htmlPipe,
     MarkdownSyntaxComponent,
     ProfileComponent,
     UserSearchComponent,
+    ErrorComponent,
+    LearnDeckComponent,
   ],
   imports: [
     BrowserModule,

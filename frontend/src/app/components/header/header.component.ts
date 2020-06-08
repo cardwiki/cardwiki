@@ -4,7 +4,8 @@ import { Router } from '@angular/router';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {DeckCreateModalComponent} from '../deck/deck-create-modal/deck-create-modal.component';
 import {Observable} from 'rxjs';
-import {Deck} from '../../dtos/deck';
+import {DeckDetails} from '../../dtos/deckDetails';
+import { SearchQueryParams } from 'src/app/interfaces/search-query-params';
 
 @Component({
   selector: 'app-header',
@@ -13,7 +14,7 @@ import {Deck} from '../../dtos/deck';
 })
 export class HeaderComponent implements OnInit {
 
-  private searchTerm = '';
+  public searchTerm = '';
 
   constructor(public authService: AuthService, private router: Router, private modalService: NgbModal) { }
 
@@ -22,10 +23,11 @@ export class HeaderComponent implements OnInit {
 
   onSubmit() {
     console.log('search', this.searchTerm)
+    const queryParams: SearchQueryParams = {
+      name: this.searchTerm
+    }
     this.router.navigate(['/search'], {
-      queryParams: {
-        name: this.searchTerm
-      }
+      queryParams
     })
   }
 
@@ -33,8 +35,8 @@ export class HeaderComponent implements OnInit {
     const modalRef = this.modalService.open(DeckCreateModalComponent);
 
     modalRef.result.then(
-      (res: Observable<Deck>) => res.subscribe(
-        (deck: Deck) => this.router.navigate(['decks', deck.id])
+      (res: Observable<DeckDetails>) => res.subscribe(
+        (deck: DeckDetails) => this.router.navigate(['decks', deck.id])
       )
     ).catch(() => {});
   }

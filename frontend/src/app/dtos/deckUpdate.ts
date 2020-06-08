@@ -1,11 +1,8 @@
-import {DeckSimple} from './deckSimple';
-import {Category} from './category';
+import { CategorySimple } from './categorySimple';
 
-export class DeckUpdate extends DeckSimple {
+export class DeckUpdate {
   constructor(
-    public id: number,
     public name: string,
-    public categories: {id: number, name: string}[]) {
-    super(id, name);
+    public categories: CategorySimple[]) {
   }
 }

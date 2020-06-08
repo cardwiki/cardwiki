@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {Category} from '../../../dtos/category';
 import {CategoryService} from '../../../services/category.service';
 import {ActivatedRoute} from '@angular/router';
+import { CategorySimple } from 'src/app/dtos/categorySimple';
 
 @Component({
   selector: 'app-category-list',
@@ -9,7 +9,7 @@ import {ActivatedRoute} from '@angular/router';
   styleUrls: ['./category-list.component.css']
 })
 export class CategoryListComponent implements OnInit {
-  categories: Category[];
+  categories: CategorySimple[];
   specs: { listSize: number, pageSize: number, page: number }
   path: string = 'categories';
   error: boolean = false;
@@ -31,7 +31,7 @@ export class CategoryListComponent implements OnInit {
         console.log('Getting categories.');
         this.categories = categories;
         if (categories) {
-          this.specs = { listSize: categories.length, pageSize: 12, page: 1};
+          this.specs = { listSize: categories.length, pageSize: 20, page: 1};
         }
       },
       (error) => {

@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class SimpleCardService implements CardService {
@@ -58,7 +59,7 @@ public class SimpleCardService implements CardService {
     @Override
     public List<Card> findCardsByDeckId(Long deckId) {
         LOGGER.debug("Find all cards for deck with id {}", deckId);
-        return cardRepository.findCardsByDeck_Id(deckId);
+        return cardRepository.findCardsByDeck_Id(deckId).stream().filter(card -> card.getLatestRevision().getRevisionEdit() != null).collect(Collectors.toList()); //TODO do this in database query
     }
 
     @Override

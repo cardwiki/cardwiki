@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Data
-public class UserOutputDto {
+public class UserDetailsDto {
     private Long id;
 
     private String username;

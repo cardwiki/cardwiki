@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {Globals} from '../global/globals';
 import {Observable} from 'rxjs';
-import {Deck} from '../dtos/deck';
-import {DeckSimple} from '../dtos/deck-simple';
+import {DeckDetails} from '../dtos/deckDetails';
+import {DeckSimple} from '../dtos/deckSimple';
 import {DeckUpdate} from '../dtos/deckUpdate';
 
 @Injectable({
@@ -21,18 +21,19 @@ export class DeckService {
    * Loads a deck from the backend
    * @param id of deck to load
    */
-  getDeckById(id: number): Observable<Deck> {
+  getDeckById(id: number): Observable<DeckDetails> {
     console.log('Load Deck with id ' + id);
-    return this.httpClient.get<Deck>(this.deckBaseUri + '/' + id);
+    return this.httpClient.get<DeckDetails>(this.deckBaseUri + '/' + id);
   }
 
   /**
    * Updates deck in the backend
+   * @param deckId id of the deck to update
    * @param deck update
    */
-  updateDeck(deck: DeckUpdate): Observable<Deck> {
-    console.log('Update Deck with id ' + deck.id);
-    return this.httpClient.patch<Deck>(this.deckBaseUri + '/' + deck.id, deck);
+  updateDeck(deckId: number, deck: DeckUpdate): Observable<DeckDetails> {
+    console.log('Update Deck with id ' + deckId);
+    return this.httpClient.patch<DeckDetails>(this.deckBaseUri + '/' + deckId, deck);
   }
 
   /**
@@ -40,9 +41,9 @@ export class DeckService {
    *
    * @param deck the name of the card deck.
    */
-  create(deck: DeckSimple): Observable<Deck> {
+  create(deck: DeckSimple): Observable<DeckDetails> {
     console.log('Create card deck: ' + deck.name);
-    return this.httpClient.post<Deck>(this.deckBaseUri, deck);
+    return this.httpClient.post<DeckDetails>(this.deckBaseUri, deck);
   }
 
   /**
@@ -53,14 +54,15 @@ export class DeckService {
    * @param offset of the page.
    * @param limit of results returned.
    */
-  searchByName(name: string, offset: number, limit: number): Observable<Deck[]> {
+  searchByName(name: string, offset: number, limit: number): Observable<DeckDetails[]> {
     console.log('search card decks: ' + name);
     const params = new HttpParams({
       fromObject: {
+        name,
         offset: offset.toString(10),
         limit: limit.toString(10)
       }
     });
-    return this.httpClient.get<Deck[]>(this.deckBaseUri, { params });
+    return this.httpClient.get<DeckDetails[]>(this.deckBaseUri, { params });
   }
 }

@@ -1,10 +1,11 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {AuthService} from '../../../services/auth.service';
-import {Router} from '@angular/router';
-import {Category} from '../../../dtos/category';
+import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {FormBuilder, FormGroup, Validators, ValidationErrors} from '@angular/forms';
+import {CategoryDetails} from '../../../dtos/categoryDetails';
 import {CategoryService} from '../../../services/category.service';
-import * as $ from 'jquery';
+import { Location } from '@angular/common';
+import { Router } from '@angular/router';
+import { CategoryUpdate } from 'src/app/dtos/categoryUpdate';
+import { CategorySimple } from 'src/app/dtos/categorySimple';
 
 @Component({
   selector: 'app-category-form',
@@ -13,23 +14,22 @@ import * as $ from 'jquery';
 })
 export class CategoryFormComponent implements OnInit {
 
-  @Input() mode: String;
-  @Input() category: Category = new Category(null, new Category(null));
+  @Input() mode: 'Create' | 'Update';
+  @Input() category: CategoryDetails;
   @Input() messages: { header: string, success: string, error: string };
+  @ViewChild('dismissModal') dismissModalButton: ElementRef;
   categoryForm: FormGroup;
   submitted: boolean;
   error: boolean;
   errorMessage: string = '';
 
-  categories: Category[];
-  result: Category = new Category(null);
-  parentId: number = null;
+  categories: CategorySimple[];
+  result: CategoryDetails = new CategoryDetails;
 
-  constructor(private formBuilder: FormBuilder, private authService: AuthService,
-              private router: Router, private categoryService: CategoryService) {
+  constructor(private formBuilder: FormBuilder, private categoryService: CategoryService, private location: Location, private router: Router) {
     this.categoryForm = this.formBuilder.group({
 
-      name: ['', [Validators.required, Validators.maxLength(200)]],
+      name: ['', [Validators.required, Validators.maxLength(200), this.nameIsBlank.bind(this)]],
         parentCategory: ['',
           {
             validators: [Validators.maxLength(200), this.validateCategoryName.bind(this)], updateOn: 'change'
@@ -41,47 +41,32 @@ export class CategoryFormComponent implements OnInit {
    * Submits form data to createCategory() or editCategory() function
    */
   submitCategoryForm() {
-    $('#modal').hide();
-    $('.modal-backdrop').remove();
+    this.dismissModalButton.nativeElement.click();
     console.log('submitted form values:', this.categoryForm.value);
+    const parent = this.categories.find(category => category.name === this.categoryForm.value.parentCategory) || null
 
-    for (let i = 0; i < this.categories.length; i++) {
-      if (this.categories[i].name === this.categoryForm.value.parentCategory) {
-        this.parentId = this.categories[i].id;
-        break;
-      }
-    }
-    const parent = this.parentId ? new Category(this.categoryForm.value.parentCategory, null, this.parentId) : null;
     if (this.mode === 'Update') {
-      console.log(this.category);
-      const payload = new Category(this.categoryForm.value.name, parent);
-      this.categoryService.editCategory(payload, this.category.id).subscribe(
-        (categoryResult) => {
-          console.log(categoryResult);
-          this.result = categoryResult;
-          this.submitted = true;
+      const payload = new CategoryUpdate(this.categoryForm.value.name, parent);
+      this.categoryService.editCategory(this.category.id, payload).subscribe(
+        (category) => {
+          this.router.navigate(['categories', category.id])
         },
         (error) => {
           console.log('Updating category failed:');
           console.log(error);
           this.errorMessage = this.categoryService.handleError(error);
           this.error = true;
-          this.submitted = true;
         }
       );
     } else {
-      this.categoryService.createCategory(new Category(this.categoryForm.value.name, parent))
-        .subscribe((categoryResult) => {
-            console.log(categoryResult);
-            this.result = categoryResult;
-            this.submitted = true;
-            this.fetchCategories();
+      this.categoryService.createCategory(new CategoryUpdate(this.categoryForm.value.name, parent))
+        .subscribe((category) => {
+            this.router.navigate(['categories', category.id])
           },
           (error) => {
             console.log('Creating category failed:', error);
             this.errorMessage = this.categoryService.handleError(error);
             this.error = true;
-            this.submitted = true;
           }
         );
     }
@@ -95,6 +80,9 @@ export class CategoryFormComponent implements OnInit {
       const errors = this.categoryForm.controls.name.errors;
       if (errors.required) {
         return 'Field is required.';
+      }
+      if (errors.nameIsBlank) {
+        return 'Name must not be blank.';
       }
       const result = this.checkCommonErrors(errors);
       return result ? result : null;
@@ -120,7 +108,7 @@ export class CategoryFormComponent implements OnInit {
     return null;
   }
 
-  checkCommonErrors(errors) {
+  checkCommonErrors(errors: ValidationErrors) {
     if (errors.maxlength) {
       return 'Maximum length exceeded.';
     }
@@ -133,7 +121,7 @@ export class CategoryFormComponent implements OnInit {
   validateCategoryName() {
     if (this.categories && this.categoryForm && this.categoryForm.controls) {
       const value = this.categoryForm.controls.parentCategory.value;
-      const valid = (value !== null && value !== '') ? this.categories.map(category => category.name).includes(value) : true;
+      const valid = (value && value !== '') ? this.categories.map(category => category.name).includes(value) : true;
       if (!valid) {
         return {'categoryNotFound': true};
       }
@@ -142,12 +130,11 @@ export class CategoryFormComponent implements OnInit {
     return null;
   }
 
-  createSubcategory() {
-    if (this.result) {
-      this.category.name = null;
-      this.category.parent.name = this.result.name;
+  nameIsBlank() {
+    if (this.categories && this.categoryForm && this.categoryForm.controls && this.categoryForm.controls.name.dirty) {
+      return this.categoryForm.controls.name.value && this.categoryForm.controls.name.value.trim() === '' ? {'nameIsBlank': true} : null;
     }
-    this.vanishResult();
+    return null;
   }
 
   /**
@@ -170,6 +157,10 @@ export class CategoryFormComponent implements OnInit {
     this.categoryForm.controls['parentCategory'].setValue('');
   }
 
+  onCancel(): void {
+    this.location.back()
+  }
+
   fetchCategories() {
     this.categoryService.getCategories().subscribe(
       (categories) => {
@@ -189,6 +180,7 @@ export class CategoryFormComponent implements OnInit {
     if (this.categoryForm) {
       this.categoryForm.controls['name'].setValue(this.category.name);
       if (this.category.parent) {
+        console.log('parent name:', this.category.parent.name);
         this.categoryForm.controls['parentCategory'].setValue(this.category.parent.name);
       }
     }

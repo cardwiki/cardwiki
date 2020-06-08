@@ -23,12 +23,6 @@ export class CardService {
     return this.httpClient.post<CardDetails>(this.getCardUri(deckId), card);
   }
 
-  private getCardUri(deckId: number, cardId?: number) {
-    return typeof cardId !== 'undefined' ?
-      `${this.globals.backendUri}/decks/${deckId}/cards/${cardId}`
-      : `${this.globals.backendUri}/decks/${deckId}/cards`;
-  }
-
   /**
    * Gets all cards for a specific deck
    * @param deckId of the deck for which cards to get
@@ -56,5 +50,11 @@ export class CardService {
   fetchCard(deckId: number, cardId: number): Observable<CardDetails> {
     console.log(`fetch card with id ${cardId} from deck ${deckId}`);
     return this.httpClient.get<CardDetails>(this.getCardUri(deckId, cardId));
+  }
+
+  private getCardUri(deckId: number, cardId?: number) {
+    return typeof cardId !== 'undefined' ?
+      `${this.globals.backendUri}/decks/${deckId}/cards/${cardId}`
+      : `${this.globals.backendUri}/decks/${deckId}/cards`;
   }
 }
