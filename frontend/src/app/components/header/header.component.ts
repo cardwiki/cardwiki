@@ -13,7 +13,7 @@ import {Deck} from '../../dtos/deck';
 })
 export class HeaderComponent implements OnInit {
 
-  private searchTerm = ''
+  private searchTerm = '';
 
   constructor(public authService: AuthService, private router: Router, private modalService: NgbModal) { }
 
@@ -37,5 +37,9 @@ export class HeaderComponent implements OnInit {
         (deck: Deck) => this.router.navigate(['decks', deck.id])
       )
     ).catch(() => {});
+  }
+
+  loggedin_username(): string {
+    return JSON.parse(localStorage.getItem("whoami")).username
   }
 }

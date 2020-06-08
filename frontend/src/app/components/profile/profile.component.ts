@@ -5,6 +5,8 @@ import {UserProfile} from "../../dtos/userProfile";
 import {DeckSimple} from "../../dtos/deckSimple";
 import {RevisionDetailed} from "../../dtos/revisionDetailed";
 import {Globals} from "../../global/globals";
+import {FormBuilder} from "@angular/forms";
+import {AuthService} from "../../services/auth.service";
 
 @Component({
   selector: 'app-profile',
@@ -27,14 +29,14 @@ export class ProfileComponent implements OnInit {
   editingDescription: boolean = false;
   editingSuccess: boolean = false;
 
-  constructor(private globals: Globals, private userService: UserService, private route: ActivatedRoute) {
+  constructor(private globals: Globals, private authService: AuthService, private userService: UserService, private route: ActivatedRoute) {
   }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       this.revisions = [];
       this.decks = [];
-      this.me = (params.get('username') == '@me');
+      if (localStorage.getItem("whoAmI")) this.me = (params.get('username') == JSON.parse(localStorage.getItem("whoAmI")).username);
       this.loadProfile(params.get('username'));
     });
   }

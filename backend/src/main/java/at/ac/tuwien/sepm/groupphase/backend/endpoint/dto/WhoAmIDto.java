@@ -4,6 +4,8 @@ import lombok.Data;
 
 @Data
 public class WhoAmIDto {
+    private Long id;
+    private String username;
     private String authId;
     private boolean hasAccount;
     private boolean isAdmin;

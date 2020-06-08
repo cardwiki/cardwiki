@@ -35,12 +35,23 @@ export class UserService {
   }
 
   /**
+   * Load profile of user with id {@code userId} from
+   * the backend.
+   *
+   * @param userId of user to load profile for
+   */
+  getProfileById(userId: number): Observable<UserProfile> {
+    console.log('load profile for user with Id: ' + userId);
+    return this.httpClient.get<UserProfile>(`${this.userBaseUri}/${userId}`);
+  }
+
+  /**
    * Load profile of user with username {@code username} from
    * the backend.
    *
    * @param username of user to load profile for
    */
-  getProfile(username: string = '@me'): Observable<UserProfile> {
+  getProfile(username: string): Observable<UserProfile> {
     console.log('load profile for user: ' + username);
     return this.httpClient.get<UserProfile>(`${this.userBaseUri}/byname/${username}`);
   }
