@@ -1,6 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.endpoint.dto;
 
-import com.google.common.base.Objects;
+import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -12,4 +12,5 @@ public class RevisionSimpleDto {
     private String message;
     private Long createdBy;
     private LocalDateTime createdAt;
+    private Revision.Type type;
 }

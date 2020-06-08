@@ -66,6 +66,7 @@ public abstract class TestDataGenerator {
         User user = givenApplicationUser();
         Card card = givenCard();
         Revision revision = new Revision();
+        revision.setType(Revision.Type.CREATE);
         revision.setMessage("message");
         revision.setCard(card);
         card.setLatestRevision(revision);
@@ -149,6 +150,7 @@ public abstract class TestDataGenerator {
 
     public Revision getUnconnectedSampleRevision() {
         Revision revision = new Revision();
+        revision.setType(Revision.Type.CREATE);
         revision.setId(REVISION_ID);
         revision.setMessage("message");
         revision.setCreatedAt(CREATED_AT);

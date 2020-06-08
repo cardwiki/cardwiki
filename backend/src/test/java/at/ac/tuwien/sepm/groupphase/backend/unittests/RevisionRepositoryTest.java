@@ -33,6 +33,7 @@ public class RevisionRepositoryTest extends TestDataGenerator {
     public void givenUser_whenSaveRevisionWithoutCard_throwsDataIntegrityViolationException() {
         User user = givenApplicationUser();
         Revision revision = new Revision();
+        revision.setType(Revision.Type.CREATE);
         revision.setMessage(REVISION_MESSAGE);
         revision.setCreatedBy(user);
 
@@ -43,6 +44,7 @@ public class RevisionRepositoryTest extends TestDataGenerator {
     public void givenCard_whenSaveRevisionWithoutUser_throwsDataIntegrityViolationException() {
         Card card = givenCard();
         Revision revision = new Revision();
+        revision.setType(Revision.Type.CREATE);
         revision.setMessage(REVISION_MESSAGE);
         revision.setCard(card);
 
@@ -55,6 +57,7 @@ public class RevisionRepositoryTest extends TestDataGenerator {
         User user = givenApplicationUser();
 
         Revision revision = new Revision();
+        revision.setType(Revision.Type.EDIT);
         revision.setMessage(REVISION_MESSAGE);
         revision.setCard(card);
         revision.setCreatedBy(user);
@@ -64,11 +67,25 @@ public class RevisionRepositoryTest extends TestDataGenerator {
     }
 
     @Test
+    public void givenCardAndUser_whenSaveRevisionWithoutType_thenThrowConstraintViolationException() {
+        Card card = givenCard();
+        User user = givenApplicationUser();
+
+        Revision revision = new Revision();
+        revision.setMessage(REVISION_MESSAGE);
+        revision.setCard(card);
+        revision.setCreatedBy(user);
+
+        assertThrows(DataIntegrityViolationException.class, () -> revisionRepository.save(revision));
+    }
+
+    @Test
     public void givenCardAndUser_whenSaveRevisionWithTooLongMessage_thenThrowConstraintViolationException() {
         Card card = givenCard();
         User user = givenApplicationUser();
 
         Revision revision = new Revision();
+        revision.setType(Revision.Type.EDIT);
         revision.setMessage("x".repeat(Revision.MAX_MESSAGE_SIZE + 1));
         revision.setCard(card);
         revision.setCreatedBy(user);
@@ -82,6 +99,7 @@ public class RevisionRepositoryTest extends TestDataGenerator {
         User user = givenApplicationUser();
 
         Revision revision = new Revision();
+        revision.setType(Revision.Type.EDIT);
         revision.setMessage("   ");
         revision.setCard(card);
         revision.setCreatedBy(user);

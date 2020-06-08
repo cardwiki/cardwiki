@@ -68,6 +68,7 @@ public class CardDataGenerator {
             deck.getCards().add(card);
 
             card.setLatestRevision(revision);
+            revision.setType(Revision.Type.CREATE);
             revision.setCard(card);
             revision.setMessage("Test Revision ");
             revision.setCreatedBy(user);
@@ -136,6 +137,7 @@ public class CardDataGenerator {
         Revision revision = new Revision();
 
         card.setLatestRevision(revision);
+        revision.setType(Revision.Type.CREATE);
         revision.setCard(card);
         revision.setMessage(deckSize + " test set revision - card " + index);
         revision.setCreatedBy(user);

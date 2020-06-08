@@ -32,6 +32,9 @@ public class Revision {
     @Column(nullable = false, length = MAX_MESSAGE_SIZE, updatable = false)
     private String message;
 
+    @Column(nullable = false, updatable = false)
+    private Type type;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -43,6 +46,12 @@ public class Revision {
         card = null;
         createdBy.dismissRevision(this);
         createdBy = null;
+    }
+
+    public enum Type {
+        CREATE,
+        EDIT,
+        DELETE
     }
 
     public Long getId() {
@@ -93,10 +102,19 @@ public class Revision {
         this.createdBy = createdBy;
     }
 
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
+
     @Override
     public String toString() {
         return "Revision{" +
             "id=" + id +
+            ", type=" + type +
             ", createdBy=" + createdBy +
             ", card=" + (card != null ? card.getId() : null) +
             ", message='" + message + "'" +

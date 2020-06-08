@@ -42,6 +42,7 @@ public class SimpleCardService implements CardService {
         card.setDeck(deck);
 
         Revision revision = new Revision();
+        revision.setType(Revision.Type.CREATE);
         revision.setMessage("Created");
         card.setLatestRevision(revision);
         revision.setCard(card);
@@ -70,6 +71,7 @@ public class SimpleCardService implements CardService {
         User user = userService.loadCurrentUser();
 
         Revision revision = new Revision();
+        revision.setType(Revision.Type.DELETE);
         revision.setCard(card);
         revision.setMessage("Deleted");
         card.setLatestRevision(revision);
@@ -93,6 +95,7 @@ public class SimpleCardService implements CardService {
         Card card = findOne(cardId);
 
         Revision revision = new Revision();
+        revision.setType(Revision.Type.EDIT);
         revision.setMessage("Edited");
         card.setLatestRevision(revision);
         revision.setCard(card);

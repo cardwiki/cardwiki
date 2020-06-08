@@ -56,7 +56,8 @@ public class CardMappingTest extends TestDataGenerator {
             () -> assertEquals(revision.getId(), dto.getId()),
             () -> assertEquals(revision.getMessage(), dto.getMessage()),
             () -> assertEquals(revision.getCreatedBy().getId(), dto.getCreatedBy()),
-            () -> assertEquals(revision.getCreatedAt(), dto.getCreatedAt())
+            () -> assertEquals(revision.getCreatedAt(), dto.getCreatedAt()),
+            () -> assertEquals(revision.getType(), dto.getType())
         );
     }
 
