@@ -7,6 +7,7 @@ import {CardSimple} from '../../../dtos/cardSimple';
 import {DeckForkModalComponent} from '../deck-fork-modal/deck-fork-modal.component';
 import {Observable} from 'rxjs';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {AuthService} from '../../../services/auth.service';
 
 @Component({
   selector: 'app-deck-view',
@@ -19,7 +20,7 @@ export class DeckViewComponent implements OnInit {
   cards: CardSimple[];
 
   constructor(private deckService: DeckService, private cardService: CardService, private route: ActivatedRoute,
-              private router: Router, private modalService: NgbModal) { }
+              private router: Router, private modalService: NgbModal, public authService: AuthService) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
