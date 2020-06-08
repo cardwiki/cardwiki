@@ -28,7 +28,7 @@ export class ProfileComponent implements OnInit {
   editingDescription: boolean = false;
   editingSuccess: boolean = false;
 
-  constructor(private globals: Globals, private authService: AuthService, private userService: UserService, private route: ActivatedRoute) {
+  constructor(public globals: Globals, private authService: AuthService, private userService: UserService, private route: ActivatedRoute) {
   }
 
   ngOnInit(): void {
