@@ -53,7 +53,7 @@ public class SimpleLearnService implements LearnService {
     private static final int[] LEARNING_STEPS = {1, 10}; // in minutes
     private static final int GRADUATING_INTERVAL = 1; // in days
     private static final int EASY_INTERVAL = 4; // in days
-    public static final int EASY_BONUS = 130; // percentage
+    public static final double EASY_BONUS = 1.3;
 
     @Override
     public void saveAttempt(AttemptInputDto attempt) {
@@ -69,61 +69,53 @@ public class SimpleLearnService implements LearnService {
         // This spaced-repetition algorithm is based on Anki's algorithm, which is based on SuperMemo 2.
 
         if (progress.getStatus() == Progress.Status.LEARNING){
-            if (attempt.getStatus() == AttemptInputDto.Status.AGAIN){
-                progress.setInterval(LEARNING_STEPS[0]);
-            } else if (attempt.getStatus() == AttemptInputDto.Status.GOOD){
-                if (progress.getInterval() >= LEARNING_STEPS[LEARNING_STEPS.length - 1]){
-                    progress.setInterval(GRADUATING_INTERVAL);
+            switch (attempt.getStatus()) {
+                case EASY:
+                    progress.setInterval(EASY_INTERVAL);
                     progress.setStatus(Progress.Status.REVIEWING);
-                } else {
-                    for (int min : LEARNING_STEPS){
-                        if (min > progress.getInterval()){
-                            progress.setInterval(min);
-                            break;
+                    progress.setDue(LocalDateTime.now().plusDays(progress.getInterval()));
+                    break;
+
+                case GOOD:
+                    if (progress.getInterval() >= LEARNING_STEPS[LEARNING_STEPS.length - 1]) {
+                        progress.setInterval(GRADUATING_INTERVAL);
+                        progress.setStatus(Progress.Status.REVIEWING);
+                        progress.setDue(LocalDateTime.now().plusDays(progress.getInterval()));
+                    } else {
+                        for (int min : LEARNING_STEPS){
+                            if (min > progress.getInterval()){
+                                progress.setInterval(min);
+                                break;
+                            }
                         }
+                        progress.setDue(LocalDateTime.now().plusMinutes(progress.getInterval()));
                     }
-                }
-            } else if (attempt.getStatus() == AttemptInputDto.Status.EASY){
-                progress.setInterval(EASY_INTERVAL);
-                progress.setStatus(Progress.Status.REVIEWING);
+                    break;
+
+                case AGAIN:
+                    progress.setInterval(LEARNING_STEPS[0]);
+                    progress.setDue(LocalDateTime.now().plusMinutes(progress.getInterval()));
+                    break;
             }
         } else {
             switch (attempt.getStatus()) {
-                case EASY: {
-                    int ef = progress.getEasinessFactor() + 15;
-                    progress.setEasinessFactor(Math.max(ef, Integer.MAX_VALUE));
-                    long interval = ((long) progress.getInterval() * progress.getEasinessFactor() * (long) EASY_BONUS) / 10_000L;
-                    try {
-                        progress.setInterval(Math.toIntExact(interval));
-                    } catch (ArithmeticException e) {
-                        progress.setInterval(Integer.MAX_VALUE);
-                    }
+                case EASY:
+                    progress.setEasinessFactor(progress.getEasinessFactor() + 15);
+                    progress.setInterval((int) Math.ceil(progress.getInterval() * progress.getEasinessFactor() * EASY_BONUS));
                     break;
-                }
-                case GOOD: {
-                    long interval = ((long) progress.getInterval() * progress.getEasinessFactor()) / 100L;
-                    try {
-                        progress.setInterval(Math.toIntExact(interval));
-                    } catch (ArithmeticException e) {
-                        progress.setInterval(Integer.MAX_VALUE);
-                    }
-                    break;
-                }
-                case AGAIN: {
-                    int ef = progress.getEasinessFactor() - 20;
-                    progress.setEasinessFactor(Math.max(ef, 130));
-                    long interval = (progress.getInterval() * 20L) / 100L;
-                    try {
-                        progress.setInterval(Math.toIntExact(interval));
-                    } catch (ArithmeticException e) {
-                        progress.setInterval(Integer.MAX_VALUE);
-                    }
-                    break;
-                }
-            }
-        }
 
-        progress.setDue(LocalDateTime.now().plusMinutes(progress.getInterval()));
+                case GOOD:
+                    progress.setInterval((int) Math.ceil(progress.getInterval() * progress.getEasinessFactor()));
+                    break;
+
+                case AGAIN:
+                    progress.setEasinessFactor(Math.max(progress.getEasinessFactor() - 20, 1.3));
+                    progress.setInterval((int) Math.ceil(progress.getInterval() * 0.2));
+                    break;
+            }
+
+            progress.setDue(LocalDateTime.now().plusDays(progress.getInterval()));
+        }
 
         try {
             progressRepository.saveAndFlush(progress);
