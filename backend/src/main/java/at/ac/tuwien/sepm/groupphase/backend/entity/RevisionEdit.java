@@ -2,6 +2,7 @@ package at.ac.tuwien.sepm.groupphase.backend.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Objects;
 
@@ -18,15 +19,21 @@ public class RevisionEdit {
     @JoinColumn(name = "revision_id", updatable = false)
     private Revision revision;
 
-    @Size(max = MAX_TEXT_SIZE)
-    @NotBlank
-    @Column(nullable = false, name = "text_front", length = MAX_TEXT_SIZE, updatable = false)
-    private String textFront;
 
     @Size(max = MAX_TEXT_SIZE)
-    @NotBlank
-    @Column(nullable = false, name = "text_back", length = MAX_TEXT_SIZE, updatable = false)
+    @Column(name = "text_front", length = MAX_TEXT_SIZE, updatable = false)
+    private String textFront;
+
+
+    @Size(max = MAX_TEXT_SIZE)
+    @Column(name = "text_back", length = MAX_TEXT_SIZE, updatable = false)
     private String textBack;
+
+    @Column(name = "image_front", updatable = false)
+    private String imageFront;
+
+    @Column(name = "image_back", updatable = false)
+    private String imageBack;
 
     public Long getId() {
         return id;
@@ -60,26 +67,45 @@ public class RevisionEdit {
         this.textBack = textBack;
     }
 
+    public String getImageFront() {
+        return imageFront;
+    }
+
+    public void setImageFront(String imageFront) {
+        this.imageFront = imageFront;
+    }
+
+    public String getImageBack() {
+        return imageBack;
+    }
+
+    public void setImageBack(String imageBack) {
+        this.imageBack = imageBack;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof RevisionEdit)) return false;
-        RevisionEdit edit = (RevisionEdit) o;
-        return Objects.equals(textFront, edit.textFront) &&
-            Objects.equals(textBack, edit.textBack);
+        if (o == null || getClass() != o.getClass()) return false;
+        RevisionEdit that = (RevisionEdit) o;
+        return Objects.equals(getTextFront(), that.getTextFront()) &&
+            Objects.equals(getImageFront(), that.getImageFront()) &&
+            Objects.equals(getTextBack(), that.getTextBack()) &&
+            Objects.equals(getImageBack(), that.getImageBack());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(textFront, textBack);
+        return Objects.hash(getTextFront(), getImageFront(), getTextBack(), getImageBack());
     }
 
     @Override
     public String toString() {
         return "RevisionEdit{" +
-            "id=" + id +
-            ", textFront='" + textFront + '\'' +
+            "textFront='" + textFront + '\'' +
+            ", imageFront='" + imageFront + '\'' +
             ", textBack='" + textBack + '\'' +
+            ", imageBack='" + imageBack + '\'' +
             '}';
     }
 }

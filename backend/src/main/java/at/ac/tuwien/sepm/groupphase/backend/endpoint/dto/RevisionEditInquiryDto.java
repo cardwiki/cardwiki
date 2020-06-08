@@ -11,13 +11,13 @@ import javax.validation.constraints.Size;
 @Data
 public class RevisionEditInquiryDto {
 
-    @NotNull(message = "Front text must not be null")
     @Size(max = RevisionEdit.MAX_TEXT_SIZE)
-    @NotBlank
     private String textFront;
 
-    @NotNull(message = "Back text must not be null")
     @Size(max = RevisionEdit.MAX_TEXT_SIZE)
-    @NotBlank
     private String textBack;
+
+    private String imageFront;
+
+    private String imageBack;
 }

@@ -9,6 +9,7 @@ public interface ImageService {
      * Saves a new image
      *
      * @param image to save
+     * @return filename of saved image
      */
     String save(InputStream image);
 

@@ -8,8 +8,10 @@ import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
@@ -34,6 +36,9 @@ public class SimpleCardService implements CardService {
     @Transactional
     public Card addCardToDeck(Long deckId, RevisionEdit revisionEdit) {
         LOGGER.debug("Add Card to Deck: {} {}", revisionEdit, deckId);
+        if (!eachSideHasContent(revisionEdit)) {
+            throw new RuntimeException("Each side has to contain either text or an image (or both)");
+        }
         User user = userService.loadCurrentUser();
         Deck deck = deckService.findOne(deckId);
 
@@ -94,6 +99,9 @@ public class SimpleCardService implements CardService {
     @Transactional
     public Card editCardInDeck(Long deckId, Long cardId, RevisionEdit revisionEdit) {
         LOGGER.debug("Edit Card {} in Deck {}: {}", cardId, deckId, revisionEdit);
+        if (!eachSideHasContent(revisionEdit)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Each side has to contain either text or an image (or both)");
+        }
         User user = userService.loadCurrentUser();
         Deck deck = deckService.findOne(deckId);
         Optional<Card> optCard = cardRepository.findDetailsById(cardId);
@@ -114,5 +122,10 @@ public class SimpleCardService implements CardService {
             return cardRepository.saveAndFlush(card);
         }
         else throw new NotFoundException(String.format("Could not find card with id %s in deck with id %s", cardId, deckId));
+    }
+
+    public boolean eachSideHasContent(RevisionEdit revisionEdit) {
+        return (revisionEdit.getTextFront() != null || revisionEdit.getImageFront() != null)
+            && (revisionEdit.getTextBack() != null || revisionEdit.getImageBack() != null);
     }
 }

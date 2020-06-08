@@ -32,20 +32,14 @@ public class SimpleImageService implements ImageService {
     public String save(InputStream inputStream) {
         LOGGER.info("Save image");
         try {
-//            String contentType = "";
-//            ImageInputStream iis = ImageIO.createImageInputStream(inputStream);
-//            Iterator<ImageReader> imageReaders = ImageIO.getImageReaders(iis);
-//            while (imageReaders.hasNext()) {
-//                ImageReader reader = imageReaders.next();
-//                contentType = reader.getFormatName();
-//            }
-
             byte[] bytes = inputStream.readAllBytes();
-            String contentType = URLConnection.guessContentTypeFromStream(new ByteArrayInputStream(bytes))
-                .split("/")[1];
-
+            String contentType = URLConnection.guessContentTypeFromStream(new ByteArrayInputStream(bytes));
+            if (contentType == null) {
+                throw new RuntimeException("Content type could not be determined");
+            }
+            contentType = contentType.split("/")[1];
             if (!(contentType.equals("png") || contentType.equals("jpeg"))) {
-                throw new RuntimeException("Content type not supported");
+                throw new RuntimeException("Content type " + contentType + " is not supported");
             }
 
             byte[] hash = MessageDigest.getInstance("SHA-256").digest(bytes);
@@ -61,7 +55,7 @@ public class SimpleImageService implements ImageService {
         StringBuffer hexString = new StringBuffer();
         for (int i = 0; i < hash.length; i++) {
             String hex = Integer.toHexString(0xff & hash[i]);
-            if(hex.length() == 1) hexString.append('0');
+            if (hex.length() == 1) hexString.append('0');
             hexString.append(hex);
         }
         return hexString.toString();

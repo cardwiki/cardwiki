@@ -6,7 +6,9 @@ export class CardSimple extends CardContent {
     public id: number,
     public deck: DeckSimple,
     public textFront: string,
-    public textBack: string) {
-    super(id, textFront, textBack);
+    public textBack: string,
+    public imageFront: string,
+    public imageBack: string) {
+    super(id, textFront, textBack, imageFront, imageBack);
   }
 }

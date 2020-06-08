@@ -12,4 +12,6 @@ public class CardDetailsDto {
     private List<RevisionSimpleDto> revisions;
     private String textFront;
     private String textBack;
+    private String imageFront;
+    private String imageBack;
 }

@@ -12,7 +12,7 @@ import { Location } from '@angular/common';
 export class CardCreateComponent implements OnInit {
 
   private deckId: number
-  public card = new CardContent(null, '', '')
+  public card = new CardContent(null, null, null, null, null)
 
   constructor(private cardService: CardService, private route: ActivatedRoute, private location: Location) { }
 

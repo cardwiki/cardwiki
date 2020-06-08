@@ -20,22 +20,26 @@ public interface CardMapper {
 
     @Mapping(source = "card.latestRevision.revisionEdit.textFront", target = "textFront")
     @Mapping(source = "card.latestRevision.revisionEdit.textBack", target = "textBack")
+    @Mapping(source = "card.latestRevision.revisionEdit.imageFront", target = "imageFront")
+    @Mapping(source = "card.latestRevision.revisionEdit.imageBack", target = "imageBack")
     CardDetailsDto cardToCardDetailsDto(Card card);
 
     @Mapping(source = "card.latestRevision.revisionEdit.textFront", target = "textFront")
     @Mapping(source = "card.latestRevision.revisionEdit.textBack", target = "textBack")
+    @Mapping(source = "card.latestRevision.revisionEdit.imageFront", target = "imageFront")
+    @Mapping(source = "card.latestRevision.revisionEdit.imageBack", target = "imageBack")
     CardSimpleDto cardToCardSimpleDto(Card card);
 
     @Mapping(source = "revision.createdBy.id", target = "createdBy")
     RevisionSimpleDto revisionToRevisionSimpleDto(Revision revision);
 
-
     RevisionEdit revisionEditInquiryDtoToRevisionEdit(RevisionEditInquiryDto revisionEditInquiryDto);
-
 
     @Named("cardToCardContentDto")
     @Mapping(source = "card.latestRevision.revisionEdit.textFront", target = "textFront")
     @Mapping(source = "card.latestRevision.revisionEdit.textBack", target = "textBack")
+    @Mapping(source = "card.latestRevision.revisionEdit.imageFront", target = "imageFront")
+    @Mapping(source = "card.latestRevision.revisionEdit.imageBack", target = "imageBack")
     CardContentDto cardToCardContentDto(Card card);
 
     @IterableMapping(qualifiedByName = "cardToCardContentDto")

@@ -8,7 +8,9 @@ export class CardDetails extends CardSimple {
     public deck: DeckSimple,
     public textFront: string,
     public textBack: string,
+    public imageFront: string,
+    public imageBack: string,
     public revisions: RevisionSimple[]) {
-      super(id, deck, textFront, textBack);
+      super(id, deck, textFront, textBack, imageFront, imageBack);
   }
 }

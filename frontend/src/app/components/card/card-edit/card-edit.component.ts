@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {CardService} from "../../../services/card.service";
-import {ActivatedRoute} from "@angular/router";
-import {CardContent} from "../../../dtos/cardContent";
+import {CardService} from '../../../services/card.service';
+import {ActivatedRoute} from '@angular/router';
+import {CardContent} from '../../../dtos/cardContent';
 import { Location } from '@angular/common';
 
 @Component({
@@ -10,8 +10,8 @@ import { Location } from '@angular/common';
   styleUrls: ['./card-edit.component.css']
 })
 export class CardEditComponent implements OnInit {
-  
-  public card = new CardContent(null, '', '');
+
+  public card = new CardContent(null, null, null, null, null);
   private deckId: number;
   private cardId: number;
 
@@ -35,7 +35,7 @@ export class CardEditComponent implements OnInit {
           console.error('error fetching card', error);
         alert('Error while fetching card');
       }
-      )
+      );
   }
 
   cardSubmit(): void {
@@ -44,17 +44,17 @@ export class CardEditComponent implements OnInit {
       .subscribe(
         cardDetails => {
           console.log('edited card', cardDetails);
-          this.location.back()
+          this.location.back();
         },
         error => {
           console.error('error editing card', error);
-          alert('Error while editing card')
+          alert('Error while editing card');
         }
-      )
+      );
   }
 
   cancel(): void {
-    this.location.back()
+    this.location.back();
   }
 
 }
