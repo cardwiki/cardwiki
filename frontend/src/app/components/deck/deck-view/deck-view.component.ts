@@ -35,12 +35,13 @@ export class DeckViewComponent implements OnInit {
   }
 
   removeCard(card: CardSimple) {
-    this.cardService.removeCardFromDeck(this.deck.id, card.id).subscribe(() => {
-      const index: number = this.cards.indexOf(card);
-      if (index !== -1) {
-        this.cards.splice(index, 1);
-      }
-    });
+    if (confirm('Are you sure you want to delete this card?'))
+      this.cardService.removeCardFromDeck(this.deck.id, card.id).subscribe(() => {
+        const index: number = this.cards.indexOf(card);
+        if (index !== -1) {
+          this.cards.splice(index, 1);
+        }
+      });
   }
 
   openForkModal() {

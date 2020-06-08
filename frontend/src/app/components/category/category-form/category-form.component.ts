@@ -3,6 +3,7 @@ import {FormBuilder, FormGroup, Validators, ValidationErrors} from '@angular/for
 import {CategoryDetails} from '../../../dtos/categoryDetails';
 import {CategoryService} from '../../../services/category.service';
 import { Location } from '@angular/common';
+import { Router } from '@angular/router';
 import { CategoryUpdate } from 'src/app/dtos/categoryUpdate';
 import { CategorySimple } from 'src/app/dtos/categorySimple';
 
@@ -25,7 +26,7 @@ export class CategoryFormComponent implements OnInit {
   categories: CategorySimple[];
   result: CategoryDetails = new CategoryDetails;
 
-  constructor(private formBuilder: FormBuilder, private categoryService: CategoryService, private location: Location) {
+  constructor(private formBuilder: FormBuilder, private categoryService: CategoryService, private location: Location, private router: Router) {
     this.categoryForm = this.formBuilder.group({
 
       name: ['', [Validators.required, Validators.maxLength(200), this.nameIsBlank.bind(this)]],
@@ -47,11 +48,8 @@ export class CategoryFormComponent implements OnInit {
     if (this.mode === 'Update') {
       const payload = new CategoryUpdate(this.categoryForm.value.name, parent);
       this.categoryService.editCategory(this.category.id, payload).subscribe(
-        (categoryResult) => {
-          console.log('Result:', categoryResult);
-          this.result = categoryResult;
-          this.submitted = true;
-          this.error = false;
+        (category) => {
+          this.router.navigate(['categories', category.id])
         },
         (error) => {
           console.log('Updating category failed:');
@@ -62,12 +60,8 @@ export class CategoryFormComponent implements OnInit {
       );
     } else {
       this.categoryService.createCategory(new CategoryUpdate(this.categoryForm.value.name, parent))
-        .subscribe((categoryResult) => {
-            console.log('Result:', categoryResult);
-            this.result = categoryResult;
-            this.submitted = true;
-            this.fetchCategories();
-            this.error = false;
+        .subscribe((category) => {
+            this.router.navigate(['categories', category.id])
           },
           (error) => {
             console.log('Creating category failed:', error);

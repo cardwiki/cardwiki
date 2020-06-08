@@ -27,14 +27,14 @@
         <div class="progress mr-2" style="height: 30px; width: 200px">
           <div class="progress-bar bg-secondary" role="progressbar" style="width: 30%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">30%</div>
         </div>
-        <a routerLink="/learn/{{deck.id}}" class="btn btn-light mr-1">Learn</a>
+        <a routerLink="/learn/{{deck.id}}" class="btn btn-primary mr-1">Learn</a>
         <a routerLink="/decks/{{deck.id}}/preview" class="btn btn-light ml-1">Preview</a>
       </div>
     </div>
     <div class="col" *ngIf="deck">
       <div class="btn-toolbar float-right">
         <button type="button" class="btn btn-light float-right mr-1"><i class="fas fa-undo"></i> Flip</button>
-        <a routerLink="/decks/{{deck.id}}/cards/new" class="btn btn-light float-right"><i class="fas fa-plus"></i> Add new card</a>
+        <a routerLink="/decks/{{deck.id}}/cards/new" class="btn btn-primary float-right"><i class="fas fa-plus"></i> Add new card</a>
       </div>
     </div>
   </div>
@@ -50,8 +50,8 @@
   </thead>
   <tbody *ngFor="let card of cards">
   <tr *ngIf="card.textFront || card.textBack" class="">
-    <td class="w-50">{{card.textFront}}</td>
-    <td class="w-50">{{card.textBack}}</td>
+    <td class="w-50" [innerHtml]="card.textFront | md2html"></td>
+    <td class="w-50" [innerHtml]="card.textBack | md2html"></td>
     <td>
       <div class="btn-group float-right">
         <a routerLink="/decks/{{deck.id}}/cards/{{card.id}}/edit" class="btn btn-light"><i class="fas fa-pencil-alt"></i></a>
