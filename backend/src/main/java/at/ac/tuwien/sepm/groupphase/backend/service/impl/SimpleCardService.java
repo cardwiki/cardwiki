@@ -32,8 +32,8 @@ public class SimpleCardService implements CardService {
 
     @Override
     @Transactional
-    public Card addCardToDeck(Long deckId, RevisionEdit revisionEdit) {
-        LOGGER.debug("Add Card to Deck: {} {}", revisionEdit, deckId);
+    public Card addCardToDeck(Long deckId, Revision revisionData) {
+        LOGGER.debug("Add Card to Deck: {} {}", revisionData, deckId);
         User user = userService.loadCurrentUser();
         Deck deck = deckService.findOne(deckId);
 
@@ -43,7 +43,7 @@ public class SimpleCardService implements CardService {
 
         Revision revision = new Revision();
         revision.setType(Revision.Type.CREATE);
-        revision.setMessage("Created");
+        revision.setMessage(revisionData.getMessage() != null ? revisionData.getMessage() : "Created");
         card.setLatestRevision(revision);
         revision.setCard(card);
         revision.setCreatedBy(user);
@@ -51,6 +51,7 @@ public class SimpleCardService implements CardService {
         card = cardRepository.saveAndFlush(card);
 
         // Add content
+        RevisionEdit revisionEdit = revisionData.getRevisionEdit();
         card.getLatestRevision().setRevisionEdit(revisionEdit);
         revisionEdit.setRevision(card.getLatestRevision());
 
@@ -89,8 +90,8 @@ public class SimpleCardService implements CardService {
 
     @Override
     @Transactional
-    public Card editCardInDeck(Long cardId, RevisionEdit revisionEdit) {
-        LOGGER.debug("Edit Card {}: {}", cardId, revisionEdit);
+    public Card editCardInDeck(Long cardId, Revision revisionData) {
+        LOGGER.debug("Edit Card {}: {}", cardId, revisionData);
         User user = userService.loadCurrentUser();
         Card card = findOne(cardId);
 
@@ -102,6 +103,7 @@ public class SimpleCardService implements CardService {
         revision.setCreatedBy(user);
 
         // Add content
+        RevisionEdit revisionEdit = revisionData.getRevisionEdit();
         card.getLatestRevision().setRevisionEdit(revisionEdit);
         revisionEdit.setRevision(card.getLatestRevision());
 

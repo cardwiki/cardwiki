@@ -2,7 +2,7 @@ package at.ac.tuwien.sepm.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.*;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.CardMapper;
-import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionEdit;
+import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
 import at.ac.tuwien.sepm.groupphase.backend.service.CardService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Authorization;
@@ -35,10 +35,10 @@ public class CardEndpoint {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/decks/{deckId}/cards")
     @ApiOperation(value = "Create a new card", authorizations = {@Authorization(value = "ROLE_USER")})
-    public CardDetailsDto create(@Valid  @RequestBody RevisionEditInquiryDto revisionEditInquiryDto, @PathVariable Long deckId) {
-        LOGGER.info("POST /api/v1/decks/{}/cards body: {}", deckId, revisionEditInquiryDto);
-        RevisionEdit revisionEdit = cardMapper.revisionEditInquiryDtoToRevisionEdit(revisionEditInquiryDto);
-        return cardMapper.cardToCardDetailsDto(cardService.addCardToDeck(deckId, revisionEdit));
+    public CardDetailsDto create(@Valid  @RequestBody RevisionInputDto revisionInputDto, @PathVariable Long deckId) {
+        LOGGER.info("POST /api/v1/decks/{}/cards body: {}", deckId, revisionInputDto);
+        Revision revision = cardMapper.revisionInputDtoToRevision(revisionInputDto);
+        return cardMapper.cardToCardDetailsDto(cardService.addCardToDeck(deckId, revision));
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -60,10 +60,10 @@ public class CardEndpoint {
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping(value = "/cards/{cardId}")
     @ApiOperation(value = "Edit a specific card in a deck", authorizations = {@Authorization(value = "ROLE_USER")})
-    public CardDetailsDto edit(@Valid  @RequestBody RevisionEditInquiryDto revisionEditInquiryDto, @PathVariable Long cardId) {
-        LOGGER.info("PATCH /api/v1/cards/{} body: {}", cardId, revisionEditInquiryDto);
-        RevisionEdit revisionEdit = cardMapper.revisionEditInquiryDtoToRevisionEdit(revisionEditInquiryDto);
-        return cardMapper.cardToCardDetailsDto(cardService.editCardInDeck(cardId, revisionEdit));
+    public CardDetailsDto edit(@Valid  @RequestBody RevisionInputDto revisionInputDto, @PathVariable Long cardId) {
+        LOGGER.info("PATCH /api/v1/cards/{} body: {}", cardId, revisionInputDto);
+        Revision revision = cardMapper.revisionInputDtoToRevision(revisionInputDto);
+        return cardMapper.cardToCardDetailsDto(cardService.editCardInDeck(cardId, revision));
     }
 
     @Secured("ROLE_USER")

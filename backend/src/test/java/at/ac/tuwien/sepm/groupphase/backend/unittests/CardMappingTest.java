@@ -5,7 +5,6 @@ import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.*;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.CardMapper;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
-import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionEdit;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,16 +61,19 @@ public class CardMappingTest extends TestDataGenerator {
     }
 
     @Test
-    public void givenRevisionEditInquiryDto_whenMapToRevisionEdit_thenRevisionEditHasAllProperties() {
-        RevisionEditInquiryDto dto = new RevisionEditInquiryDto();
+    public void givenRevisionInputDto_whenMapToRevision_thenRevisionHasAllProperties() {
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setTextFront("front text");
         dto.setTextBack("back text");
+        dto.setMessage("my message");
 
-        RevisionEdit revisionEdit = cardMapper.revisionEditInquiryDtoToRevisionEdit(dto);
+        Revision revision = cardMapper.revisionInputDtoToRevision(dto);
 
+        assertNotNull(revision.getRevisionEdit());
         assertAll(
-            () -> assertEquals(dto.getTextFront(), revisionEdit.getTextFront()),
-            () -> assertEquals(dto.getTextBack(), revisionEdit.getTextBack())
+            () -> assertEquals(dto.getMessage(), revision.getMessage()),
+            () -> assertEquals(dto.getTextFront(), revision.getRevisionEdit().getTextFront()),
+            () -> assertEquals(dto.getTextBack(), revision.getRevisionEdit().getTextBack())
         );
     }
 

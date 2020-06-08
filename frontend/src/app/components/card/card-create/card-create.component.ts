@@ -1,9 +1,9 @@
 import { ActivatedRoute } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
-import { CardContent } from 'src/app/dtos/cardContent';
 import { CardService } from 'src/app/services/card.service';
 import { Location } from '@angular/common';
 import { NotificationService } from 'src/app/services/notification.service';
+import { CardUpdate } from 'src/app/dtos/cardUpdate';
 
 @Component({
   selector: 'app-card-create',
@@ -13,11 +13,12 @@ import { NotificationService } from 'src/app/services/notification.service';
 export class CardCreateComponent implements OnInit {
 
   private deckId: number
-  public card = new CardContent(null, '', '')
+  public card: CardUpdate
 
   constructor(private cardService: CardService, private route: ActivatedRoute, private location: Location, private notificationService: NotificationService) { }
 
   ngOnInit(): void {
+    this.card = new CardUpdate('', '')
     this.deckId = Number(this.route.snapshot.paramMap.get('id'))
   }
 

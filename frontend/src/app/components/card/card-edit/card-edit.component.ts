@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {CardService} from "../../../services/card.service";
 import {ActivatedRoute} from "@angular/router";
-import {CardContent} from "../../../dtos/cardContent";
 import { Location } from '@angular/common';
 import { NotificationService } from 'src/app/services/notification.service';
+import { CardUpdate } from 'src/app/dtos/cardUpdate';
 
 @Component({
   selector: 'app-card-edit',
@@ -12,12 +12,13 @@ import { NotificationService } from 'src/app/services/notification.service';
 })
 export class CardEditComponent implements OnInit {
   
-  public card = new CardContent(null, '', '');
+  public card: CardUpdate;
   private cardId: number;
 
   constructor(private cardService: CardService, private route: ActivatedRoute, private location: Location, private notificationService: NotificationService) { }
 
   ngOnInit(): void {
+    this.card = new CardUpdate('', '');
     this.cardId = Number(this.route.snapshot.paramMap.get('cardId'));
     this.fetchCardContent();
   }
@@ -27,7 +28,8 @@ export class CardEditComponent implements OnInit {
     this.cardService.fetchCard(this.cardId)
       .subscribe(cardDetails => {
         console.log('fetched card', cardDetails);
-        this.card = cardDetails;
+        this.card.textFront = cardDetails.textFront;
+        this.card.textBack = cardDetails.textBack;
       })
   }
 
