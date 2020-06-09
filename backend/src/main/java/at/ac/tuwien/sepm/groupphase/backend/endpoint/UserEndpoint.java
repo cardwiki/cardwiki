@@ -69,13 +69,6 @@ public class UserEndpoint {
             .collect(Collectors.toList());
     }
 
-    @Secured("ROLE_USER")
-    @GetMapping(value = "/{id}")
-    @ApiOperation(value = "Get user profile of user by id")
-    public UserDetailsDto getProfile(@PathVariable long id) {
-        return userMapper.userToUserDetailsDto(userService.loadUserById(id));
-    }
-
     @GetMapping(value = "/byname/{username}")
     @ApiOperation(value = "Get user profile")
     public UserDetailsDto getProfile(@PathVariable String username) {
