@@ -7,9 +7,11 @@
       <div class="btn-toolbar float-right">
         <a routerLink="/decks/{{deck.id}}/edit" class="btn btn-light float-right mr-1"><i class="fas fa-pencil-alt"></i> Edit</a>
         <button type="button" class="btn btn-light float-right mr-1"><i class="far fa-star"></i> Save</button>
-        <button *ngIf="cards && cards.length > 0 && authService.isLoggedIn()" type="button" class="btn btn-light mr-1" (click)="openForkModal()">
-          <i class="fas fa-code-branch"></i> Fork
-        </button>
+        <ng-template [appUserRole]="'USER'"> <!-- Necessary because we can't use *appUserRole and *ngIf in the same element -->
+          <button *ngIf="cards && cards.length > 0" type="button" class="btn btn-light mr-1" (click)="openForkModal()">
+            <i class="fas fa-code-branch"></i> Fork 
+          </button>
+        </ng-template>
         <button type="button" class="btn btn-light float-right mr-1">
           <i class="fas fa-list"></i> View History</button>
       </div>

@@ -37,6 +37,7 @@ import { MarkdownSyntaxComponent } from './components/help/markdown-syntax/markd
 import { ToastsContainerComponent } from './components/toasts-container/toasts-container.component';
 import { LearnDeckComponent } from './components/learn-deck/learn-deck.component';
 import { DeckForkModalComponent } from './components/deck/deck-fork-modal/deck-fork-modal.component';
+import { UserRoleDirective } from './directives/user-role.directive';
 
 @NgModule({
   declarations: [
@@ -71,6 +72,7 @@ import { DeckForkModalComponent } from './components/deck/deck-fork-modal/deck-f
     ToastsContainerComponent,
     LearnDeckComponent,
     DeckForkModalComponent,
+    UserRoleDirective,
   ],
   imports: [
     BrowserModule,

@@ -10,7 +10,7 @@
       <li class="nav-item">
         <a class="nav-link" routerLink="/categories">Categories</a>
       </li>
-      <li class="nav-item" *ngIf="authService.isLoggedIn()">
+      <li class="nav-item" *appUserRole="'USER'">
         <a class="nav-link" href="#" (click)="openDeckModal(); false">Create a deck</a>
       </li>
     </ul>
@@ -27,8 +27,8 @@
         <a class="nav-link" routerLink="/about" routerLinkActive="active">About</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" *ngIf="!authService.isLoggedIn()" routerLink="/login" routerLinkActive="active">Login</a>
-        <a class="nav-link" *ngIf="authService.isLoggedIn()" routerLink="/" (click)="authService.logoutUser()">Logout</a>
+        <a class="nav-link" *appUserRole="'ANONYMOUS'" routerLink="/login" routerLinkActive="active">Login</a>
+        <a class="nav-link" *appUserRole="'USER'" routerLink="/" (click)="authService.logoutUser()">Logout</a>
       </li>
     </ul>
   </div>
