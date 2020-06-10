@@ -48,7 +48,7 @@ export class AuthService {
     return this.httpClient.post<UserRegistration>(this.globals.backendUri + '/users', {username: username, description: ''})
       .pipe(
         tap(null, this.errorHandler.handleError('Could not register')),
-        tap(res => this.updateWhoAmI({ ...this.currentAuth.whoAmI, hasAccount: true }))
+        tap(res => this.updateWhoAmI({ ...this.getStoredAuth().whoAmI, hasAccount: true }))
       )
   }
 
@@ -66,14 +66,15 @@ export class AuthService {
    * @param token 
    */
   updateToken(token: string): void {
-    const auth = this.getAuthStore()
-    auth.token = token
-    this.setAuthStore(auth)
+    this.storeAuth({
+      ...this.getStoredAuth(),
+      token,
+    })
     this.refreshUserRoles()
   }
 
   getToken(): string {
-    return this.currentAuth.token
+    return this.getStoredAuth().token
   }
 
   /**
@@ -81,9 +82,10 @@ export class AuthService {
    * @param whoAmI 
    */
   private updateWhoAmI(whoAmI: WhoAmI): void {
-    const auth = this.getAuthStore()
-    auth.whoAmI = whoAmI
-    this.setAuthStore(auth)
+    this.storeAuth({
+      ...this.getStoredAuth(),
+      whoAmI,
+    })
     this.refreshUserRoles()
   }
 
@@ -94,14 +96,18 @@ export class AuthService {
     this.currentUserRoleSubject$.next(this.getStoredUserRoles())
   }
 
+  /**
+   * Get stored user roles if they are not expired yet
+   */
   private getStoredUserRoles(): UserRole[] {
+    const auth = this.getStoredAuth()
     // Not logged in or expired
-    if (!this.currentAuth.whoAmI || !this.currentAuth.token || !this.currentAuth.whoAmI.hasAccount)
+    if (!auth.whoAmI || !auth.token || !auth.whoAmI.hasAccount)
       return ['ANONYMOUS']
-    if (this.getTokenExpirationDate(this.currentAuth.token).valueOf() < new Date().valueOf())
+    if (this.getTokenExpirationDate(auth.token).valueOf() < new Date().valueOf())
       return ['ANONYMOUS']
 
-    return this.currentAuth.whoAmI.admin ?
+    return auth.whoAmI.admin ?
       ['USER', 'ADMIN'] : ['USER']
   }
 
@@ -119,25 +125,25 @@ export class AuthService {
 
   /**
    * Read-only copy of current auth data
-   * Utility wrapper of getAuthStore
    */
-  private get currentAuth(): AuthStore {
-    const authData = this.getAuthStore()
+  private getStoredAuth(): AuthStore {
+    const serialized = localStorage.getItem('auth')
+    const authData = serialized ? JSON.parse(serialized) : {}
     Object.freeze(authData) // Prevent trying to update this object instead of updating it in localStorage
     return authData
   }
 
-  private getAuthStore(): AuthStore {
-    const serialized = localStorage.getItem('auth')
-    return serialized ? JSON.parse(serialized) : {}
-  }
-
-  private setAuthStore(auth: AuthStore) {
+  /**
+   * Store auth data in localStorage
+   * @param auth auth data to be stored
+   */
+  private storeAuth(auth: AuthStore) {
     const serialized = JSON.stringify(auth)
     localStorage.setItem('auth', serialized)
   }
 }
 
+// No enum so it's easy for direct use in html templates
 export type UserRole = 'ANONYMOUS' | 'USER' | 'ADMIN'
 
 interface AuthStore {

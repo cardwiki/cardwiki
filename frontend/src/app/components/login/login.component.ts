@@ -69,7 +69,8 @@ export class LoginComponent implements OnInit {
 
   _textValue:string;
   ConvertToLower(evt: string) {
-    this._textValue = evt ? evt.toLowerCase() : '';
+    if (evt)
+      this._textValue = evt.toLowerCase();
   }
 
 }
