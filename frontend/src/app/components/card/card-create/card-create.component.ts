@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { CardContent } from 'src/app/dtos/cardContent';
 import { CardService } from 'src/app/services/card.service';
 import { Location } from '@angular/common';
+import { NotificationService } from 'src/app/services/notification.service';
 
 @Component({
   selector: 'app-card-create',
@@ -14,7 +15,7 @@ export class CardCreateComponent implements OnInit {
   private deckId: number
   public card = new CardContent(null, null, null, null, null)
 
-  constructor(private cardService: CardService, private route: ActivatedRoute, private location: Location) { }
+  constructor(private cardService: CardService, private route: ActivatedRoute, private location: Location, private notificationService: NotificationService) { }
 
   ngOnInit(): void {
     this.deckId = Number(this.route.snapshot.paramMap.get('id'))
@@ -26,13 +27,9 @@ export class CardCreateComponent implements OnInit {
       .subscribe(
         cardDetails => {
           console.log('created card', cardDetails)
+          this.notificationService.success('Created new Card')
           this.location.back()
-        },
-        error => {
-          console.error('error creating card', error)
-          alert('Error while creating card')
-        }
-      )
+        })
   }
 
   cancel(): void {

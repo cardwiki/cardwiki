@@ -6,6 +6,7 @@ import {DeckCreateModalComponent} from '../deck/deck-create-modal/deck-create-mo
 import {Observable} from 'rxjs';
 import {DeckDetails} from '../../dtos/deckDetails';
 import { SearchQueryParams } from 'src/app/interfaces/search-query-params';
+import { NotificationService } from 'src/app/services/notification.service';
 
 @Component({
   selector: 'app-header',
@@ -14,9 +15,9 @@ import { SearchQueryParams } from 'src/app/interfaces/search-query-params';
 })
 export class HeaderComponent implements OnInit {
 
-  public searchTerm = ''
+  public searchTerm = '';
 
-  constructor(public authService: AuthService, private router: Router, private modalService: NgbModal) { }
+  constructor(public authService: AuthService, private router: Router, private modalService: NgbModal, private notificationService: NotificationService) { }
 
   ngOnInit() {
   }
@@ -28,7 +29,7 @@ export class HeaderComponent implements OnInit {
     }
     this.router.navigate(['/search'], {
       queryParams
-    })
+    });
   }
 
   openDeckModal() {
@@ -36,8 +37,15 @@ export class HeaderComponent implements OnInit {
 
     modalRef.result.then(
       (res: Observable<DeckDetails>) => res.subscribe(
-        (deck: DeckDetails) => this.router.navigate(['decks', deck.id])
+        (deck: DeckDetails) => {
+          this.notificationService.success('Created Deck')
+          this.router.navigate(['decks', deck.id])
+        }
       )
     ).catch(() => {});
+  }
+
+  loggedin_username(): string {
+    return JSON.parse(localStorage.getItem("whoami")).username
   }
 }

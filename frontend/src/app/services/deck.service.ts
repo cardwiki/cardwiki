@@ -6,6 +6,8 @@ import {Observable} from 'rxjs';
 import {DeckDetails} from '../dtos/deckDetails';
 import {DeckSimple} from '../dtos/deckSimple';
 import {DeckUpdate} from '../dtos/deckUpdate';
+import { ErrorHandlerService } from './error-handler.service';
+import { tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +16,7 @@ export class DeckService {
 
   private deckBaseUri: string = this.globals.backendUri + '/decks';
 
-  constructor(private httpClient: HttpClient, private globals: Globals) {
+  constructor(private httpClient: HttpClient, private globals: Globals, private errorHandler: ErrorHandlerService) {
   }
 
   /**
@@ -23,7 +25,8 @@ export class DeckService {
    */
   getDeckById(id: number): Observable<DeckDetails> {
     console.log('Load Deck with id ' + id);
-    return this.httpClient.get<DeckDetails>(this.deckBaseUri + '/' + id);
+    return this.httpClient.get<DeckDetails>(this.deckBaseUri + '/' + id)
+      .pipe(tap(null, this.errorHandler.handleError('Could not fetch Deck')));
   }
 
   /**
@@ -33,7 +36,8 @@ export class DeckService {
    */
   updateDeck(deckId: number, deck: DeckUpdate): Observable<DeckDetails> {
     console.log('Update Deck with id ' + deckId);
-    return this.httpClient.patch<DeckDetails>(this.deckBaseUri + '/' + deckId, deck);
+    return this.httpClient.patch<DeckDetails>(this.deckBaseUri + '/' + deckId, deck)
+      .pipe(tap(null, this.errorHandler.handleError('Could not update Deck')));
   }
 
   /**
@@ -43,7 +47,8 @@ export class DeckService {
    */
   create(deck: DeckSimple): Observable<DeckDetails> {
     console.log('Create card deck: ' + deck.name);
-    return this.httpClient.post<DeckDetails>(this.deckBaseUri, deck);
+    return this.httpClient.post<DeckDetails>(this.deckBaseUri, deck)
+      .pipe(tap(null, this.errorHandler.handleError('Could not create Deck')));
   }
 
   /**
@@ -63,6 +68,18 @@ export class DeckService {
         limit: limit.toString(10)
       }
     });
-    return this.httpClient.get<DeckDetails[]>(this.deckBaseUri, { params });
+    return this.httpClient.get<DeckDetails[]>(this.deckBaseUri, { params })
+      .pipe(tap(null, this.errorHandler.handleError('Could not search for Decks')));
+  }
+
+  /**
+   * Creates a new card deck.
+   *
+   * @param deck the name of the card deck.
+   */
+  copy(deckId: number, deck: DeckSimple): Observable<DeckDetails> {
+    console.log('Copy card deck with id ' + deckId);
+    return this.httpClient.post<DeckDetails>(this.deckBaseUri + '/' + deckId + '/copy', deck)
+      .pipe(tap(null, this.errorHandler.handleError('Could not fork Deck')));
   }
 }

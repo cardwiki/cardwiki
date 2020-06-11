@@ -7,13 +7,10 @@ package at.ac.tuwien.sepm.groupphase.backend.unittests;
     import at.ac.tuwien.sepm.groupphase.backend.exception.CategoryNotFoundException;
     import at.ac.tuwien.sepm.groupphase.backend.repository.CategoryRepository;
     import at.ac.tuwien.sepm.groupphase.backend.service.CategoryService;
-    import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
     import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
     import org.hibernate.exception.ConstraintViolationException;
     import org.junit.jupiter.api.Test;
     import org.junit.jupiter.api.extension.ExtendWith;
-    import org.mockito.ArgumentCaptor;
-    import org.mockito.Captor;
     import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.boot.test.context.SpringBootTest;
     import org.springframework.boot.test.mock.mockito.MockBean;
@@ -22,6 +19,7 @@ package at.ac.tuwien.sepm.groupphase.backend.unittests;
     import org.springframework.test.context.ActiveProfiles;
     import org.springframework.test.context.junit.jupiter.SpringExtension;
     import java.sql.SQLException;
+    import java.time.LocalDateTime;
     import java.util.*;
     import static org.junit.jupiter.api.Assertions.*;
     import static org.mockito.AdditionalAnswers.returnsFirstArg;
@@ -79,7 +77,6 @@ public class CategoryServiceTest extends TestDataGenerator {
         child.setName("child category");
         child.setId(0L);
         child.setParent(category);
-        category.getChildren().add(child);
 
         when(categoryRepository.findCategoryById(any(Long.class))).thenAnswer(i -> {
             if (i.getArgument(0).equals(category.getId())) {
@@ -87,7 +84,7 @@ public class CategoryServiceTest extends TestDataGenerator {
             } else if (i.getArgument(0).equals(category.getParent().getId())) {
                 return Optional.of(category.getParent());
             }
-            return Optional.of(category);
+            return Optional.empty();
         });
         when(categoryRepository.findChildren(any(Long.class))).thenAnswer(i -> {
             List<Category> children = new ArrayList<>();
@@ -128,12 +125,21 @@ public class CategoryServiceTest extends TestDataGenerator {
 
     @Test
     public void givenNothing_whenCreateCategory_thenReturnsCategoryWithAllFields() {
-        Category category = getSampleCategoryWithParent();
+        Category category = new Category();
+        category.setName("test category");
+        category.setParent(getUnconnectedSampleCategory2());
         User user = getSampleUser();
+        category.setChildren(new HashSet<>());
+        category.setDecks(new HashSet<>());
 
         when(userService.loadCurrentUser()).thenReturn(user);
-        when(categoryRepository.saveAndFlush(any(Category.class))).then(returnsFirstArg());
-        when(categoryRepository.save(any(Category.class))).then(returnsFirstArg());
+        when(categoryRepository.saveAndFlush(any(Category.class))).thenAnswer(i -> {
+            Category cat = i.getArgument(0);
+            LocalDateTime now = LocalDateTime.now();
+            cat.setCreatedAt(now);
+            cat.setUpdatedAt(now);
+            return cat;
+        });
 
         Category result = categoryService.createCategory(category);
         assertAll(
@@ -179,8 +185,11 @@ public class CategoryServiceTest extends TestDataGenerator {
         when(categoryRepository.findCategoryById(category.getId())).thenReturn(Optional.of(category));
         when(categoryRepository.findCategoryById(newParent.getId())).thenReturn(Optional.of(newParent));
         when(categoryRepository.ancestorExistsWithId(any(Long.class), any(Long.class))).thenReturn(false);
-        when(categoryRepository.saveAndFlush(any(Category.class))).then(returnsFirstArg());
-        when(categoryRepository.save(any(Category.class))).then(returnsFirstArg());
+        when(categoryRepository.saveAndFlush(any(Category.class))).thenAnswer(i -> {
+            Category cat = i.getArgument(0);
+            cat.setUpdatedAt(LocalDateTime.now());
+            return cat;
+        });
 
         Category result = categoryService.updateCategory(category.getId(), update);
 
@@ -239,7 +248,6 @@ public class CategoryServiceTest extends TestDataGenerator {
         DataIntegrityViolationException e = new DataIntegrityViolationException("", new ConstraintViolationException("", new SQLException(), "NAME_UNIQUE"));
 
         when(categoryRepository.saveAndFlush(any(Category.class))).thenThrow(e);
-        when(categoryRepository.save(any(Category.class))).thenThrow(e);
         when(categoryRepository.findCategoryById(category.getId())).thenReturn(Optional.of(category));
         when(categoryRepository.ancestorExistsWithId(any(Long.class), any(Long.class))).thenReturn(false);
 
@@ -256,7 +264,7 @@ public class CategoryServiceTest extends TestDataGenerator {
         update.setName("  category   x   ");
 
         when(categoryRepository.findCategoryById(category.getId())).thenReturn(Optional.of(category));
-        when(categoryRepository.ancestorExistsWithId(any(Long.class), any(Long.class))).thenReturn(true);
+        when(categoryRepository.ancestorExistsWithId(any(Long.class), any(Long.class))).thenReturn(false);
         when(categoryRepository.saveAndFlush(any(Category.class))).then(returnsFirstArg());
         when(categoryRepository.save(any(Category.class))).then(returnsFirstArg());
 

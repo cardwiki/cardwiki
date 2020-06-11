@@ -1,5 +1,4 @@
-<app-error *ngIf="error" [errorMessage]="errorMessage" (click)="vanishError()"></app-error>
-<div *ngIf="!error && specs" class="row ml-0">
+<div *ngIf="specs" class="row ml-0">
   <div class="column">
       <div class="col">
         <div class="row mb-3">
@@ -29,7 +28,6 @@
             </form>
             <app-list
               class="row ml-0"
-              *ngIf="!this.error"
               [list]="filteredList ? filteredList : list"
               [specs]="specs"
               [path]="path"

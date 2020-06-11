@@ -49,9 +49,6 @@ export class SearchComponent implements OnInit {
           this.decks = []
         this.decks.push(...decks)
         this.canLoadMore = decks.length === this.limit
-      }, error => {
-        console.error('Could not search for decks', error)
-        alert('Error while searching for decks')
       }).add(() => this.loading = false)
   }
 

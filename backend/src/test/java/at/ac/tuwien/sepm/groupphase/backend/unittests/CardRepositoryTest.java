@@ -137,4 +137,30 @@ public class CardRepositoryTest extends TestDataGenerator {
             assertEquals(deck, returnedCard.getDeck());
         }
     }
+
+    @Test
+    public void givenDeck_whenFindCardsWithContentByDeckId_thenFindCardsWithContentOfDeck() {
+        RevisionEdit revisionEdit = givenRevisionEdit();
+        Revision revision = revisionEdit.getRevision();
+        Card card = revision.getCard();
+        Deck deck = card.getDeck();
+
+        List<Card> cards = cardRepository.findCardsWithContentByDeck_Id(deck.getId());
+        assertTrue(cards.contains(card));
+        for (Card returnedCard: cards) {
+            assertEquals(deck, returnedCard.getDeck());
+        }
+
+        User user = givenApplicationUser();
+        Revision deleteRevision = new Revision();
+        deleteRevision.setCard(card);
+        deleteRevision.setMessage("Delete");
+        card.setLatestRevision(deleteRevision);
+        deleteRevision.setCreatedBy(user);
+        cardRepository.saveAndFlush(card);
+
+        cards = cardRepository.findCardsWithContentByDeck_Id(deck.getId());
+
+        assertFalse(cards.contains(card));
+    }
 }

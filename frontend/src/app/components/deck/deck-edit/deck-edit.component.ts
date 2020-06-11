@@ -5,6 +5,7 @@ import {Location} from '@angular/common';
 import {DeckUpdate} from '../../../dtos/deckUpdate';
 import {CategoryService} from '../../../services/category.service';
 import { CategorySimple } from 'src/app/dtos/categorySimple';
+import { NotificationService } from 'src/app/services/notification.service';
 
 @Component({
   selector: 'app-deck-edit',
@@ -22,7 +23,8 @@ export class DeckEditComponent implements OnInit {
     private deckService: DeckService,
     private categoryService: CategoryService,
     private route: ActivatedRoute,
-    private location: Location
+    private location: Location,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -35,7 +37,10 @@ export class DeckEditComponent implements OnInit {
 
   save(): void {
     this.deckService.updateDeck(this.deckId, this.deck).subscribe(
-      () => this.location.back()
+      () => {
+        this.notificationService.success('Updated Deck')
+        this.location.back()
+      }
     );
   }
 
@@ -50,9 +55,6 @@ export class DeckEditComponent implements OnInit {
   }
 
   removeCategory(category: CategorySimple): void {
-    const index = this.deck.categories.indexOf(category, 0);
-    if (index > -1) {
-      this.deck.categories.splice(index, 1);
-    }
+    this.deck.categories = this.deck.categories.filter(c => c !== category)
   }
 }

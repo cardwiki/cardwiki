@@ -15,7 +15,7 @@ public class Progress {
     @EmbeddedId
     private Id id;
 
-    private int easinessFactor;
+    private double easinessFactor;
 
     // named ivl instead of interval because that's a reserved SQL keyword
     private int ivl;
@@ -36,7 +36,7 @@ public class Progress {
 
     public Progress(Id id) {
         this.id = id;
-        easinessFactor = 250;
+        easinessFactor = 2.5;
         status = Status.LEARNING;
         ivl = 1;
     }
@@ -65,11 +65,11 @@ public class Progress {
         this.id = id;
     }
 
-    public int getEasinessFactor() {
+    public double getEasinessFactor() {
         return easinessFactor;
     }
 
-    public void setEasinessFactor(int easinessFactor) {
+    public void setEasinessFactor(double easinessFactor) {
         this.easinessFactor = easinessFactor;
     }
 

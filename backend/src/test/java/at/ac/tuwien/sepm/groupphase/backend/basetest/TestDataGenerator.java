@@ -29,6 +29,8 @@ public abstract class TestDataGenerator {
     private RevisionEditRepository revisionEditRepository;
     @Autowired
     private CategoryRepository categoryRepository;
+    @Autowired
+    private ProgressRepository progressRepository;
 
     private static long userCounter = 0;
 
@@ -95,6 +97,17 @@ public abstract class TestDataGenerator {
         parent = categoryRepository.saveAndFlush(parent);
         category.setParent(parent);
         return categoryRepository.saveAndFlush(category);
+    }
+
+    public Progress givenProgress() {
+        User user = givenApplicationUser();
+        Card card = givenCard();
+
+        Progress.Id id = new Progress.Id(user, card);
+        Progress progress = new Progress(id);
+        progress.setDue(LocalDateTime.now());
+
+        return progressRepository.saveAndFlush(progress);
     }
 
     Long DECK_ID = 0L;

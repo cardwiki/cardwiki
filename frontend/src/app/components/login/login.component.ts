@@ -12,9 +12,6 @@ import { WhoAmI } from 'src/app/dtos/whoAmI';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
-  // Error flag
-  error: boolean = false;
-  errorMessage: string = '';
   authProviders: OAuth2ProviderDto[];
   oAuthInfo: WhoAmI;
   registerForm: FormGroup;
@@ -52,10 +49,12 @@ export class LoginComponent implements OnInit {
   }
 
   register(username: string) {
-    this.authService.register(username).subscribe(status => {
-      console.log("Status: ", status);
-      if (status.username) {
-        this.username = status.username;
+    this.authService.register(username).subscribe(response => {
+      console.log("Register response: ", response);
+      if (response.username) {
+        this.username = response.username;
+        localStorage.setItem('whoami', JSON.stringify({...JSON.parse(localStorage.getItem("whoami")),
+                                                                id: response.id, username: response.username}));
         setTimeout(() =>
           {
             this.registerForm.reset();
@@ -64,22 +63,12 @@ export class LoginComponent implements OnInit {
           },
           2500);
       }
-    }, error1 => {
-      this.errorMessage = error1.error.message; //TODO fix sql statement in error message
-      this.error = true;
     });
   }
 
   _textValue:string;
   ConvertToLower(evt: string) {
-    this._textValue = evt.toLowerCase();
-  }
-
-  /**
-   * Error flag will be deactivated, which clears the error message
-   */
-  vanishError() {
-    this.error = false;
+    if (this._textValue) this._textValue = evt.toLowerCase();
   }
 
 }

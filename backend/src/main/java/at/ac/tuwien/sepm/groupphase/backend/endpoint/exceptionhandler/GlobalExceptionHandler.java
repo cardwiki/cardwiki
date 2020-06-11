@@ -15,6 +15,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,24 +67,24 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Override methods from ResponseEntityExceptionHandler to send a customized HTTP response for a know exception
-     * from e.g. Spring
+     * Handle Validation Errors
+     * Parse errors into json format: { 'validation': [{ fieldName: description }]}
      */
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
                                                                   HttpHeaders headers,
                                                                   HttpStatus status, WebRequest request) {
-        // TODO: return proper JSON
-        Map<String, Object> body = new LinkedHashMap<>();
-        //Get all errors
-        List<String> errors = ex.getBindingResult()
+        // List of validation errors in format
+        // [ { field: description } ]
+        List<Map<String, String>> errors = ex.getBindingResult()
             .getFieldErrors()
             .stream()
-            .map(err -> err.getField() + " " + err.getDefaultMessage())
+            .map(err -> Collections.singletonMap(err.getField(), err.getDefaultMessage()))
             .collect(Collectors.toList());
-        body.put("Validation errors", errors);
 
-        return new ResponseEntity<>(body.toString(), headers, status);
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("validation", errors);
 
+        return new ResponseEntity<>(body, headers, status);
     }
 }

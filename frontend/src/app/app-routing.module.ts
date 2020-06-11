@@ -19,6 +19,8 @@ import {CategorySubcategoriesComponent} from './components/category/category-sub
 import {CategoryDecksComponent} from './components/category/category-decks/category-decks.component';
 
 import { MarkdownSyntaxComponent } from './components/help/markdown-syntax/markdown-syntax.component';
+import {ProfileComponent} from "./components/profile/profile.component";
+import {UserSearchComponent} from "./components/user-search/user-search.component";
 import {LearnDeckComponent} from './components/learn-deck/learn-deck.component';
 
 
@@ -38,6 +40,8 @@ const routes: Routes = [
   {path: 'learn/:id', canActivate: [AuthGuard], component: LearnDeckComponent},
   {path: 'login', component: LoginComponent},
   {path: 'search', component: SearchComponent},
+  {path: 'users/:username/profile', component: ProfileComponent},
+  {path: 'users', component: UserSearchComponent},
 
   // static pages
   {path: 'about', component: AboutComponent},
