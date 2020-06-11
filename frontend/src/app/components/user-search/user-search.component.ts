@@ -20,7 +20,7 @@ export class UserSearchComponent implements OnInit {
 
   constructor(private route: ActivatedRoute, private router: Router, private modalService: NgbModal, private userService: UserService) {
     this.route.queryParams.subscribe(params => {
-      this.searchTerm = params['username'];
+      this.searchTerm = params['username'] || '';
     });
   }
 
