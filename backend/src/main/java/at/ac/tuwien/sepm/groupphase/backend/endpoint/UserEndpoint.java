@@ -56,7 +56,7 @@ public class UserEndpoint {
     @GetMapping
     @ApiOperation(value = "Search for users")
     public List<UserDetailsDto> search(@Valid @NotNull @RequestParam String username, @RequestParam Integer limit, @RequestParam Integer offset) {
-        return userService.searchByUsername(username, PageRequest.of(offset, limit, Sort.Direction.ASC))
+        return userService.searchByUsername(username, PageRequest.of(offset, limit, Sort.by("username").ascending()))
             .stream()
             .map(userMapper::userToUserDetailsDto)
             .collect(Collectors.toList());
