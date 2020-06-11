@@ -6,16 +6,19 @@ import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
+import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
@@ -80,6 +83,20 @@ public class UserServiceTest extends TestDataGenerator {
         Mockito.when(userRepository.findAll())
             .thenReturn(Arrays.asList(user1, user2, user3));
         assertEquals(Arrays.asList(user1, user2, user3), userService.getAll());
+    }
+
+    @Test
+    public void givenNothing_whenAttemptRegisterAndRepositoryThrowsConstraintViolationException_thenThrow() {
+        User user = getSampleUser();
+        Mockito.when(userRepository.save(user)).thenThrow(new DataIntegrityViolationException("notImportantForTest", new ConstraintViolationException("notImportantForTest", new SQLException(), "some constraint")));
+        assertThrows(DataIntegrityViolationException.class, () -> userService.createUser(user));
+    }
+
+    @Test
+    public void givenNothing_whenAttemptRegisterAndRepositoryThrowsOtherException_thenThrow() {
+        User user = getSampleUser();
+        Mockito.when(userRepository.save(user)).thenThrow(new DataIntegrityViolationException("notImportantForTest", new Exception()));
+        assertThrows(Exception.class, () -> userService.createUser(user));
     }
 
     @Test
