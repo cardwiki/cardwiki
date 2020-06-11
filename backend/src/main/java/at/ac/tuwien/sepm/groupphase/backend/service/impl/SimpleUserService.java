@@ -54,9 +54,8 @@ public class SimpleUserService implements UserService {
     @Override
     @Transactional
     public User editSettings(Long id, User user) {
-        if (!id.equals(loadCurrentUser().getId())) throw new UserNotFoundException(); //TODO throw correct error
-
-        User currentUser = userRepository.getOne(id);
+        User currentUser = loadCurrentUser();
+        if (!id.equals(currentUser.getId())) throw new UserNotFoundException(); //TODO throw correct error
         currentUser.setDescription(user.getDescription());
 
         return userRepository.save(currentUser);
