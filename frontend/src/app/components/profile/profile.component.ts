@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {UserService} from "../../services/user.service";
 import {UserProfile} from "../../dtos/userProfile";
@@ -18,7 +18,7 @@ export class ProfileComponent implements OnInit {
   REVISION_PAGINATION_LIMIT: number = 10;
   REVISIONTEXT_TRUNCATE: number = 30;
 
-  @Input() profile: UserProfile; //TODO using this correctly? (only editing one field)
+  profile: UserProfile;
   decks: DeckSimple[] = [];
   revisions: RevisionDetailed[] = [];
   maxDecksLoaded: boolean = false;
