@@ -2,12 +2,15 @@
 	<p><button class="btn btn-link" routerLink="/decks/{{deck.id}}">back to deck {{deck.name}}</button></p>
 	<div class="d-flex align-items-center flex-column wrapper" *ngIf=card>
 		<div class=card-container>
-      <img *ngIf="card.imageFront" src="http://localhost:8080/images/{{card.imageFront}}" height="70px" width="100px">
+      <img class="img-fluid img-thumbnail img-front mb-2" *ngIf="card.imageFront" src="http://localhost:8080/images/{{card.imageFront}}">
 			<div class=lgfont *ngIf="card.textFront" [innerHtml]="card.textFront | md2html"></div>
 			<div class="scene text-center" (click)="onFlip()">
 				<div class=flip-card [ngClass]="flipped ? 'flipped' : ''">
 					<div class="flip-card-face please-flip">flip backside by clicking here or pressing spacebar</div>
-          <div class="flip-card-face lgfont flip-card-face-back"><img *ngIf="card.imageBack" src="http://localhost:8080/images/{{card.imageBack}}" height="70px" width="100px"><span *ngIf="card.textBack" [innerHtml]="card.textBack  | md2html"></span></div>
+          <div class="flip-card-face flip-card-face-back">
+              <img class="img-fluid img-thumbnail img-back my-3" *ngIf="card.imageBack" src="http://localhost:8080/images/{{card.imageBack}}">
+              <div class="lgfont" *ngIf="card.textBack" [innerHtml]="card.textBack  | md2html"></div>
+          </div>
 				</div>
 			</div>
 		</div>

@@ -38,26 +38,40 @@
   </div>
 </div>
 
+<div class="table-responsive">
 <table class="table table-hover table-striped" *ngIf="cards">
   <thead class="thead-light">
-  <tr class="">
-    <th scope="col">Front</th>
-    <th scope="col">Back</th>
-    <th scope="col" class="col-2"></th>
-  </tr>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Front</th>
+      <th scope="col">Back</th>
+      <th scope="col" class="col-2"></th>
+    </tr>
   </thead>
   <tbody *ngFor="let card of cards">
-  <tr class="">
-    <td class="w-50"><img *ngIf="card.imageFront" src="http://localhost:8080/images/{{card.imageFront}}" height="70px" width="100px"><span *ngIf="card.textFront" [innerHtml]="card.textFront | md2html"></span></td>
-    <td class="w-50"><img *ngIf="card.imageBack" src="http://localhost:8080/images/{{card.imageBack}}" height="70px" width="100px"><span *ngIf="card.textBack" [innerHtml]="card.textBack | md2html"></span></td>
-    <td>
-      <div class="btn-group float-right">
-        <a routerLink="/decks/{{deck.id}}/cards/{{card.id}}/edit" class="btn btn-light"><i class="fas fa-pencil-alt"></i></a>
-        <button type="button" class="btn btn-light"><i class="far fa-clone"></i></button>
-        <button type="button" class="btn btn-light"><i class="fas fa-history"></i></button>
-        <button type="button" class="btn btn-light" (click)="removeCard(card)"><i class="fas fa-trash-alt"></i></button>
-      </div>
-    </td>
-  </tr>
+    <tr>
+      <th scope="row" class="align-middle">{{cards.indexOf(card) + 1}}</th>
+      <td class="w-50">
+        <div *ngIf="card.imageFront" class="float-left w-25 mr-3">
+          <img src="http://localhost:8080/images/{{card.imageFront}}" class="img-fluid img-thumbnail">
+        </div>
+        <div *ngIf="card.textFront" [innerHtml]="card.textFront | md2html"></div>
+      </td>
+      <td class="w-50">
+        <div *ngIf="card.imageBack" class="float-left w-25 mr-3">
+          <img src="http://localhost:8080/images/{{card.imageBack}}" class="img-fluid img-thumbnail">
+        </div>
+        <div *ngIf="card.textBack" [innerHtml]="card.textBack | md2html"></div>
+      </td>
+      <td>
+        <div class="btn-group card-actions">
+          <a routerLink="/decks/{{deck.id}}/cards/{{card.id}}/edit" class="btn btn-light"><i class="fas fa-pencil-alt"></i></a>
+          <button type="button" class="btn btn-light"><i class="far fa-clone"></i></button>
+          <button type="button" class="btn btn-light"><i class="fas fa-history"></i></button>
+          <button type="button" class="btn btn-light" (click)="removeCard(card)"><i class="fas fa-trash-alt"></i></button>
+        </div>
+      </td>
+    </tr>
   </tbody>
 </table>
+</div>

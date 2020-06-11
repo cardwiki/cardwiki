@@ -3,7 +3,6 @@ import {DeckService} from '../../../services/deck.service';
 import {ActivatedRoute} from '@angular/router';
 import {Location} from '@angular/common';
 import {DeckUpdate} from '../../../dtos/deckUpdate';
-import {CategoryDetails} from '../../../dtos/categoryDetails';
 import {CategoryService} from '../../../services/category.service';
 import { CategorySimple } from 'src/app/dtos/categorySimple';
 

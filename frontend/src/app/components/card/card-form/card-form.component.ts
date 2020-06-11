@@ -10,11 +10,8 @@ import {ImageService} from '../../../services/image.service';
 })
 export class CardFormComponent implements OnInit {
 
-  imageDataFront: ArrayBuffer;
-  imageDataBack: ArrayBuffer;
-  imageTypeFront: string;
-  imageTypeBack: string;
-
+  filenameFront: string = 'Choose file';
+  filenameBack: string = 'Choose file';
   @Input() card: CardContent;
   @Output() cardSubmit: EventEmitter<CardContent> = new EventEmitter();
   @Output() cancel: EventEmitter<void> = new EventEmitter();
@@ -23,20 +20,14 @@ export class CardFormComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  async onSubmit() {
+  onSubmit() {
     console.log('submitting card form', this.card);
-    if (this.imageDataFront && this.imageTypeFront) {
-      this.card.imageFront = await this.imageService.upload(this.imageDataFront, this.imageTypeFront).toPromise();
-    }
-    if (this.imageDataBack && this.imageDataBack) {
-      this.card.imageBack = await this.imageService.upload(this.imageDataBack, this.imageTypeBack).toPromise();
-    }
-    this.cardSubmit.emit(this.card);
+    this.cardSubmit.emit(this.card)
   }
 
   onCancel() {
     console.log('cancelling card form');
-    this.cancel.emit();
+    this.cancel.emit()
   }
 
   onFileChange(event: any, side: string) {
@@ -44,14 +35,13 @@ export class CardFormComponent implements OnInit {
     if (event.target.files && event.target.files.length) {
       const [file] = event.target.files;
       reader.readAsArrayBuffer(file);
-      reader.onload = () => {
+      reader.onload = async () => {
         if (side === 'front') {
-          this.imageDataFront = reader.result as ArrayBuffer;
-          this.imageTypeFront = file.type;
-          console.log(this.imageTypeFront);
+          this.card.imageFront = await this.imageService.upload(reader.result as ArrayBuffer, file.type).toPromise()
+          this.filenameFront = event.target.files[0].name
         } else {
-          this.imageDataBack = reader.result as ArrayBuffer;
-          this.imageTypeBack = file.type;
+          this.card.imageBack = await this.imageService.upload(reader.result as ArrayBuffer, file.type).toPromise()
+          this.filenameBack = event.target.files[0].name
         }
       };
     }

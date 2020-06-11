@@ -29,9 +29,10 @@
 	backface-visibility: hidden;
 
 	display: flex;
+  flex-direction: column;
 	align-content: center;
 	align-items: center;
-	justify-content: center;
+	justify-content: space-evenly;
 	background: white;
 }
 
@@ -45,4 +46,14 @@
 }
 .flipped .please-flip {
 	display: none;
+}
+
+.img-front {
+  max-height: 300px;
+  max-width: 30%;
+}
+
+.img-back {
+  max-height: 300px;
+  max-width: 90%;
 }

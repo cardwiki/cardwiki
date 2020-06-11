@@ -1,0 +1,10 @@
+.table > tbody > tr > td {
+  vertical-align: middle;
+}
+
+img {
+  max-height: 70px;
+}
+
+.card-actions { visibility: hidden; }
+tr:hover .card-actions { visibility: visible; }
