@@ -12,11 +12,11 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -42,7 +42,7 @@ public class UserEndpoint {
     @ApiOperation(value = "Register the authenticated user")
     public UserDetailsDto register(Authentication token, @Valid @RequestBody UserInputDto userInputDto) {
         if (token == null)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not authenticated");
+            throw new AccessDeniedException("Login using an Oauth2 provider first");
 
         User u = userMapper.userInputDtoToUser(userInputDto);
         u.setAuthId(SecurityContextHolder.getContext().getAuthentication().getName());
@@ -50,15 +50,6 @@ public class UserEndpoint {
         u = userService.createUser(u);
         return userMapper.userToUserDetailsDto(u);
     }
-
-    /*
-    @Secured("ROLE_USER")
-    @GetMapping
-    @ApiOperation(value = "List all users")
-    public List<UserDetailsDto> get() {
-        return userService.getAll().stream().map(user -> userMapper.userToUserOutputDto(user)).collect(Collectors.toList());
-    }
-     */
 
     @GetMapping
     @ApiOperation(value = "Search for users")
