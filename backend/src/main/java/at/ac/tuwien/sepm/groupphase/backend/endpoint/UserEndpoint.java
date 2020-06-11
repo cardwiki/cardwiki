@@ -19,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,7 +54,7 @@ public class UserEndpoint {
 
     @GetMapping
     @ApiOperation(value = "Search for users")
-    public List<UserDetailsDto> search(@RequestParam String username, @RequestParam Integer limit, @RequestParam Integer offset) {
+    public List<UserDetailsDto> search(@Valid @NotNull @RequestParam String username, @RequestParam Integer limit, @RequestParam Integer offset) {
         return userService.searchByUsername(username, PageRequest.of(offset, limit))
             .stream()
             .map(userMapper::userToUserDetailsDto)
