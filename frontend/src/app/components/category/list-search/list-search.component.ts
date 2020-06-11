@@ -16,8 +16,6 @@ export class ListSearchComponent implements OnInit {
   @Input() path: string;
   @Input() messages: { success: string, error: string };
   filteredList: CategorySimple[];
-  error: boolean = false;
-  errorMessage: string = null;
   searchForm: FormGroup;
 
   @ViewChild('searchFormField') searchChild: ElementRef;
@@ -26,6 +24,10 @@ export class ListSearchComponent implements OnInit {
     this.searchForm = this.formBuilder.group({
       search: ['']
     });
+  }
+
+  ngOnInit() {
+    this.onChanges();
   }
 
   onChanges() {
@@ -64,11 +66,7 @@ export class ListSearchComponent implements OnInit {
     }
   }
 
-  ngOnInit() {
-    this.onChanges();
-  }
-
-  vanishError () {
-    this.error = false;
+  onReset() {
+    this.searchForm.reset();
   }
 }

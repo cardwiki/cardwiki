@@ -3,6 +3,7 @@ import {FormBuilder, FormGroup, Validators, ValidationErrors} from '@angular/for
 import {CategoryDetails} from '../../../dtos/categoryDetails';
 import {CategoryService} from '../../../services/category.service';
 import { Location } from '@angular/common';
+import { NotificationService } from 'src/app/services/notification.service';
 import { Router } from '@angular/router';
 import { CategoryUpdate } from 'src/app/dtos/categoryUpdate';
 import { CategorySimple } from 'src/app/dtos/categorySimple';
@@ -19,14 +20,12 @@ export class CategoryFormComponent implements OnInit {
   @Input() messages: { header: string, success: string, error: string };
   @ViewChild('dismissModal') dismissModalButton: ElementRef;
   categoryForm: FormGroup;
-  submitted: boolean;
-  error: boolean;
-  errorMessage: string = '';
 
   categories: CategorySimple[];
   result: CategoryDetails = new CategoryDetails;
 
-  constructor(private formBuilder: FormBuilder, private categoryService: CategoryService, private location: Location, private router: Router) {
+  constructor(private formBuilder: FormBuilder, private categoryService: CategoryService,
+              private location: Location, private router: Router, private notificationService: NotificationService) {
     this.categoryForm = this.formBuilder.group({
 
       name: ['', [Validators.required, Validators.maxLength(200), this.nameIsBlank.bind(this)]],
@@ -35,6 +34,12 @@ export class CategoryFormComponent implements OnInit {
             validators: [Validators.maxLength(200), this.validateCategoryName.bind(this)], updateOn: 'change'
           }]
     });
+  }
+
+  ngOnInit(): void {
+    this.categoryForm.reset();
+    this.fetchCategories();
+    this.setDefaults();
   }
 
   /**
@@ -49,26 +54,15 @@ export class CategoryFormComponent implements OnInit {
       const payload = new CategoryUpdate(this.categoryForm.value.name, parent);
       this.categoryService.editCategory(this.category.id, payload).subscribe(
         (category) => {
+          this.notificationService.success('Updated Category')
           this.router.navigate(['categories', category.id])
-        },
-        (error) => {
-          console.log('Updating category failed:');
-          console.log(error);
-          this.errorMessage = this.categoryService.handleError(error);
-          this.error = true;
-        }
-      );
+      });
     } else {
       this.categoryService.createCategory(new CategoryUpdate(this.categoryForm.value.name, parent))
         .subscribe((category) => {
-            this.router.navigate(['categories', category.id])
-          },
-          (error) => {
-            console.log('Creating category failed:', error);
-            this.errorMessage = this.categoryService.handleError(error);
-            this.error = true;
-          }
-        );
+          this.notificationService.success('Created Category')
+          this.router.navigate(['categories', category.id])
+      });
     }
   }
 
@@ -137,21 +131,6 @@ export class CategoryFormComponent implements OnInit {
     return null;
   }
 
-  /**
-   * Hides the result screen
-   */
-  vanishResult() {
-    this.error = false;
-    this.submitted = false;
-    this.categoryForm.reset();
-    this.fetchCategories();
-    this.setDefaults();
-  }
-
-  ngOnInit(): void {
-    this.vanishResult();
-  }
-
   onRefresh(): void {
     this.fetchCategories();
     this.categoryForm.controls['parentCategory'].setValue('');
@@ -164,16 +143,9 @@ export class CategoryFormComponent implements OnInit {
   fetchCategories() {
     this.categoryService.getCategories().subscribe(
       (categories) => {
-        console.log('Getting categories.');
+        console.log('Fetched categories', categories);
         this.categories = categories;
-      },
-      (error) => {
-        console.log('Could not get categories:');
-        console.log(error);
-        this.error = true;
-        this.errorMessage = this.categoryService.handleError(error);
-      }
-    );
+      });
   }
 
   setDefaults(): void {

@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import {CategoryDetails} from '../../../dtos/categoryDetails';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {CategoryService} from '../../../services/category.service';
 import {DeckSimple} from '../../../dtos/deckSimple';
 import {combineLatest} from 'rxjs';
@@ -11,15 +11,13 @@ import {map} from 'rxjs/operators';
   templateUrl: './category-decks.component.html',
   styleUrls: ['./category-decks.component.css']
 })
-export class CategoryDecksComponent implements OnInit {
+export class CategoryDecksComponent {
   category: CategoryDetails;
-  error: boolean;
-  errorMessage: string;
   filter: string;
   filteredList: DeckSimple[];
   specs: { listSize: number, pageSize: number, page: number };
 
-  constructor(private route: ActivatedRoute, private categoryService: CategoryService, private router: Router) {
+  constructor(private route: ActivatedRoute, private categoryService: CategoryService) {
     combineLatest([this.route.params, this.route.queryParams])
       .pipe(map(results => ({id: results[0].id, queryParams: results[1]})))
       .subscribe(results => {
@@ -34,11 +32,6 @@ export class CategoryDecksComponent implements OnInit {
           category.id = id;
           this.category = category;
           this.applyFilter();
-        },
-        (error) => {
-          console.log(error);
-          this.error = true;
-          this.errorMessage = this.categoryService.handleError(error);
         });
   }
 
@@ -55,15 +48,5 @@ export class CategoryDecksComponent implements OnInit {
       };
       this.filteredList = filteredList;
     }
-  }
-
-  /**
-   * Hides the error screen
-   */
-  vanishError() {
-    this.error = false;
-  }
-
-  ngOnInit(): void {
   }
 }

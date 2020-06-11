@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CategoryService } from '../../../services/category.service';
 import { CategoryDetails } from '../../../dtos/categoryDetails';
@@ -8,28 +8,21 @@ import { CategoryDetails } from '../../../dtos/categoryDetails';
   templateUrl: './category-update.component.html',
   styleUrls: ['./category-update.component.css']
 })
-export class CategoryUpdateComponent implements OnInit {
+export class CategoryUpdateComponent {
   editCategoryMode: 'Update' = 'Update';
-  result: { category: CategoryDetails, error: boolean, errorMessage: string };
-  messages: { header: string, success: string, error: string };
+  category: CategoryDetails;
+  messages = { header: 'Update category', success: 'Category successfully updated', error: 'Error updating category'};
 
   constructor(private route: ActivatedRoute, private categoryService: CategoryService) {
-    this.route.params.subscribe( async (params) => await this.doSearch(params['id']));
+    this.route.params.subscribe(params => {
+      this.category = null;
+      this.doSearch(params.id)
+    });
   }
 
   doSearch(id: number) {
-    this.result = this.categoryService.doSearch(id);
-    console.log('result', this.result);
+    this.categoryService.getCategoryById(id).subscribe(
+      category => this.category = category
+    );
   }
-
-  vanishError() {
-    if (this.result) {
-      this.result.error = false;
-    }
-  }
-
-  ngOnInit(): void {
-    this.messages = { header: 'Update category', success: 'Category successfully updated', error: 'Error updating category'};
-  }
-
 }

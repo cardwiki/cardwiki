@@ -1,9 +1,8 @@
 package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 
-import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
-import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
-import at.ac.tuwien.sepm.groupphase.backend.entity.User;
+import at.ac.tuwien.sepm.groupphase.backend.entity.*;
 import at.ac.tuwien.sepm.groupphase.backend.exception.DeckNotFoundException;
+import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.CategoryService;
 import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
@@ -15,10 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.invoke.MethodHandles;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 public class SimpleDeckService implements DeckService {
@@ -26,12 +24,14 @@ public class SimpleDeckService implements DeckService {
     private final DeckRepository deckRepository;
     private final UserService userService;
     private final CategoryService categoryService;
+    private final CardRepository cardRepository;
 
-
-    public SimpleDeckService(DeckRepository deckRepository, UserService userService, CategoryService categoryService) {
+    public SimpleDeckService(DeckRepository deckRepository, UserService userService, CategoryService categoryService,
+                             CardRepository cardRepository) {
         this.deckRepository = deckRepository;
         this.userService = userService;
         this.categoryService = categoryService;
+        this.cardRepository = cardRepository;
     }
 
     @Transactional
@@ -85,5 +85,51 @@ public class SimpleDeckService implements DeckService {
         }
 
         return deckRepository.save(deck);
+    }
+
+    @Transactional
+    @Override
+    public Deck copy(Long id, Deck deckCopy) {
+        LOGGER.debug("Copy deck with id: {}", id);
+        User currentUser = userService.loadCurrentUser();
+        Deck source = findOne(id);
+
+        Deck deck = create(deckCopy);
+        deck.setCategories(new HashSet<>(source.getCategories()));
+        for (Category category : source.getCategories()) {
+            category.getDecks().add(deck);
+        }
+        deckRepository.save(deck);
+
+        List<Card> srcCards = cardRepository.findCardsWithContentByDeck_Id(id);
+        List<Card> destCards = srcCards.stream()
+            .map(srcCard -> {
+                Card card = new Card();
+                card.setDeck(deck);
+                Revision revision = new Revision();
+                revision.setMessage(String.format("Copied from deck %s.", id));
+                revision.setCreatedBy(currentUser);
+                revision.setCard(card);
+                card.setLatestRevision(revision);
+                return card;
+            })
+            .collect(Collectors.toList());
+        cardRepository.saveAll(destCards);
+        cardRepository.flush();
+
+        IntStream
+            .range(0, destCards.size())
+            .forEach(i -> {
+                RevisionEdit revisionEdit = new RevisionEdit();
+                revisionEdit.setTextFront(srcCards.get(i).getLatestRevision().getRevisionEdit().getTextFront());
+                revisionEdit.setTextBack(srcCards.get(i).getLatestRevision().getRevisionEdit().getTextBack());
+                destCards.get(i).getLatestRevision().setRevisionEdit(revisionEdit);
+                revisionEdit.setRevision(destCards.get(i).getLatestRevision());
+            });
+        cardRepository.saveAll(destCards);
+        cardRepository.flush();
+        deck.getCards().addAll(destCards);
+
+        return deck;
     }
 }

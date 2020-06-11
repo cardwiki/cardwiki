@@ -1,12 +1,7 @@
-<app-error *ngIf="result.error" [errorMessage]="result.errorMessage" (click)="vanishError()"></app-error>
 <app-category-form
-  *ngIf="!result.error && result.category"
+  *ngIf="category"
   [mode]="editCategoryMode"
-  [category]="result.category"
+  [category]="category"
   [messages]="messages"
 >
 </app-category-form>
-
-<div *ngIf="result.error" class="alert alert-danger alert-dismissible fade show" role="alert">
-  {{result.errorMessage}}
-</div>

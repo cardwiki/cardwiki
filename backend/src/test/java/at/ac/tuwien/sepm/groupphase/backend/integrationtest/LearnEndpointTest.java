@@ -125,13 +125,31 @@ public class LearnEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    public void givenAuthenticatedUser_whenNonexistentStatus_then400() throws Exception {
+    public void givenAuthenticatedUser_whenInvalidStatus_then400() throws Exception {
         User user = givenApplicationUser();
         Card card = givenCard();
 
         ObjectNode input = objectMapper.createObjectNode();
         input.put("cardId", card.getId());
         input.put("status", "---");
+
+        mvc.perform(
+            post("/api/v1/learn/attempt")
+                .with(mockLogin(USER_ROLES, user.getAuthId()))
+                .contentType("application/json")
+                .content(input.toString())
+        )
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void givenAuthenticatedUser_whenNullStatus_then400() throws Exception {
+        User user = givenApplicationUser();
+        Card card = givenCard();
+
+        ObjectNode input = objectMapper.createObjectNode();
+        input.put("cardId", card.getId());
+
         mvc.perform(
             post("/api/v1/learn/attempt")
                 .with(mockLogin(USER_ROLES, user.getAuthId()))

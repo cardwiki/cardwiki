@@ -1,9 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Injector, OnInit} from '@angular/core';
 import {DeckDetails} from '../../../dtos/deckDetails';
 import {DeckService} from '../../../services/deck.service';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {CardService} from '../../../services/card.service';
 import {CardSimple} from '../../../dtos/cardSimple';
+import {NotificationService} from 'src/app/services/notification.service';
+import {DeckForkModalComponent} from '../deck-fork-modal/deck-fork-modal.component';
+import {Observable} from 'rxjs';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {AuthService} from '../../../services/auth.service';
 
 @Component({
   selector: 'app-deck-view',
@@ -15,7 +20,8 @@ export class DeckViewComponent implements OnInit {
   deck: DeckDetails;
   cards: CardSimple[];
 
-  constructor(private deckService: DeckService, private cardService: CardService, private route: ActivatedRoute) { }
+  constructor(private deckService: DeckService, private cardService: CardService, private route: ActivatedRoute,
+              private router: Router, private modalService: NgbModal, public authService: AuthService, private notificationService: NotificationService) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
@@ -31,12 +37,22 @@ export class DeckViewComponent implements OnInit {
   }
 
   removeCard(card: CardSimple) {
-    if (confirm('Are you sure you want to delete this card?'))
+    if (confirm('Are you sure you want to delete this card?')) {
       this.cardService.removeCardFromDeck(this.deck.id, card.id).subscribe(() => {
-        const index: number = this.cards.indexOf(card);
-        if (index !== -1) {
-          this.cards.splice(index, 1);
-        }
+        this.cards = this.cards.filter(c => c !== card)
+        this.notificationService.success('Deleted Card')
       });
+    }
+  }
+
+  openForkModal() {
+    const modalRef = this.modalService.open(DeckForkModalComponent);
+    modalRef.componentInstance.deck = this.deck;
+
+    modalRef.result.then(
+      (res: Observable<DeckDetails>) => res.subscribe(
+        (deck: DeckDetails) => this.router.navigate(['decks', deck.id])
+      )
+    ).catch(() => {});
   }
 }

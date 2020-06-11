@@ -44,4 +44,15 @@ public interface DeckService {
      * @return updated deck
      */
     Deck update(Long id, Deck deckUpdate);
+
+    /**
+     * Create a new card deck by copying an existing one.
+     *
+     * @param id of the deck to copy
+     * @param deckCopy deck containing data needed for the deck to be created.
+     * @return the new card deck.
+     * @throws UserNotFoundException if no authenticated user can be found
+     * @throws DeckNotFoundException if no deck with the given id can be found
+     */
+    Deck copy(Long id, Deck deckCopy);
 }
