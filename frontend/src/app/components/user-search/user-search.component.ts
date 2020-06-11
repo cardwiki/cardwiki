@@ -11,7 +11,7 @@ import {UserService} from "../../services/user.service";
 })
 export class UserSearchComponent implements OnInit {
 
-  USER_PAGINATION_LIMIT = 10;
+  readonly USER_PAGINATION_LIMIT = 10;
 
   searchTerm = '';
   users: UserProfile[] = [];
