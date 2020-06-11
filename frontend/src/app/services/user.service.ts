@@ -5,6 +5,8 @@ import {Observable} from "rxjs";
 import {DeckSimple} from "../dtos/deckSimple";
 import {RevisionDetailed} from "../dtos/revisionDetailed";
 import {UserProfile} from "../dtos/userProfile";
+import {tap} from "rxjs/operators";
+import {ErrorHandlerService} from "./error-handler.service";
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +15,7 @@ export class UserService {
 
   private userBaseUri: string = this.globals.backendUri + '/users';
 
-  constructor(private httpClient: HttpClient, private globals: Globals) { }
+  constructor(private httpClient: HttpClient, private globals: Globals, private errorHandler: ErrorHandlerService) { }
 
   /**
    * Load users containing {@code userid} in their username
@@ -31,18 +33,8 @@ export class UserService {
         limit: limit.toString(10)
       }
     });
-    return this.httpClient.get<UserProfile[]>(this.userBaseUri, {params});
-  }
-
-  /**
-   * Load profile of user with id {@code userId} from
-   * the backend.
-   *
-   * @param userId of user to load profile for
-   */
-  getProfileById(userId: number): Observable<UserProfile> {
-    console.log('load profile for user with Id: ' + userId);
-    return this.httpClient.get<UserProfile>(`${this.userBaseUri}/${userId}`);
+    return this.httpClient.get<UserProfile[]>(this.userBaseUri, {params})
+      .pipe(tap(null, this.errorHandler.handleError('Could not find Users')));
   }
 
   /**
@@ -53,7 +45,8 @@ export class UserService {
    */
   getProfile(username: string): Observable<UserProfile> {
     console.log('load profile for user: ' + username);
-    return this.httpClient.get<UserProfile>(`${this.userBaseUri}/byname/${username}`);
+    return this.httpClient.get<UserProfile>(`${this.userBaseUri}/byname/${username}`)
+      .pipe(tap(null, this.errorHandler.handleError('Could not load User Profile')));
   }
 
   /**
@@ -72,7 +65,8 @@ export class UserService {
         limit: limit.toString(10)
       }
     });
-    return this.httpClient.get<DeckSimple[]>(`${this.userBaseUri}/${userid}/decks`, { params });
+    return this.httpClient.get<DeckSimple[]>(`${this.userBaseUri}/${userid}/decks`, { params })
+      .pipe(tap(null, this.errorHandler.handleError('Could not load User Decks')));
   }
 
   /**
@@ -91,7 +85,8 @@ export class UserService {
         limit: limit.toString(10)
       }
     });
-    return this.httpClient.get<RevisionDetailed[]>(`${this.userBaseUri}/${userid}/revisions`, { params });
+    return this.httpClient.get<RevisionDetailed[]>(`${this.userBaseUri}/${userid}/revisions`, { params })
+      .pipe(tap(null, this.errorHandler.handleError('Could not load User Revisions')));
   }
 
   /**
@@ -102,6 +97,7 @@ export class UserService {
    */
   editDescription(userid: number, description: string): Observable<UserProfile> {
     console.log('Save description: ' + description);
-    return this.httpClient.patch<UserProfile>(`${this.userBaseUri}/${userid}`, {description: description});
+    return this.httpClient.patch<UserProfile>(`${this.userBaseUri}/${userid}`, {description: description})
+      .pipe(tap(null, this.errorHandler.handleError('Could not edit User description')));
   }
 }
