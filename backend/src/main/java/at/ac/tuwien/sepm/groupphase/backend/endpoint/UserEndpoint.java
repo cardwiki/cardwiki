@@ -11,6 +11,7 @@ import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.annotation.Secured;
@@ -55,7 +56,7 @@ public class UserEndpoint {
     @GetMapping
     @ApiOperation(value = "Search for users")
     public List<UserDetailsDto> search(@Valid @NotNull @RequestParam String username, @RequestParam Integer limit, @RequestParam Integer offset) {
-        return userService.searchByUsername(username, PageRequest.of(offset, limit))
+        return userService.searchByUsername(username, PageRequest.of(offset, limit, Sort.Direction.ASC))
             .stream()
             .map(userMapper::userToUserDetailsDto)
             .collect(Collectors.toList());
