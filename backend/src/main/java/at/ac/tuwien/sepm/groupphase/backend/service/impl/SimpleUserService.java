@@ -2,7 +2,6 @@ package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
-import at.ac.tuwien.sepm.groupphase.backend.entity.Progress;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
@@ -41,21 +40,21 @@ public class SimpleUserService implements UserService {
     }
 
     @Override
-    public List<Deck> getDecks(long id, Pageable pageable) {
+    public List<Deck> getDecks(Long id, Pageable pageable) {
         LOGGER.debug("Load {} decks with offset {} from user {}", pageable.getPageSize(), pageable.getOffset(), id);
         return deckRepository.findByCreatedBy_Id(id, pageable);
     }
 
     @Override
-    public List<Revision> getRevisions(long id, Pageable pageable) {
+    public List<Revision> getRevisions(Long id, Pageable pageable) {
         LOGGER.debug("Load {} revisions with offset {} from user {}", pageable.getPageSize(), pageable.getOffset(), id);
         return revisionRepository.findByCreatedBy_Id(id, pageable);
     }
 
     @Override
     @Transactional
-    public User editSettings(long id, User user) {
-        if (id != loadCurrentUser().getId()) throw new UserNotFoundException(); //TODO throw correct error
+    public User editSettings(Long id, User user) {
+        if (!id.equals(loadCurrentUser().getId())) throw new UserNotFoundException(); //TODO throw correct error
 
         User currentUser = userRepository.getOne(id);
         currentUser.setDescription(user.getDescription());
@@ -64,7 +63,7 @@ public class SimpleUserService implements UserService {
     }
 
     @Override
-    public User loadUserById(long id) {
+    public User loadUserById(Long id) {
         LOGGER.debug("Load user by id {}", id);
         return userRepository.findById(id).orElseThrow(UserNotFoundException::new);
     }

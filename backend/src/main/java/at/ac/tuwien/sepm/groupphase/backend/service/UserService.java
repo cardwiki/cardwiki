@@ -18,7 +18,7 @@ public interface UserService {
      * @return the user entity
      * @throws UserNotFoundException is thrown if the specified user does not exists
      */
-    User loadUserById(long id);
+    User loadUserById(Long id);
 
     /**
      * Find a user in the context of Spring Security based on the email address
@@ -34,7 +34,7 @@ public interface UserService {
 
     /**
      * Loads an user for an Auth ID.
-     * @param authId
+     * @param authId authorization ID of the user to load
      * @return the user entity
      */
     Optional<User> loadUserByAuthId(String authId);
@@ -74,7 +74,7 @@ public interface UserService {
      * @param pageable pagination data consisting of LIMIT and OFFSET
      * @return List of Decks created by the user
      */
-    List<Deck> getDecks(long id, Pageable pageable);
+    List<Deck> getDecks(Long id, Pageable pageable);
 
     /**
      * Loads revisions created by user using their id
@@ -83,7 +83,7 @@ public interface UserService {
      * @param pageable pagination data consisting of LIMIT and OFFSET
      * @return List of Revisions created by the user
      */
-    List<Revision> getRevisions(long id, Pageable pageable);
+    List<Revision> getRevisions(Long id, Pageable pageable);
 
     /**
      * Change settings of user with id {@code id}
@@ -92,7 +92,7 @@ public interface UserService {
      * @param user contains user data to edit
      * @return User with changed settings
      */
-    User editSettings(long id, User user);
+    User editSettings(Long id, User user);
 
     /**
      * Updates a user.
