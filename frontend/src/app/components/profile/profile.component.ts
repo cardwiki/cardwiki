@@ -50,16 +50,16 @@ export class ProfileComponent implements OnInit {
 
   loadDecks(offset: number = this.decks.length/this.DECK_PAGINATION_LIMIT): void {
     this.userService.getDecks(this.profile.id, this.DECK_PAGINATION_LIMIT, offset).subscribe(decks => {
-        Array.prototype.push.apply(this.decks, decks);
-        if (decks.length < this.DECK_PAGINATION_LIMIT) this.maxDecksLoaded = true;
-      })
+      this.decks.push(...decks);
+      if (decks.length < this.DECK_PAGINATION_LIMIT) this.maxDecksLoaded = true;
+    })
   }
 
   loadRevisions(offset: number = this.revisions.length/this.REVISION_PAGINATION_LIMIT): void {
     this.userService.getRevisions(this.profile.id, this.REVISION_PAGINATION_LIMIT, offset).subscribe(revisions => {
-        Array.prototype.push.apply(this.revisions, revisions);
-        if (revisions.length < this.REVISION_PAGINATION_LIMIT) this.maxRevisionsLoaded = true;
-      })
+      this.revisions.push(...revisions);
+      if (revisions.length < this.REVISION_PAGINATION_LIMIT) this.maxRevisionsLoaded = true;
+    })
   }
 
   saveDescription(): void {
