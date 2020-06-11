@@ -45,7 +45,7 @@ export class UserSearchComponent implements OnInit {
 
   loadUsers(offset: number = this.users.length/this.USER_PAGINATION_LIMIT): void {
     this.userService.searchUsers(this.searchTerm, this.USER_PAGINATION_LIMIT, offset).subscribe(users => {
-      Array.prototype.push.apply(this.users, users);
+      this.users.push(...users);
       if (users.length + this.users.length === 0) this.noUsersFound = true;
       if (users.length < this.USER_PAGINATION_LIMIT) this.maxUsersLoaded = true;
     })
