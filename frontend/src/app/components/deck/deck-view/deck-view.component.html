@@ -55,13 +55,13 @@
       <th scope="row" class="align-middle">{{cards.indexOf(card) + 1}}</th>
       <td class="w-50">
         <div *ngIf="card.imageFront" class="float-left w-25 mr-3">
-          <img src="http://localhost:8080/images/{{card.imageFront}}" class="img-fluid img-thumbnail">
+          <img src="{{globals.backendBaseUri}}{{card.imageFront}}" class="img-fluid img-thumbnail">
         </div>
         <div *ngIf="card.textFront" [innerHtml]="card.textFront | md2html"></div>
       </td>
       <td class="w-50">
         <div *ngIf="card.imageBack" class="float-left w-25 mr-3">
-          <img src="http://localhost:8080/images/{{card.imageBack}}" class="img-fluid img-thumbnail">
+          <img src="{{globals.backendBaseUri}}{{card.imageBack}}" class="img-fluid img-thumbnail">
         </div>
         <div *ngIf="card.textBack" [innerHtml]="card.textBack | md2html"></div>
       </td>

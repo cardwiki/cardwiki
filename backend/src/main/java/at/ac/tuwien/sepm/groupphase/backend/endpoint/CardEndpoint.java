@@ -9,12 +9,15 @@ import io.swagger.annotations.Authorization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.lang.invoke.MethodHandles;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
@@ -24,11 +27,13 @@ public class CardEndpoint {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final CardService cardService;
     private final CardMapper cardMapper;
+    private final Path path;
 
     @Autowired
-    public CardEndpoint(CardService cardService, CardMapper cardMapper) {
+    public CardEndpoint(CardService cardService, CardMapper cardMapper, @Value("${cawi.image-served-path}") String path) {
         this.cardService = cardService;
         this.cardMapper = cardMapper;
+        this.path = Paths.get(path);
     }
 
     @Secured("ROLE_USER")
@@ -45,7 +50,10 @@ public class CardEndpoint {
     @ApiOperation(value = "Get information about a specific card in deck")
     public CardSimpleDto findOne(@PathVariable Long deckId, @PathVariable Long cardId) {
         LOGGER.info("GET /api/v1/decks/{}/cards/{}", deckId, cardId);
-        return cardMapper.cardToCardSimpleDto(cardService.findOne(deckId, cardId));
+        CardSimpleDto cardSimpleDto = cardMapper.cardToCardSimpleDto(cardService.findOne(deckId, cardId));
+        if (cardSimpleDto.getImageFront() != null) cardSimpleDto.setImageFront(path.resolve(cardSimpleDto.getImageFront()).toString());
+        if (cardSimpleDto.getImageBack() != null) cardSimpleDto.setImageBack(path.resolve(cardSimpleDto.getImageBack()).toString());
+        return cardSimpleDto;
     }
 
     @Secured("ROLE_USER")
@@ -63,7 +71,12 @@ public class CardEndpoint {
     @ApiOperation(value = "Get all cards for a specific deck")
     public List<CardContentDto> getCardsByDeckId(@PathVariable Long deckId) {
         LOGGER.info("GET /api/v1/decks/{}/cards", deckId);
-        return cardMapper.cardToCardContentDto(cardService.findCardsByDeckId(deckId));
+        List<CardContentDto> cardContentDtos = cardMapper.cardToCardContentDto(cardService.findCardsByDeckId(deckId));
+        for (CardContentDto cardContentDto : cardContentDtos) {
+           if (cardContentDto.getImageFront() != null) cardContentDto.setImageFront(path.resolve(cardContentDto.getImageFront()).toString());
+           if (cardContentDto.getImageBack() != null) cardContentDto.setImageBack(path.resolve(cardContentDto.getImageBack()).toString());
+        }
+        return cardContentDtos;
     }
 
     @Secured("ROLE_USER")

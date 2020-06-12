@@ -6,7 +6,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
 import java.lang.invoke.MethodHandles;
+import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -30,17 +32,23 @@ public class SimpleImageService implements ImageService {
     public String save(MultipartFile file) {
         LOGGER.info("Save image");
         try {
-            String contentType = file.getContentType();
-            if (contentType == null)
-                throw new RuntimeException("Content type could not be determined");
-            contentType = contentType.split("/")[1];
-            if (!(contentType.equals("png") || contentType.equals("jpeg")))
-                throw new RuntimeException("Content type " + contentType + " is not supported");
-
             byte[] bytes = file.getBytes();
+
+            //Get and check content type
+            String contentType = URLConnection.guessContentTypeFromStream(new ByteArrayInputStream(bytes));
+            if (contentType == null) {
+                throw new IllegalArgumentException("Content type could not be determined");
+            }
+            contentType = contentType.split("/")[1];
+            if (!(contentType.equals("png") || contentType.equals("jpeg"))) {
+                throw new IllegalArgumentException("Content type " + contentType + " is not supported");
+            }
+
+            //Save file
             byte[] hash = MessageDigest.getInstance("SHA-256").digest(bytes);
             String filename = bytesToHex(hash) + "." + contentType;
             Files.write(path.resolve(filename), bytes);
+
             return filename;
         } catch (Exception e) {
             throw new RuntimeException("Could not store image. Error: " + e.getMessage());
@@ -49,8 +57,8 @@ public class SimpleImageService implements ImageService {
 
     private static String bytesToHex(byte[] hash) {
         StringBuffer hexString = new StringBuffer();
-        for (int i = 0; i < hash.length; i++) {
-            String hex = Integer.toHexString(0xff & hash[i]);
+        for (byte b : hash) {
+            String hex = Integer.toHexString(0xff & b);
             if (hex.length() == 1) hexString.append('0');
             hexString.append(hex);
         }

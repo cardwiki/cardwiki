@@ -4,6 +4,7 @@ import {DeckDetails} from "../../dtos/deckDetails";
 import {CardSimple} from "../../dtos/cardSimple";
 import {DeckService} from "../../services/deck.service";
 import {CardService} from "../../services/card.service";
+import {Globals} from '../../global/globals';
 
 @Component({
   selector: 'app-deck-preview',
@@ -27,7 +28,7 @@ export class DeckPreviewComponent implements OnInit {
   currentcard: CardSimple;
   flipped: boolean = false;
 
-  constructor(private deckService: DeckService, private cardService: CardService, private route: ActivatedRoute) { }
+  constructor(private deckService: DeckService, private cardService: CardService, private route: ActivatedRoute, private globals: Globals) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
