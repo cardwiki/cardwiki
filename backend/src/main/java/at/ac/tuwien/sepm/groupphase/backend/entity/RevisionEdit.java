@@ -1,11 +1,13 @@
 package at.ac.tuwien.sepm.groupphase.backend.entity;
 
+import at.ac.tuwien.sepm.groupphase.backend.validation.ContentNotNull;
+import at.ac.tuwien.sepm.groupphase.backend.validation.NullOrNotBlank;
+
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Objects;
 
+@ContentNotNull
 @Entity
 @Table(name = "revision_edits")
 public class RevisionEdit {
@@ -21,11 +23,13 @@ public class RevisionEdit {
 
 
     @Size(max = MAX_TEXT_SIZE)
+    @NullOrNotBlank
     @Column(name = "text_front", length = MAX_TEXT_SIZE, updatable = false)
     private String textFront;
 
 
     @Size(max = MAX_TEXT_SIZE)
+    @NullOrNotBlank
     @Column(name = "text_back", length = MAX_TEXT_SIZE, updatable = false)
     private String textBack;
 

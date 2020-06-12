@@ -22,6 +22,12 @@ export class CardFormComponent implements OnInit {
 
   onSubmit() {
     console.log('submitting card form', this.card);
+    if (this.card.textFront === '') {
+      this.card.textFront = null
+    }
+    if (this.card.textBack === '') {
+      this.card.textBack = null
+    }
     this.cardSubmit.emit(this.card)
   }
 
