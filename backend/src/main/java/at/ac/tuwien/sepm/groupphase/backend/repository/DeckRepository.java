@@ -2,6 +2,7 @@ package at.ac.tuwien.sepm.groupphase.backend.repository;
 
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
+import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,4 +29,14 @@ public interface DeckRepository extends JpaRepository<Deck, Long> {
      */
     @EntityGraph(attributePaths = {"categories"})
     Optional<Deck> findById(Long deckId);
+
+    /**
+     * Find all decks created by user
+     *
+     * @param id of the user to query
+     * @param pageable pagination parameters for the query
+     * @return ordered list of all decks created by user
+     */
+    @EntityGraph(attributePaths = {"createdBy"})
+    List<Deck> findByCreatedBy_Id(long id, Pageable pageable);
 }

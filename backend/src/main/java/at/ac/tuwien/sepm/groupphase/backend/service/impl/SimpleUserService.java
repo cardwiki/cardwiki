@@ -1,9 +1,12 @@
 package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 
-import at.ac.tuwien.sepm.groupphase.backend.entity.Progress;
+import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
+import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
+import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
+import at.ac.tuwien.sepm.groupphase.backend.repository.RevisionRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import org.hibernate.exception.ConstraintViolationException;
@@ -11,22 +14,57 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Optional;
+import java.util.Objects;
 
 @Service
 public class SimpleUserService implements UserService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final UserRepository userRepository;
+    private final DeckRepository deckRepository;
+    private final RevisionRepository revisionRepository;
 
     @Autowired
-    public SimpleUserService(UserRepository userRepository) {
+    public SimpleUserService(UserRepository userRepository, DeckRepository deckRepository, RevisionRepository revisionRepository) {
         this.userRepository = userRepository;
+        this.deckRepository = deckRepository;
+        this.revisionRepository = revisionRepository;
+    }
+
+    @Override
+    public List<Deck> getDecks(Long id, Pageable pageable) {
+        LOGGER.debug("Load {} decks with offset {} from user {}", pageable.getPageSize(), pageable.getOffset(), id);
+        return deckRepository.findByCreatedBy_Id(id, pageable);
+    }
+
+    @Override
+    public List<Revision> getRevisions(Long id, Pageable pageable) {
+        LOGGER.debug("Load {} revisions with offset {} from user {}", pageable.getPageSize(), pageable.getOffset(), id);
+        return revisionRepository.findByCreatedBy_Id(id, pageable);
+    }
+
+    @Override
+    @Transactional
+    public User editSettings(Long id, User user) {
+        User currentUser = loadCurrentUser();
+        if (!id.equals(currentUser.getId())) throw new UserNotFoundException(); //TODO throw correct error
+        currentUser.setDescription(user.getDescription());
+
+        return userRepository.save(currentUser);
+    }
+
+    @Override
+    public User loadUserById(Long id) {
+        LOGGER.debug("Load user by id {}", id);
+        return userRepository.findById(id).orElseThrow(UserNotFoundException::new);
     }
 
     @Override
@@ -68,6 +106,13 @@ public class SimpleUserService implements UserService {
     @Override
     public List<User> getAll() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public List<User> searchByUsername(String username, Pageable pageable) {
+        LOGGER.debug("Search users for username {} {}", username, pageable);
+        Objects.requireNonNull(username, "name argument must not be null");
+        return userRepository.findByUsernameContainingIgnoreCase(username, pageable);
     }
 
     @Override
