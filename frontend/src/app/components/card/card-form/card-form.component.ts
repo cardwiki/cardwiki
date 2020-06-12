@@ -30,20 +30,19 @@ export class CardFormComponent implements OnInit {
     this.cancel.emit()
   }
 
-  onFileChange(event: any, side: string) {
-    const reader = new FileReader();
+  async onFileChange(event: any, side: string) {
     if (event.target.files && event.target.files.length) {
-      const [file] = event.target.files;
-      reader.readAsArrayBuffer(file);
-      reader.onload = async () => {
-        if (side === 'front') {
-          this.card.imageFront = await this.imageService.upload(reader.result as ArrayBuffer, file.type).toPromise()
-          this.filenameFront = event.target.files[0].name
-        } else {
-          this.card.imageBack = await this.imageService.upload(reader.result as ArrayBuffer, file.type).toPromise()
-          this.filenameBack = event.target.files[0].name
-        }
-      };
+      const file = <File>event.target.files[0];
+      const formData = new FormData();
+      formData.append('file', file, file.name);
+
+      if (side === 'front') {
+        this.card.imageFront = await this.imageService.upload(formData).toPromise();
+        this.filenameFront = file.name;
+      } else {
+        this.card.imageBack = await this.imageService.upload(formData).toPromise();
+        this.filenameBack = file.name;
+      }
     }
   }
 }

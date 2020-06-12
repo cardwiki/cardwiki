@@ -6,16 +6,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
-import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class SimpleImageService implements ImageService {
@@ -29,19 +27,17 @@ public class SimpleImageService implements ImageService {
     }
 
     @Override
-    public String save(InputStream inputStream) {
+    public String save(MultipartFile file) {
         LOGGER.info("Save image");
         try {
-            byte[] bytes = inputStream.readAllBytes();
-            String contentType = URLConnection.guessContentTypeFromStream(new ByteArrayInputStream(bytes));
-            if (contentType == null) {
+            String contentType = file.getContentType();
+            if (contentType == null)
                 throw new RuntimeException("Content type could not be determined");
-            }
             contentType = contentType.split("/")[1];
-            if (!(contentType.equals("png") || contentType.equals("jpeg"))) {
+            if (!(contentType.equals("png") || contentType.equals("jpeg")))
                 throw new RuntimeException("Content type " + contentType + " is not supported");
-            }
 
+            byte[] bytes = file.getBytes();
             byte[] hash = MessageDigest.getInstance("SHA-256").digest(bytes);
             String filename = bytesToHex(hash) + "." + contentType;
             Files.write(path.resolve(filename), bytes);

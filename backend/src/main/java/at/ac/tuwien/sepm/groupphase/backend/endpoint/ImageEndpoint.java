@@ -7,8 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.ServletInputStream;
+import org.springframework.web.multipart.MultipartFile;
 import java.lang.invoke.MethodHandles;
 
 @RestController
@@ -24,10 +23,10 @@ public class ImageEndpoint {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @PostMapping(consumes = {"image/png", "image/jpeg"})
+    @PostMapping
     @ApiOperation(value = "Save a new image")
-    public String upload(ServletInputStream inputStream) {
+    public String upload(@RequestParam MultipartFile file) {
         LOGGER.info("POST api/v1/images");
-        return imageService.save(inputStream);
+        return imageService.save(file);
     }
 }

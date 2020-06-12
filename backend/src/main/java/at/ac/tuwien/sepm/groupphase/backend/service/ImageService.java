@@ -1,16 +1,15 @@
 package at.ac.tuwien.sepm.groupphase.backend.service;
 
-
-import java.io.InputStream;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface ImageService {
 
     /**
      * Saves a new image
      *
-     * @param image to save
+     * @param file to save
      * @return filename of saved image
      */
-    String save(InputStream image);
+    String save(MultipartFile file);
 
 }

@@ -29,6 +29,10 @@ spring:
       path: /h2-console
   resources:
     static-locations: file:./${cawi.image-saved-path}
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 2MB
   mvc:
     static-path-pattern: ${cawi.image-served-path}/**
   security:

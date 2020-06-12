@@ -13,12 +13,11 @@ export class ImageService {
   constructor(private httpClient: HttpClient, private globals: Globals) { }
 
   /** Uploads image to the backend
-  * @param data image data
-  * @param type image type
+  * @param data image formdata
   **/
-  upload(data: ArrayBuffer, type: string): Observable<string> {
+  upload(data: FormData): Observable<string> {
     console.log('Upload image');
-    return this.httpClient.post(this.imageBaseUri, data, {headers: {'content-type': type}, responseType: 'text'});
+    return this.httpClient.post(this.imageBaseUri, data, {responseType: 'text'});
   }
 
 }
