@@ -6,6 +6,7 @@ import {DeckSimple} from "../../dtos/deckSimple";
 import {RevisionDetailed} from "../../dtos/revisionDetailed";
 import {Globals} from "../../global/globals";
 import {AuthService} from "../../services/auth.service";
+import {RevisionType} from 'src/app/dtos/revisionSimple';
 
 @Component({
   selector: 'app-profile',
@@ -14,9 +15,9 @@ import {AuthService} from "../../services/auth.service";
 })
 export class ProfileComponent implements OnInit {
 
-  DECK_PAGINATION_LIMIT: number = 10;
-  REVISION_PAGINATION_LIMIT: number = 10;
-  REVISIONTEXT_TRUNCATE: number = 30;
+  readonly DECK_PAGINATION_LIMIT: number = 10;
+  readonly REVISION_PAGINATION_LIMIT: number = 10;
+  readonly REVISIONTEXT_TRUNCATE: number = 30;
 
   profile: UserProfile;
   decks: DeckSimple[] = [];
@@ -27,6 +28,12 @@ export class ProfileComponent implements OnInit {
   me: boolean = false;
   editingDescription: boolean = false;
   editingSuccess: boolean = false;
+
+  readonly revisionTypeToString: { [key in RevisionType]: string } = {
+    [RevisionType.CREATE] : 'Created',
+    [RevisionType.EDIT] : 'Edited',
+    [RevisionType.DELETE] : 'Deleted',
+  }
 
   constructor(public globals: Globals, private authService: AuthService, private userService: UserService, private route: ActivatedRoute) {
   }
@@ -73,5 +80,4 @@ export class ProfileComponent implements OnInit {
       }
     );
   }
-
 }

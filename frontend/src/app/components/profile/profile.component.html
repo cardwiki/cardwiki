@@ -40,7 +40,7 @@
         <ul class="list-group list-group-flush">
           <li *ngFor="let revision of revisions" class="list-group-item">
             {{revision.createdAt | date : 'medium' }}:
-            <a routerLink="/decks/{{revision.card.deck.id}}/cards/{{revision.card.id}}/revision?id={{revision.id}}">{{revision.message}}</a>
+            <a routerLink="/decks/{{revision.card.deck.id}}/cards/{{revision.card.id}}/revision?id={{revision.id}}">{{revisionTypeToString[revision.type]}}</a>
             card
             <a routerLink="/decks/{{revision.card.deck.id}}/cards/{{revision.card.id}}">{{revision.card.textFront && revision.card.textFront.length > REVISIONTEXT_TRUNCATE ? (revision.card.textFront | slice:0:REVISIONTEXT_TRUNCATE)+'...' : revision.card.textFront}}</a>
             in
