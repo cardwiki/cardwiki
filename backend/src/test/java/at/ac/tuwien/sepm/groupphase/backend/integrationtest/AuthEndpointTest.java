@@ -37,7 +37,7 @@ public class AuthEndpointTest extends TestDataGenerator {
         .andExpect(jsonPath("$.authId").value(IsNull.nullValue()))
         .andExpect(jsonPath("$.hasAccount").value(false))
         .andExpect(jsonPath("$.admin").value(false))
-        .andExpect(jsonPath("$.userId").value(IsNull.nullValue()));
+        .andExpect(jsonPath("$.id").value(IsNull.nullValue()));
     }
 
     @Test
@@ -51,7 +51,7 @@ public class AuthEndpointTest extends TestDataGenerator {
             .andExpect(jsonPath("$.authId").value(user.getAuthId()))
             .andExpect(jsonPath("$.hasAccount").value(true))
             .andExpect(jsonPath("$.admin").value(false))
-            .andExpect(jsonPath("$.userId").value(user.getId()));
+            .andExpect(jsonPath("$.id").value(user.getId()));
     }
 
     @Test
@@ -66,6 +66,6 @@ public class AuthEndpointTest extends TestDataGenerator {
             .andExpect(jsonPath("$.authId").value(user.getAuthId()))
             .andExpect(jsonPath("$.hasAccount").value(true))
             .andExpect(jsonPath("$.admin").value(true))
-            .andExpect(jsonPath("$.userId").value(user.getId()));
+            .andExpect(jsonPath("$.id").value(user.getId()));
     }
 }

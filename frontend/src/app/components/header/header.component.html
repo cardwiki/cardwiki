@@ -13,6 +13,9 @@
       <li class="nav-item" *appUserRole="'USER'">
         <a class="nav-link" href="#" (click)="openDeckModal(); false">Create a deck</a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/users">Users</a>
+      </li>
     </ul>
     <form (ngSubmit)="onSubmit()" #searchForm="ngForm" class="form-inline my-2 my-lg-0 mr-auto mw-25 flex-grow-1">
       <div class="input-group flex-grow-1" role="group">
@@ -27,6 +30,7 @@
         <a class="nav-link" routerLink="/about" routerLinkActive="active">About</a>
       </li>
       <li class="nav-item">
+        <a class="nav-link" *appUserRole="'USER'" routerLink="/users/{{loggedin_username()}}/profile" routerLinkActive="active">Profile</a>
         <a class="nav-link" *appUserRole="'ANONYMOUS'" routerLink="/login" routerLinkActive="active">Login</a>
         <a class="nav-link" *appUserRole="'USER'" routerLink="/" (click)="authService.logoutUser()">Logout</a>
       </li>

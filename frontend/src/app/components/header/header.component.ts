@@ -15,7 +15,7 @@ import { NotificationService } from 'src/app/services/notification.service';
 })
 export class HeaderComponent implements OnInit {
 
-  public searchTerm = ''
+  public searchTerm = '';
 
   constructor(public authService: AuthService, private router: Router, private modalService: NgbModal, private notificationService: NotificationService) { }
 
@@ -43,5 +43,9 @@ export class HeaderComponent implements OnInit {
         }
       )
     ).catch(() => {});
+  }
+
+  loggedin_username(): string {
+    return JSON.parse(localStorage.getItem("whoami")).username
   }
 }

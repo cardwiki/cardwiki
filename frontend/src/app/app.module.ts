@@ -34,6 +34,8 @@ import { CategorySubcategoriesComponent } from './components/category/category-s
 import { CategoryDecksComponent } from './components/category/category-decks/category-decks.component';
 import { Md2htmlPipe } from './pipes/md2html.pipe';
 import { MarkdownSyntaxComponent } from './components/help/markdown-syntax/markdown-syntax.component';
+import { ProfileComponent } from './components/profile/profile.component';
+import { UserSearchComponent } from './components/user-search/user-search.component';
 import { ToastsContainerComponent } from './components/toasts-container/toasts-container.component';
 import { LearnDeckComponent } from './components/learn-deck/learn-deck.component';
 import { DeckForkModalComponent } from './components/deck/deck-fork-modal/deck-fork-modal.component';
@@ -69,6 +71,8 @@ import { UserRoleDirective } from './directives/user-role.directive';
     CategoryDecksComponent,
     Md2htmlPipe,
     MarkdownSyntaxComponent,
+    ProfileComponent,
+    UserSearchComponent,
     ToastsContainerComponent,
     LearnDeckComponent,
     DeckForkModalComponent,

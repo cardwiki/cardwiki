@@ -52,10 +52,12 @@ export class LoginComponent implements OnInit {
   }
 
   register(username: string) {
-    this.authService.register(username).subscribe(status => {
-      console.log("Status: ", status);
-      if (status.username) {
-        this.username = status.username;
+    this.authService.register(username).subscribe(response => {
+      console.log("Register response: ", response);
+      if (response.username) {
+        this.username = response.username;
+        localStorage.setItem('whoami', JSON.stringify({...JSON.parse(localStorage.getItem("whoami")),
+                                                                id: response.id, username: response.username}));
         setTimeout(() =>
           {
             this.registerForm.reset();
@@ -69,7 +71,7 @@ export class LoginComponent implements OnInit {
 
   _textValue:string;
   ConvertToLower(evt: string) {
-    if (evt)
+    if (this._textValue && evt)
       this._textValue = evt.toLowerCase();
   }
 
