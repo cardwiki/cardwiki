@@ -23,7 +23,7 @@ export class DeckViewComponent implements OnInit {
 
   constructor(private deckService: DeckService, private cardService: CardService, private route: ActivatedRoute,
               private router: Router, private modalService: NgbModal, public authService: AuthService,
-              private notificationService: NotificationService, private globals: Globals) { }
+              private notificationService: NotificationService, public globals: Globals) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {

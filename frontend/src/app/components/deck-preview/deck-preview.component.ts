@@ -28,7 +28,7 @@ export class DeckPreviewComponent implements OnInit {
   currentcard: CardSimple;
   flipped: boolean = false;
 
-  constructor(private deckService: DeckService, private cardService: CardService, private route: ActivatedRoute, private globals: Globals) { }
+  constructor(private deckService: DeckService, private cardService: CardService, private route: ActivatedRoute, public globals: Globals) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {

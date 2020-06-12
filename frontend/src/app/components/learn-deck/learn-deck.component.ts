@@ -18,7 +18,7 @@ export class LearnDeckComponent implements OnInit {
   card: CardSimple;
   flipped: boolean;
 
-  constructor(private deckService: DeckService, private learnService: LearnService, private route: ActivatedRoute, private globals: Globals) { }
+  constructor(private deckService: DeckService, private learnService: LearnService, private route: ActivatedRoute, public globals: Globals) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {

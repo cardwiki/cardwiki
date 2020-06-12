@@ -12,7 +12,7 @@ export class CardViewComponent implements OnInit {
   @Input() card: CardContent
   @Input() side: 'front' | 'back'
 
-  constructor(private globals: Globals) { }
+  constructor(public globals: Globals) { }
 
   ngOnInit(): void {
     console.log(this.card);
