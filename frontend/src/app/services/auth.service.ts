@@ -14,17 +14,25 @@ import { ErrorHandlerService } from './error-handler.service';
 })
 export class AuthService {
 
-  private currentUserRoleSubject$: BehaviorSubject<UserRole[]>
-  public currentUserRoles$: Observable<UserRole[]>
+  public userRoles$: Observable<UserRole[]>
+  public userName$: Observable<string> // null if not logged in
+
+  private userRoleSubject$: BehaviorSubject<UserRole[]>
+  private userNameSubject$: BehaviorSubject<string>
 
   private baseUri: string = this.globals.backendUri + '/auth';
 
   constructor(private httpClient: HttpClient, private globals: Globals, private errorHandler: ErrorHandlerService) {
-    this.currentUserRoleSubject$ = new BehaviorSubject(this.getStoredUserRoles())
-    this.currentUserRoles$ = this.currentUserRoleSubject$.asObservable()
+    this.userRoleSubject$ = new BehaviorSubject(this.getStoredUserRoles())
+    this.userRoles$ = this.userRoleSubject$.asObservable()
       .pipe(distinctUntilChanged((a, b) => a.length === b.length && a.every(role => b.includes(role))))
 
-    this.currentUserRoles$.subscribe(roles => console.log('user roles changed to', roles))
+    this.userNameSubject$ = new BehaviorSubject(this.getStoredUserName())
+    this.userName$ = this.userNameSubject$.asObservable()
+      .pipe(distinctUntilChanged())
+
+    this.userRoles$.subscribe(roles => console.log('user roles changed to', roles))
+    this.userName$.subscribe(username => console.log('username changed to ', username))
   }
 
   getAuthProviders(): Observable<OAuth2ProviderDto[]> {
@@ -48,12 +56,16 @@ export class AuthService {
     return this.httpClient.post<UserRegistration>(this.globals.backendUri + '/users', {username: username, description: ''})
       .pipe(
         tap(null, this.errorHandler.handleError('Could not register')),
-        tap(res => this.updateWhoAmI({ ...this.getStoredAuth().whoAmI, hasAccount: true }))
+        tap(res => this.updateWhoAmI({ ...this.getStoredAuth().whoAmI, hasAccount: true, id: res.id, username: res.username, admin: res.admin }))
       )
   }
 
-  getCurrentUserRoles(): UserRole[] {
-    return this.currentUserRoleSubject$.value;
+  getUserRoles(): UserRole[] {
+    return this.userRoleSubject$.value
+  }
+
+  getUserName(): string {
+    return this.userNameSubject$.value
   }
 
   logoutUser(): void {
@@ -93,7 +105,8 @@ export class AuthService {
    * Update user roles based on stored auth data
    */
   private refreshUserRoles(): void {
-    this.currentUserRoleSubject$.next(this.getStoredUserRoles())
+    this.userRoleSubject$.next(this.getStoredUserRoles())
+    this.userNameSubject$.next(this.getStoredUserName())
   }
 
   /**
@@ -109,6 +122,10 @@ export class AuthService {
 
     return auth.whoAmI.admin ?
       ['USER', 'ADMIN'] : ['USER']
+  }
+
+  private getStoredUserName(): string {
+    return this.getStoredAuth().whoAmI?.username || null
   }
 
   private getTokenExpirationDate(token: string): Date {

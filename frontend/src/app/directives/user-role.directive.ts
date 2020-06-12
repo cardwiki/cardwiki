@@ -19,7 +19,7 @@ export class UserRoleDirective implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.authService.currentUserRoles$.pipe(
+    this.authService.userRoles$.pipe(
       takeUntil(this.stop$)
     ).subscribe(roles => {
       if (roles.includes(this.appUserRole)) {

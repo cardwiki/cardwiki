@@ -3,8 +3,8 @@ export class WhoAmI {
         public id: number,
         public username: string,
         public authId: string,
-        public userId: number,
         public admin: boolean,
-        public hasAccount: boolean) {
+        public hasAccount: boolean,
+    ) {
     }
 }

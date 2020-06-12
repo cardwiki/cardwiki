@@ -56,8 +56,6 @@ export class LoginComponent implements OnInit {
       console.log("Register response: ", response);
       if (response.username) {
         this.username = response.username;
-        localStorage.setItem('whoami', JSON.stringify({...JSON.parse(localStorage.getItem("whoami")),
-                                                                id: response.id, username: response.username}));
         setTimeout(() =>
           {
             this.registerForm.reset();
