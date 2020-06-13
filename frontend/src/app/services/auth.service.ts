@@ -114,10 +114,16 @@ export class AuthService {
    */
   private getStoredUserRoles(): UserRole[] {
     const auth = this.getStoredAuth()
-    // Not logged in or expired
-    if (!auth.whoAmI || !auth.token || !auth.whoAmI.hasAccount)
+
+    // Token expired
+    if (auth.token && this.getTokenExpirationDate(auth.token).valueOf() < new Date().valueOf()) {
+      // Remove invalid token so anonymous requests succeed
+      this.updateToken(undefined)
       return ['ANONYMOUS']
-    if (this.getTokenExpirationDate(auth.token).valueOf() < new Date().valueOf())
+    }
+
+    // Not logged in
+    if (!auth.whoAmI?.hasAccount || !auth.token)
       return ['ANONYMOUS']
 
     return auth.whoAmI.admin ?
