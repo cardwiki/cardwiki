@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.basetest;
 
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.AttemptInputDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
 import at.ac.tuwien.sepm.groupphase.backend.repository.*;
 import org.hamcrest.Description;
@@ -231,6 +232,15 @@ public abstract class TestDataGenerator {
         category.setParent(parent);
         parent.getChildren().add(category);
         return category;
+    }
+
+    public AttemptInputDto getSampleAttempt() {
+        Card card = getSampleCard();
+        AttemptInputDto attempt = new AttemptInputDto();
+        attempt.setCardId(card.getId());
+        attempt.setStatus(AttemptInputDto.Status.GOOD);
+
+        return attempt;
     }
 
     public Matcher<String> validIsoDateTime() {
