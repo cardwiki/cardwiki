@@ -95,4 +95,13 @@ public class DeckEndpoint {
         LOGGER.info("Post /api/v1/decks/{}/copy body={}", id, deckInputDto);
         return deckMapper.deckToDeckDto(deckService.copy(id, deckMapper.deckInputDtoToDeck(deckInputDto)));
     }
+
+    @Secured("ROLE_ADMIN")
+    @DeleteMapping(value = "/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "delete deck", authorizations = @Authorization("ROLE_ADMIN"))
+    public void deleteDeck(@PathVariable Long id) {
+        LOGGER.info("DELETE /api/v1/decks/{}", id);
+        deckService.delete(id);
+    }
 }
