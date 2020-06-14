@@ -42,6 +42,8 @@ public class Deck {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "decks")
     private Set<Category> categories = new HashSet<>();
 
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "favorites")
+    private Set<User> favoredBy = new HashSet<>();
 
     public void dismissCard(Card card) {
         if (!cards.remove(card))
@@ -111,6 +113,14 @@ public class Deck {
 
     public void setCategories(Set<Category> categories) {
         this.categories = categories;
+    }
+
+    public Set<User> getFavoredBy() {
+        return favoredBy;
+    }
+
+    public void setFavoredBy(Set<User> favoredBy) {
+        this.favoredBy = favoredBy;
     }
 
     @Override

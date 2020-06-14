@@ -53,6 +53,14 @@ public abstract class TestDataGenerator {
         return deckRepository.saveAndFlush(deck);
     }
 
+    public Deck givenFavorite() {
+        Deck deck = givenDeck();
+        User user = deck.getCreatedBy();
+        user.getFavorites().add(deck);
+        deck.getFavoredBy().add(user);
+        return deckRepository.saveAndFlush(deck);
+    }
+
     public Card givenCard() {
         Deck deck = givenDeck();
         Card card = new Card();

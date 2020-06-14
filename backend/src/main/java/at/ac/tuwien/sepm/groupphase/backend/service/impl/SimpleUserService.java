@@ -3,6 +3,8 @@ package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
+import at.ac.tuwien.sepm.groupphase.backend.exception.AuthenticationRequiredException;
+import at.ac.tuwien.sepm.groupphase.backend.exception.InsufficientAuthorizationException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
@@ -15,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,7 +58,9 @@ public class SimpleUserService implements UserService {
     @Transactional
     public User editSettings(Long id, User user) {
         User currentUser = loadCurrentUser();
-        if (!id.equals(currentUser.getId())) throw new UserNotFoundException(); //TODO throw correct error
+        if (!id.equals(currentUser.getId()))
+            throw new InsufficientAuthorizationException("Cannot edit settings for other users");
+
         currentUser.setDescription(user.getDescription());
 
         return userRepository.save(currentUser);
@@ -82,7 +87,10 @@ public class SimpleUserService implements UserService {
     @Override
     public User loadCurrentUser() {
         LOGGER.debug("Load current user");
-        return loadUserByAuthId(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow(UserNotFoundException::new);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || auth.getName() == null)
+            throw new AuthenticationRequiredException("Cannot load active user because not authentication is given");
+        return loadUserByAuthId(auth.getName()).orElseThrow(() -> new AuthenticationRequiredException("No user with this authentication exists"));
     }
 
     @Override

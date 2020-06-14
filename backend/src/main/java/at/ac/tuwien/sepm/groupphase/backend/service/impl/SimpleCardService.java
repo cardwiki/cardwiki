@@ -59,7 +59,7 @@ public class SimpleCardService implements CardService {
     @Override
     public List<Card> findCardsByDeckId(Long deckId) {
         LOGGER.debug("Find all cards for deck with id {}", deckId);
-        return cardRepository.findCardsByDeck_Id(deckId).stream().filter(card -> card.getLatestRevision().getRevisionEdit() != null).collect(Collectors.toList()); //TODO do this in database query
+        return cardRepository.findCardsWithContentByDeck_Id(deckId);
     }
 
     @Override

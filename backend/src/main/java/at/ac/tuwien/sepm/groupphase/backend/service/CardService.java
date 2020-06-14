@@ -3,7 +3,8 @@ package at.ac.tuwien.sepm.groupphase.backend.service;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
 import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionEdit;
 import at.ac.tuwien.sepm.groupphase.backend.exception.DeckNotFoundException;
-import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
+import at.ac.tuwien.sepm.groupphase.backend.exception.AuthenticationRequiredException;
+
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ public interface CardService {
      * @param revisionEdit data of the new card
      * @return created card
      * @throws DeckNotFoundException if no deck with this id exists
-     * @throws UserNotFoundException if no authenticated user could be found
+     * @throws AuthenticationRequiredException if no authenticated user could be found
      */
     Card addCardToDeck(Long deckId, RevisionEdit revisionEdit);
 

@@ -3,6 +3,7 @@ package at.ac.tuwien.sepm.groupphase.backend.repository;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -39,4 +40,13 @@ public interface DeckRepository extends JpaRepository<Deck, Long> {
      */
     @EntityGraph(attributePaths = {"createdBy"})
     List<Deck> findByCreatedBy_Id(long id, Pageable pageable);
+
+    /**
+     * Find favorites of user
+     *
+     * @param userId id of the user
+     * @param pageable pagination parameters for the query
+     * @return page of favorites by user
+     */
+    Page<Deck> findByFavoredById(Long userId, Pageable pageable);
 }

@@ -8,6 +8,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -76,5 +78,30 @@ public class DeckRepositoryTest extends TestDataGenerator {
 
     @Test void givenNothing_whenFindById_thenResultIsNull() {
         assertTrue(deckRepository.findById(1L).isEmpty());
+    }
+
+    @Test void givenUser_whenFindFavoredById_thenReturnEmpty() {
+        Long userId = givenApplicationUser().getId();
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Page<Deck> result = deckRepository.findByFavoredById(userId, pageable);
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test void givenFavorite_whenFindFavoredById_thenReturnFavorite() {
+        Deck deck = givenFavorite();
+        Long userId = deck.getCreatedBy().getId();
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Page<Deck> result = deckRepository.findByFavoredById(userId, pageable);
+
+        assertEquals(1, result.getNumberOfElements());
+        Deck resultDeck = result.iterator().next();
+        assertNotNull(resultDeck);
+        assertAll(
+            () -> assertEquals(deck.getId(), resultDeck.getId()),
+            () -> assertEquals(deck.getName(), resultDeck.getName())
+        );
     }
 }
