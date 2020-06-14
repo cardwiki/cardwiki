@@ -28,7 +28,8 @@ export class AuthService {
     return this.httpClient.get<WhoAmI>(this.baseUri + '/whoami')
       .pipe(
         tap(null, this.errorHandler.handleError('Could not fetch user info')),
-        tap(res => localStorage.setItem('hasAccount', String(res.hasAccount)))
+        tap(res => localStorage.setItem('hasAccount', String(res.hasAccount))),
+        tap(res => localStorage.setItem('userId', String(res.id))), // TODO: Update when merged with frontend-login-status
       )
   }
 
@@ -40,12 +41,19 @@ export class AuthService {
     return this.httpClient.post<UserRegistration>(this.globals.backendUri + '/users', {username: username, description: ''})
       .pipe(
         tap(null, this.errorHandler.handleError('Could not register')),
-        tap(res => localStorage.setItem('hasAccount', 'true'))
+        tap(res => localStorage.setItem('hasAccount', 'true')),
+        tap(res => localStorage.setItem('userId', String(res.id))), // TODO: Update when merged with frontend-login-status
       )
   }
 
   getToken(): string {
     return localStorage.getItem('authToken');
+  }
+
+  // TODO: Update when merged with frontend-login-status
+  getUserId(): number {
+    const storedId = localStorage.getItem('userId')
+    return storedId === null ? null : +storedId
   }
 
   /**

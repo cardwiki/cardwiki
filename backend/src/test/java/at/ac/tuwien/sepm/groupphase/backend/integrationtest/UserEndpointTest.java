@@ -289,15 +289,19 @@ public class UserEndpointTest extends TestDataGenerator {
         User user = favorite.getCreatedBy();
 
         mvc.perform(get("/api/v1/users/{userId}/favorites", user.getId())
-            .queryParam("limit", "10")
             .queryParam("offset", "0")
+            .queryParam("limit", "10")
             .with(login(user.getAuthId())))
             .andExpect(status().isOk())
+            .andExpect((jsonPath("content[0].id").value(favorite.getId())))
+            .andExpect((jsonPath("content[0].name").value(favorite.getName())))
             .andExpect(jsonPath("numberOfElements").value(1))
             .andExpect(jsonPath("totalElements").value(1))
+            .andExpect(jsonPath("totalPages").value(1))
+            .andExpect(jsonPath("first").value(true))
             .andExpect(jsonPath("last").value(true))
-            .andExpect((jsonPath("content[0].id").value(favorite.getId())))
-            .andExpect((jsonPath("content[0].name").value(favorite.getName())));
+            .andExpect(jsonPath("pageable.pageNumber").value(0))
+            .andExpect(jsonPath("pageable.pageSize").value(10));
     }
 
     @Test

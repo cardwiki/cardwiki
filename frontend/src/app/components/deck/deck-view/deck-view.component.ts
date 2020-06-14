@@ -9,6 +9,7 @@ import {DeckForkModalComponent} from '../deck-fork-modal/deck-fork-modal.compone
 import {Observable} from 'rxjs';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {AuthService} from '../../../services/auth.service';
+import {FavoriteService} from 'src/app/services/favorite.service';
 
 @Component({
   selector: 'app-deck-view',
@@ -20,7 +21,7 @@ export class DeckViewComponent implements OnInit {
   deck: DeckDetails;
   cards: CardSimple[];
 
-  constructor(private deckService: DeckService, private cardService: CardService, private route: ActivatedRoute,
+  constructor(private deckService: DeckService, private cardService: CardService, private route: ActivatedRoute, private favoriteService: FavoriteService,
               private router: Router, private modalService: NgbModal, public authService: AuthService, private notificationService: NotificationService) { }
 
   ngOnInit(): void {
@@ -54,5 +55,10 @@ export class DeckViewComponent implements OnInit {
         (deck: DeckDetails) => this.router.navigate(['decks', deck.id])
       )
     ).catch(() => {});
+  }
+
+  saveToFavorites() {
+    this.favoriteService.addFavorite(this.deck.id)
+      .subscribe(() => this.notificationService.success('Saved to Favorites'))
   }
 }
