@@ -41,6 +41,7 @@ public abstract class TestDataGenerator {
         user.setUsername("username-" + userCounter);
         user.setDescription("some user");
         user.setAuthId("service:" + userCounter);
+        user.setAdmin(false);
         user.setEnabled(true);
         return userRepository.saveAndFlush(user);
     }

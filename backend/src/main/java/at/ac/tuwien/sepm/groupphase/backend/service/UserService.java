@@ -4,6 +4,7 @@ import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -100,6 +101,8 @@ public interface UserService {
      * @param id of the user to be updated.
      * @param user containing the data to update the user with
      * @return the updated user
+     * @throws UserNotFoundException if the user to be updated does not exist.
+     * @throws AccessDeniedException if the update operation is not allowed.
      */
     User updateUser(Long id, User user);
 }

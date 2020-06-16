@@ -48,6 +48,7 @@ public class UserEndpoint {
 
         User u = userMapper.userInputDtoToUser(userInputDto);
         u.setAuthId(SecurityContextHolder.getContext().getAuthentication().getName());
+        u.setAdmin(false);
         u.setEnabled(true);
         u = userService.createUser(u);
         return userMapper.userToUserDetailsDto(u);
@@ -83,7 +84,7 @@ public class UserEndpoint {
     @Secured("ROLE_USER")
     @PatchMapping(value = "/{id}")
     @ApiOperation(value = "Change settings of logged in user")
-    public UserDetailsDto editSettings(@PathVariable long id, @Valid @RequestBody UserEditInquiryDto userEditInquiryDto) {
-        return userMapper.userToUserDetailsDto(userService.editSettings(id, userMapper.userEditInquiryDtoToUser(userEditInquiryDto)));
+    public UserDetailsDto updateUser(@PathVariable long id, @Valid @RequestBody UserUpdateDto userUpdateDto) {
+        return userMapper.userToUserDetailsDto(userService.updateUser(id, userMapper.userUpdateDtoToUser(userUpdateDto)));
     }
 }

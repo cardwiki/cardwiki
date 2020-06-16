@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -115,8 +116,37 @@ public class SimpleUserService implements UserService {
         return userRepository.findByUsernameContainingIgnoreCase(username, pageable);
     }
 
+    @Transactional
     @Override
     public User updateUser(Long id, User user) {
-        return userRepository.saveAndFlush(user);
+        User currentUser = loadCurrentUser();
+
+        if (!currentUser.getId().equals(id) && !currentUser.isAdmin()) {
+            throw new AccessDeniedException("You are not allowed to edit users other than your own.");
+        }
+
+        if (!currentUser.isAdmin() && (user.isAdmin() != null || user.isEnabled() != null)) {
+            throw new AccessDeniedException("This operation needs admin rights.");
+        }
+
+        User updatedUser = currentUser.getId().equals(id) ? currentUser : loadUserById(id);
+
+        if (currentUser.isAdmin() && !currentUser.getId().equals(id) && updatedUser.isAdmin()) {
+            throw new AccessDeniedException("You are not allowed to update other admins.");
+        }
+
+        if (user.getDescription() != null) {
+            updatedUser.setDescription(user.getDescription());
+        }
+
+        if (currentUser.isAdmin() && user.isAdmin() != null) {
+            updatedUser.setAdmin(user.isAdmin());
+        }
+
+        if (currentUser.isAdmin() && user.isEnabled() != null) {
+            updatedUser.setEnabled(user.isEnabled());
+        }
+
+        return userRepository.save(updatedUser);
     }
 }

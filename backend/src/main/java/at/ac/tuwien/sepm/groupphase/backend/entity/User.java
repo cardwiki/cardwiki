@@ -7,7 +7,6 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -36,10 +35,10 @@ public class User {
     private String username;
 
     @Column(nullable = false)
-    private boolean admin;
+    private Boolean admin;
 
     @Column(nullable = false)
-    private boolean enabled;
+    private Boolean enabled;
 
     @Column(nullable = false, length = MAX_DESCRIPTION_LENGTH)
     private String description;
@@ -83,7 +82,7 @@ public class User {
         this.username = username;
     }
 
-    public boolean isAdmin() {
+    public Boolean isAdmin() {
         return admin;
     }
 
@@ -95,15 +94,15 @@ public class User {
         this.authId = authId;
     }
 
-    public void setAdmin(boolean admin) {
+    public void setAdmin(Boolean admin) {
         this.admin = admin;
     }
 
-    public void setEnabled(boolean enabled) {
+    public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
 
-    public boolean isEnabled(){
+    public Boolean isEnabled(){
         return enabled;
     }
 

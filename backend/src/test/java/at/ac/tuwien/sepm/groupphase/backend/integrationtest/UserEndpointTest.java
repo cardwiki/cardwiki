@@ -1,9 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.integrationtest;
 
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CardSimpleDto;
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckSimpleDto;
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.RevisionDetailedDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.UserDetailsDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionEdit;
@@ -14,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -230,7 +226,7 @@ public class UserEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    public void editUser() throws  Exception {
+    public void editUserDescription() throws  Exception {
         User user = givenApplicationUser();
 
         ObjectNode input = objectMapper.createObjectNode();
@@ -258,7 +254,7 @@ public class UserEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    public void editOtherUserNotFound() throws  Exception {
+    public void editOtherUserForbidden() throws  Exception {
         User user1 = givenApplicationUser();
         User user2 = givenApplicationUser();
 
@@ -267,6 +263,115 @@ public class UserEndpointTest extends TestDataGenerator {
 
         mvc.perform(patch("/api/v1/users/{userid}", user1.getId())
             .with(login(user2.getAuthId()))
+            .contentType("application/json").content(input.toString()))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void adminEditAdminStatus() throws Exception {
+        User user = givenApplicationUser();
+        user.setAdmin(true);
+        User editedUser = givenApplicationUser();
+
+        ObjectNode input = objectMapper.createObjectNode();
+        input.put("admin", true);
+
+        mvc.perform(patch("/api/v1/users/{userid}", editedUser.getId())
+            .with(login(user.getAuthId()))
+            .contentType("application/json").content(input.toString()))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.admin").value(true));
+    }
+
+    @Test
+    public void nonAdminEditOwnAdminStatus_forbidden() throws Exception {
+        User user = givenApplicationUser();
+
+        ObjectNode input = objectMapper.createObjectNode();
+        input.put("admin", true);
+
+        mvc.perform(patch("/api/v1/users/{userid}", user.getId())
+            .with(login(user.getAuthId()))
+            .contentType("application/json").content(input.toString()))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void adminEditOwnDescription() throws Exception {
+        User user = givenApplicationUser();
+        user.setAdmin(true);
+
+        ObjectNode input = objectMapper.createObjectNode();
+        input.put("description", "updated");
+
+        mvc.perform(patch("/api/v1/users/{userid}", user.getId())
+            .with(login(user.getAuthId()))
+            .contentType("application/json").content(input.toString()))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.description").value("updated"));
+    }
+
+    @Test
+    public void nonAdminEditOwnEnabledStatus_forbidden() throws Exception {
+        User user = givenApplicationUser();
+
+        ObjectNode input = objectMapper.createObjectNode();
+        input.put("enabled", false);
+
+        mvc.perform(patch("/api/v1/users/{userid}", user.getId())
+            .with(login(user.getAuthId()))
+            .contentType("application/json").content(input.toString()))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void adminEditAdmin_forbidden() throws Exception {
+        User user1 = givenApplicationUser();
+        user1.setAdmin(true);
+        User user2 = givenApplicationUser();
+        user2.setAdmin(true);
+
+        ObjectNode input = objectMapper.createObjectNode();
+        input.put("enabled", false);
+
+        mvc.perform(patch("/api/v1/users/{userid}", user2.getId())
+            .with(login(user1.getAuthId()))
+            .contentType("application/json").content(input.toString()))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void adminDisableUser() throws Exception {
+        User admin = givenApplicationUser();
+        admin.setAdmin(true);
+        User user = givenApplicationUser();
+        user.setEnabled(true);
+
+        ObjectNode input = objectMapper.createObjectNode();
+        input.put("enabled", false);
+
+        mvc.perform(patch("/api/v1/users/{userid}", user.getId())
+            .with(login(admin.getAuthId()))
+            .contentType("application/json").content(input.toString()))
+            .andExpect(status().isOk());
+
+        mvc.perform(get("/api/v1/auth/whoami")
+            .with(login(user.getAuthId()))
+            .contentType("application/json"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.hasAccount").value(false));
+    }
+
+    @Test
+    public void adminUpdateNonExistentUser_thenThrowNotFound() throws Exception {
+        User admin = givenApplicationUser();
+        admin.setAdmin(true);
+
+        ObjectNode input = objectMapper.createObjectNode();
+        input.put("description", "updated");
+
+        mvc.perform(patch("/api/v1/users/{userid}", admin.getId() + 1)
+            .with(login(admin.getAuthId()))
             .contentType("application/json").content(input.toString()))
             .andExpect(status().isNotFound());
     }

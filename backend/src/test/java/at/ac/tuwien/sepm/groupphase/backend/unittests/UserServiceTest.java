@@ -98,17 +98,4 @@ public class UserServiceTest extends TestDataGenerator {
         Mockito.when(userRepository.save(user)).thenThrow(new DataIntegrityViolationException("notImportantForTest", new Exception()));
         assertThrows(Exception.class, () -> userService.createUser(user));
     }
-
-    @Test
-    public void givenUser_whenUpdateUser_thenReturnUpdatedUser() {
-        User user = getSampleUser();
-        user.setAdmin(!user.isAdmin());
-        user.setEnabled(!user.isEnabled());
-        user.setDescription("updated " + user.getDescription());
-        user.setUsername("newusername");
-
-        Mockito.when(userRepository.saveAndFlush(user))
-            .thenReturn(user);
-        assertEquals(user, userService.updateUser(user.getId(), user));
-    }
 }
