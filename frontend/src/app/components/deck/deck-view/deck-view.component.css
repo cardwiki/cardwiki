@@ -1,10 +1,17 @@
-.table > tbody > tr > td {
-  vertical-align: middle;
+.card-actions {
+  visibility: hidden;
 }
 
-img {
+tr:hover .card-actions {
+  visibility: visible;
+}
+
+.card-cell-container {
+  display: flex;
+  align-items: center;
+}
+
+.card-cell-container img {
   max-height: 70px;
+  max-width: 100px;
 }
-
-.card-actions { visibility: hidden; }
-tr:hover .card-actions { visibility: visible; }
