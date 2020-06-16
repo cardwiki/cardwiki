@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { NotificationService } from './notification.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { throwError, of, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -34,6 +35,23 @@ export class ErrorHandlerService {
 
       throw error
     };
+  }
+
+  /**
+   * Catch http errors with specific status and resolve with the provided value
+   * 
+   * @param status single or multiple status which should be caught
+   * @param value value which should be resolved for further processing
+   * @returns error handler which can be used inside catchError
+   */
+  public catchStatus<T>(status: number | number[], value: T): (error: any) => Observable<T> {
+    const statuses = [status].flat()
+  
+    return (error: HttpErrorResponse): Observable<T> => {
+      if (statuses.includes(error?.status))
+        return of(value)
+      return throwError(error)
+    }
   }
 
   private log(operation: string, error: any): void {

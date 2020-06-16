@@ -117,6 +117,17 @@ public class UserEndpoint {
     }
 
     @Secured("ROLE_USER")
+    @GetMapping(value = "/{userId}/favorites/{deckId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiOperation(value = "Check if a deck is a favorite of the user")
+    public void hasFavorite(@PathVariable Long userId, @PathVariable Long deckId) {
+        LOGGER.info("GET /api/v1/users/{}/favorites/{}", userId, deckId);
+        if (!favoriteService.hasFavorite(userId, deckId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("%s has no favorite %s", userId, deckId));
+        }
+    }
+
+    @Secured("ROLE_USER")
     @DeleteMapping(value = "/{userId}/favorites/{deckId}")
     @ApiOperation(value = "Remove a deck from favorites of user")
     public void removeFavorite(@PathVariable Long userId, @PathVariable Long deckId) {

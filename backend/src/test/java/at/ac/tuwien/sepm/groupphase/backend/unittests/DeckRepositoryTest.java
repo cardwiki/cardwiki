@@ -104,4 +104,23 @@ public class DeckRepositoryTest extends TestDataGenerator {
             () -> assertEquals(deck.getName(), resultDeck.getName())
         );
     }
+
+    @Test void givenDeckAndUser_whenexistsByIdAndFavoredById_thenReturnFalse() {
+        Long deckId = givenDeck().getId();
+        Long userId = givenApplicationUser().getId();
+
+        assertFalse(deckRepository.existsByIdAndFavoredById(deckId, userId));
+    }
+
+    @Test void givenFavorite_whenexistsByIdAndFavoredById_thenReturnTrue() {
+        Deck deck = givenFavorite();
+        Long userId = deck.getCreatedBy().getId();
+        Long deckId = deck.getId();
+
+        assertTrue(deckRepository.existsByIdAndFavoredById(deckId, userId));
+    }
+
+    @Test void givenNothing_whenexistsByIdAndFavoredById_thenThrow() {
+        assertFalse(() -> deckRepository.existsByIdAndFavoredById(0L, 0L));
+    }
 }

@@ -49,4 +49,13 @@ public interface DeckRepository extends JpaRepository<Deck, Long> {
      * @return page of favorites by user
      */
     Page<Deck> findByFavoredById(Long userId, Pageable pageable);
+
+    /**
+     * Check if a deck is a favorite of a user
+     *
+     * @param deckId id of the deck
+     * @param userId id of the user
+     * @return false if deck is not a favorite of the user, or if deck/user does not exist
+     */
+    boolean existsByIdAndFavoredById(Long deckId, Long userId);
 }

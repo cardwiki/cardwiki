@@ -6,6 +6,7 @@ import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.exception.AuthenticationRequiredException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.DeckNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.InsufficientAuthorizationException;
+import at.ac.tuwien.sepm.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
@@ -61,6 +62,19 @@ public class FavoriteServiceTest extends TestDataGenerator {
 
         assertEquals(deck, result, "Returns favorite deck");
         assertTrue(user.getFavorites().contains(deck), "Deck has been added to user favorites");
+    }
+
+    @Test
+    void givenFavorite_whenAddFavorite_thenThrowConflictException() {
+        User user = getSampleUser();
+        Deck deck = getSampleDeck();
+        user.getFavorites().add(deck);
+
+        when(userService.loadCurrentUser()).thenReturn(user);
+        when(deckService.findOne(deck.getId())).thenReturn(deck);
+        when(userRepository.save(any(User.class))).thenAnswer(returnsFirstArg());
+
+        assertThrows(ConflictException.class, () -> favoriteService.addFavorite(user.getId(), deck.getId()));
     }
 
     @Test
@@ -135,6 +149,63 @@ public class FavoriteServiceTest extends TestDataGenerator {
         when(deckRepository.findByFavoredById(user.getId(), pageable)).thenReturn(page);
 
         assertThrows(InsufficientAuthorizationException.class, () -> favoriteService.getFavorites(otherUserId, pageable));
+    }
+
+    @Test
+    void givenFavorite_whenHasFavorite_thenReturnTrue() {
+        User user = getSampleUser();
+        Deck deck = getSampleDeck();
+
+        when(userService.loadCurrentUser()).thenReturn(user);
+        when(deckRepository.existsByIdAndFavoredById(deck.getId(), user.getId())).thenReturn(true);
+
+        assertTrue(favoriteService.hasFavorite(user.getId(), deck.getId()));
+    }
+
+    @Test
+    void givenUser_whenHasFavorite_thenReturnFalse() {
+        User user = getSampleUser();
+        Deck deck = getSampleDeck();
+
+        when(userService.loadCurrentUser()).thenReturn(user);
+        when(deckRepository.existsByIdAndFavoredById(deck.getId(), user.getId())).thenReturn(false);
+
+        assertFalse(favoriteService.hasFavorite(user.getId(), deck.getId()));
+    }
+
+    @Test
+    void givenUser_whenHasFavoriteWithUnknownDeck_thenThrowDeckNotFoundException() {
+        User user = getSampleUser();
+        Long deckId = 0L;
+
+        when(userService.loadCurrentUser()).thenReturn(user);
+        when(deckService.findOne(any(Long.class))).thenThrow(DeckNotFoundException.class);
+        when(deckRepository.existsByIdAndFavoredById(deckId, user.getId())).thenReturn(false);
+
+        assertThrows(DeckNotFoundException.class, () -> favoriteService.hasFavorite(user.getId(), deckId));
+    }
+
+    @Test
+    void givenUser_whenHasFavoriteWithoutAuthentication_thenThrowAuthenticationRequiredException() {
+        User user = getSampleUser();
+        Deck deck = getSampleDeck();
+
+        when(userService.loadCurrentUser()).thenThrow(AuthenticationRequiredException.class);
+        when(deckRepository.existsByIdAndFavoredById(deck.getId(), user.getId())).thenReturn(false);
+
+        assertThrows(AuthenticationRequiredException.class, () -> favoriteService.hasFavorite(user.getId(), deck.getId()));
+    }
+
+    @Test
+    void givenUser_whenHasFavoriteForOtherUser_thenThrowInsufficientAuthorizationException() {
+        User user = getSampleUser();
+        Long otherUserId = user.getId() + 1;
+        Deck deck = getSampleDeck();
+
+        when(userService.loadCurrentUser()).thenReturn(user);
+        when(deckRepository.existsByIdAndFavoredById(deck.getId(), user.getId())).thenReturn(false);
+
+        assertThrows(InsufficientAuthorizationException.class, () -> favoriteService.hasFavorite(otherUserId, deck.getId()));
     }
 
     @Test

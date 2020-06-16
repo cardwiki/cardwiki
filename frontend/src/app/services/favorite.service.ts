@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Globals } from '../global/globals';
 import { ErrorHandlerService } from './error-handler.service';
 import { DeckSimple } from '../dtos/deckSimple';
-import { tap } from 'rxjs/operators';
+import { tap, map, catchError } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { Page } from '../dtos/page';
 import { Pageable } from '../dtos/pageable';
@@ -37,6 +37,21 @@ export class FavoriteService {
 
     return this.httpClient.get<Page<DeckSimple>>(this.getFavoriteUri(), { params })
       .pipe(tap(null, this.errorHandler.handleError('Could not get favorites')))
+  }
+
+  /**
+   * Check if a deck is in the favorites of the logged in user
+   * 
+   * @param deckId deck which should be checked
+   */
+  hasFavorite(deckId: number): Observable<boolean> {
+    // return false if the status is 404, else true for a successful response
+    return this.httpClient.get<void>(this.getFavoriteUri(deckId))
+      .pipe(
+        catchError(this.errorHandler.catchStatus(404, false)),
+        tap(null, this.errorHandler.handleError('Could not check if deck is a favorite')),
+        map(val => val !== false),
+      )
   }
 
   /**

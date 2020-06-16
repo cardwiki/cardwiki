@@ -4,6 +4,7 @@ import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.exception.DeckNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.InsufficientAuthorizationException;
+import at.ac.tuwien.sepm.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
@@ -44,7 +45,8 @@ public class SimpleFavoriteService implements FavoriteService {
             throw new InsufficientAuthorizationException("Cannot add favorites for other users");
 
         Deck deck = deckService.findOne(deckId);
-        user.getFavorites().add(deck);
+        if (!user.getFavorites().add(deck))
+            throw new ConflictException("Deck already saved as favorite");
         userRepository.save(user);
 
         return deck;
@@ -59,6 +61,20 @@ public class SimpleFavoriteService implements FavoriteService {
             throw new InsufficientAuthorizationException("Cannot get favorites from other users");
 
         return deckRepository.findByFavoredById(userId, pageable);
+    }
+
+    @Override
+    @Transactional
+    public boolean hasFavorite(Long userId, Long deckId) {
+        LOGGER.debug("Check if {} has a favorite {}", userId, deckId);
+        User user = userService.loadCurrentUser();
+        if (!user.getId().equals(userId))
+            throw new InsufficientAuthorizationException("Cannot get favorites from other users");
+
+        // Throw if deck does not exist
+        deckService.findOne(deckId);
+
+        return deckRepository.existsByIdAndFavoredById(deckId, userId);
     }
 
     @Override

@@ -6,7 +6,7 @@ import {CardService} from '../../../services/card.service';
 import {CardSimple} from '../../../dtos/cardSimple';
 import {NotificationService} from 'src/app/services/notification.service';
 import {DeckForkModalComponent} from '../deck-fork-modal/deck-fork-modal.component';
-import {Observable} from 'rxjs';
+import {Observable, Subject, BehaviorSubject} from 'rxjs';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {AuthService} from '../../../services/auth.service';
 import {FavoriteService} from 'src/app/services/favorite.service';
@@ -20,6 +20,7 @@ export class DeckViewComponent implements OnInit {
 
   deck: DeckDetails;
   cards: CardSimple[];
+  isFavorite$: Subject<boolean>
 
   constructor(private deckService: DeckService, private cardService: CardService, private route: ActivatedRoute, private favoriteService: FavoriteService,
               private router: Router, private modalService: NgbModal, public authService: AuthService, private notificationService: NotificationService) { }
@@ -28,6 +29,7 @@ export class DeckViewComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       this.loadDeck(Number(params.get('id')));
     });
+    this.isFavorite$ = new Subject()
   }
 
   loadDeck(id: number) {
@@ -35,6 +37,8 @@ export class DeckViewComponent implements OnInit {
       this.deck = deck;
       this.cardService.getCardsByDeckId(id).subscribe(cards => this.cards = cards);
     });
+    // TODO: Only check for favorite if logged in
+    this.favoriteService.hasFavorite(id).subscribe(isFavorite => this.isFavorite$.next(isFavorite))
   }
 
   removeCard(card: CardSimple) {
@@ -59,6 +63,11 @@ export class DeckViewComponent implements OnInit {
 
   saveToFavorites() {
     this.favoriteService.addFavorite(this.deck.id)
-      .subscribe(() => this.notificationService.success('Saved to Favorites'))
+      .subscribe(() => this.isFavorite$.next(true))
+  }
+
+  removeFromFavorites() {
+    this.favoriteService.removeFavorite(this.deck.id)
+      .subscribe(() => this.isFavorite$.next(false))
   }
 }
