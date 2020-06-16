@@ -9,3 +9,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
+  servlet:
+    multipart:
+      max-file-size: 1KB
+      max-request-size: 1KB

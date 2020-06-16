@@ -33,31 +33,55 @@ public class SimpleImageService implements ImageService {
     @Override
     public String save(MultipartFile file) {
         LOGGER.info("Save image");
+        byte[] bytes;
         try {
-            byte[] bytes = file.getBytes();
-
-            //Get and check content type
-            String contentType = URLConnection.guessContentTypeFromStream(new ByteArrayInputStream(bytes));
-            if (contentType == null) {
-                throw new IllegalArgumentException("Content type could not be determined");
-            }
-            contentType = contentType.split("/")[1].toLowerCase();
-            if (!(contentType.equals("png") || contentType.equals("jpeg"))) {
-                throw new IllegalArgumentException("Content type " + contentType + " is not supported");
-            }
-
-            //Save file
-            byte[] hash = MessageDigest.getInstance("SHA-256").digest(bytes);
-            String filename = bytesToHex(hash) + "." + contentType;
-            Files.write(imageSavedPath.resolve(filename), bytes);
-
-            return filename;
-        } catch (IOException | NoSuchAlgorithmException e) {
-            throw new RuntimeException("Could not store image. Error: " + e.getMessage());
+            bytes = file.getBytes();
+        } catch (IOException ex) {
+            throw new RuntimeException("Could not store image. Error: " + ex.getMessage());
         }
+
+        if (bytes.length == 0) {
+            throw new IllegalArgumentException("Empty file");
+        }
+
+        //Create filename
+        String contentType = getContentTypeFromBytes(bytes);
+        byte[] hash;
+        try {
+            hash = MessageDigest.getInstance("SHA-256").digest(bytes);
+        } catch (NoSuchAlgorithmException ex) {
+            throw new RuntimeException("Could not store image. Error: " + ex.getMessage());
+        }
+        String filename = bytesToHex(hash) + "." + contentType;
+
+        //Save image
+        try {
+           Files.write(imageSavedPath.resolve(filename), bytes);
+        } catch (IOException ex) {
+            throw new RuntimeException("Could not store image. Error: " + ex.getMessage());
+        }
+
+        return filename;
     }
 
-    private static String bytesToHex(byte[] hash) {
+    private String getContentTypeFromBytes(byte[] bytes) {
+        String contentType;
+        try {
+            contentType = URLConnection.guessContentTypeFromStream(new ByteArrayInputStream(bytes));
+        } catch (IOException ex) {
+            throw new RuntimeException("Could not store image. Error: " + ex.getMessage());
+        }
+        if (contentType == null) {
+            throw new IllegalArgumentException("Content type could not be determined");
+        }
+        contentType = contentType.split("/")[1].toLowerCase();
+        if (!(contentType.equals("png") || contentType.equals("jpeg"))) {
+            throw new IllegalArgumentException("Content type " + contentType + " is not supported");
+        }
+        return contentType;
+    }
+
+    private String bytesToHex(byte[] hash) {
         StringBuffer hexString = new StringBuffer();
         for (byte b : hash) {
             String hex = Integer.toHexString(0xff & b);

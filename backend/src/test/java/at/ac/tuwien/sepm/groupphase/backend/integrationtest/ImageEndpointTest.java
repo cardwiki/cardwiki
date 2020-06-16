@@ -12,6 +12,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+
 import java.io.FileInputStream;
 import java.nio.file.Paths;
 
@@ -56,7 +57,7 @@ public class ImageEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    public void uploadImageWithUnsupportedContentTypThrowsBadRequest() throws Exception {
+    public void uploadImageWithUnsupportedContentTypeThrowsBadRequest() throws Exception {
         User user = givenApplicationUser();
         FileInputStream fileInputStream = new FileInputStream(unsupportedTestImagePath);
         MockMultipartFile multipartFile = new MockMultipartFile("file", fileInputStream);
@@ -68,10 +69,21 @@ public class ImageEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    public void uploadFileWhoseContentTypCannotBeGuessedThrowsBadRequest() throws Exception {
+    public void uploadFileWhoseContentTypeCannotBeGuessedThrowsBadRequest() throws Exception {
         User user = givenApplicationUser();
         MockMultipartFile multipartFile = new MockMultipartFile("file", "test.txt",
             "text/plain", "test".getBytes());
+
+        mvc.perform(multipart("/api/v1/images")
+            .file(multipartFile)
+            .with(mockLogin(USER_ROLES, user.getAuthId())))
+            .andExpect(status().is(400));
+    }
+
+    @Test
+    public void uploadEmptyFileThrowsBadRequest() throws Exception {
+        User user = givenApplicationUser();
+        MockMultipartFile multipartFile = new MockMultipartFile("file", new byte[0]);
 
         mvc.perform(multipart("/api/v1/images")
             .file(multipartFile)
