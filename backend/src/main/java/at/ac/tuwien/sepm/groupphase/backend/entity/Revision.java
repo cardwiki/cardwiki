@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "revisions")
 public class Revision {
-    public static final int MAX_MESSAGE_SIZE = 500;
+    public static final int MAX_MESSAGE_SIZE = 150;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

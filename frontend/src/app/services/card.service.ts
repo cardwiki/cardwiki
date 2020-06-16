@@ -43,10 +43,12 @@ export class CardService {
   /**
    * Removes a card from its deck
    * @param cardId of the card to remove
+   * @param message optional description why the card will be removed
    */
-  removeCard(cardId: number): Observable<CardContent> {
+  removeCard(cardId: number, message?: string): Observable<CardContent> {
     console.log(`remove card with id ${cardId}`);
-    return this.httpClient.delete<CardContent>(`${this.cardBaseUri}/${cardId}`)
+    const params = message ? { message } : {}
+    return this.httpClient.delete<CardContent>(`${this.cardBaseUri}/${cardId}`, { params })
       .pipe(tap(null, this.errorHandler.handleError('Could not remove Card')))
   }
 

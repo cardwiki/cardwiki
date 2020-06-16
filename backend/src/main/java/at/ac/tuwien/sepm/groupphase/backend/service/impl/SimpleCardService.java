@@ -66,7 +66,7 @@ public class SimpleCardService implements CardService {
 
     @Override
     @Transactional
-    public Card addDeleteRevisionToCard(Long cardId) {
+    public Card addDeleteRevisionToCard(Long cardId, String revisionMessage) {
         LOGGER.debug("Add delete-revision to card with id {}", cardId);
         Card card = findOne(cardId);
         User user = userService.loadCurrentUser();
@@ -74,7 +74,7 @@ public class SimpleCardService implements CardService {
         Revision revision = new Revision();
         revision.setType(Revision.Type.DELETE);
         revision.setCard(card);
-        revision.setMessage("Deleted");
+        revision.setMessage(revisionMessage == null ? "Deleted" : revisionMessage);
         card.setLatestRevision(revision);
         revision.setCreatedBy(user);
 
@@ -97,7 +97,7 @@ public class SimpleCardService implements CardService {
 
         Revision revision = new Revision();
         revision.setType(Revision.Type.EDIT);
-        revision.setMessage("Edited");
+        revision.setMessage(revisionData.getMessage() != null ? revisionData.getMessage() : "Edited");
         card.setLatestRevision(revision);
         revision.setCard(card);
         revision.setCreatedBy(user);

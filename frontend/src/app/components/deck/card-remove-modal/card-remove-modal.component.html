@@ -1,0 +1,21 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title">Delete card</h5>
+        <button type="button" class="close" (click)="activeModal.dismiss()">
+            &times;
+        </button>
+    </div>
+    <form (ngSubmit)="onSubmit()" #cardRemoveForm="ngForm">
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="message">Optionally describe why you delete this card</label>
+                <input type="text" class="form-control" id="message" name="message"
+                    [(ngModel)]="message" maxlength="{{globals.maxMessageSize}}">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-danger">Delete</button>
+            <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss()">Cancel</button>
+        </div>
+    </form>
+</div>

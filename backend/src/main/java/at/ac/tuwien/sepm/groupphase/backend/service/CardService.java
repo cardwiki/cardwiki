@@ -51,7 +51,8 @@ public interface CardService {
      * Add delete-revision to card
      *
      * @param cardId of the card to which the delete-revision will be added
+     * @param revisionMessage optional message for the delete-revision
      * @return card with added delete-revision
      */
-    Card addDeleteRevisionToCard(Long cardId);
+    Card addDeleteRevisionToCard(Long cardId, String revisionMessage);
 }

@@ -11,14 +11,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Size;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/v1")
+@Validated
 public class CardEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -70,8 +73,8 @@ public class CardEndpoint {
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping(value = "/cards/{cardId}")
     @ApiOperation(value = "Removes card from deck", authorizations = {@Authorization(value = "ROLE_USER")})
-    public CardContentDto addDeleteRevisionToCard(@PathVariable Long cardId) {
-        LOGGER.info("DELETE /api/v1/cards/{}", cardId);
-        return cardMapper.cardToCardContentDto(cardService.addDeleteRevisionToCard(cardId));
+    public CardContentDto addDeleteRevisionToCard(@PathVariable Long cardId, @RequestParam(required = false) @Size(max = Revision.MAX_MESSAGE_SIZE) String message) {
+        LOGGER.info("DELETE /api/v1/cards/{}?message=", message);
+        return cardMapper.cardToCardContentDto(cardService.addDeleteRevisionToCard(cardId, message));
     }
 }

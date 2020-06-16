@@ -57,7 +57,7 @@
         <a routerLink="/decks/{{deck.id}}/cards/{{card.id}}/edit" class="btn btn-light"><i class="fas fa-pencil-alt"></i></a>
         <button type="button" class="btn btn-light"><i class="far fa-clone"></i></button>
         <button type="button" class="btn btn-light"><i class="fas fa-history"></i></button>
-        <button type="button" class="btn btn-light" (click)="removeCard(card)"><i class="fas fa-trash-alt"></i></button>
+        <button type="button" class="btn btn-light" (click)="openCardRemoveModal(card)"><i class="fas fa-trash-alt"></i></button>
       </div>
     </td>
   </tr>
