@@ -27,13 +27,13 @@ public class CardEndpoint {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final CardService cardService;
     private final CardMapper cardMapper;
-    private final Path path;
+    private final Path imageServedPath;
 
     @Autowired
-    public CardEndpoint(CardService cardService, CardMapper cardMapper, @Value("${cawi.image-served-path}") String path) {
+    public CardEndpoint(CardService cardService, CardMapper cardMapper, @Value("${cawi.image-served-path}") String imageServedPath) {
         this.cardService = cardService;
         this.cardMapper = cardMapper;
-        this.path = Paths.get(path);
+        this.imageServedPath = Paths.get(imageServedPath);
     }
 
     @Secured("ROLE_USER")
@@ -51,8 +51,12 @@ public class CardEndpoint {
     public CardSimpleDto findOne(@PathVariable Long deckId, @PathVariable Long cardId) {
         LOGGER.info("GET /api/v1/decks/{}/cards/{}", deckId, cardId);
         CardSimpleDto cardSimpleDto = cardMapper.cardToCardSimpleDto(cardService.findOne(deckId, cardId));
-        if (cardSimpleDto.getImageFront() != null) cardSimpleDto.setImageFront(path.resolve(cardSimpleDto.getImageFront()).toString());
-        if (cardSimpleDto.getImageBack() != null) cardSimpleDto.setImageBack(path.resolve(cardSimpleDto.getImageBack()).toString());
+        if (cardSimpleDto.getImageFront() != null) {
+            cardSimpleDto.setImageFront(imageServedPath.resolve(cardSimpleDto.getImageFront()).toString());
+        }
+        if (cardSimpleDto.getImageBack() != null) {
+            cardSimpleDto.setImageBack(imageServedPath.resolve(cardSimpleDto.getImageBack()).toString());
+        }
         return cardSimpleDto;
     }
 
@@ -73,8 +77,12 @@ public class CardEndpoint {
         LOGGER.info("GET /api/v1/decks/{}/cards", deckId);
         List<CardContentDto> cardContentDtos = cardMapper.cardToCardContentDto(cardService.findCardsByDeckId(deckId));
         for (CardContentDto cardContentDto : cardContentDtos) {
-           if (cardContentDto.getImageFront() != null) cardContentDto.setImageFront(path.resolve(cardContentDto.getImageFront()).toString());
-           if (cardContentDto.getImageBack() != null) cardContentDto.setImageBack(path.resolve(cardContentDto.getImageBack()).toString());
+           if (cardContentDto.getImageFront() != null) {
+               cardContentDto.setImageFront(imageServedPath.resolve(cardContentDto.getImageFront()).toString());
+           }
+           if (cardContentDto.getImageBack() != null) {
+               cardContentDto.setImageBack(imageServedPath.resolve(cardContentDto.getImageBack()).toString());
+           }
         }
         return cardContentDtos;
     }

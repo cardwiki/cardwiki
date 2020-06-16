@@ -7,12 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,11 +23,11 @@ import org.springframework.web.multipart.MultipartFile;
 public class SimpleImageService implements ImageService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    private final Path path;
+    private final Path imageSavedPath;
 
     @Autowired
-    public SimpleImageService(@Value("${cawi.image-saved-path}") String path) {
-        this.path = Paths.get(path);
+    public SimpleImageService(@Value("${cawi.image-saved-path}") String imageSavedPath) {
+        this.imageSavedPath = Paths.get(imageSavedPath);
     }
 
     @Override
@@ -39,7 +41,7 @@ public class SimpleImageService implements ImageService {
             if (contentType == null) {
                 throw new IllegalArgumentException("Content type could not be determined");
             }
-            contentType = contentType.split("/")[1];
+            contentType = contentType.split("/")[1].toLowerCase();
             if (!(contentType.equals("png") || contentType.equals("jpeg"))) {
                 throw new IllegalArgumentException("Content type " + contentType + " is not supported");
             }
@@ -47,10 +49,10 @@ public class SimpleImageService implements ImageService {
             //Save file
             byte[] hash = MessageDigest.getInstance("SHA-256").digest(bytes);
             String filename = bytesToHex(hash) + "." + contentType;
-            Files.write(path.resolve(filename), bytes);
+            Files.write(imageSavedPath.resolve(filename), bytes);
 
             return filename;
-        } catch (Exception e) {
+        } catch (IOException | NoSuchAlgorithmException e) {
             throw new RuntimeException("Could not store image. Error: " + e.getMessage());
         }
     }
