@@ -16,6 +16,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.validation.ConstraintViolationException;
 import java.lang.invoke.MethodHandles;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -79,6 +80,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         LOGGER.warn(ex.getMessage());
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.FORBIDDEN, request);
     }
+
+    /**
+     * TODO:    Added because non-object RequestParams which are validated with @Validated are not caught by handleMethodArgumentNotValid
+     *          Should be merged with handleMethodArgumentNotValid if possible or transformed into a better format
+     */
+    @ExceptionHandler(value = {ConstraintViolationException.class})
+    public ResponseEntity<Object> handleValidationFailure(ConstraintViolationException ex, WebRequest request) {
+        LOGGER.warn(ex.getMessage());
+
+        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+    }
+
 
     /**
      * Handle Validation Errors

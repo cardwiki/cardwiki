@@ -5,6 +5,7 @@ export class UserRegistration {
         public description: string,
         public createdAt: Date,
         public updatedAt: Date,
-        public isAdmin: boolean) {
+        public admin: boolean,
+    ) {
     }
 }

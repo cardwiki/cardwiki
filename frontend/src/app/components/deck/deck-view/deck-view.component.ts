@@ -10,6 +10,7 @@ import {Observable, Subject, BehaviorSubject} from 'rxjs';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {AuthService} from '../../../services/auth.service';
 import {FavoriteService} from 'src/app/services/favorite.service';
+import { CardRemoveModalComponent } from '../card-remove-modal/card-remove-modal.component';
 
 @Component({
   selector: 'app-deck-view',
@@ -37,17 +38,22 @@ export class DeckViewComponent implements OnInit {
       this.deck = deck;
       this.cardService.getCardsByDeckId(id).subscribe(cards => this.cards = cards);
     });
-    // TODO: Only check for favorite if logged in
-    this.favoriteService.hasFavorite(id).subscribe(isFavorite => this.isFavorite$.next(isFavorite))
+    if (this.authService.isLoggedIn())
+      this.favoriteService.hasFavorite(id).subscribe(isFavorite => this.isFavorite$.next(isFavorite))
   }
 
-  removeCard(card: CardSimple) {
-    if (confirm('Are you sure you want to delete this card?')) {
-      this.cardService.removeCardFromDeck(this.deck.id, card.id).subscribe(() => {
-        this.cards = this.cards.filter(c => c !== card)
-        this.notificationService.success('Deleted Card')
-      });
-    }
+  openCardRemoveModal(card: CardSimple) {
+    const modalRef = this.modalService.open(CardRemoveModalComponent);
+    modalRef.componentInstance.card = card;
+
+    modalRef.result.then(
+      (res: Observable<void>) => res.subscribe(
+        () => {
+          this.notificationService.success('Deleted Card')
+          this.cards = this.cards.filter(c => c !== card)
+        }   
+      )
+    ).catch(err => console.error('Did not remove card', err));
   }
 
   openForkModal() {

@@ -32,8 +32,8 @@ public class SimpleCardService implements CardService {
 
     @Override
     @Transactional
-    public Card addCardToDeck(Long deckId, RevisionEdit revisionEdit) {
-        LOGGER.debug("Add Card to Deck: {} {}", revisionEdit, deckId);
+    public Card addCardToDeck(Long deckId, Revision revisionData) {
+        LOGGER.debug("Add Card to Deck: {} {}", revisionData, deckId);
         User user = userService.loadCurrentUser();
         Deck deck = deckService.findOne(deckId);
 
@@ -42,7 +42,8 @@ public class SimpleCardService implements CardService {
         card.setDeck(deck);
 
         Revision revision = new Revision();
-        revision.setMessage("Created");
+        revision.setType(Revision.Type.CREATE);
+        revision.setMessage(revisionData.getMessage() != null ? revisionData.getMessage() : "Created");
         card.setLatestRevision(revision);
         revision.setCard(card);
         revision.setCreatedBy(user);
@@ -50,6 +51,7 @@ public class SimpleCardService implements CardService {
         card = cardRepository.saveAndFlush(card);
 
         // Add content
+        RevisionEdit revisionEdit = revisionData.getRevisionEdit();
         card.getLatestRevision().setRevisionEdit(revisionEdit);
         revisionEdit.setRevision(card.getLatestRevision());
 
@@ -64,14 +66,15 @@ public class SimpleCardService implements CardService {
 
     @Override
     @Transactional
-    public Card addDeleteRevisionToCard(Long deckId, Long cardId) {
-        LOGGER.debug("Add delete-revision to card with id {} from deck with id {}", cardId, deckId);
-        Card card = findOne(deckId, cardId);
+    public Card addDeleteRevisionToCard(Long cardId, String revisionMessage) {
+        LOGGER.debug("Add delete-revision to card with id {}", cardId);
+        Card card = findOne(cardId);
         User user = userService.loadCurrentUser();
 
         Revision revision = new Revision();
+        revision.setType(Revision.Type.DELETE);
         revision.setCard(card);
-        revision.setMessage("Deleted");
+        revision.setMessage(revisionMessage == null ? "Deleted" : revisionMessage);
         card.setLatestRevision(revision);
         revision.setCreatedBy(user);
 
@@ -79,40 +82,31 @@ public class SimpleCardService implements CardService {
     }
 
     @Transactional
-    public Card findOne(Long deckId, Long cardId) {
-        LOGGER.debug("Find card with id {} in deck with id {}", deckId, cardId);
-        Deck deck = deckService.findOne(deckId);
+    public Card findOne(Long cardId) {
+        LOGGER.debug("Find card with id {}", cardId);
         Optional<Card> card = cardRepository.findSimpleById(cardId);
-
-        if (card.isPresent() && card.get().getDeck().getId().equals(deck.getId())) {
-            return card.get();
-        }
-        else throw new NotFoundException(String.format("Could not find card with id %s in deck with id %s", cardId, deckId));
+        return card.orElseThrow(() -> new NotFoundException("Could not find card with id " + cardId));
     }
 
     @Override
     @Transactional
-    public Card editCardInDeck(Long deckId, Long cardId, RevisionEdit revisionEdit) {
-        LOGGER.debug("Edit Card {} in Deck {}: {}", cardId, deckId, revisionEdit);
+    public Card editCardInDeck(Long cardId, Revision revisionData) {
+        LOGGER.debug("Edit Card {}: {}", cardId, revisionData);
         User user = userService.loadCurrentUser();
-        Deck deck = deckService.findOne(deckId);
-        Optional<Card> optCard = cardRepository.findDetailsById(cardId);
+        Card card = findOne(cardId);
 
-        if (optCard.isPresent() && optCard.get().getDeck().getId().equals(deck.getId())) {
-            Card card = optCard.get();
+        Revision revision = new Revision();
+        revision.setType(Revision.Type.EDIT);
+        revision.setMessage(revisionData.getMessage() != null ? revisionData.getMessage() : "Edited");
+        card.setLatestRevision(revision);
+        revision.setCard(card);
+        revision.setCreatedBy(user);
 
-            Revision revision = new Revision();
-            revision.setMessage("Edited");
-            card.setLatestRevision(revision);
-            revision.setCard(card);
-            revision.setCreatedBy(user);
+        // Add content
+        RevisionEdit revisionEdit = revisionData.getRevisionEdit();
+        card.getLatestRevision().setRevisionEdit(revisionEdit);
+        revisionEdit.setRevision(card.getLatestRevision());
 
-            // Add content
-            card.getLatestRevision().setRevisionEdit(revisionEdit);
-            revisionEdit.setRevision(card.getLatestRevision());
-
-            return cardRepository.saveAndFlush(card);
-        }
-        else throw new NotFoundException(String.format("Could not find card with id %s in deck with id %s", cardId, deckId));
+        return cardRepository.saveAndFlush(card);
     }
 }

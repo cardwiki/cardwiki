@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.basetest;
 
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.AttemptInputDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
 import at.ac.tuwien.sepm.groupphase.backend.repository.*;
 import org.hamcrest.Description;
@@ -74,6 +75,7 @@ public abstract class TestDataGenerator {
         User user = givenApplicationUser();
         Card card = givenCard();
         Revision revision = new Revision();
+        revision.setType(Revision.Type.CREATE);
         revision.setMessage("message");
         revision.setCard(card);
         card.setLatestRevision(revision);
@@ -157,6 +159,7 @@ public abstract class TestDataGenerator {
 
     public Revision getUnconnectedSampleRevision() {
         Revision revision = new Revision();
+        revision.setType(Revision.Type.CREATE);
         revision.setId(REVISION_ID);
         revision.setMessage("message");
         revision.setCreatedAt(CREATED_AT);
@@ -237,6 +240,15 @@ public abstract class TestDataGenerator {
         category.setParent(parent);
         parent.getChildren().add(category);
         return category;
+    }
+
+    public AttemptInputDto getSampleAttempt() {
+        Card card = getSampleCard();
+        AttemptInputDto attempt = new AttemptInputDto();
+        attempt.setCardId(card.getId());
+        attempt.setStatus(AttemptInputDto.Status.GOOD);
+
+        return attempt;
     }
 
     public Matcher<String> validIsoDateTime() {
