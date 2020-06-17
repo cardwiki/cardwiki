@@ -42,7 +42,7 @@ export class ProfileComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       this.revisions = [];
       this.decks = [];
-      if (localStorage.getItem("whoami")) this.me = (params.get('username') === JSON.parse(localStorage.getItem("whoami")).username);
+      this.me = this.authService.getUserName() === params.get('username')
       this.loadProfile(params.get('username'));
     });
   }

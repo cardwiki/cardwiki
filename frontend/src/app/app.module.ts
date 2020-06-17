@@ -40,6 +40,7 @@ import { ToastsContainerComponent } from './components/toasts-container/toasts-c
 import { LearnDeckComponent } from './components/learn-deck/learn-deck.component';
 import { DeckForkModalComponent } from './components/deck/deck-fork-modal/deck-fork-modal.component';
 import { CardRemoveModalComponent } from './components/deck/card-remove-modal/card-remove-modal.component';
+import { UserRoleDirective } from './directives/user-role.directive';
 
 @NgModule({
   declarations: [
@@ -77,6 +78,7 @@ import { CardRemoveModalComponent } from './components/deck/card-remove-modal/ca
     LearnDeckComponent,
     DeckForkModalComponent,
     CardRemoveModalComponent,
+    UserRoleDirective,
   ],
   imports: [
     BrowserModule,
