@@ -9,6 +9,7 @@ import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.UserMapper;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Authorization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -86,5 +87,13 @@ public class UserEndpoint {
     @ApiOperation(value = "Change settings of logged in user")
     public UserDetailsDto updateUser(@PathVariable long id, @Valid @RequestBody UserUpdateDto userUpdateDto) {
         return userMapper.userToUserDetailsDto(userService.updateUser(id, userMapper.userUpdateDtoToUser(userUpdateDto)));
+    }
+
+    @Secured("ROLE_ADMIN")
+    @DeleteMapping(value = "/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "Delete user", authorizations = {@Authorization("apiKey")})
+    public void delete(@PathVariable long id) {
+        userService.delete(id);
     }
 }

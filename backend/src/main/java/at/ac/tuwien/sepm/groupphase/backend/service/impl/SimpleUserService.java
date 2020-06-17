@@ -6,6 +6,7 @@ import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
+import at.ac.tuwien.sepm.groupphase.backend.repository.ProgressRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.RevisionRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
@@ -32,12 +33,19 @@ public class SimpleUserService implements UserService {
     private final UserRepository userRepository;
     private final DeckRepository deckRepository;
     private final RevisionRepository revisionRepository;
+    private final ProgressRepository progressRepository;
 
     @Autowired
-    public SimpleUserService(UserRepository userRepository, DeckRepository deckRepository, RevisionRepository revisionRepository) {
+    public SimpleUserService(
+        UserRepository userRepository,
+        DeckRepository deckRepository,
+        RevisionRepository revisionRepository,
+        ProgressRepository progressRepository)
+    {
         this.userRepository = userRepository;
         this.deckRepository = deckRepository;
         this.revisionRepository = revisionRepository;
+        this.progressRepository = progressRepository;
     }
 
     @Override
@@ -119,6 +127,7 @@ public class SimpleUserService implements UserService {
     @Transactional
     @Override
     public User updateUser(Long id, User user) {
+        LOGGER.debug("Update user with id {}: {}", id, user);
         User currentUser = loadCurrentUser();
 
         if (!currentUser.getId().equals(id) && !currentUser.isAdmin()) {
@@ -148,5 +157,27 @@ public class SimpleUserService implements UserService {
         }
 
         return userRepository.save(updatedUser);
+    }
+
+    @Transactional
+    @Override
+    public void delete(Long id) {
+        LOGGER.debug("Delete user with id {}", id);
+        User user;
+        try {
+            user = loadUserById(id);
+        } catch (UserNotFoundException e) {
+            return;
+        }
+
+        if (user.isAdmin()) {
+            throw new AccessDeniedException("Admins cannot be deleted.");
+        }
+
+        user.setUsername("[deleted]");
+        user.setDescription("[removed]");
+        user.setEnabled(false);
+        userRepository.save(user);
+        progressRepository.deleteUserProgress(id);
     }
 }

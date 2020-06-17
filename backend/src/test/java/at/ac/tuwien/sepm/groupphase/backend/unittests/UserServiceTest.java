@@ -4,17 +4,21 @@ import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
+import at.ac.tuwien.sepm.groupphase.backend.repository.ProgressRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -32,8 +36,14 @@ public class UserServiceTest extends TestDataGenerator {
     @MockBean
     private UserRepository userRepository;
 
+    @MockBean
+    private ProgressRepository progressRepository;
+
     @Autowired
     private UserService userService;
+
+    @Captor
+    private ArgumentCaptor<User> argumentCaptor;
 
     @Test
     public void givenNothing_whenFindOneNonexistent_thenThrowNotFoundException() {
@@ -97,5 +107,39 @@ public class UserServiceTest extends TestDataGenerator {
         User user = getSampleUser();
         Mockito.when(userRepository.save(user)).thenThrow(new DataIntegrityViolationException("notImportantForTest", new Exception()));
         assertThrows(Exception.class, () -> userService.createUser(user));
+    }
+
+    @Test
+    public void givenNothing_whenDeleteNonExistentUser_thenDoNotThrow() {
+        Mockito.when(userRepository.findById(404L)).thenReturn(Optional.empty());
+        assertDoesNotThrow(() -> userService.delete(404L));
+    }
+
+    @Test
+    public void givenUser_whenDeleteUser_thenUpdateUser() {
+        User user = getSampleUser();
+        user.setUsername("username");
+        user.setDescription("description");
+        user.setEnabled(true);
+
+        Mockito.when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+
+        userService.delete(user.getId());
+
+        Mockito.verify(progressRepository).deleteUserProgress(user.getId());
+        Mockito.verify(userRepository).save(argumentCaptor.capture());
+        assertFalse(argumentCaptor.getValue().isEnabled());
+        assertEquals("[deleted]", argumentCaptor.getValue().getUsername());
+        assertEquals("[removed]", argumentCaptor.getValue().getDescription());
+    }
+
+    @Test
+    public void givenAdmin_whenDeleteAdmin_thenThrowAccessDeniedException() {
+        User admin = getSampleUser();
+        admin.setAdmin(true);
+
+        Mockito.when(userRepository.findById(admin.getId())).thenReturn(Optional.of(admin));
+
+        assertThrows(AccessDeniedException.class, () -> userService.delete(admin.getId()));
     }
 }

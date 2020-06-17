@@ -3,8 +3,10 @@ package at.ac.tuwien.sepm.groupphase.backend.integrationtest;
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.UserDetailsDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
+import at.ac.tuwien.sepm.groupphase.backend.entity.Progress;
 import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionEdit;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
+import at.ac.tuwien.sepm.groupphase.backend.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.Test;
@@ -18,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static at.ac.tuwien.sepm.groupphase.backend.integrationtest.security.MockedLogins.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -31,7 +34,8 @@ public class UserEndpointTest extends TestDataGenerator {
     @Autowired
     private ObjectMapper objectMapper;
 
-    // TODO: test user updating
+    @Autowired
+    private UserRepository userRepository;
 
     @Test
     public void createUser() throws Exception {
@@ -374,6 +378,54 @@ public class UserEndpointTest extends TestDataGenerator {
             .with(login(admin.getAuthId()))
             .contentType("application/json").content(input.toString()))
             .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void userDeleteUser_forbidden() throws Exception {
+        User user1 = givenApplicationUser();
+        User user2 = givenApplicationUser();
+
+        mvc.perform(delete("/api/v1/users/{userId}", user2.getId())
+            .with(login(user1.getAuthId())))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void adminDeleteAdmin_forbidden() throws Exception {
+        User admin1 = givenApplicationUser();
+        admin1.setAdmin(true);
+        User admin2 = givenApplicationUser();
+        admin2.setAdmin(true);
+
+        mvc.perform(delete("/api/v1/users/{userId}", admin2.getId())
+            .with(login(admin1.getAuthId())))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void adminDeleteNonExistentUser_NoContent() throws Exception {
+        User admin = givenApplicationUser();
+        admin.setAdmin(true);
+
+        mvc.perform(delete("/api/v1/users/{userId}", admin.getId() + 1)
+            .with(login(admin.getAuthId())))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    public void adminDeleteUser() throws Exception {
+        User admin = givenApplicationUser();
+        admin.setAdmin(true);
+        Progress progress = givenProgress();
+        User user = progress.getId().getUser();
+
+        mvc.perform(delete("/api/v1/users/{userId}", user.getId())
+            .with(login(admin.getAuthId())))
+            .andExpect(status().isOk());
+
+        assertFalse(user.isEnabled());
+        assertEquals("[deleted]", user.getUsername());
+        assertEquals("[removed]", user.getDescription());
     }
 
     private static String longestCommonSubstring(String S1, String S2)

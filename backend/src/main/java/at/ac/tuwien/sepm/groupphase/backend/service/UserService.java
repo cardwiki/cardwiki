@@ -105,4 +105,12 @@ public interface UserService {
      * @throws AccessDeniedException if the update operation is not allowed.
      */
     User updateUser(Long id, User user);
+
+    /**
+     * Deletes a user.
+     *
+     * @param id of the user to be deleted.
+     * @throws AccessDeniedException if the user to be deleted is an admin.
+     */
+    void delete(Long id);
 }
