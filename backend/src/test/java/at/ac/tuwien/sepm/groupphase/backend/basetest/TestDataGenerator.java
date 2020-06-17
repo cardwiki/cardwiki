@@ -29,6 +29,8 @@ public abstract class TestDataGenerator {
     @Autowired
     private RevisionEditRepository revisionEditRepository;
     @Autowired
+    private CommentRepository commentRepository;
+    @Autowired
     private CategoryRepository categoryRepository;
     @Autowired
     private ProgressRepository progressRepository;
@@ -43,6 +45,12 @@ public abstract class TestDataGenerator {
         user.setDescription("some user");
         user.setAuthId("service:" + userCounter);
         user.setEnabled(true);
+        return userRepository.saveAndFlush(user);
+    }
+
+    public User givenAdmin() {
+        User user = givenApplicationUser();
+        user.setAdmin(true);
         return userRepository.saveAndFlush(user);
     }
 
@@ -69,6 +77,17 @@ public abstract class TestDataGenerator {
         deck.getCards().add(card);
 
         return cardRepository.saveAndFlush(card);
+    }
+
+    public Comment givenComment() {
+        Deck deck = givenDeck();
+        User user = givenApplicationUser();
+        Comment comment = new Comment();
+        comment.setMessage("some message");
+        comment.setCreatedBy(user);
+        comment.setDeck(deck);
+
+        return commentRepository.saveAndFlush(comment);
     }
 
     public Revision givenRevision() {
@@ -150,6 +169,14 @@ public abstract class TestDataGenerator {
         return deck;
     }
 
+    public Comment getUnconnectedSampleComment() {
+        Comment comment = new Comment();
+        comment.setMessage("beautiful comment");
+        comment.setCreatedAt(CREATED_AT);
+        comment.setUpdatedAt(UPDATED_AT);
+        return comment;
+    }
+
     public Card getUnconnectedSampleCard() {
         Card card = new Card();
         card.setId(CARD_ID);
@@ -200,6 +227,13 @@ public abstract class TestDataGenerator {
         Deck deck = getUnconnectedSampleDeck();
         deck.setCreatedBy(getSampleUser());
         return deck;
+    }
+
+    public Comment getSampleComment() {
+        Comment comment = getUnconnectedSampleComment();
+        comment.setCreatedBy(getSampleUser());
+        comment.setDeck(getSampleDeck());
+        return comment;
     }
 
     public Card getSampleCard() {

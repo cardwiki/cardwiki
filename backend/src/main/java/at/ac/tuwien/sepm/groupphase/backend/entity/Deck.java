@@ -36,8 +36,8 @@ public class Deck {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "deck")
     private Set<Card> cards = new HashSet<>();
 
-    //@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "deck")
-    //private Set<Comment> comments = new HashSet<>();
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "deck")
+    private Set<Comment> comments = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "decks")
     private Set<Category> categories = new HashSet<>();
