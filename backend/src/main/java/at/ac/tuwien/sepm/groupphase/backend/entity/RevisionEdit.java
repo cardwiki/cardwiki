@@ -21,23 +21,23 @@ public class RevisionEdit {
     @JoinColumn(name = "revision_id", updatable = false)
     private Revision revision;
 
-
     @Size(max = MAX_TEXT_SIZE)
     @NullOrNotBlank
     @Column(name = "text_front", length = MAX_TEXT_SIZE, updatable = false)
     private String textFront;
-
 
     @Size(max = MAX_TEXT_SIZE)
     @NullOrNotBlank
     @Column(name = "text_back", length = MAX_TEXT_SIZE, updatable = false)
     private String textBack;
 
-    @Column(name = "image_front", updatable = false)
-    private String imageFront;
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "image_front_id", nullable = true, updatable = false)
+    private Image imageFront;
 
-    @Column(name = "image_back", updatable = false)
-    private String imageBack;
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "image_back_id", nullable = true, updatable = false)
+    private Image imageBack;
 
     public Long getId() {
         return id;
@@ -71,19 +71,19 @@ public class RevisionEdit {
         this.textBack = textBack;
     }
 
-    public String getImageFront() {
+    public Image getImageFront() {
         return imageFront;
     }
 
-    public void setImageFront(String imageFront) {
+    public void setImageFront(Image imageFront) {
         this.imageFront = imageFront;
     }
 
-    public String getImageBack() {
+    public Image getImageBack() {
         return imageBack;
     }
 
-    public void setImageBack(String imageBack) {
+    public void setImageBack(Image imageBack) {
         this.imageBack = imageBack;
     }
 

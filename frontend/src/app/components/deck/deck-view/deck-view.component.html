@@ -56,7 +56,7 @@
         <td class="w-50 align-middle">
           <div class="card-cell-container">
             <div *ngIf="card.imageFront" class="mr-3">
-              <img src="{{globals.backendBaseUri}}{{card.imageFront}}" class="float-left img-fluid img-thumbnail">
+              <img src="{{globals.backendBaseUri}}{{card.imageFront.url}}" class="float-left img-fluid img-thumbnail">
             </div>
             <div class="txt"  *ngIf="card.textFront" [innerHtml]="card.textFront | md2html"></div>
           </div>
@@ -64,7 +64,7 @@
         <td class="w-50 align-middle">
           <div class="card-cell-container">
             <div *ngIf="card.imageBack" class="mr-3">
-              <img src="{{globals.backendBaseUri}}{{card.imageBack}}" class="float-left img-fluid img-thumbnail">
+              <img src="{{globals.backendBaseUri}}{{card.imageBack.url}}" class="float-left img-fluid img-thumbnail">
             </div>
             <div class="txt" *ngIf="card.textBack" [innerHtml]="card.textBack | md2html"></div>
           </div>

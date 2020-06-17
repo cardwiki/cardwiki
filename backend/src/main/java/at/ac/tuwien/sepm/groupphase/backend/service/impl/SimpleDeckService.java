@@ -123,6 +123,8 @@ public class SimpleDeckService implements DeckService {
                 RevisionEdit revisionEdit = new RevisionEdit();
                 revisionEdit.setTextFront(srcCards.get(i).getLatestRevision().getRevisionEdit().getTextFront());
                 revisionEdit.setTextBack(srcCards.get(i).getLatestRevision().getRevisionEdit().getTextBack());
+                revisionEdit.setImageFront(srcCards.get(i).getLatestRevision().getRevisionEdit().getImageFront());
+                revisionEdit.setImageBack(srcCards.get(i).getLatestRevision().getRevisionEdit().getImageBack());
                 destCards.get(i).getLatestRevision().setRevisionEdit(revisionEdit);
                 revisionEdit.setRevision(destCards.get(i).getLatestRevision());
             });

@@ -1,6 +1,11 @@
 package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 
+import at.ac.tuwien.sepm.groupphase.backend.entity.Image;
+import at.ac.tuwien.sepm.groupphase.backend.entity.User;
+import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
+import at.ac.tuwien.sepm.groupphase.backend.repository.ImageRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.ImageService;
+import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +20,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -24,15 +32,28 @@ public class SimpleImageService implements ImageService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final Path imageSavedPath;
+    private final ImageRepository imageRepository;
+    private final UserService userService;
 
     @Autowired
-    public SimpleImageService(@Value("${cawi.image-saved-path}") String imageSavedPath) {
+    public SimpleImageService(@Value("${cawi.image-saved-path}") String imageSavedPath, ImageRepository imageRepository, UserService userService) {
         this.imageSavedPath = Paths.get(imageSavedPath);
+        this.imageRepository = imageRepository;
+        this.userService = userService;
+    }
+
+    @Transactional
+    @Override
+    public Image findById(Long id) {
+        LOGGER.debug("Find image with id {}", id);
+        Objects.requireNonNull(id, "id argument must not be null");
+        Optional<Image> image = imageRepository.findById(id);
+        return image.orElseThrow(() -> new NotFoundException(String.format("Could not find image with id %s", id)));
     }
 
     @Override
-    public String save(MultipartFile file) {
-        LOGGER.info("Save image");
+    public Image create(MultipartFile file) {
+        LOGGER.info("Create a new image");
         byte[] bytes;
         try {
             bytes = file.getBytes();
@@ -44,7 +65,7 @@ public class SimpleImageService implements ImageService {
             throw new IllegalArgumentException("Empty file");
         }
 
-        //Create filename
+        // Create filename
         String contentType = getContentTypeFromBytes(bytes);
         byte[] hash;
         try {
@@ -54,14 +75,20 @@ public class SimpleImageService implements ImageService {
         }
         String filename = bytesToHex(hash) + "." + contentType;
 
-        //Save image
+        // Save file to filesystem
         try {
            Files.write(imageSavedPath.resolve(filename), bytes);
         } catch (IOException ex) {
             throw new RuntimeException("Could not store image. Error: " + ex.getMessage());
         }
 
-        return filename;
+        // Create image entity
+        User user = userService.loadCurrentUser();
+        Image image = new Image();
+        image.setCreatedBy(user);
+        image.setFilename(filename);
+
+        return imageRepository.save(image);
     }
 
     private String getContentTypeFromBytes(byte[] bytes) {

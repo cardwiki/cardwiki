@@ -1,5 +1,6 @@
 import {CardContent} from './cardContent';
 import { DeckSimple } from './deckSimple';
+import {Image} from './image';
 
 export class CardSimple extends CardContent {
   constructor(
@@ -7,8 +8,8 @@ export class CardSimple extends CardContent {
     public deck: DeckSimple,
     public textFront: string,
     public textBack: string,
-    public imageFront: string,
-    public imageBack: string) {
+    public imageFront: Image,
+    public imageBack: Image) {
     super(id, textFront, textBack, imageFront, imageBack);
   }
 }

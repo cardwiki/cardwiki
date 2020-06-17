@@ -5,6 +5,7 @@ import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.CardService;
 import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
+import at.ac.tuwien.sepm.groupphase.backend.service.ImageService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,11 +24,14 @@ public class SimpleCardService implements CardService {
     private final UserService userService;
     private final DeckService deckService;
     private final CardRepository cardRepository;
+    private final ImageService imageService;
 
-    public SimpleCardService(CardRepository cardRepository, DeckService deckService, UserService userService) {
+    public SimpleCardService(CardRepository cardRepository, DeckService deckService,
+                             UserService userService, ImageService imageService) {
         this.cardRepository = cardRepository;
         this.userService = userService;
         this.deckService = deckService;
+        this.imageService = imageService;
     }
 
     @Override
@@ -52,6 +56,14 @@ public class SimpleCardService implements CardService {
         // Add content
         card.getLatestRevision().setRevisionEdit(revisionEdit);
         revisionEdit.setRevision(card.getLatestRevision());
+
+        // Add revision edits to images
+        if (revisionEdit.getImageFront() != null) {
+            imageService.findById(revisionEdit.getImageFront().getId()).getFrontSides().add(revisionEdit);
+        }
+        if (revisionEdit.getImageBack() != null) {
+            imageService.findById(revisionEdit.getImageBack().getId()).getBackSides().add(revisionEdit);
+        }
 
         return cardRepository.save(card);
     }
@@ -110,6 +122,14 @@ public class SimpleCardService implements CardService {
             // Add content
             card.getLatestRevision().setRevisionEdit(revisionEdit);
             revisionEdit.setRevision(card.getLatestRevision());
+
+            // Add revision edits to images
+            if (revisionEdit.getImageFront() != null) {
+                imageService.findById(revisionEdit.getImageFront().getId()).getFrontSides().add(revisionEdit);
+            }
+            if (revisionEdit.getImageBack() != null) {
+                imageService.findById(revisionEdit.getImageBack().getId()).getBackSides().add(revisionEdit);
+            }
 
             return cardRepository.saveAndFlush(card);
         }

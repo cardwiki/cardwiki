@@ -12,11 +12,13 @@ public class ContentNotNullValidator implements ConstraintValidator<ContentNotNu
 
    public boolean isValid(Object object, ConstraintValidatorContext context) {
        if (object instanceof RevisionEdit) {
-           RevisionEdit re = (RevisionEdit) object;
-           return (re.getTextFront() != null || re.getImageFront() != null) && (re.getTextBack() != null || re.getImageBack() != null);
+           RevisionEdit revisionEdit = (RevisionEdit) object;
+           return (revisionEdit.getTextFront() != null || revisionEdit.getImageFront() != null)
+               && (revisionEdit.getTextBack() != null || revisionEdit.getImageBack() != null);
        } else if (object instanceof RevisionEditInquiryDto) {
-           RevisionEditInquiryDto reid = (RevisionEditInquiryDto) object;
-           return (reid.getTextFront() != null || reid.getImageFront() != null) && (reid.getTextBack() != null || reid.getImageBack() != null);
+           RevisionEditInquiryDto revisionEditInquiryDto = (RevisionEditInquiryDto) object;
+           return (revisionEditInquiryDto.getTextFront() != null || revisionEditInquiryDto.getImageFront() != null)
+               && (revisionEditInquiryDto.getTextBack() != null || revisionEditInquiryDto.getImageBack() != null);
        } else {
            throw new IllegalArgumentException("@ContentNotNull only applies to RevisionEdit and RevisionEditInquiryDto");
        }

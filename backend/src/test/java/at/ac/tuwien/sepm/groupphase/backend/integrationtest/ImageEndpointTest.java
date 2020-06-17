@@ -19,8 +19,8 @@ import java.nio.file.Paths;
 import static at.ac.tuwien.sepm.groupphase.backend.integrationtest.security.MockedLogins.USER_ROLES;
 import static at.ac.tuwien.sepm.groupphase.backend.integrationtest.security.MockedLogins.mockLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -42,7 +42,7 @@ public class ImageEndpointTest extends TestDataGenerator {
     private static final String unsupportedTestImagePath = "src/test/resources/badrequest.gif";
 
     @Test
-    public void uploadImageReturnsPath() throws Exception {
+    public void uploadImageReturnsImageDto() throws Exception {
         User user = givenApplicationUser();
         FileInputStream fileInputStream = new FileInputStream(testImagePath);
         MockMultipartFile multipartFile = new MockMultipartFile("file", fileInputStream);
@@ -51,7 +51,9 @@ public class ImageEndpointTest extends TestDataGenerator {
             .file(multipartFile)
             .with(mockLogin(USER_ROLES, user.getAuthId())))
             .andExpect(status().is(201))
-            .andExpect(content().string(Paths.get(imageServedPath, testImageHash).toString()));
+            .andExpect(jsonPath("$.id").isNumber())
+            .andExpect(jsonPath("$.filename").value(testImageHash))
+            .andExpect(jsonPath("$.url").value(Paths.get(imageServedPath, testImageHash).toString()));
 
         Paths.get(imageSavedPath, testImageHash).toFile().delete();
     }

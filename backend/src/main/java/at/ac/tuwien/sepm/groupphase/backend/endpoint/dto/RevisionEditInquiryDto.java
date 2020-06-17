@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.endpoint.dto;
 
+import at.ac.tuwien.sepm.groupphase.backend.entity.Image;
 import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionEdit;
 import at.ac.tuwien.sepm.groupphase.backend.validation.ContentNotNull;
 import at.ac.tuwien.sepm.groupphase.backend.validation.NullOrNotBlank;
@@ -18,7 +19,7 @@ public class RevisionEditInquiryDto {
     @NullOrNotBlank
     private String textBack;
 
-    private String imageFront;
+    private Image imageFront;
 
-    private String imageBack;
+    private Image imageBack;
 }

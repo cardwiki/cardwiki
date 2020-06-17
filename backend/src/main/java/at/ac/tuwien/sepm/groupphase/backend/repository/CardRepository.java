@@ -19,6 +19,7 @@ public interface CardRepository extends JpaRepository<Card, Long> {
      * @param deckId of the deck
      * @return list of cards of the deck
      */
+    @EntityGraph(attributePaths = {"latestRevision.revisionEdit.imageFront", "latestRevision.revisionEdit.imageBack"})
     List<Card> findCardsByDeck_Id(Long deckId);
 
     /**
@@ -36,7 +37,8 @@ public interface CardRepository extends JpaRepository<Card, Long> {
      * @param cardId of the card
      * @return card including revisionSet
      */
-    @EntityGraph(attributePaths = {"deck", "revisions", "latestRevision"})
+    @EntityGraph(attributePaths = {"deck", "revisions", "latestRevision",
+        "latestRevision.revisionEdit.imageFront", "latestRevision.revisionEdit.imageBack"})
     Optional<Card> findDetailsById(Long cardId);
 
     /**
@@ -45,6 +47,7 @@ public interface CardRepository extends JpaRepository<Card, Long> {
      * @param cardId of the card
      * @return card
      */
-    @EntityGraph(attributePaths = {"deck", "latestRevision"})
+    @EntityGraph(attributePaths = {"deck", "latestRevision",
+        "latestRevision.revisionEdit.imageFront", "latestRevision.revisionEdit.imageBack"})
     Optional<Card> findSimpleById(Long cardId);
 }
