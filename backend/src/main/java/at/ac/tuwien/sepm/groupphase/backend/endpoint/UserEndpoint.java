@@ -94,17 +94,11 @@ public class UserEndpoint {
     }
 
     @Secured("ROLE_USER")
-    @PostMapping(value = "/{userId}/favorites")
+    @PutMapping(value = "/{userId}/favorites/{deckId}")
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "Add deck to user favorites")
-    public DeckSimpleDto addFavorite(@PathVariable Long userId, @Valid @RequestBody DeckIdDto deckIdDto) {
-        LOGGER.info("POST /api/v1/users/{}/favorites deckId: {}", userId, deckIdDto.getDeckId());
-        try {
-            return deckMapper.deckToDeckSimpleDto(favoriteService.addFavorite(userId, deckIdDto.getDeckId()));
-        } catch (DeckNotFoundException e) {
-            LOGGER.warn("Could not find deck for favorite: {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+    public DeckSimpleDto addFavorite(@PathVariable Long userId, @PathVariable Long deckId) {
+        return deckMapper.deckToDeckSimpleDto(favoriteService.addFavorite(userId, deckId));
     }
 
     @Secured("ROLE_USER")

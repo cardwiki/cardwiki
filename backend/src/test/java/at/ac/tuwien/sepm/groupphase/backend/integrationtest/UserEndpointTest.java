@@ -230,13 +230,9 @@ public class UserEndpointTest extends TestDataGenerator {
     public void addFavorite() throws Exception {
         Deck deck = givenDeck();
         User user = deck.getCreatedBy();
-        ObjectNode dto = objectMapper.createObjectNode();
-        dto.put("deckId", deck.getId().toString());
 
-        mvc.perform(post("/api/v1/users/{userId}/favorites", user.getId())
-            .with(login(user.getAuthId()))
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(dto.toString()))
+        mvc.perform(put("/api/v1/users/{userId}/favorites/{deckId}", user.getId(), deck.getId())
+            .with(login(user.getAuthId())))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("id").value(deck.getId()))
             .andExpect(jsonPath("name").value(deck.getName()));
@@ -246,13 +242,9 @@ public class UserEndpointTest extends TestDataGenerator {
     public void addFavoriteWhichIsAlreadyFavoriteThrowsConflict() throws Exception {
         Deck deck = givenFavorite();
         User user = deck.getCreatedBy();
-        ObjectNode dto = objectMapper.createObjectNode();
-        dto.put("deckId", deck.getId().toString());
 
-        mvc.perform(post("/api/v1/users/{userId}/favorites", user.getId())
-            .with(login(user.getAuthId()))
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(dto.toString()))
+        mvc.perform(put("/api/v1/users/{userId}/favorites/{deckId}", user.getId(), deck.getId())
+            .with(login(user.getAuthId())))
             .andExpect(status().isConflict());
     }
 
@@ -260,12 +252,8 @@ public class UserEndpointTest extends TestDataGenerator {
     public void addFavorite_withNoAuthentication_throwsForbidden() throws Exception {
         Deck deck = givenDeck();
         User user = deck.getCreatedBy();
-        ObjectNode dto = objectMapper.createObjectNode();
-        dto.put("deckId", deck.getId());
 
-        mvc.perform(post("/api/v1/users/{userId}/favorites", user.getId())
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(dto.toString()))
+        mvc.perform(put("/api/v1/users/{userId}/favorites/{deckId}", user.getId(), deck.getId()))
             .andExpect(status().isForbidden());
     }
 
@@ -274,27 +262,19 @@ public class UserEndpointTest extends TestDataGenerator {
         Deck deck = givenDeck();
         User user = deck.getCreatedBy();
         Long otherUserId = user.getId() + 1;
-        ObjectNode dto = objectMapper.createObjectNode();
-        dto.put("deckId", deck.getId());
 
-        mvc.perform(post("/api/v1/users/{userId}/favorites", otherUserId)
-            .with(login(user.getAuthId()))
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(dto.toString()))
+        mvc.perform(put("/api/v1/users/{userId}/favorites/{deckId}", otherUserId, deck.getId())
+            .with(login(user.getAuthId())))
             .andExpect(status().isForbidden());
     }
 
     @Test
-    public void addFavorite_withUnknownDeckId_throwsBadRequest() throws Exception {
+    public void addFavorite_withUnknownDeckId_throwsNotFound() throws Exception {
         User user = givenApplicationUser();
-        ObjectNode dto = objectMapper.createObjectNode();
-        dto.put("deckId", "0");
 
-        mvc.perform(post("/api/v1/users/{userId}/favorites", user.getId())
-            .with(login(user.getAuthId()))
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(dto.toString()))
-            .andExpect(status().isBadRequest());
+        mvc.perform(put("/api/v1/users/{userId}/favorites/{deckId}", user.getId(), 0L)
+            .with(login(user.getAuthId())))
+            .andExpect(status().isNotFound());
     }
 
     @Test

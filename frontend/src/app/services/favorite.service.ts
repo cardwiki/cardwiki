@@ -23,7 +23,7 @@ export class FavoriteService {
    * @param deckId deck which should be added as favorite
    */
   addFavorite(deckId: number): Observable<DeckSimple> {
-    return this.httpClient.post<DeckSimple>(this.getFavoriteUri(), { deckId })
+    return this.httpClient.put<DeckSimple>(this.getFavoriteUri(deckId), {})
       .pipe(tap(null, this.errorHandler.handleError('Could not add favorite')))
   }
 
