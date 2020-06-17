@@ -143,6 +143,7 @@ public abstract class TestDataGenerator {
             card.setLatestRevision(revisionEdit);
             card.getRevisions().add(revisionEdit);
             revisionEdit.setCard(card);
+            revisionEdit.setCreatedBy(user);
             beforeReturn(revisionEdit);
             return revisionEdit;
         }
@@ -152,7 +153,6 @@ public abstract class TestDataGenerator {
             revisionEdit.setTextFront("front text");
             revisionEdit.setTextBack("back text");
             revisionEdit.setMessage("test message");
-            revisionEdit.setCreatedBy(user);
             user.getRevisions().add(revisionEdit);
             return editCard(card, revisionEdit);
         }

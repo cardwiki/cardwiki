@@ -11,6 +11,8 @@ import io.swagger.annotations.Authorization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
@@ -19,7 +21,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 import java.lang.invoke.MethodHandles;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
@@ -91,5 +96,21 @@ public class CardEndpoint {
     public void delete(@PathVariable Long cardId) {
         LOGGER.info("DELETE card {}", cardId);
         cardService.delete(cardId);
+	}
+
+    @GetMapping(value = "/cards/{id}/revisions")
+    @ApiOperation(value = "Get revisions of the card")
+    public Page<RevisionDetailedDto> getRevisionsOfCard(@PathVariable long id, Pageable pageable) {
+        cardService.findOneOrThrow(id);
+        return cardService.getRevisionsOfCard(id, pageable).map(revision -> revisionMapper.revisionToRevisionDetailedDto(revision));
+    }
+
+    @GetMapping(value = "/revisions")
+    @ApiOperation(value = "Get multiple revisions by id")
+    public Map<Long,RevisionSimpleDto> getRevisionsByIds(@RequestParam(name = "id") Long[] ids) {
+        // TODO: return revision details
+        return cardService.getRevisionsByIds(ids)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toMap(Revision::getId, revisionMapper::revisionToRevisionSimpleDto));
     }
 }

@@ -3,7 +3,9 @@ package at.ac.tuwien.sepm.groupphase.backend.endpoint;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckInputDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckUpdateDto;
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.RevisionDetailedDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.DeckMapper;
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.RevisionMapper;
 import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
 import io.swagger.annotations.ApiOperation;
@@ -11,7 +13,9 @@ import io.swagger.annotations.Authorization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -31,11 +35,13 @@ public class DeckEndpoint {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final DeckService deckService;
     private final DeckMapper deckMapper;
+    private final RevisionMapper revisionMapper;
 
     @Autowired
-    public DeckEndpoint(DeckService deckService, DeckMapper deckMapper) {
+    public DeckEndpoint(DeckService deckService, DeckMapper deckMapper, RevisionMapper revisionMapper) {
         this.deckService = deckService;
         this.deckMapper = deckMapper;
+        this.revisionMapper = revisionMapper;
     }
 
     @Secured("ROLE_USER")
@@ -103,5 +109,12 @@ public class DeckEndpoint {
     public void deleteDeck(@PathVariable Long id) {
         LOGGER.info("DELETE /api/v1/decks/{}", id);
         deckService.delete(id);
+	}
+
+    @GetMapping(value = "/{id}/revisions")
+    @ApiOperation(value = "Get revisions of the deck")
+    public Page<RevisionDetailedDto> getRevisions(@PathVariable Long id, Pageable pageable) {
+        deckService.findOneOrThrow(id);
+        return deckService.getRevisions(id, pageable).map(revision -> revisionMapper.revisionToRevisionDetailedDto(revision));
     }
 }

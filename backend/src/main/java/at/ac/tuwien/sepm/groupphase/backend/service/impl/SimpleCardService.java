@@ -5,20 +5,27 @@ import at.ac.tuwien.sepm.groupphase.backend.exception.CardNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.*;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.ProgressRepository;
+import at.ac.tuwien.sepm.groupphase.backend.repository.RevisionRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.CardService;
 import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
 import at.ac.tuwien.sepm.groupphase.backend.service.ImageService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
+import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.lang.invoke.MethodHandles;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class SimpleCardService implements CardService {
@@ -29,19 +36,25 @@ public class SimpleCardService implements CardService {
     private final CardRepository cardRepository;
     private final ProgressRepository progressRepository;
     private final ImageService imageService;
+    private final RevisionRepository revisionRepository;
+
+    private EntityManager entityManager;
 
     public SimpleCardService(
         CardRepository cardRepository,
         DeckService deckService,
         UserService userService,
         ProgressRepository progressRepository,
-        ImageService imageService)
+        ImageService imageService,
+        RevisionRepository revisionRepository, EntityManager entityManager)
     {
         this.cardRepository = cardRepository;
         this.userService = userService;
         this.deckService = deckService;
         this.progressRepository = progressRepository;
         this.imageService = imageService;
+        this.revisionRepository = revisionRepository;
+        this.entityManager = entityManager;
     }
 
     @Override
@@ -149,4 +162,20 @@ public class SimpleCardService implements CardService {
         }
     }
 
+    @Override
+    @Transactional
+    public Page<Revision> getRevisionsOfCard(Long id, Pageable pageable) {
+        LOGGER.debug("Load {} revisions with offset {} from card {}", pageable.getPageSize(), pageable.getOffset(), id);
+        return revisionRepository.findByCard_Id(id, pageable);
+    }
+
+    private static final int MAX_REVISIONS_COUNT = 10;
+
+    @Override
+    @Transactional
+    public Stream<Revision> getRevisionsByIds(Long[] ids) {
+        if (ids.length > MAX_REVISIONS_COUNT)
+            throw new BadRequestException(String.format("You may not query more than %d revisions at once.", MAX_REVISIONS_COUNT));
+        return entityManager.unwrap(Session.class).byMultipleIds(Revision.class).multiLoad(ids).stream().filter(Objects::nonNull);
+    }
 }

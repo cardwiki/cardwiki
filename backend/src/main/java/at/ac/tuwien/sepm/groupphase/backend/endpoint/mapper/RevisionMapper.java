@@ -20,8 +20,6 @@ abstract public class RevisionMapper {
     @Mapping(source = "revision.card", target = "card")
     public abstract RevisionDetailedDto revisionToRevisionDetailedDto(Revision revision);
 
-    public abstract List<RevisionSimpleDto> revisionsToRevisionSimpleDtoList(List<Revision> revisions);
-
     @Mapping(source = "edit.card.id", target = "id")
     @Mapping(source = "edit.imageFront.filename", target = "imageFrontUrl", qualifiedByName = "prefixImagesServedPath")
     @Mapping(source = "edit.imageBack.filename", target = "imageBackUrl", qualifiedByName = "prefixImagesServedPath")
