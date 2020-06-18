@@ -52,7 +52,10 @@ public class CardEndpoint {
     @ApiOperation(value = "Get all cards for a specific deck")
     public List<CardContentDto> getCardsByDeckId(@PathVariable Long deckId) {
         LOGGER.info("GET /api/v1/decks/{}/cards", deckId);
-        return cardService.findLatestEditRevisionsByDeckId(deckId).map(revisionMapper::revisionEditToCardContentDto).collect(Collectors.toList());
+        return cardService.findLatestEditRevisionsByDeckId(deckId)
+            .stream()
+            .map(revisionMapper::revisionEditToCardContentDto)
+            .collect(Collectors.toList());
     }
 
     @GetMapping(value = "/cards/{cardId}")

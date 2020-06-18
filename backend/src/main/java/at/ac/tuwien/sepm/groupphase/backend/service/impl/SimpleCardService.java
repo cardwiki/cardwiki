@@ -13,7 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SimpleCardService implements CardService {
@@ -49,9 +50,10 @@ public class SimpleCardService implements CardService {
     }
 
     @Override
-    public Stream<RevisionEdit> findLatestEditRevisionsByDeckId(Long deckId) {
+    @Transactional
+    public List<RevisionEdit> findLatestEditRevisionsByDeckId(Long deckId) {
         LOGGER.debug("Find latest edit revisions id {}", deckId);
-        return cardRepository.findLatestEditRevisionsByDeck_Id(deckId);
+        return cardRepository.findLatestEditRevisionsByDeck_Id(deckId).collect(Collectors.toList());
     }
 
     @Override

@@ -9,7 +9,6 @@ import at.ac.tuwien.sepm.groupphase.backend.exception.AuthenticationRequiredExce
 
 
 import java.util.List;
-import java.util.stream.Stream;
 
 public interface CardService {
 
@@ -49,7 +48,7 @@ public interface CardService {
      * @param deckId of the deck
      * @return list of cards of the deck
      */
-    Stream<RevisionEdit> findLatestEditRevisionsByDeckId(Long deckId);
+    List<RevisionEdit> findLatestEditRevisionsByDeckId(Long deckId);
 
     /**
      * Add delete-revision to card
