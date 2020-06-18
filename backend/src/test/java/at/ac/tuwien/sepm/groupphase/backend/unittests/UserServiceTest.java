@@ -72,7 +72,7 @@ public class UserServiceTest extends TestDataGenerator {
 
     @Test
     public void givenNothing_whenSearchByNameNotExistent_thenReturnEmptyList() {
-        Mockito.when(userRepository.findByUsernameContainingIgnoreCase("", Pageable.unpaged()))
+        Mockito.when(userRepository.findByUsernameContainingIgnoreCaseAndDeletedFalse("", Pageable.unpaged()))
             .thenReturn(Collections.emptyList());
         assertTrue(userService.searchByUsername("", Pageable.unpaged()).isEmpty());
     }
@@ -80,7 +80,7 @@ public class UserServiceTest extends TestDataGenerator {
     @Test
     public void givenNothing_whenSearchByNameExistent_thenReturnUser() {
         User user = getSampleUser();
-        Mockito.when(userRepository.findByUsernameContainingIgnoreCase(user.getUsername(), Pageable.unpaged()))
+        Mockito.when(userRepository.findByUsernameContainingIgnoreCaseAndDeletedFalse(user.getUsername(), Pageable.unpaged()))
             .thenReturn(Collections.singletonList(user));
         assertTrue(userService.searchByUsername(user.getUsername(), Pageable.unpaged()).contains(user));
     }
@@ -131,6 +131,8 @@ public class UserServiceTest extends TestDataGenerator {
         assertFalse(argumentCaptor.getValue().isEnabled());
         assertEquals("[deleted]", argumentCaptor.getValue().getUsername());
         assertEquals("[removed]", argumentCaptor.getValue().getDescription());
+        assertFalse(argumentCaptor.getValue().isEnabled());
+        assertTrue(argumentCaptor.getValue().isDeleted());
     }
 
     @Test

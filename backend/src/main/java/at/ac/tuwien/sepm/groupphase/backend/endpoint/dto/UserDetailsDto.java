@@ -18,4 +18,8 @@ public class UserDetailsDto {
     private LocalDateTime updatedAt;
 
     private boolean isAdmin;
+
+    private boolean isEnabled;
+
+    private boolean isDeleted;
 }

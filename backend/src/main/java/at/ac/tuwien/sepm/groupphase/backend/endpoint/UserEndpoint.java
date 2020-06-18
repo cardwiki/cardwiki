@@ -51,6 +51,7 @@ public class UserEndpoint {
         u.setAuthId(SecurityContextHolder.getContext().getAuthentication().getName());
         u.setAdmin(false);
         u.setEnabled(true);
+        u.setDeleted(false);
         u = userService.createUser(u);
         return userMapper.userToUserDetailsDto(u);
     }

@@ -40,6 +40,9 @@ public class User {
     @Column(nullable = false)
     private Boolean enabled;
 
+    @Column(nullable = false)
+    private Boolean deleted;
+
     @Column(nullable = false, length = MAX_DESCRIPTION_LENGTH)
     private String description;
 
@@ -59,11 +62,6 @@ public class User {
     }
 
     public User() {
-    }
-
-    public void dismissRevision(Revision revision) {
-        if (!revisions.remove(revision))
-            throw new NoSuchElementException("Tried to dismiss revision which is not yet associated with user");
     }
 
     public Long getId() {
@@ -136,6 +134,14 @@ public class User {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 
     @Override

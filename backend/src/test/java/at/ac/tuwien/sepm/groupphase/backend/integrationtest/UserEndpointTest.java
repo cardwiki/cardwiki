@@ -174,12 +174,16 @@ public class UserEndpointTest extends TestDataGenerator {
         response1.setUsername(user1.getUsername());
         response1.setDescription(user1.getDescription());
         response1.setAdmin(user1.isAdmin());
+        response1.setEnabled(true);
+        response1.setDeleted(false);
         response1.setCreatedAt(user1.getCreatedAt());
         response1.setUpdatedAt(user1.getUpdatedAt());
         response2.setId(user2.getId());
         response2.setUsername(user2.getUsername());
         response2.setDescription(user2.getDescription());
         response2.setAdmin(user2.isAdmin());
+        response2.setEnabled(true);
+        response2.setDeleted(false);
         response2.setCreatedAt(user2.getCreatedAt());
         response2.setUpdatedAt(user2.getUpdatedAt());
 

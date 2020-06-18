@@ -47,6 +47,7 @@ public class CardDataGenerator {
         user.setDescription("test user");
         user.setAdmin(false);
         user.setEnabled(false);
+        user.setDeleted(false);
         user.setUsername("crashtestdummy" + id);
         userRepository.saveAndFlush(user);
         Deck deck = new Deck();
@@ -94,6 +95,7 @@ public class CardDataGenerator {
         user.setDescription("test user3");
         user.setAdmin(false);
         user.setEnabled(false);
+        user.setDeleted(false);
         user.setUsername("NutCase");
         userRepository.saveAndFlush(user);
 
@@ -115,6 +117,7 @@ public class CardDataGenerator {
         user.setDescription("test user4");
         user.setAdmin(false);
         user.setEnabled(false);
+        user.setDeleted(false);
         user.setUsername("CamelCase");
         userRepository.saveAndFlush(user);
 

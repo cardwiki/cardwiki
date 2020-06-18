@@ -32,7 +32,7 @@ public abstract class TestDataGenerator {
     @Autowired
     private ProgressRepository progressRepository;
 
-    private static long userCounter = 0;
+    private long userCounter = 0;
 
     public User givenApplicationUser() {
         userCounter++;
@@ -43,6 +43,7 @@ public abstract class TestDataGenerator {
         user.setAuthId("service:" + userCounter);
         user.setAdmin(false);
         user.setEnabled(true);
+        user.setDeleted(false);
         return userRepository.saveAndFlush(user);
     }
 
@@ -128,6 +129,7 @@ public abstract class TestDataGenerator {
         user.setUsername("username" + userCounter);
         user.setAdmin(false);
         user.setEnabled(true);
+        user.setDeleted(false);
         user.setDescription("some user");
         return user;
     }

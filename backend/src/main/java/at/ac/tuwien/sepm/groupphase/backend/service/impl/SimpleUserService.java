@@ -121,7 +121,7 @@ public class SimpleUserService implements UserService {
     public List<User> searchByUsername(String username, Pageable pageable) {
         LOGGER.debug("Search users for username {} {}", username, pageable);
         Objects.requireNonNull(username, "name argument must not be null");
-        return userRepository.findByUsernameContainingIgnoreCase(username, pageable);
+        return userRepository.findByUsernameContainingIgnoreCaseAndDeletedFalse(username, pageable);
     }
 
     @Transactional
@@ -177,6 +177,7 @@ public class SimpleUserService implements UserService {
         user.setUsername("[deleted]");
         user.setDescription("[removed]");
         user.setEnabled(false);
+        user.setDeleted(true);
         userRepository.save(user);
         progressRepository.deleteUserProgress(id);
     }
