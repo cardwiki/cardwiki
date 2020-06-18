@@ -73,4 +73,12 @@ public class CategoryEndpoint {
                 id, categoryMapper.categoryInputDtoToCategory(categoryInputDto)));
 
     }
+
+    @Secured("ROLE_ADMIN")
+    @DeleteMapping(value = "/{id}")
+    @ApiOperation(value = "Permanently delete a category", authorizations = {@Authorization(value = "apiKey")})
+    public void deleteCategory(@PathVariable Long id) {
+        LOGGER.info("DELETE /api/v1/categories/{}", id);
+        categoryService.deleteCategory(id);
+    }
 }

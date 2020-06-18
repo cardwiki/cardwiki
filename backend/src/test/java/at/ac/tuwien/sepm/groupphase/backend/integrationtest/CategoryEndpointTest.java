@@ -15,8 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import static at.ac.tuwien.sepm.groupphase.backend.integrationtest.security.MockedLogins.USER_ROLES;
-import static at.ac.tuwien.sepm.groupphase.backend.integrationtest.security.MockedLogins.mockLogin;
+import static at.ac.tuwien.sepm.groupphase.backend.integrationtest.security.MockedLogins.*;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -256,5 +255,36 @@ public class CategoryEndpointTest extends TestDataGenerator {
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(categoryInputDto)))
             .andExpect(status().is(400));
+    }
+
+    @Test
+    public void userDeletesCategoryThrowsForbidden() throws Exception {
+        User user = givenApplicationUser();
+        Category category = givenCategory();
+
+        mvc.perform(delete("/api/v1/categories/{id}", category.getId())
+            .with(login(user.getAuthId())))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void adminDeletesNonExistentCategoryReturnOk() throws Exception {
+        User admin = givenApplicationUser();
+        admin.setAdmin(true);
+
+        mvc.perform(delete("/api/v1/categories/{id}", 404)
+            .with(login(admin.getAuthId())))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    public void adminDeletesCategory() throws Exception {
+        User admin = givenApplicationUser();
+        admin.setAdmin(true);
+        Category category = givenCategory();
+
+        mvc.perform(delete("/api/v1/categories/{id}", category.getId())
+            .with(login(admin.getAuthId())))
+            .andExpect(status().isOk());
     }
 }
