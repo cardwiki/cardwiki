@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Data
-public class RevisionInputDto {
+public class RevisionEditDto {
 
     @NotNull(message = "Front text must not be null")
     @Size(max = RevisionEdit.MAX_TEXT_SIZE)

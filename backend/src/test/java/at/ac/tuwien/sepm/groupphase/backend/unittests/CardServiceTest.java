@@ -1,10 +1,7 @@
 package at.ac.tuwien.sepm.groupphase.backend.unittests;
 
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
-import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
-import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
-import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
-import at.ac.tuwien.sepm.groupphase.backend.entity.User;
+import at.ac.tuwien.sepm.groupphase.backend.entity.*;
 import at.ac.tuwien.sepm.groupphase.backend.exception.DeckNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
@@ -47,8 +44,8 @@ public class CardServiceTest extends TestDataGenerator {
 
     @Test
     public void givenDeckAndUserExist_whenAddCardToDeck_thenReturnCard() {
-        Revision revision = getUnconnectedSampleRevision();
-        revision.setRevisionEdit(getUnconnectedSampleRevisionEdit());
+        RevisionCreate revision = getUnconnectedSampleRevisionCreate();
+
         User user = getUnconnectedSampleUser();
         Deck deck = getUnconnectedSampleDeck();
 
@@ -65,18 +62,18 @@ public class CardServiceTest extends TestDataGenerator {
             () -> assertEquals(deck, returnedCard.getDeck(), "Saves card with provided deck"),
             () -> assertEquals(user, returnedCard.getLatestRevision().getCreatedBy(), "Saves card with provided user")
         );
-        Revision returnedRevision = returnedCard.getLatestRevision();
+        RevisionEdit returnedRevision = (RevisionEdit) returnedCard.getLatestRevision();
         assertNotNull(returnedRevision, "Saves card with LatestRevision");
         assertAll(
             () -> assertEquals(revision.getMessage(), returnedRevision.getMessage(), "Saves card with revision message"),
-            () -> assertEquals(revision.getRevisionEdit(), returnedRevision.getRevisionEdit(), "Saves card with content")
+            () -> assertEquals(revision.getTextFront(), returnedRevision.getTextFront(), "Saves card with content"),
+            () -> assertEquals(revision.getTextBack(), returnedRevision.getTextBack(), "Saves card with content")
         );
     }
 
     @Test
     public void givenDeckAndUserExist_whenAddCardToDeckWithoutMessage_thenReturnCardWithDefaultMessage() {
-        Revision revision = getUnconnectedSampleRevision();
-        revision.setRevisionEdit(getUnconnectedSampleRevisionEdit());
+        RevisionCreate revision = getUnconnectedSampleRevisionCreate();
         revision.setMessage(null);
         User user = getUnconnectedSampleUser();
         Deck deck = getUnconnectedSampleDeck();
@@ -93,8 +90,8 @@ public class CardServiceTest extends TestDataGenerator {
 
     @Test
     public void givenDeckExists_whenAddCardToDeck_thenThrowUserNotFoundException() {
-        Revision revision = getUnconnectedSampleRevision();
-        revision.setRevisionEdit(getUnconnectedSampleRevisionEdit());
+        RevisionCreate revision = getUnconnectedSampleRevisionCreate();
+
         Deck deck = getUnconnectedSampleDeck();
         when(userService.loadCurrentUserOrThrow()).thenThrow(UserNotFoundException.class);
         when(deckService.findOneOrThrow(DECK_ID)).thenReturn(deck);
@@ -104,8 +101,7 @@ public class CardServiceTest extends TestDataGenerator {
 
     @Test
     public void givenUserExists_whenAddCardToDeck_thenThrowUserNotFoundException() {
-        Revision revision = getUnconnectedSampleRevision();
-        revision.setRevisionEdit(getUnconnectedSampleRevisionEdit());
+        RevisionCreate revision = getUnconnectedSampleRevisionCreate();
         User user = getUnconnectedSampleUser();
         when(userService.loadCurrentUserOrThrow()).thenReturn(user);
         when(deckService.findOneOrThrow(DECK_ID)).thenThrow(DeckNotFoundException.class);

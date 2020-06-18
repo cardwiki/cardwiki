@@ -46,7 +46,7 @@ public class SimpleLearnService implements LearnService {
 
         return progressRepository.findNextCards(deckId, userService.loadCurrentUserOrThrow().getId(), pageable).stream()
             .peek((x) -> x.setDeck(null))
-            .filter(card -> card.getLatestRevision() != null && card.getLatestRevision().getRevisionEdit() != null) // TODO: do this in the SQL query
+            .filter(card -> card.getLatestRevision() != null && card.getLatestRevision() != null) // TODO: do this in the SQL query
             .collect(Collectors.toList());
     }
 

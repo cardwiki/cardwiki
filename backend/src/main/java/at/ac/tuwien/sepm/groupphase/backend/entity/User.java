@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.entity;
 
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckInputDto;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -73,6 +74,8 @@ public class User {
         if (!revisions.remove(revision))
             throw new NoSuchElementException("Tried to dismiss revision which is not yet associated with user");
     }
+
+    // Getters & Setters
 
     public Long getId() {
         return id;

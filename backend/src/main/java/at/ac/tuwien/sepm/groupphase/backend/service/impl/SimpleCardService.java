@@ -12,8 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.invoke.MethodHandles;
-import java.util.List;
 import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SimpleCardService implements CardService {
@@ -31,8 +32,8 @@ public class SimpleCardService implements CardService {
 
     @Override
     @Transactional
-    public Card addCardToDeck(Long deckId, Revision revisionData) {
-        LOGGER.debug("Add Card to Deck: {} {}", revisionData, deckId);
+    public Card addCardToDeck(Long deckId, RevisionCreate revisionCreate) {
+        LOGGER.debug("Add Card to Deck: {} {}", revisionCreate, deckId);
         User user = userService.loadCurrentUserOrThrow();
         Deck deck = deckService.findOneOrThrow(deckId);
 
@@ -40,44 +41,35 @@ public class SimpleCardService implements CardService {
         Card card = new Card();
         card.setDeck(deck);
 
-        Revision revision = new Revision();
-        revision.setType(Revision.Type.CREATE);
-        revision.setMessage(revisionData.getMessage() != null ? revisionData.getMessage() : "Created");
-        card.setLatestRevision(revision);
-        revision.setCard(card);
-        revision.setCreatedBy(user);
+        revisionCreate.setMessage(revisionCreate.getMessage() != null ? revisionCreate.getMessage() : "Created");
+        card.setLatestRevision(revisionCreate);
+        revisionCreate.setCard(card);
+        revisionCreate.setCreatedBy(user);
 
-        card = cardRepository.saveAndFlush(card);
-
-        // Add content
-        RevisionEdit revisionEdit = revisionData.getRevisionEdit();
-        card.getLatestRevision().setRevisionEdit(revisionEdit);
-        revisionEdit.setRevision(card.getLatestRevision());
-
-        return cardRepository.save(card);
-    }
-
-    @Override
-    public List<Card> findCardsByDeckId(Long deckId) {
-        LOGGER.debug("Find all cards for deck with id {}", deckId);
-        return cardRepository.findCardsWithContentByDeck_Id(deckId);
+        return cardRepository.saveAndFlush(card);
     }
 
     @Override
     @Transactional
-    public Card addDeleteRevisionToCard(Long cardId, String revisionMessage) {
+    public List<RevisionEdit> findLatestEditRevisionsByDeckId(Long deckId) {
+        LOGGER.debug("Find latest edit revisions id {}", deckId);
+        return cardRepository.findLatestEditRevisionsByDeck_Id(deckId).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public void addDeleteRevisionToCard(Long cardId, String revisionMessage) {
         LOGGER.debug("Add delete-revision to card with id {}", cardId);
         Card card = findOneOrThrow(cardId);
         User user = userService.loadCurrentUserOrThrow();
 
-        Revision revision = new Revision();
-        revision.setType(Revision.Type.DELETE);
+        RevisionDelete revision = new RevisionDelete();
         revision.setCard(card);
         revision.setMessage(revisionMessage == null ? "Deleted" : revisionMessage);
         card.setLatestRevision(revision);
         revision.setCreatedBy(user);
 
-        return cardRepository.save(card);
+        cardRepository.save(card);
     }
 
     @Transactional
@@ -89,22 +81,15 @@ public class SimpleCardService implements CardService {
 
     @Override
     @Transactional
-    public Card editCardInDeck(Long cardId, Revision revisionData) {
-        LOGGER.debug("Edit Card {}: {}", cardId, revisionData);
+    public Card editCardInDeck(Long cardId, RevisionEdit revisionEdit) {
+        LOGGER.debug("Edit Card {}: {}", cardId, revisionEdit);
         User user = userService.loadCurrentUserOrThrow();
         Card card = findOneOrThrow(cardId);
 
-        Revision revision = new Revision();
-        revision.setType(Revision.Type.EDIT);
-        revision.setMessage(revisionData.getMessage() != null ? revisionData.getMessage() : "Edited");
-        card.setLatestRevision(revision);
-        revision.setCard(card);
-        revision.setCreatedBy(user);
-
-        // Add content
-        RevisionEdit revisionEdit = revisionData.getRevisionEdit();
-        card.getLatestRevision().setRevisionEdit(revisionEdit);
-        revisionEdit.setRevision(card.getLatestRevision());
+        revisionEdit.setMessage(revisionEdit.getMessage() != null ? revisionEdit.getMessage() : "Edited");
+        card.setLatestRevision(revisionEdit);
+        revisionEdit.setCard(card);
+        revisionEdit.setCreatedBy(user);
 
         return cardRepository.saveAndFlush(card);
     }

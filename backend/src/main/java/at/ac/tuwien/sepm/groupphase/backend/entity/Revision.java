@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepm.groupphase.backend.entity;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.security.core.parameters.P;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -8,9 +9,22 @@ import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "type")
 @Table(name = "revisions")
-public class Revision {
+public abstract class Revision {
     public static final int MAX_MESSAGE_SIZE = 150;
+
+    public enum Type {
+        EDIT, DELETE, CREATE;
+
+        // Values must match properties so mapping type from string to enum works
+        public static class Values {
+            public static final String EDIT = "EDIT";
+            public static final String DELETE = "DELETE";
+            public static final String CREATE = "CREATE";
+        }  
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,20 +38,17 @@ public class Revision {
     @JoinColumn(name="created_by", nullable = false, updatable = false)
     private User createdBy;
 
-    @OneToOne(mappedBy = "revision", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private RevisionEdit revisionEdit;
-
     @Size(max = MAX_MESSAGE_SIZE)
     @NotBlank
     @Column(nullable = false, length = MAX_MESSAGE_SIZE, updatable = false)
     private String message;
 
-    @Column(nullable = false, updatable = false)
-    private Type type;
-
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(insertable = false, updatable = false)
+    private String type;
 
     @PreRemove
     private void dismissContainers() {
@@ -46,12 +57,6 @@ public class Revision {
         card = null;
         createdBy.dismissRevision(this);
         createdBy = null;
-    }
-
-    public enum Type {
-        CREATE,
-        EDIT,
-        DELETE
     }
 
     public Long getId() {
@@ -68,14 +73,6 @@ public class Revision {
 
     public void setCard(Card card) {
         this.card = card;
-    }
-
-    public RevisionEdit getRevisionEdit() {
-        return revisionEdit;
-    }
-
-    public void setRevisionEdit(RevisionEdit revisionEdit) {
-        this.revisionEdit = revisionEdit;
     }
 
     public String getMessage() {
@@ -102,12 +99,8 @@ public class Revision {
         this.createdBy = createdBy;
     }
 
-    public Type getType() {
+    public String getType() {
         return type;
-    }
-
-    public void setType(Type type) {
-        this.type = type;
     }
 
     @Override
@@ -118,7 +111,6 @@ public class Revision {
             ", createdBy=" + createdBy +
             ", card=" + (card != null ? card.getId() : null) +
             ", message='" + message + "'" +
-            ", revisionEdit=" + revisionEdit.getId() +
             '}';
     }
 }
