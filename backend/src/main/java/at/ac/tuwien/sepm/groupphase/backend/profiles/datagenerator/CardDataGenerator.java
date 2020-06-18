@@ -68,14 +68,10 @@ public class CardDataGenerator {
             deck.getCards().add(card);
 
             card.setLatestRevision(revision);
-            revision.setCard(card);
-            revision.setMessage("Test Revision ");
-            revision.setCreatedBy(user);
             user.getRevisions().add(revision);
-
-            card = cardRepository.save(card);
-
-            // Add content
+            revision.setCard(card);
+            revision.setCreatedBy(user);
+            revision.setMessage("Test Revision ");
             revision.setTextFront(parts[0]);
             revision.setTextBack(parts[1]);
 
@@ -90,7 +86,7 @@ public class CardDataGenerator {
         user.setDescription("test user3");
         user.setAdmin(false);
         user.setEnabled(false);
-        user.setUsername("NutCase");
+        user.setUsername("nununu");
         userRepository.saveAndFlush(user);
 
         Deck deck = new Deck();
@@ -111,7 +107,7 @@ public class CardDataGenerator {
         user.setDescription("test user4");
         user.setAdmin(false);
         user.setEnabled(false);
-        user.setUsername("CamelCase");
+        user.setUsername("nocamelcase");
         userRepository.saveAndFlush(user);
 
         Deck deck = new Deck();
