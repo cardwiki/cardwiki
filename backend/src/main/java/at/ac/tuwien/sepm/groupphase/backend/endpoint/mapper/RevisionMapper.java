@@ -20,6 +20,7 @@ public interface RevisionMapper {
 
     List<RevisionSimpleDto> revisionsToRevisionSimpleDtoList(List<Revision> revisions);
 
+    @Mapping(source = "edit.card.id", target = "id")
     CardContentDto revisionEditToCardContentDto(RevisionEdit edit);
 
     RevisionEdit revisionEditDtoToRevisionEdit(RevisionEditDto dto);

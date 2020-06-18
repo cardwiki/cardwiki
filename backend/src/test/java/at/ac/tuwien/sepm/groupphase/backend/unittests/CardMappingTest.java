@@ -54,12 +54,17 @@ public class CardMappingTest extends TestDataGenerator {
 
     @Test
     public void givenCard_whenMapToCardContentDto_thenDtoHasAllProperties() {
+        Card card = new Card();
+        card.setId(1L);
         RevisionEdit revisionEdit = new RevisionEdit();
+        revisionEdit.setTextFront("fronti");
+        revisionEdit.setTextBack("backi");
+        revisionEdit.setCard(card);
 
         CardContentDto dto = revisionMapper.revisionEditToCardContentDto(revisionEdit);
 
         assertAll(
-            () -> assertEquals(revisionEdit.getId(), dto.getId()),
+            () -> assertEquals(revisionEdit.getCard().getId(), dto.getId()),
             () -> assertEquals(revisionEdit.getTextFront(), dto.getTextFront()),
             () -> assertEquals(revisionEdit.getTextBack(), dto.getTextBack())
         );

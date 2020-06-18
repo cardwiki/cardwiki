@@ -1,9 +1,10 @@
 package at.ac.tuwien.sepm.groupphase.backend.entity;
 
+import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 @Entity
-@DiscriminatorValue("delete")
+@DiscriminatorValue(Revision.Type.Values.DELETE)
 public class RevisionDelete extends Revision {
 }

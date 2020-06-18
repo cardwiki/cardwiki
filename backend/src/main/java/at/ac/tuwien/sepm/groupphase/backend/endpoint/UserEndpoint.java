@@ -56,6 +56,7 @@ public class UserEndpoint {
     @PostMapping
     @ApiOperation(value = "Register the authenticated user")
     public UserDetailsDto register(Authentication token, @Valid @RequestBody UserInputDto userInputDto) {
+        LOGGER.info("POST /api/v1/users {} {}", token, userInputDto);
         if (token == null)
             throw new AccessDeniedException("Login using an Oauth2 provider first");
 
@@ -69,6 +70,7 @@ public class UserEndpoint {
     @GetMapping
     @ApiOperation(value = "Search for users")
     public List<UserDetailsDto> search(@Valid @NotNull @RequestParam String username, @RequestParam Integer limit, @RequestParam Integer offset) {
+        LOGGER.info("GET /api/v1/users?username={}&limit={}&offset={}", username, limit, offset);
         return userService.searchByUsername(username, PageRequest.of(offset, limit, Sort.by("username").ascending()))
             .stream()
             .map(userMapper::userToUserDetailsDto)
@@ -78,18 +80,21 @@ public class UserEndpoint {
     @GetMapping(value = "/byname/{username}")
     @ApiOperation(value = "Get user profile")
     public UserDetailsDto getProfile(@PathVariable String username) {
+        LOGGER.info("GET /api/v1/users/byname/{}", username);
         return userMapper.userToUserDetailsDto(userService.loadUserByUsername(username));
     }
 
     @GetMapping(value = "/{id}/decks")
     @ApiOperation(value = "Get decks created by user")
     public List<DeckSimpleDto> getDecks(@PathVariable long id, @RequestParam Integer limit, @RequestParam Integer offset) {
+        LOGGER.info("GET /api/v1/users/{}/decks?limit={}&offset={}", id, limit, offset);
         return userService.getDecks(id, PageRequest.of(offset, limit)).stream().map(deckMapper::deckToDeckSimpleDto).collect(Collectors.toList());
     }
 
     @GetMapping(value = "/{id}/revisions")
     @ApiOperation(value = "Get revisions created by user")
     public List<RevisionDetailedDto> getRevisions(@PathVariable long id, @RequestParam Integer limit, @RequestParam Integer offset) {
+        LOGGER.info("GET /api/v1/users/{}/revisions?limit={}&offset={}", id, limit, offset);
         return userService.getRevisions(id, PageRequest.of(offset, limit)).stream().map(revision -> revisionMapper.revisionToRevisionDetailedDto(revision)).collect(Collectors.toList());
     }
 
@@ -98,6 +103,7 @@ public class UserEndpoint {
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "Add deck to user favorites")
     public DeckSimpleDto addFavorite(@PathVariable Long userId, @PathVariable Long deckId) {
+        LOGGER.info("PUT /api/v1/users/{}/favorites/{}", userId, deckId);
         return deckMapper.deckToDeckSimpleDto(favoriteService.addFavorite(userId, deckId));
     }
 
@@ -133,6 +139,7 @@ public class UserEndpoint {
     @PatchMapping(value = "/{id}")
     @ApiOperation(value = "Change settings of logged in user")
     public UserDetailsDto editSettings(@PathVariable long id, @Valid @RequestBody UserEditInquiryDto userEditInquiryDto) {
+        LOGGER.info("PATCH /api/v1/users/{} {}", id, userEditInquiryDto);
         return userMapper.userToUserDetailsDto(userService.editSettings(id, userMapper.userEditInquiryDtoToUser(userEditInquiryDto)));
     }
 }

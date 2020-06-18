@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.entity;
 
+import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -7,7 +8,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "revision_edits")
-@DiscriminatorValue("edit")
+@DiscriminatorValue(Revision.Type.Values.EDIT)
 public class RevisionEdit extends Revision {
     public static final int MAX_TEXT_SIZE = 1000;
 

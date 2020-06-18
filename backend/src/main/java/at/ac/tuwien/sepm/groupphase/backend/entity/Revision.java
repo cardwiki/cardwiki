@@ -16,7 +16,14 @@ public abstract class Revision {
     public static final int MAX_MESSAGE_SIZE = 150;
 
     public enum Type {
-        EDIT, DELETE, CREATE
+        EDIT, DELETE, CREATE;
+
+        // Values must match properties so mapping type from string to enum works
+        public static class Values {
+            public static final String EDIT = "EDIT";
+            public static final String DELETE = "DELETE";
+            public static final String CREATE = "CREATE";
+        }  
     }
 
     @Id
