@@ -6,7 +6,7 @@
       <div class="card mt-4">
         <div class="card-header">
           Bio
-          <button *ngIf="me && !editingDescription" (click)="editingDescription = true" type="button" class="btn btn-sm btn-light float-right m-n1"><i class="fas fa-pencil-alt"></i></button>
+          <button *ngIf="(me || (admin && !profile.admin)) && !editingDescription" (click)="editingDescription = true" type="button" class="btn btn-sm btn-light float-right m-n1"><i class="fas fa-pencil-alt"></i></button>
           <button *ngIf="editingDescription" (click)="saveDescription()"  type="button" class="btn btn-sm {{editingSuccess ? 'btn-success' : 'btn-light'}} float-right m-n1"><i class="fas fa-check-circle"></i></button>
         </div>
         <div class="card-body">

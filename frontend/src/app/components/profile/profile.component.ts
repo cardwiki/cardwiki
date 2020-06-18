@@ -25,6 +25,7 @@ export class ProfileComponent implements OnInit {
   maxRevisionsLoaded: boolean = false;
 
   me: boolean = false;
+  admin: boolean = false;
   editingDescription: boolean = false;
   editingSuccess: boolean = false;
 
@@ -38,6 +39,7 @@ export class ProfileComponent implements OnInit {
       if (localStorage.getItem("whoami")) this.me = (params.get('username') === JSON.parse(localStorage.getItem("whoami")).username);
       this.loadProfile(params.get('username'));
     });
+    if (localStorage.getItem("whoami")) this.admin = JSON.parse(localStorage.getItem("whoami")).admin;
   }
 
   loadProfile(username: string): void {
