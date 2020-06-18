@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,4 +50,8 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     @EntityGraph(attributePaths = {"deck", "latestRevision",
         "latestRevision.revisionEdit.imageFront", "latestRevision.revisionEdit.imageBack"})
     Optional<Card> findSimpleById(Long cardId);
+
+    @EntityGraph(attributePaths = {"latestRevision.revisionEdit", "latestRevision.revisionEdit.imageFront", "latestRevision.revisionEdit.imageBack"})
+    @Query("select c from Card c left join Progress p on c.id = p.id.card.id and p.id.user.id = :userId where c.deck.id=:deckId and (current_timestamp >= p.due or p.due is null) order by p.status asc nulls first, p.due asc nulls first")
+    List<Card> findNextCards(@Param("deckId") Long deckId, @Param("userId") Long userId, Pageable pageable);
 }

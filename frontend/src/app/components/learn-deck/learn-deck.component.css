@@ -49,11 +49,11 @@
 }
 
 .img-front {
-  max-height: 300px;
+  max-height: 180px;
   max-width: 30%;
 }
 
 .img-back {
-  max-height: 300px;
+  max-height: 200px;
   max-width: 90%;
 }

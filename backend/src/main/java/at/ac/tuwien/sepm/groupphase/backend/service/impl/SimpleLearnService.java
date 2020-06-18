@@ -4,6 +4,7 @@ import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.AttemptInputDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Progress;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
+import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.ProgressRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.LearnService;
@@ -28,12 +29,14 @@ public class SimpleLearnService implements LearnService {
     private final ProgressRepository progressRepository;
     private final DeckRepository deckRepository;
     private final UserService userService;
+    private final CardRepository cardRepository;
 
     @Autowired
-    public SimpleLearnService(ProgressRepository progressRepository, DeckRepository deckRepository, UserService userService) {
+    public SimpleLearnService(ProgressRepository progressRepository, DeckRepository deckRepository, UserService userService, CardRepository cardRepository) {
         this.progressRepository = progressRepository;
         this.deckRepository = deckRepository;
         this.userService = userService;
+        this.cardRepository = cardRepository;
     }
 
     @Override
@@ -44,7 +47,7 @@ public class SimpleLearnService implements LearnService {
             throw new IllegalArgumentException("deckId does not exist");
         }
 
-        return progressRepository.findNextCards(deckId, userService.loadCurrentUser().getId(), pageable).stream()
+        return cardRepository.findNextCards(deckId, userService.loadCurrentUser().getId(), pageable).stream()
             .peek((x) -> x.setDeck(null))
             .filter(card -> card.getLatestRevision() != null && card.getLatestRevision().getRevisionEdit() != null) // TODO: do this in the SQL query
             .collect(Collectors.toList());
