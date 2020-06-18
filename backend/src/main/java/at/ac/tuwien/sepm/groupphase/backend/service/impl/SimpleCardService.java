@@ -57,7 +57,7 @@ public class SimpleCardService implements CardService {
         card.getLatestRevision().setRevisionEdit(revisionEdit);
         revisionEdit.setRevision(card.getLatestRevision());
 
-        // Add revision edits to images
+        // Add revision edit to image(s)
         if (revisionEdit.getImageFront() != null) {
             imageService.findById(revisionEdit.getImageFront().getId()).getFrontSides().add(revisionEdit);
         }

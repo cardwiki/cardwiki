@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepm.groupphase.backend.integrationtest;
 
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.ImageDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.RevisionEditInquiryDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
@@ -8,13 +9,14 @@ import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.constraints.Null;
+import java.nio.file.Paths;
 
 import static at.ac.tuwien.sepm.groupphase.backend.integrationtest.security.MockedLogins.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -30,6 +32,9 @@ public class CardEndpointTest extends TestDataGenerator {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Value("${cawi.image-served-path}")
+    private String imageServedPath;
 
     private static final String UTF_16_SAMPLE_TEXT = "ユ简크로أفضل البحوثΣὲ γνДесแผ∮E⋅∞∑çéèñé";
     private static final String FRONT_TEXT = "Test Front";
@@ -69,6 +74,62 @@ public class CardEndpointTest extends TestDataGenerator {
             .andExpect(status().is(201))
             .andExpect(jsonPath("$.textFront").value(UTF_16_SAMPLE_TEXT))
             .andExpect(jsonPath("$.textBack").value(UTF_16_SAMPLE_TEXT));
+    }
+
+    @Test void createCardWithImagesReturnsCardDetailsWithImageDtos() throws Exception {
+        Deck deck = givenDeck();
+        User user = givenApplicationUser();
+        Image image = givenImage();
+
+        ImageDto imageDto = new ImageDto();
+        imageDto.setId(image.getId());
+        imageDto.setFilename(image.getFilename());
+
+        RevisionEditInquiryDto dto = new RevisionEditInquiryDto();
+        dto.setImageFront(imageDto);
+        dto.setImageBack(imageDto);
+
+        mvc.perform(post("/api/v1/decks/{deckId}/cards", deck.getId())
+            .with(mockLogin(USER_ROLES, user.getAuthId()))
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(dto)))
+            .andExpect(status().is(201))
+            .andExpect(jsonPath("$.deck.id").value(deck.getId()))
+            .andExpect(jsonPath("$.id").isNumber())
+            .andExpect(jsonPath("$.imageFront.filename").value(imageDto.getFilename()))
+            .andExpect(jsonPath("$.imageBack.filename").value(imageDto.getFilename()))
+            .andExpect(jsonPath("$.imageFront.url").value(Paths.get(imageServedPath, imageDto.getFilename()).toString()))
+            .andExpect(jsonPath("$.imageBack.url").value(Paths.get(imageServedPath, imageDto.getFilename()).toString()));
+    }
+
+    @Test void createCardWithTextAndImagesReturnsCardDetails() throws Exception {
+        Deck deck = givenDeck();
+        User user = givenApplicationUser();
+        Image image = givenImage();
+
+        ImageDto imageDto = new ImageDto();
+        imageDto.setId(image.getId());
+        imageDto.setFilename(image.getFilename());
+
+        RevisionEditInquiryDto dto = new RevisionEditInquiryDto();
+        dto.setTextFront(FRONT_TEXT);
+        dto.setTextBack(BACK_TEXT);
+        dto.setImageFront(imageDto);
+        dto.setImageBack(imageDto);
+
+        mvc.perform(post("/api/v1/decks/{deckId}/cards", deck.getId())
+            .with(mockLogin(USER_ROLES, user.getAuthId()))
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(dto)))
+            .andExpect(status().is(201))
+            .andExpect(jsonPath("$.deck.id").value(deck.getId()))
+            .andExpect(jsonPath("$.id").isNumber())
+            .andExpect(jsonPath("$.textFront").value(FRONT_TEXT))
+            .andExpect(jsonPath("$.textBack").value(BACK_TEXT))
+            .andExpect(jsonPath("$.imageFront.filename").value(imageDto.getFilename()))
+            .andExpect(jsonPath("$.imageBack.filename").value(imageDto.getFilename()))
+            .andExpect(jsonPath("$.imageFront.url").value(Paths.get(imageServedPath, imageDto.getFilename()).toString()))
+            .andExpect(jsonPath("$.imageBack.url").value(Paths.get(imageServedPath, imageDto.getFilename()).toString()));
     }
 
     @Test
@@ -196,6 +257,67 @@ public class CardEndpointTest extends TestDataGenerator {
             .andExpect(jsonPath("$.id").isNumber())
             .andExpect(jsonPath("$.textFront").value(FRONT_TEXT))
             .andExpect(jsonPath("$.textBack").value(BACK_TEXT));
+    }
+
+    @Test
+    public void editCardWithNewImagesReturnsCardDetails() throws Exception {
+        Card card = givenCard();
+        Deck deck = card.getDeck();
+        User user = givenApplicationUser();
+        Image image = givenImage();
+
+        ImageDto imageDto = new ImageDto();
+        imageDto.setId(image.getId());
+        imageDto.setFilename(image.getFilename());
+
+        RevisionEditInquiryDto dto = new RevisionEditInquiryDto();
+        dto.setImageFront(imageDto);
+        dto.setImageBack(imageDto);
+
+        mvc.perform(patch("/api/v1/decks/{deckId}/cards/{cardId}", deck.getId(), card.getId())
+            .with(mockLogin(USER_ROLES, user.getAuthId()))
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(dto)))
+            .andExpect(status().is(200))
+            .andExpect(jsonPath("$.deck.id").value(deck.getId()))
+            .andExpect(jsonPath("$.id").isNumber())
+            .andExpect(jsonPath("$.imageFront.filename").value(imageDto.getFilename()))
+            .andExpect(jsonPath("$.imageBack.filename").value(imageDto.getFilename()))
+            .andExpect(jsonPath("$.imageFront.url").value(Paths.get(imageServedPath, imageDto.getFilename()).toString()))
+            .andExpect(jsonPath("$.imageBack.url").value(Paths.get(imageServedPath, imageDto.getFilename()).toString()));
+    }
+
+
+    @Test
+    public void editCardWithTextAndNewImagesReturnsCardDetails() throws Exception {
+        Card card = givenCard();
+        Deck deck = card.getDeck();
+        User user = givenApplicationUser();
+        Image image = givenImage();
+
+        ImageDto imageDto = new ImageDto();
+        imageDto.setId(image.getId());
+        imageDto.setFilename(image.getFilename());
+
+        RevisionEditInquiryDto dto = new RevisionEditInquiryDto();
+        dto.setTextFront(FRONT_TEXT);
+        dto.setTextBack(BACK_TEXT);
+        dto.setImageFront(imageDto);
+        dto.setImageBack(imageDto);
+
+        mvc.perform(patch("/api/v1/decks/{deckId}/cards/{cardId}", deck.getId(), card.getId())
+            .with(mockLogin(USER_ROLES, user.getAuthId()))
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(dto)))
+            .andExpect(status().is(200))
+            .andExpect(jsonPath("$.deck.id").value(deck.getId()))
+            .andExpect(jsonPath("$.id").isNumber())
+            .andExpect(jsonPath("$.textFront").value(FRONT_TEXT))
+            .andExpect(jsonPath("$.textBack").value(BACK_TEXT))
+            .andExpect(jsonPath("$.imageFront.filename").value(imageDto.getFilename()))
+            .andExpect(jsonPath("$.imageBack.filename").value(imageDto.getFilename()))
+            .andExpect(jsonPath("$.imageFront.url").value(Paths.get(imageServedPath, imageDto.getFilename()).toString()))
+            .andExpect(jsonPath("$.imageBack.url").value(Paths.get(imageServedPath, imageDto.getFilename()).toString()));
     }
 
     @Test

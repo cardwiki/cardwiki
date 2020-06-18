@@ -4,6 +4,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -27,10 +28,10 @@ public class Image {
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "imageFront")
-    private Set<RevisionEdit> frontSides;
+    private Set<RevisionEdit> frontSides = new HashSet<>();
 
     @OneToMany(mappedBy = "imageBack")
-    private Set<RevisionEdit> backSides;
+    private Set<RevisionEdit> backSides = new HashSet<>();
 
     public Long getId() {
         return id;

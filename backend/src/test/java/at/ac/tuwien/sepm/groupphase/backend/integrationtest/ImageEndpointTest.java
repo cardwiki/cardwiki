@@ -5,7 +5,6 @@ import at.ac.tuwien.sepm.groupphase.backend.config.PropertyOverrideContextInitia
 import at.ac.tuwien.sepm.groupphase.backend.entity.Image;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.repository.ImageRepository;
-import at.ac.tuwien.sepm.groupphase.backend.service.ImageService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
