@@ -158,7 +158,6 @@ public class UserEndpointTest extends TestDataGenerator {
 
     @Test
     public void getUserByNameNotFound() throws Exception {
-
         mvc.perform(get("/api/v1/users/byname/foobar")
             .contentType("application/json"))
             .andExpect(status().isNotFound());
@@ -166,8 +165,8 @@ public class UserEndpointTest extends TestDataGenerator {
 
     @Test
     public void searchUsers() throws Exception {
-        userRepository.saveAndFlush(validUser("fooBar"));
-        userRepository.saveAndFlush(validUser("BuzFooBarBuz"));
+        persistentAgent("fooBar");
+        persistentAgent("BuzFooBarBuz");
 
         mvc.perform(get("/api/v1/users/")
             .queryParam("username", "foobar")

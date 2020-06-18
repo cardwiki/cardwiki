@@ -108,10 +108,8 @@ public class CardRepositoryTest extends TestDataGenerator {
 
     @Test
     public void givenCardAndRevisionEdit_whenDeleteById_thenNotExistsById() {
-        User user = validUser("gustav");
-        Card card = emptyCard(validDeck(user));
-        validRevisionEdit(user, card);
-        cardRepository.saveAndFlush(card);
+        Agent user = persistentAgent();
+        Card card = user.createCardIn(user.createDeck());
 
         // When
         cardRepository.deleteById(card.getId());

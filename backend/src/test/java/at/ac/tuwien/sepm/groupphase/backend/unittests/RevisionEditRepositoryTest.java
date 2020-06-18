@@ -29,8 +29,9 @@ public class RevisionEditRepositoryTest extends TestDataGenerator {
     @Test
     public void givenRevision_whenSaveRevisionEdit_thenFindByIdReturnsRevisionEdit() {
         // When
-        User user = validUser("gustav");
-        RevisionEdit edit = validRevisionEdit(user, emptyCard(validDeck(user)));
+        Agent persistentAgent = persistentAgent();
+
+        RevisionEdit edit = persistentAgent.unpersist().editCard(persistentAgent.createCardIn(persistentAgent.createDeck()));
         edit = revisionRepository.saveAndFlush(edit);
 
         // Then
@@ -40,8 +41,8 @@ public class RevisionEditRepositoryTest extends TestDataGenerator {
     @Test
     public void givenRevision_whenSaveRevisionEditWithTooLongText_thenFindByIdReturnsRevisionEdit() {
         // When
-        User user = validUser("gustav");
-        RevisionEdit edit = validRevisionEdit(user, emptyCard(validDeck(user)));
+        Agent user = transientAgent();
+        RevisionEdit edit = user.editCard(user.createCardIn(user.createDeck()));
         edit.setTextFront("x".repeat(RevisionEdit.MAX_TEXT_SIZE + 1));
         edit.setTextBack("back text");
 
@@ -52,8 +53,8 @@ public class RevisionEditRepositoryTest extends TestDataGenerator {
     @Test
     public void givenRevision_whenSaveRevisionEditWithBlankText_thenFindByIdReturnsRevisionEdit() {
         // When
-        User user = validUser("gustav");
-        RevisionEdit edit = validRevisionEdit(user, emptyCard(validDeck(user)));
+        Agent user = transientAgent();
+        RevisionEdit edit = user.editCard(user.createCardIn(user.createDeck()));
         edit.setTextFront("  ");
 
         // Then
@@ -63,8 +64,8 @@ public class RevisionEditRepositoryTest extends TestDataGenerator {
     @Test
     public void givenRevision_whenSaveRevisionEditWithSpecialCharacters_thenFindByIdReturnsWithSpecialCharacters() {
         // When
-        User user = validUser("gustav");
-        RevisionEdit edit = validRevisionEdit(user, emptyCard(validDeck(user)));
+        Agent user = transientAgent();
+        RevisionEdit edit = user.editCard(user.createCardIn(user.createDeck()));
         edit.setTextFront(UTF_16_SAMPLE_TEXT);
         edit = revisionRepository.saveAndFlush(edit);
 
@@ -74,9 +75,8 @@ public class RevisionEditRepositoryTest extends TestDataGenerator {
 
     @Test
     public void givenRevisionEdit_whenDeleteRevisionById_thenExistsByIdReturnsFalse() {
-        User user = validUser("gustav");
-        RevisionEdit revisionEdit = validRevisionEdit(user, emptyCard(validDeck(user)));
-        revisionRepository.saveAndFlush(revisionEdit);
+        Agent user = persistentAgent();
+        RevisionEdit revisionEdit = user.editCard(user.createCardIn(user.createDeck()));
 
         // When
         revisionRepository.deleteById(revisionEdit.getId());

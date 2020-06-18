@@ -38,26 +38,6 @@ public class DeckEndpointTest extends TestDataGenerator {
     @Autowired
     private DeckRepository deckRepository;
 
-    public static Deck generateDeck(){
-        User gustav = validUser("gustav");
-        Deck deck = validDeck(gustav);
-
-        for (int i = 0; i < 10; i++) {
-            Card card = emptyCard(deck);
-            validRevisionCreate(gustav, card);
-            for (int j = 0; j < 10; j++) {
-                RevisionEdit edit = validRevisionEdit(gustav, card);
-                edit.setTextBack(String.format("text back, card %d, revision %d", i, j));
-                edit.setTextFront(String.format("text front, card %d, revision %d", i, j));
-            }
-        }
-
-        deck.getCategories().add(validCategory("foo", gustav));
-        deck.getCategories().add(validCategory("bar", gustav));
-        deck.getCategories().add(validCategory("baz", gustav));
-        return deck;
-    }
-
     @Test
     public void givenAuthenticatedUser_whenCreateDeck_thenReturnDeck() throws Exception {
         User user = givenApplicationUser();

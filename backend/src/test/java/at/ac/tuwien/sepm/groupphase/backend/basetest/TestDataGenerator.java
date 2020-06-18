@@ -1,7 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.basetest;
 
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.AttemptInputDto;
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.RevisionDetailedDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
 import at.ac.tuwien.sepm.groupphase.backend.repository.*;
 import org.hamcrest.Description;
@@ -27,83 +26,138 @@ public abstract class TestDataGenerator {
     @Autowired
     private EntityManager em;
 
-    public void persist(Object o){
-        em.persist(o);
-    }
-
-    public static User validUser(String name){
+    private static User defaultUser(String username){
         User user = new User();
-        user.setUsername(name);
-        user.setDescription("some user");
-        user.setAuthId("service:" + name);
+        user.setUsername(username);
+        user.setDescription("some description");
+        user.setAuthId(username);
         user.setEnabled(true);
         return user;
     }
 
-    public static Deck validDeck(User user){
-        Deck deck = new Deck();
-        deck.setName("deck name");
-        deck.setCreatedAt(LocalDateTime.of(2020, 1, 1, 1, 1));
-        deck.setUpdatedAt(LocalDateTime.of(2020, 2, 1, 1, 1));
-        deck.setCreatedBy(user);
-        return deck;
+    public Agent transientAgent(){
+        return new Agent(false, defaultUser("gustav"));
     }
 
-    public static Card emptyCard(Deck deck){
-        Card card = new Card();
-        card.setDeck(deck);
-        deck.getCards().add(card);
-        card.setCreatedAt(LocalDateTime.of(2020, 1, 1, 1, 1));
-        return card;
+    public Agent transientAgent(String name){
+        return new Agent(false, defaultUser(name));
     }
 
-    public static Category validCategory(String name, User user){
-        Category category = new Category();
-        category.setCreatedBy(user);
-        category.setCreatedAt(LocalDateTime.of(2020, 1, 1, 1, 1));
-        category.setUpdatedAt(LocalDateTime.of(2020, 2, 1, 1, 1));
-        category.setName(name);
-        return category;
+    public Agent persistentAgent(){
+        return new Agent(true, defaultUser("gustav"));
     }
 
-    public static RevisionDelete validRevisionDelete(User user, Card card) {
-        RevisionDelete revisionDelete = new RevisionDelete();
-        revisionDelete.setMessage("test message");
-
-        revisionDelete.setCreatedBy(user);
-        user.getRevisions().add(revisionDelete);
-
-        card.setLatestRevision(revisionDelete);
-        revisionDelete.setCard(card);
-        return revisionDelete;
+    public Agent persistentAgent(String name){
+        return new Agent(true, defaultUser(name));
     }
 
-    public static RevisionEdit validRevisionCreate(User user, Card card) {
-        RevisionEdit revisionEdit = new RevisionCreate();
-        revisionEdit.setTextFront("front");
-        revisionEdit.setTextBack("back");
-        revisionEdit.setMessage("test message");
+    public class Agent {
+        private User user;
+        private boolean persist;
 
-        revisionEdit.setCreatedBy(user);
-        user.getRevisions().add(revisionEdit);
+        public User getUser(){
+            return user;
+        }
 
-        card.setLatestRevision(revisionEdit);
-        revisionEdit.setCard(card);
-        return revisionEdit;
-    }
+        public Agent persist(){
+            return new Agent(true, user);
+        }
 
-    public static RevisionEdit validRevisionEdit(User user, Card card) {
-        RevisionEdit revisionEdit = new RevisionEdit();
-        revisionEdit.setTextFront("front");
-        revisionEdit.setTextBack("back");
-        revisionEdit.setMessage("test message");
+        public Agent unpersist(){
+            return new Agent(false, user);
+        }
 
-        revisionEdit.setCreatedBy(user);
-        user.getRevisions().add(revisionEdit);
+        public Agent(boolean persist, User user){
+            this.persist = persist;
+            this.user = user;
+            if (persist) {
+                em.persist(user);
+                em.flush();
+            }
+        }
 
-        card.setLatestRevision(revisionEdit);
-        revisionEdit.setCard(card);
-        return revisionEdit;
+        public void beforeReturn(Object o){
+            if (persist) {
+                em.persist(o);
+                em.flush();
+                if (o.getClass().equals(Deck.class))
+                    System.out.println("IT's HAPPENING " + ((Deck) o).getId());
+            }
+        }
+
+        public Deck createDeck(){
+            Deck deck = new Deck();
+            deck.setName("some deck");
+            deck.setCreatedBy(user);
+            deck.setCreatedAt(LocalDateTime.of(2020, 1, 1, 1, 1));
+            deck.setUpdatedAt(LocalDateTime.of(2020, 2, 1, 1, 1));
+            beforeReturn(deck);
+            return deck;
+        }
+
+        public Card createCardIn(Deck deck, RevisionCreate revisionCreate){
+            Card card = new Card();
+            card.setDeck(deck);
+            card.setLatestRevision(revisionCreate);
+            revisionCreate.setCreatedBy(user);
+            revisionCreate.setCard(card);
+            card.getRevisions().add(revisionCreate);
+            deck.getCards().add(card);
+            card.setCreatedAt(LocalDateTime.of(2020, 1, 1, 1, 1));
+            beforeReturn(card);
+            return card;
+        }
+
+        public Card createCardIn(Deck deck){
+            RevisionCreate revisionCreate = new RevisionCreate();
+            revisionCreate.setTextFront("front text");
+            revisionCreate.setTextBack("back text");
+            revisionCreate.setMessage("test message");
+            revisionCreate.setCreatedBy(user);
+            user.getRevisions().add(revisionCreate);
+            return createCardIn(deck, revisionCreate);
+        }
+
+        public RevisionEdit editCard(Card card, RevisionEdit revisionEdit){
+            card.setLatestRevision(revisionEdit);
+            card.getRevisions().add(revisionEdit);
+            revisionEdit.setCard(card);
+            beforeReturn(revisionEdit);
+            return revisionEdit;
+        }
+
+        public RevisionEdit editCard(Card card){
+            RevisionEdit revisionEdit = new RevisionEdit();
+            revisionEdit.setTextFront("front text");
+            revisionEdit.setTextBack("back text");
+            revisionEdit.setMessage("test message");
+            revisionEdit.setCreatedBy(user);
+            user.getRevisions().add(revisionEdit);
+            return editCard(card, revisionEdit);
+        }
+
+        public Category createCategory(String name){
+            Category category = new Category();
+            category.setName(name);
+            category.setCreatedAt(LocalDateTime.of(2020, 1, 1, 1, 1));
+            category.setUpdatedAt(LocalDateTime.of(2020, 2, 1, 1, 1));
+            beforeReturn(category);
+            return category;
+        }
+
+        public void deleteCard(Card card, RevisionDelete revisionDelete){
+            revisionDelete.setCreatedBy(user);
+            user.getRevisions().add(revisionDelete);
+            card.setLatestRevision(revisionDelete);
+            revisionDelete.setCard(card);
+            beforeReturn(revisionDelete);
+        }
+
+        public void deleteCard(Card card){
+            RevisionDelete revisionDelete = new RevisionDelete();
+            revisionDelete.setMessage("test message");
+            deleteCard(card, revisionDelete);
+        }
     }
 
     public Matcher<String> validIsoDateTime() {

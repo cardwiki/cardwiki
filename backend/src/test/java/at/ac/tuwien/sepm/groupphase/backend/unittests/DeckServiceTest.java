@@ -10,7 +10,6 @@ import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,7 +19,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -127,26 +125,25 @@ public class DeckServiceTest extends TestDataGenerator {
 
     @Test
     public void givenDeckToCopy_whenCopyDeck_thenReturnCopyOfDeck() {
-        User current = validUser("marie");
-        User gustav = validUser("gustav");
-        Deck deck = validDeck(gustav);
+        Agent current = transientAgent("marie");
+        Agent gustav = transientAgent("gustav");
+        Deck deck = gustav.createDeck();
 
         for (int i = 0; i < 10; i++) {
-            Card c = emptyCard(deck);
-            validRevisionCreate(gustav, c);
+            gustav.createCardIn(deck);
         }
 
         long id = 1;
 
         when(deckRepository.findById(id)).thenReturn(Optional.of(deck));
         when(deckRepository.save(any(Deck.class))).then(returnsFirstArg());
-        when(userService.loadCurrentUser()).thenReturn(current);
+        when(userService.loadCurrentUser()).thenReturn(current.getUser());
         when(cardRepository.findCardsWithContentByDeck_Id(id)).thenReturn(deck.getCards().stream());
 
         Deck resultDeck = deckService.copy(id, deck);
         assertAll(
             () -> assertEquals(resultDeck.getName(), deck.getName()),
-            () -> assertEquals(resultDeck.getCreatedBy(), current),
+            () -> assertEquals(resultDeck.getCreatedBy(), current.getUser()),
             () -> assertEquals(resultDeck.getCards().size(), 10),
             () -> assertEquals(resultDeck.getCategories(), deck.getCategories())
         );
