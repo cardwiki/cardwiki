@@ -28,7 +28,7 @@ public interface CommentService {
      * @return the comment
      * @throws CommentNotFoundException if no comment with this id exists
      */
-    Comment findOne(Long commentId);
+    Comment findOneOrThrow(Long commentId);
 
     /**
      * Get page of comments for a deck ordered by creation date

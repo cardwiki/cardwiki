@@ -39,7 +39,7 @@ public class UserServiceTest extends TestDataGenerator {
     public void givenNothing_whenFindOneNonexistent_thenThrowNotFoundException() {
         Long id = 1L;
         Mockito.when(userRepository.findById(id)).thenReturn(Optional.empty());
-        assertThrows(NotFoundException.class, () -> userService.loadUserById(id));
+        assertThrows(NotFoundException.class, () -> userService.findUserByIdOrThrow(id));
     }
 
     @Test
@@ -47,12 +47,12 @@ public class UserServiceTest extends TestDataGenerator {
         Long id = 1L;
         User user = getSampleUser();
         Mockito.when(userRepository.findById(id)).thenReturn(Optional.of(user));
-        assertEquals(user, userService.loadUserById(id));
+        assertEquals(user, userService.findUserByIdOrThrow(id));
     }
 
     @Test
     public void givenNothing_whenFindOneArgNull_thenThrowNullPointer() {
-        assertThrows(UserNotFoundException.class, () -> userService.loadUserById(null));
+        assertThrows(UserNotFoundException.class, () -> userService.findUserByIdOrThrow(null));
     }
 
     @Test

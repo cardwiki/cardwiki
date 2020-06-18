@@ -44,7 +44,7 @@ public class SimpleLearnService implements LearnService {
             throw new IllegalArgumentException("deckId does not exist");
         }
 
-        return progressRepository.findNextCards(deckId, userService.loadCurrentUser().getId(), pageable).stream()
+        return progressRepository.findNextCards(deckId, userService.loadCurrentUserOrThrow().getId(), pageable).stream()
             .peek((x) -> x.setDeck(null))
             .filter(card -> card.getLatestRevision() != null && card.getLatestRevision().getRevisionEdit() != null) // TODO: do this in the SQL query
             .collect(Collectors.toList());
@@ -58,7 +58,7 @@ public class SimpleLearnService implements LearnService {
     @Override
     public void saveAttempt(AttemptInputDto attempt) {
         LOGGER.debug("Save new attempt {}", attempt);
-        User user = userService.loadCurrentUser();
+        User user = userService.loadCurrentUserOrThrow();
         Card card = new Card();
         card.setId(attempt.getCardId());
 

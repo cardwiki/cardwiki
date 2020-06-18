@@ -2,6 +2,7 @@ package at.ac.tuwien.sepm.groupphase.backend.unittests;
 
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
+import at.ac.tuwien.sepm.groupphase.backend.exception.AuthenticationRequiredException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.DeckNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
@@ -10,7 +11,6 @@ import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -47,7 +47,7 @@ public class DeckServiceTest extends TestDataGenerator {
     public void givenNothing_whenFindOneNonexistent_thenThrowNotFoundException() {
         Long id = 1L;
         Mockito.when(deckRepository.findById(id)).thenReturn(Optional.empty());
-        assertThrows(NotFoundException.class, () -> deckService.findOne(id));
+        assertThrows(NotFoundException.class, () -> deckService.findOneOrThrow(id));
     }
 
     @Test
@@ -55,12 +55,12 @@ public class DeckServiceTest extends TestDataGenerator {
         Long id = 1L;
         Deck deck = getSampleDeck();
         Mockito.when(deckRepository.findById(id)).thenReturn(Optional.of(deck));
-        assertEquals(deck, deckService.findOne(id));
+        assertEquals(deck, deckService.findOneOrThrow(id));
     }
 
     @Test
     public void givenNothing_whenFindOneArgNull_thenThrowNullPointer() {
-        assertThrows(NullPointerException.class, () -> deckService.findOne(null));
+        assertThrows(NullPointerException.class, () -> deckService.findOneOrThrow(null));
     }
 
     @Test
@@ -90,19 +90,19 @@ public class DeckServiceTest extends TestDataGenerator {
         simpleDeck.setName(deck.getName());
 
         Mockito.when(deckRepository.save(simpleDeck)).thenReturn(deck);
-        Mockito.when(userService.loadCurrentUser()).thenReturn(deck.getCreatedBy());
+        Mockito.when(userService.loadCurrentUserOrThrow()).thenReturn(deck.getCreatedBy());
         assertEquals(deck, deckService.create(simpleDeck));
     }
 
     @Test
-    public void givenNothing_whenCreateNoCurrentUser_thenThrowIllegalState() {
+    public void givenNothing_whenCreateNoCurrentUser_thenThrowAuthenticationRequiredException() {
         Deck deck = getSampleDeck();
         Deck simpleDeck = new Deck();
         simpleDeck.setName("Name");
 
         Mockito.when(deckRepository.save(simpleDeck)).thenReturn(deck);
-        Mockito.when(userService.loadCurrentUser()).thenReturn(null);
-        assertThrows(IllegalStateException.class, () -> deckService.create(simpleDeck));
+        Mockito.when(userService.loadCurrentUserOrThrow()).thenThrow(AuthenticationRequiredException.class);
+        assertThrows(AuthenticationRequiredException.class, () -> deckService.create(simpleDeck));
     }
 
     @Test
@@ -111,12 +111,12 @@ public class DeckServiceTest extends TestDataGenerator {
     }
 
     @Test
-    public void givenNothing_whenCopyDeckNoCurrentUser_thenThrowIllegalState() {
+    public void givenNothing_whenCopyDeckNoCurrentUser_thenThrowAuthenticationRequiredException() {
         Deck simpleDeck = new Deck();
         simpleDeck.setName("Name");
 
-        when(userService.loadCurrentUser()).thenReturn(null);
-        assertThrows(IllegalStateException.class, () -> deckService.create(simpleDeck));
+        when(userService.loadCurrentUserOrThrow()).thenThrow(AuthenticationRequiredException.class);
+        assertThrows(AuthenticationRequiredException.class, () -> deckService.create(simpleDeck));
     }
 
     @Test
@@ -143,7 +143,7 @@ public class DeckServiceTest extends TestDataGenerator {
 
         when(deckRepository.findById(deck.getId())).thenReturn(Optional.of(deck));
         when(deckRepository.save(any(Deck.class))).then(returnsFirstArg());
-        when(userService.loadCurrentUser()).thenReturn(user);
+        when(userService.loadCurrentUserOrThrow()).thenReturn(user);
         when(cardRepository.findCardsWithContentByDeck_Id(deck.getId())).thenReturn(Arrays.asList(card));
 
         Deck resultDeck = deckService.copy(deck.getId(), deckCopy);

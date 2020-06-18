@@ -54,8 +54,8 @@ public class FavoriteServiceTest extends TestDataGenerator {
         User user = getSampleUser();
         Deck deck = getSampleDeck();
 
-        when(userService.loadCurrentUser()).thenReturn(user);
-        when(deckService.findOne(deck.getId())).thenReturn(deck);
+        when(userService.loadCurrentUserOrThrow()).thenReturn(user);
+        when(deckService.findOneOrThrow(deck.getId())).thenReturn(deck);
         when(userRepository.save(any(User.class))).thenAnswer(returnsFirstArg());
 
         Deck result = favoriteService.addFavorite(user.getId(), deck.getId());
@@ -70,8 +70,8 @@ public class FavoriteServiceTest extends TestDataGenerator {
         Deck deck = getSampleDeck();
         user.getFavorites().add(deck);
 
-        when(userService.loadCurrentUser()).thenReturn(user);
-        when(deckService.findOne(deck.getId())).thenReturn(deck);
+        when(userService.loadCurrentUserOrThrow()).thenReturn(user);
+        when(deckService.findOneOrThrow(deck.getId())).thenReturn(deck);
         when(userRepository.save(any(User.class))).thenAnswer(returnsFirstArg());
 
         assertThrows(ConflictException.class, () -> favoriteService.addFavorite(user.getId(), deck.getId()));
@@ -82,8 +82,8 @@ public class FavoriteServiceTest extends TestDataGenerator {
         User user = getSampleUser();
         Deck deck = getSampleDeck();
 
-        when(userService.loadCurrentUser()).thenThrow(AuthenticationRequiredException.class);
-        when(deckService.findOne(deck.getId())).thenReturn(deck);
+        when(userService.loadCurrentUserOrThrow()).thenThrow(AuthenticationRequiredException.class);
+        when(deckService.findOneOrThrow(deck.getId())).thenReturn(deck);
         when(userRepository.save(any(User.class))).thenAnswer(returnsFirstArg());
 
         assertThrows(AuthenticationRequiredException.class, () -> favoriteService.addFavorite(user.getId(), deck.getId()));
@@ -95,8 +95,8 @@ public class FavoriteServiceTest extends TestDataGenerator {
         Long otherUserId = user.getId() + 1;
         Deck deck = getSampleDeck();
 
-        when(userService.loadCurrentUser()).thenReturn(user);
-        when(deckService.findOne(deck.getId())).thenReturn(deck);
+        when(userService.loadCurrentUserOrThrow()).thenReturn(user);
+        when(deckService.findOneOrThrow(deck.getId())).thenReturn(deck);
         when(userRepository.save(any(User.class))).thenAnswer(returnsFirstArg());
 
         assertThrows(InsufficientAuthorizationException.class, () -> favoriteService.addFavorite(otherUserId, deck.getId()));
@@ -106,8 +106,8 @@ public class FavoriteServiceTest extends TestDataGenerator {
     void givenNothing_whenAddUnknownDeck_thenThrowDeckNotFoundException() {
         User user = getSampleUser();
 
-        when(userService.loadCurrentUser()).thenReturn(user);
-        when(deckService.findOne(any(Long.class))).thenThrow(DeckNotFoundException.class);
+        when(userService.loadCurrentUserOrThrow()).thenReturn(user);
+        when(deckService.findOneOrThrow(any(Long.class))).thenThrow(DeckNotFoundException.class);
         when(userRepository.save(any(User.class))).thenAnswer(returnsFirstArg());
 
         assertThrows(DeckNotFoundException.class, () -> favoriteService.addFavorite(user.getId(), 0L));
@@ -119,7 +119,7 @@ public class FavoriteServiceTest extends TestDataGenerator {
         Pageable pageable = PageRequest.of(0, 10);
         Page<Deck> page = mock(Page.class);
 
-        when(userService.loadCurrentUser()).thenReturn(user);
+        when(userService.loadCurrentUserOrThrow()).thenReturn(user);
         when(deckRepository.findByFavoredById(user.getId(), pageable)).thenReturn(page);
 
         Page<Deck> result = favoriteService.getFavorites(user.getId(), pageable);
@@ -132,7 +132,7 @@ public class FavoriteServiceTest extends TestDataGenerator {
         Pageable pageable = PageRequest.of(0, 10);
         Page<Deck> page = mock(Page.class);
 
-        when(userService.loadCurrentUser()).thenThrow(AuthenticationRequiredException.class);
+        when(userService.loadCurrentUserOrThrow()).thenThrow(AuthenticationRequiredException.class);
         when(deckRepository.findByFavoredById(user.getId(), pageable)).thenReturn(page);
 
         assertThrows(AuthenticationRequiredException.class, () -> favoriteService.getFavorites(user.getId(), pageable));
@@ -145,7 +145,7 @@ public class FavoriteServiceTest extends TestDataGenerator {
         Pageable pageable = PageRequest.of(0, 10);
         Page<Deck> page = mock(Page.class);
 
-        when(userService.loadCurrentUser()).thenReturn(user);
+        when(userService.loadCurrentUserOrThrow()).thenReturn(user);
         when(deckRepository.findByFavoredById(user.getId(), pageable)).thenReturn(page);
 
         assertThrows(InsufficientAuthorizationException.class, () -> favoriteService.getFavorites(otherUserId, pageable));
@@ -156,7 +156,7 @@ public class FavoriteServiceTest extends TestDataGenerator {
         User user = getSampleUser();
         Deck deck = getSampleDeck();
 
-        when(userService.loadCurrentUser()).thenReturn(user);
+        when(userService.loadCurrentUserOrThrow()).thenReturn(user);
         when(deckRepository.existsByIdAndFavoredById(deck.getId(), user.getId())).thenReturn(true);
 
         assertTrue(favoriteService.hasFavorite(user.getId(), deck.getId()));
@@ -167,7 +167,7 @@ public class FavoriteServiceTest extends TestDataGenerator {
         User user = getSampleUser();
         Deck deck = getSampleDeck();
 
-        when(userService.loadCurrentUser()).thenReturn(user);
+        when(userService.loadCurrentUserOrThrow()).thenReturn(user);
         when(deckRepository.existsByIdAndFavoredById(deck.getId(), user.getId())).thenReturn(false);
 
         assertFalse(favoriteService.hasFavorite(user.getId(), deck.getId()));
@@ -178,8 +178,8 @@ public class FavoriteServiceTest extends TestDataGenerator {
         User user = getSampleUser();
         Long deckId = 0L;
 
-        when(userService.loadCurrentUser()).thenReturn(user);
-        when(deckService.findOne(any(Long.class))).thenThrow(DeckNotFoundException.class);
+        when(userService.loadCurrentUserOrThrow()).thenReturn(user);
+        when(deckService.findOneOrThrow(any(Long.class))).thenThrow(DeckNotFoundException.class);
         when(deckRepository.existsByIdAndFavoredById(deckId, user.getId())).thenReturn(false);
 
         assertThrows(DeckNotFoundException.class, () -> favoriteService.hasFavorite(user.getId(), deckId));
@@ -190,7 +190,7 @@ public class FavoriteServiceTest extends TestDataGenerator {
         User user = getSampleUser();
         Deck deck = getSampleDeck();
 
-        when(userService.loadCurrentUser()).thenThrow(AuthenticationRequiredException.class);
+        when(userService.loadCurrentUserOrThrow()).thenThrow(AuthenticationRequiredException.class);
         when(deckRepository.existsByIdAndFavoredById(deck.getId(), user.getId())).thenReturn(false);
 
         assertThrows(AuthenticationRequiredException.class, () -> favoriteService.hasFavorite(user.getId(), deck.getId()));
@@ -202,7 +202,7 @@ public class FavoriteServiceTest extends TestDataGenerator {
         Long otherUserId = user.getId() + 1;
         Deck deck = getSampleDeck();
 
-        when(userService.loadCurrentUser()).thenReturn(user);
+        when(userService.loadCurrentUserOrThrow()).thenReturn(user);
         when(deckRepository.existsByIdAndFavoredById(deck.getId(), user.getId())).thenReturn(false);
 
         assertThrows(InsufficientAuthorizationException.class, () -> favoriteService.hasFavorite(otherUserId, deck.getId()));
@@ -214,8 +214,8 @@ public class FavoriteServiceTest extends TestDataGenerator {
         Deck deck = getSampleDeck();
         user.getFavorites().add(deck);
 
-        when(userService.loadCurrentUser()).thenReturn(user);
-        when(deckService.findOne(deck.getId())).thenReturn(deck);
+        when(userService.loadCurrentUserOrThrow()).thenReturn(user);
+        when(deckService.findOneOrThrow(deck.getId())).thenReturn(deck);
         when(userRepository.save(any(User.class))).thenAnswer(returnsFirstArg());
 
         favoriteService.removeFavorite(user.getId(), deck.getId());
@@ -228,8 +228,8 @@ public class FavoriteServiceTest extends TestDataGenerator {
         User user = getSampleUser();
         Deck deck = getSampleDeck();
 
-        when(userService.loadCurrentUser()).thenThrow(AuthenticationRequiredException.class);
-        when(deckService.findOne(deck.getId())).thenReturn(deck);
+        when(userService.loadCurrentUserOrThrow()).thenThrow(AuthenticationRequiredException.class);
+        when(deckService.findOneOrThrow(deck.getId())).thenReturn(deck);
         when(userRepository.save(any(User.class))).thenAnswer(returnsFirstArg());
 
         assertThrows(AuthenticationRequiredException.class, () -> favoriteService.removeFavorite(user.getId(), deck.getId()));
@@ -242,8 +242,8 @@ public class FavoriteServiceTest extends TestDataGenerator {
         Deck deck = getSampleDeck();
         user.getFavorites().add(deck);
 
-        when(userService.loadCurrentUser()).thenReturn(user);
-        when(deckService.findOne(deck.getId())).thenReturn(deck);
+        when(userService.loadCurrentUserOrThrow()).thenReturn(user);
+        when(deckService.findOneOrThrow(deck.getId())).thenReturn(deck);
         when(userRepository.save(any(User.class))).thenAnswer(returnsFirstArg());
 
         assertThrows(InsufficientAuthorizationException.class, () -> favoriteService.removeFavorite(otherUserId, deck.getId()));
@@ -253,8 +253,8 @@ public class FavoriteServiceTest extends TestDataGenerator {
     void givenNothing_whenRemoveUnknownDeck_thenThrowDeckNotFoundException() {
         User user = getSampleUser();
 
-        when(userService.loadCurrentUser()).thenReturn(user);
-        when(deckService.findOne(any(Long.class))).thenThrow(DeckNotFoundException.class);
+        when(userService.loadCurrentUserOrThrow()).thenReturn(user);
+        when(deckService.findOneOrThrow(any(Long.class))).thenThrow(DeckNotFoundException.class);
         when(userRepository.save(any(User.class))).thenAnswer(returnsFirstArg());
 
         assertThrows(DeckNotFoundException.class, () -> favoriteService.removeFavorite(user.getId(), 0L));
@@ -266,8 +266,8 @@ public class FavoriteServiceTest extends TestDataGenerator {
         Deck deck = getSampleDeck();
         Long favoriteId = deck.getId() + 1;
 
-        when(userService.loadCurrentUser()).thenReturn(user);
-        when(deckService.findOne(any(Long.class))).thenReturn(deck);
+        when(userService.loadCurrentUserOrThrow()).thenReturn(user);
+        when(deckService.findOneOrThrow(any(Long.class))).thenReturn(deck);
         when(userRepository.save(any(User.class))).thenAnswer(returnsFirstArg());
 
         assertThrows(DeckNotFoundException.class, () -> favoriteService.removeFavorite(user.getId(), favoriteId));

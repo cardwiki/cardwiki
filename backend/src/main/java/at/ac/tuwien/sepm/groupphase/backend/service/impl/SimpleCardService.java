@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class SimpleCardService implements CardService {
@@ -34,8 +33,8 @@ public class SimpleCardService implements CardService {
     @Transactional
     public Card addCardToDeck(Long deckId, Revision revisionData) {
         LOGGER.debug("Add Card to Deck: {} {}", revisionData, deckId);
-        User user = userService.loadCurrentUser();
-        Deck deck = deckService.findOne(deckId);
+        User user = userService.loadCurrentUserOrThrow();
+        Deck deck = deckService.findOneOrThrow(deckId);
 
         // Save Card with initial revision
         Card card = new Card();
@@ -68,8 +67,8 @@ public class SimpleCardService implements CardService {
     @Transactional
     public Card addDeleteRevisionToCard(Long cardId, String revisionMessage) {
         LOGGER.debug("Add delete-revision to card with id {}", cardId);
-        Card card = findOne(cardId);
-        User user = userService.loadCurrentUser();
+        Card card = findOneOrThrow(cardId);
+        User user = userService.loadCurrentUserOrThrow();
 
         Revision revision = new Revision();
         revision.setType(Revision.Type.DELETE);
@@ -82,7 +81,7 @@ public class SimpleCardService implements CardService {
     }
 
     @Transactional
-    public Card findOne(Long cardId) {
+    public Card findOneOrThrow(Long cardId) {
         LOGGER.debug("Find card with id {}", cardId);
         Optional<Card> card = cardRepository.findSimpleById(cardId);
         return card.orElseThrow(() -> new NotFoundException("Could not find card with id " + cardId));
@@ -92,8 +91,8 @@ public class SimpleCardService implements CardService {
     @Transactional
     public Card editCardInDeck(Long cardId, Revision revisionData) {
         LOGGER.debug("Edit Card {}: {}", cardId, revisionData);
-        User user = userService.loadCurrentUser();
-        Card card = findOne(cardId);
+        User user = userService.loadCurrentUserOrThrow();
+        Card card = findOneOrThrow(cardId);
 
         Revision revision = new Revision();
         revision.setType(Revision.Type.EDIT);

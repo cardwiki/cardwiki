@@ -128,7 +128,7 @@ public class LearnServiceTest extends TestDataGenerator {
         AttemptInputDto attempt = getSampleAttempt();
         attempt.setStatus(result);
 
-        Mockito.when(userService.loadCurrentUser()).thenReturn(user);
+        Mockito.when(userService.loadCurrentUserOrThrow()).thenReturn(user);
 
         learnService.saveAttempt(attempt);
 

@@ -58,7 +58,7 @@ public class CommentEndpoint {
     @ApiOperation(value = "Get information about a specific comment")
     public CommentSimpleDto findOne(@PathVariable Long commentId) {
         LOGGER.info("GET /api/v1/comments/{}", commentId);
-        return commentMapper.commentToCommentSimpleDto(commentService.findOne(commentId));
+        return commentMapper.commentToCommentSimpleDto(commentService.findOneOrThrow(commentId));
     }
 
     @Secured("ROLE_USER")

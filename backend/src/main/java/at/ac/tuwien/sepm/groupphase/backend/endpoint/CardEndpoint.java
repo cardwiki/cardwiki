@@ -56,7 +56,7 @@ public class CardEndpoint {
     @ApiOperation(value = "Get information about a specific card in deck")
     public CardSimpleDto findOne(@PathVariable Long cardId) {
         LOGGER.info("GET /api/v1/cards/{}", cardId);
-        return cardMapper.cardToCardSimpleDto(cardService.findOne(cardId));
+        return cardMapper.cardToCardSimpleDto(cardService.findOneOrThrow(cardId));
     }
 
     @Secured("ROLE_USER")

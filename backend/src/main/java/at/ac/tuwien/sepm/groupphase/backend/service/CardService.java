@@ -2,6 +2,7 @@ package at.ac.tuwien.sepm.groupphase.backend.service;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
+import at.ac.tuwien.sepm.groupphase.backend.exception.CardNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.DeckNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.AuthenticationRequiredException;
 
@@ -27,8 +28,9 @@ public interface CardService {
      *
      * @param cardId id of the card
      * @return the card entry
+     * @throws CardNotFoundException if no card with this id exists
      */
-    Card findOne(Long cardId);
+    Card findOneOrThrow(Long cardId);
 
 
     /**

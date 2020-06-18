@@ -52,14 +52,14 @@ public class CardServiceTest extends TestDataGenerator {
         User user = getUnconnectedSampleUser();
         Deck deck = getUnconnectedSampleDeck();
 
-        when(userService.loadCurrentUser()).thenReturn(user);
-        when(deckService.findOne(DECK_ID)).thenReturn(deck);
+        when(userService.loadCurrentUserOrThrow()).thenReturn(user);
+        when(deckService.findOneOrThrow(DECK_ID)).thenReturn(deck);
         when(cardRepository.saveAndFlush(any(Card.class))).then(returnsFirstArg());
         when(cardRepository.save(any(Card.class))).then(returnsFirstArg());
 
         Card returnedCard = cardService.addCardToDeck(DECK_ID, revision);
 
-        verify(deckService).findOne(DECK_ID);
+        verify(deckService).findOneOrThrow(DECK_ID);
         assertNotNull(returnedCard.getLatestRevision(), "Saves card with LatestRevision");
         assertAll(
             () -> assertEquals(deck, returnedCard.getDeck(), "Saves card with provided deck"),
@@ -81,8 +81,8 @@ public class CardServiceTest extends TestDataGenerator {
         User user = getUnconnectedSampleUser();
         Deck deck = getUnconnectedSampleDeck();
 
-        when(userService.loadCurrentUser()).thenReturn(user);
-        when(deckService.findOne(DECK_ID)).thenReturn(deck);
+        when(userService.loadCurrentUserOrThrow()).thenReturn(user);
+        when(deckService.findOneOrThrow(DECK_ID)).thenReturn(deck);
         when(cardRepository.saveAndFlush(any(Card.class))).then(returnsFirstArg());
         when(cardRepository.save(any(Card.class))).then(returnsFirstArg());
 
@@ -96,8 +96,8 @@ public class CardServiceTest extends TestDataGenerator {
         Revision revision = getUnconnectedSampleRevision();
         revision.setRevisionEdit(getUnconnectedSampleRevisionEdit());
         Deck deck = getUnconnectedSampleDeck();
-        when(userService.loadCurrentUser()).thenThrow(UserNotFoundException.class);
-        when(deckService.findOne(DECK_ID)).thenReturn(deck);
+        when(userService.loadCurrentUserOrThrow()).thenThrow(UserNotFoundException.class);
+        when(deckService.findOneOrThrow(DECK_ID)).thenReturn(deck);
 
         assertThrows(UserNotFoundException.class, () -> cardService.addCardToDeck(DECK_ID, revision));
     }
@@ -107,8 +107,8 @@ public class CardServiceTest extends TestDataGenerator {
         Revision revision = getUnconnectedSampleRevision();
         revision.setRevisionEdit(getUnconnectedSampleRevisionEdit());
         User user = getUnconnectedSampleUser();
-        when(userService.loadCurrentUser()).thenReturn(user);
-        when(deckService.findOne(DECK_ID)).thenThrow(DeckNotFoundException.class);
+        when(userService.loadCurrentUserOrThrow()).thenReturn(user);
+        when(deckService.findOneOrThrow(DECK_ID)).thenThrow(DeckNotFoundException.class);
 
         assertThrows(DeckNotFoundException.class, () -> cardService.addCardToDeck(DECK_ID, revision));
     }

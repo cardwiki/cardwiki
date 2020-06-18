@@ -51,8 +51,8 @@ public class CommentServiceTest extends TestDataGenerator {
         User user = mock(User.class);
         Deck deck = mock(Deck.class);
 
-        when(deckService.findOne(deckId)).thenReturn(deck);
-        when(userService.loadCurrentUser()).thenReturn(user);
+        when(deckService.findOneOrThrow(deckId)).thenReturn(deck);
+        when(userService.loadCurrentUserOrThrow()).thenReturn(user);
         when(commentRepository.save(any(Comment.class))).thenAnswer(returnsFirstArg());
 
         Comment result = commentService.addCommentToDeck(deckId, comment);
@@ -68,8 +68,8 @@ public class CommentServiceTest extends TestDataGenerator {
         Comment comment = mock(Comment.class);
         User user = mock(User.class);
 
-        when(deckService.findOne(deckId)).thenThrow(DeckNotFoundException.class);
-        when(userService.loadCurrentUser()).thenReturn(user);
+        when(deckService.findOneOrThrow(deckId)).thenThrow(DeckNotFoundException.class);
+        when(userService.loadCurrentUserOrThrow()).thenReturn(user);
 
         assertThrows(DeckNotFoundException.class, () -> commentService.addCommentToDeck(deckId, comment));
     }
@@ -80,8 +80,8 @@ public class CommentServiceTest extends TestDataGenerator {
         Comment comment = mock(Comment.class);
         Deck deck = mock(Deck.class);
 
-        when(deckService.findOne(deckId)).thenReturn(deck);
-        when(userService.loadCurrentUser()).thenThrow(AuthenticationRequiredException.class);
+        when(deckService.findOneOrThrow(deckId)).thenReturn(deck);
+        when(userService.loadCurrentUserOrThrow()).thenThrow(AuthenticationRequiredException.class);
 
         assertThrows(AuthenticationRequiredException.class, () -> commentService.addCommentToDeck(deckId, comment));
     }
@@ -93,7 +93,7 @@ public class CommentServiceTest extends TestDataGenerator {
 
         when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));
 
-        assertEquals(comment, commentService.findOne(commentId));
+        assertEquals(comment, commentService.findOneOrThrow(commentId));
     }
 
     @Test
@@ -102,7 +102,7 @@ public class CommentServiceTest extends TestDataGenerator {
 
         when(commentRepository.findById(commentId)).thenReturn(Optional.empty());
 
-        assertThrows(CommentNotFoundException.class, () -> commentService.findOne(commentId));
+        assertThrows(CommentNotFoundException.class, () -> commentService.findOneOrThrow(commentId));
     }
 
     @Test
@@ -112,7 +112,7 @@ public class CommentServiceTest extends TestDataGenerator {
         Pageable pageable = mock(Pageable.class);
         Page<Comment> commentPage = mock(Page.class);
 
-        when(deckService.findOne(deckId)).thenReturn(deck);
+        when(deckService.findOneOrThrow(deckId)).thenReturn(deck);
         when(commentRepository.findByDeckIdOrderByCreatedAtDesc(deckId, pageable)).thenReturn(commentPage);
 
         assertEquals(commentPage, commentService.findCommentsByDeckId(deckId, pageable));
@@ -123,7 +123,7 @@ public class CommentServiceTest extends TestDataGenerator {
         Long deckId = 0L;
         Pageable pageable = mock(Pageable.class);
 
-        when(deckService.findOne(deckId)).thenThrow(DeckNotFoundException.class);
+        when(deckService.findOneOrThrow(deckId)).thenThrow(DeckNotFoundException.class);
 
         assertThrows(DeckNotFoundException.class, () -> commentService.findCommentsByDeckId(deckId, pageable));
     }
@@ -138,7 +138,7 @@ public class CommentServiceTest extends TestDataGenerator {
         User user = mock(User.class);
 
         when(originalComment.getCreatedBy()).thenReturn(user);
-        when(userService.loadCurrentUser()).thenReturn(user);
+        when(userService.loadCurrentUserOrThrow()).thenReturn(user);
         when(commentRepository.findById(commentId)).thenReturn(Optional.of(originalComment));
         when(commentRepository.save(any(Comment.class))).thenAnswer(returnsFirstArg());
 
@@ -156,7 +156,7 @@ public class CommentServiceTest extends TestDataGenerator {
         User user = mock(User.class);
 
         when(originalComment.getCreatedBy()).thenReturn(user);
-        when(userService.loadCurrentUser()).thenReturn(user);
+        when(userService.loadCurrentUserOrThrow()).thenReturn(user);
         when(commentRepository.findById(commentId)).thenReturn(Optional.of(originalComment));
         when(commentRepository.save(any(Comment.class))).thenAnswer(returnsFirstArg());
 
@@ -175,7 +175,7 @@ public class CommentServiceTest extends TestDataGenerator {
         User otherUser = mock(User.class);
 
         when(originalComment.getCreatedBy()).thenReturn(creator);
-        when(userService.loadCurrentUser()).thenReturn(otherUser);
+        when(userService.loadCurrentUserOrThrow()).thenReturn(otherUser);
         when(commentRepository.findById(commentId)).thenReturn(Optional.of(originalComment));
 
         assertThrows(InsufficientAuthorizationException.class, () -> commentService.editComment(commentId, newComment));
@@ -187,7 +187,7 @@ public class CommentServiceTest extends TestDataGenerator {
         User user = mock(User.class);
         Comment comment = mock(Comment.class);
 
-        when(userService.loadCurrentUser()).thenReturn(user);
+        when(userService.loadCurrentUserOrThrow()).thenReturn(user);
         when(commentRepository.findById(commentId)).thenReturn(Optional.empty());
 
         assertThrows(CommentNotFoundException.class, () -> commentService.editComment(commentId, comment));
@@ -198,7 +198,7 @@ public class CommentServiceTest extends TestDataGenerator {
         Long commentId = 0L;
         Comment comment = mock(Comment.class);
 
-        when(userService.loadCurrentUser()).thenThrow(AuthenticationRequiredException.class);
+        when(userService.loadCurrentUserOrThrow()).thenThrow(AuthenticationRequiredException.class);
 
         assertThrows(AuthenticationRequiredException.class, () -> commentService.editComment(commentId, comment));
     }
@@ -210,7 +210,7 @@ public class CommentServiceTest extends TestDataGenerator {
         User user = mock(User.class);
 
         when(comment.getCreatedBy()).thenReturn(user);
-        when(userService.loadCurrentUser()).thenReturn(user);
+        when(userService.loadCurrentUserOrThrow()).thenReturn(user);
         when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));
         doNothing().when(commentRepository).deleteById(commentId);
 
@@ -227,7 +227,7 @@ public class CommentServiceTest extends TestDataGenerator {
         when(admin.isAdmin()).thenReturn(true);
 
         when(comment.getCreatedBy()).thenReturn(creator);
-        when(userService.loadCurrentUser()).thenReturn(admin);
+        when(userService.loadCurrentUserOrThrow()).thenReturn(admin);
         when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));
         doNothing().when(commentRepository).deleteById(commentId);
 
@@ -244,7 +244,7 @@ public class CommentServiceTest extends TestDataGenerator {
         when(otherUser.isAdmin()).thenReturn(false);
 
         when(comment.getCreatedBy()).thenReturn(creator);
-        when(userService.loadCurrentUser()).thenReturn(otherUser);
+        when(userService.loadCurrentUserOrThrow()).thenReturn(otherUser);
         when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));
 
         assertThrows(InsufficientAuthorizationException.class, () -> commentService.deleteComment(commentId));
@@ -255,7 +255,7 @@ public class CommentServiceTest extends TestDataGenerator {
         Long commentId = 0L;
         User user = mock(User.class);
 
-        when(userService.loadCurrentUser()).thenReturn(user);
+        when(userService.loadCurrentUserOrThrow()).thenReturn(user);
         when(commentRepository.findById(commentId)).thenReturn(Optional.empty());
 
         assertThrows(CommentNotFoundException.class, () -> commentService.deleteComment(commentId));
@@ -263,7 +263,7 @@ public class CommentServiceTest extends TestDataGenerator {
 
     @Test
     public void givenNothing_whenDeleteComment_thenThrowAuthenticationRequiredException() {
-        when(userService.loadCurrentUser()).thenThrow(AuthenticationRequiredException.class);
+        when(userService.loadCurrentUserOrThrow()).thenThrow(AuthenticationRequiredException.class);
 
         assertThrows(AuthenticationRequiredException.class, () -> commentService.deleteComment(0L));
     }
