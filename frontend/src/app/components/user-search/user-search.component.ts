@@ -17,6 +17,7 @@ export class UserSearchComponent implements OnInit {
   users: UserProfile[] = [];
   maxUsersLoaded: boolean = false;
   noUsersFound: boolean = false;
+  admin: boolean = false;
 
   constructor(private route: ActivatedRoute, private router: Router, private modalService: NgbModal, private userService: UserService) {
     this.route.queryParams.subscribe(params => {
@@ -26,6 +27,7 @@ export class UserSearchComponent implements OnInit {
 
   ngOnInit() {
     if (this.searchTerm) this.loadUsers(0)
+    if (localStorage.getItem("whoami")) this.admin = JSON.parse(localStorage.getItem("whoami")).admin;
   }
 
   onSubmit() {
@@ -48,7 +50,26 @@ export class UserSearchComponent implements OnInit {
       this.users.push(...users);
       if (users.length + this.users.length === 0) this.noUsersFound = true;
       if (users.length < this.USER_PAGINATION_LIMIT) this.maxUsersLoaded = true;
+      console.log(users);
     })
   }
 
+  grantAdminRights(user: UserProfile): void {
+    this.userService.editAdminStatus(user.id, true).subscribe( updatedUser => {
+      user.admin = updatedUser.admin;
+    });
+  }
+
+  editEnabledStatus(user: UserProfile, enabled: boolean): void {
+    this.userService.editEnabledStatus(user.id, enabled).subscribe(updatedUser => {
+      user.enabled = updatedUser.enabled;
+    });
+  }
+
+  delete(user: UserProfile): void {
+    this.userService.delete(user.id).subscribe( _ => {
+      user.username = '[deleted]';
+      user.deleted = true;
+    });
+  }
 }

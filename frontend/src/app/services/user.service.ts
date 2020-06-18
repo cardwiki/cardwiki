@@ -100,4 +100,41 @@ export class UserService {
     return this.httpClient.patch<UserProfile>(`${this.userBaseUri}/${userid}`, {description: description})
       .pipe(tap(null, this.errorHandler.handleError('Could not edit User description')));
   }
+
+  /**
+   * Enable or disable the account with userid {@code userid}.
+   *
+   * @param userid of the user to update.
+   * @param enabled the 'enabled' status to set.
+   */
+  editEnabledStatus(userid: number, enabled: boolean): Observable<UserProfile> {
+    const msg = enabled ? 'enable user' : 'disable user';
+    console.log(`${msg} ${userid}`);
+    return this.httpClient.patch<UserProfile>(`${this.userBaseUri}/${userid}`, {enabled: enabled})
+      .pipe(tap(null, this.errorHandler.handleError('Could not ' + msg)));
+  }
+
+  /**
+   * Makes a user an admin or removes your own admin rights.
+   *
+   * @param userid of the user to update.
+   * @param enabled the 'admin' status to set.
+   */
+  editAdminStatus(userid: number, admin: boolean): Observable<UserProfile> {
+    const msg = admin ? 'promote user' : 'demote user';
+    console.log(`${msg} ${userid}`);
+    return this.httpClient.patch<UserProfile>(`${this.userBaseUri}/${userid}`, {admin: admin})
+      .pipe(tap(null, this.errorHandler.handleError('Could not ' + msg)));
+  }
+
+  /**
+   * Deletes a user.
+   *
+   * @param userid of the user to delete.
+   */
+  delete(userid: number): Observable<void> {
+    console.log('delete user ' + userid);
+    return this.httpClient.delete<void>(`${this.userBaseUri}/${userid}`)
+      .pipe(tap(null, this.errorHandler.handleError('Could not delete user ' + userid)));
+  }
 }

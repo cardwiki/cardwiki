@@ -17,6 +17,12 @@
     <ul class="list-group list-group-flush">
       <li *ngFor="let user of users" class="list-group-item">
         <a routerLink="/users/{{user.username}}/profile">{{user.username}}</a>
+        <div *ngIf="admin && !user.admin && !user.deleted" class="btn-group float-right">
+          <button class="btn btn-outline-danger" (click)="grantAdminRights(user)">Grant admin rights</button>
+          <button *ngIf="user.enabled" class="btn btn-outline-danger" (click)="editEnabledStatus(user, false)">Disable</button>
+          <button *ngIf="!user.enabled" class="btn btn-outline-danger" (click)="editEnabledStatus(user, true)">Enable</button>
+          <button class="btn btn-outline-danger" (click)="delete(user)">Delete</button>
+        </div>
       </li>
     </ul>
     <button *ngIf="!maxUsersLoaded" class="card-footer btn p-1" (click)="loadUsers()">
