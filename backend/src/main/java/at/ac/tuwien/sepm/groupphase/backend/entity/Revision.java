@@ -15,6 +15,10 @@ import java.time.LocalDateTime;
 public abstract class Revision {
     public static final int MAX_MESSAGE_SIZE = 150;
 
+    public enum Type {
+        EDIT, DELETE, CREATE
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
