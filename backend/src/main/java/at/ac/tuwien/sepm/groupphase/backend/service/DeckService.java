@@ -2,7 +2,7 @@ package at.ac.tuwien.sepm.groupphase.backend.service;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.exception.DeckNotFoundException;
-import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
+import at.ac.tuwien.sepm.groupphase.backend.exception.AuthenticationRequiredException;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -32,7 +32,7 @@ public interface DeckService {
      *
      * @param deck to create.
      * @return the new card deck.
-     * @throws UserNotFoundException if no authenticated user could be found
+     * @throws AuthenticationRequiredException if no authenticated user could be found
      */
     Deck create(Deck deck);
 
@@ -51,7 +51,7 @@ public interface DeckService {
      * @param id of the deck to copy
      * @param deckCopy deck containing data needed for the deck to be created.
      * @return the new card deck.
-     * @throws UserNotFoundException if no authenticated user can be found
+     * @throws AuthenticationRequiredException if no authenticated user can be found
      * @throws DeckNotFoundException if no deck with the given id can be found
      */
     Deck copy(Long id, Deck deckCopy);

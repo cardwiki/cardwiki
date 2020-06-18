@@ -1,9 +1,10 @@
 package at.ac.tuwien.sepm.groupphase.backend.service;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
-import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionEdit;
+import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
 import at.ac.tuwien.sepm.groupphase.backend.exception.DeckNotFoundException;
-import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
+import at.ac.tuwien.sepm.groupphase.backend.exception.AuthenticationRequiredException;
+
 
 import java.util.List;
 
@@ -14,32 +15,30 @@ public interface CardService {
      * Current user must be registered.
      *
      * @param deckId id of the deck where it will be added
-     * @param revisionEdit data of the new card
+     * @param revision data of the new card
      * @return created card
      * @throws DeckNotFoundException if no deck with this id exists
-     * @throws UserNotFoundException if no authenticated user could be found
+     * @throws AuthenticationRequiredException if no authenticated user could be found
      */
-    Card addCardToDeck(Long deckId, RevisionEdit revisionEdit);
+    Card addCardToDeck(Long deckId, Revision revision);
 
     /**
      * Find a single card by id.
      *
-     * @param deckId id of the deck the card belongs to
      * @param cardId id of the card
      * @return the card entry
      */
-    Card findOne(Long deckId, Long cardId);
+    Card findOne(Long cardId);
 
 
     /**
      * Edit a card in an existing deck
      *
-     * @param revisionEdit new data of the card
-     * @param deckId id of the deck the card belongs to
+     * @param revision new data of the card
      * @param cardId id of the card
      * @return edited card
      */
-    Card editCardInDeck(Long deckId, Long cardId, RevisionEdit revisionEdit);
+    Card editCardInDeck(Long cardId, Revision revision);
 
     /**
      * Get all cards for a specific deck
@@ -52,9 +51,9 @@ public interface CardService {
     /**
      * Add delete-revision to card
      *
-     * @param deckId of the card's deck
      * @param cardId of the card to which the delete-revision will be added
+     * @param revisionMessage optional message for the delete-revision
      * @return card with added delete-revision
      */
-    Card addDeleteRevisionToCard(Long deckId, Long cardId);
+    Card addDeleteRevisionToCard(Long cardId, String revisionMessage);
 }

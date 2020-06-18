@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {CardService} from '../../../services/card.service';
 import {ActivatedRoute} from '@angular/router';
-import {CardContent} from '../../../dtos/cardContent';
 import { Location } from '@angular/common';
 import { NotificationService } from 'src/app/services/notification.service';
+import { CardUpdate } from 'src/app/dtos/cardUpdate';
 
 @Component({
   selector: 'app-card-edit',
@@ -12,30 +12,33 @@ import { NotificationService } from 'src/app/services/notification.service';
 })
 export class CardEditComponent implements OnInit {
 
-  public card = new CardContent(null, null, null, null, null);
-  private deckId: number;
+  public card: CardUpdate;
   private cardId: number;
 
-  constructor(private cardService: CardService, private route: ActivatedRoute, private location: Location, private notificationService: NotificationService) { }
+  constructor(private cardService: CardService, private route: ActivatedRoute, private location: Location,
+              private notificationService: NotificationService) { }
 
   ngOnInit(): void {
-    this.deckId = Number(this.route.snapshot.paramMap.get('deckId'));
+    this.card = new CardUpdate(null, null, null, null);
     this.cardId = Number(this.route.snapshot.paramMap.get('cardId'));
     this.fetchCardContent();
   }
 
   fetchCardContent(): void {
-    console.log('CardEditComponent.fetchCardContent', this.deckId, this.cardId);
-    this.cardService.fetchCard(this.deckId, this.cardId)
+    console.log('CardEditComponent.fetchCardContent', this.cardId);
+    this.cardService.fetchCard(this.cardId)
       .subscribe(cardDetails => {
         console.log('fetched card', cardDetails);
-        this.card = cardDetails;
+        this.card.textFront = cardDetails.textFront;
+        this.card.textBack = cardDetails.textBack;
+        this.card.imageFront = cardDetails.imageFront;
+        this.card.imageBack = cardDetails.imageBack;
       })
   }
 
   cardSubmit(): void {
-    console.log('CardEditComponent.onSubmit', this.deckId, this.cardId, this.card);
-    this.cardService.editCard(this.deckId, this.cardId, this.card)
+    console.log('CardEditComponent.onSubmit', this.cardId, this.card);
+    this.cardService.editCard(this.cardId, this.card)
       .subscribe(cardDetails => {
         console.log('edited card', cardDetails);
         this.notificationService.success('Updated Card')

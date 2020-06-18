@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CardContent } from 'src/app/dtos/cardContent';
+import { CardUpdate } from 'src/app/dtos/cardUpdate';
 import { Globals } from '../../../global/globals';
 import {ImageService} from '../../../services/image.service';
 
@@ -12,8 +13,8 @@ export class CardFormComponent implements OnInit {
 
   filenameFront: string = 'Choose file';
   filenameBack: string = 'Choose file';
-  @Input() card: CardContent;
-  @Output() cardSubmit: EventEmitter<CardContent> = new EventEmitter();
+  @Input() card: CardUpdate
+  @Output() cardSubmit: EventEmitter<CardUpdate> = new EventEmitter();
   @Output() cancel: EventEmitter<void> = new EventEmitter();
   constructor(public globals: Globals, public imageService: ImageService) { }
 
@@ -28,6 +29,8 @@ export class CardFormComponent implements OnInit {
     if (this.card.textBack === '') {
       this.card.textBack = null
     }
+    this.card.message = this.card.message || null
+    console.log('submitting card form', this.card)
     this.cardSubmit.emit(this.card)
   }
 

@@ -103,7 +103,7 @@ public class SimpleLearnService implements LearnService {
         } else {
             switch (attempt.getStatus()) {
                 case EASY:
-                    progress.setEasinessFactor(progress.getEasinessFactor() + 15);
+                    progress.setEasinessFactor(progress.getEasinessFactor() + 0.15);
                     progress.setInterval((int) Math.ceil(progress.getInterval() * progress.getEasinessFactor() * EASY_BONUS));
                     break;
 
@@ -112,7 +112,7 @@ public class SimpleLearnService implements LearnService {
                     break;
 
                 case AGAIN:
-                    progress.setEasinessFactor(Math.max(progress.getEasinessFactor() - 20, 1.3));
+                    progress.setEasinessFactor(Math.max(progress.getEasinessFactor() - 0.2, 1.3));
                     progress.setInterval((int) Math.ceil(progress.getInterval() * 0.2));
                     break;
             }

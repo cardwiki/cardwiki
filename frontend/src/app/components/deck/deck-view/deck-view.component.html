@@ -5,11 +5,16 @@
     </div>
     <div class="col">
       <div class="btn-toolbar float-right">
-        <a routerLink="/decks/{{deck.id}}/edit" class="btn btn-light float-right mr-1"><i class="fas fa-pencil-alt"></i> Edit</a>
-        <button type="button" class="btn btn-light float-right mr-1"><i class="far fa-star"></i> Save</button>
-        <button *ngIf="cards && cards.length > 0 && authService.isLoggedIn()" type="button" class="btn btn-light mr-1" (click)="openForkModal()">
-          <i class="fas fa-code-branch"></i> Fork
-        </button>
+        <ng-template [appUserRole]="'USER'">
+          <a routerLink="/decks/{{deck.id}}/edit" class="btn btn-light float-right mr-1"><i class="fas fa-pencil-alt"></i> Edit</a>
+          <button *ngIf="isFavorite$ | async; else notFavorite" type="button" class="btn btn-light float-right mr-1" (click)="removeFromFavorites()"><i class="fas fa-star"></i> Saved</button>
+          <ng-template #notFavorite>
+            <button type="button" class="btn btn-light float-right mr-1" (click)="saveToFavorites()"><i class="far fa-star"></i> Save</button>
+          </ng-template>
+          <button *ngIf="cards && cards.length > 0" type="button" class="btn btn-light mr-1" (click)="openForkModal()">
+            <i class="fas fa-code-branch"></i> Fork
+          </button>
+        </ng-template>
         <button type="button" class="btn btn-light float-right mr-1">
           <i class="fas fa-list"></i> View History</button>
       </div>
@@ -74,7 +79,7 @@
             <a routerLink="/decks/{{deck.id}}/cards/{{card.id}}/edit" class="btn btn-light"><i class="fas fa-pencil-alt"></i></a>
             <button type="button" class="btn btn-light"><i class="far fa-clone"></i></button>
             <button type="button" class="btn btn-light"><i class="fas fa-history"></i></button>
-            <button type="button" class="btn btn-light" (click)="removeCard(card)"><i class="fas fa-trash-alt"></i></button>
+            <button type="button" class="btn btn-light" (click)="openCardRemoveModal(card)"><i class="fas fa-trash-alt"></i></button>
           </div>
         </td>
       </tr>

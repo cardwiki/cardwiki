@@ -28,6 +28,7 @@ public interface CardRepository extends JpaRepository<Card, Long> {
      * @param deckId of the deck
      * @return list of cards of the deck, excluding currently empty ones
      */
+    @EntityGraph(attributePaths = {"latestRevision.revisionEdit.imageFront", "latestRevision.revisionEdit.imageBack"})
     @Query(value="select c from Card c inner join RevisionEdit r on r.revision=c.latestRevision where c.deck.id=:deckId")
     List<Card> findCardsWithContentByDeck_Id(@Param("deckId") Long deckId);
 

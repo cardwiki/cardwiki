@@ -10,6 +10,6 @@ export class CardSimple extends CardContent {
     public textBack: string,
     public imageFront: Image,
     public imageBack: Image) {
-    super(id, textFront, textBack, imageFront, imageBack);
+    super(textFront, textBack, imageFront, imageBack);
   }
 }

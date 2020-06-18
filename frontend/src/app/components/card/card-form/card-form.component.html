@@ -35,6 +35,13 @@
         </div>
     </div>
 
+    <div class="form-group">
+        <input type="text" name="message" class="form-control form-control-sm"
+                aria-label="Description of changes"
+                placeholder="Optionally describe your changes here"
+                [(ngModel)]="card.message" minlength="0" maxlength="{{globals.maxMessageSize}}">
+    </div>
+
     <button type="submit" class="btn btn-primary">Submit</button>
     <button type="button" class="btn btn-outline-danger ml-2" (click)="onCancel()">Cancel</button>
 </form>

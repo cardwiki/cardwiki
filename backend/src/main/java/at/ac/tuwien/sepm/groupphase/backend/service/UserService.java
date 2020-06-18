@@ -3,6 +3,7 @@ package at.ac.tuwien.sepm.groupphase.backend.service;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
+import at.ac.tuwien.sepm.groupphase.backend.exception.AuthenticationRequiredException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
 import org.springframework.data.domain.Pageable;
 
@@ -42,7 +43,7 @@ public interface UserService {
     /**
      * Loads the currently authenticated user.
      * @return the user entity
-     * @throws UserNotFoundException if the current user is not stored in the repository
+     * @throws AuthenticationRequiredException if no authentication is provided or the current user is not stored in the repository
      */
     User loadCurrentUser();
 

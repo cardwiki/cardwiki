@@ -1,9 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.integrationtest;
 
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CardSimpleDto;
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckSimpleDto;
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.RevisionDetailedDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.UserDetailsDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionEdit;
@@ -14,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -230,6 +227,198 @@ public class UserEndpointTest extends TestDataGenerator {
     }
 
     @Test
+    public void addFavorite() throws Exception {
+        Deck deck = givenDeck();
+        User user = deck.getCreatedBy();
+
+        mvc.perform(put("/api/v1/users/{userId}/favorites/{deckId}", user.getId(), deck.getId())
+            .with(login(user.getAuthId())))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("id").value(deck.getId()))
+            .andExpect(jsonPath("name").value(deck.getName()));
+    }
+
+    @Test
+    public void addFavoriteWhichIsAlreadyFavoriteThrowsConflict() throws Exception {
+        Deck deck = givenFavorite();
+        User user = deck.getCreatedBy();
+
+        mvc.perform(put("/api/v1/users/{userId}/favorites/{deckId}", user.getId(), deck.getId())
+            .with(login(user.getAuthId())))
+            .andExpect(status().isConflict());
+    }
+
+    @Test
+    public void addFavorite_withNoAuthentication_throwsForbidden() throws Exception {
+        Deck deck = givenDeck();
+        User user = deck.getCreatedBy();
+
+        mvc.perform(put("/api/v1/users/{userId}/favorites/{deckId}", user.getId(), deck.getId()))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void addFavorite_forOtherUser_throwsForbidden() throws Exception {
+        Deck deck = givenDeck();
+        User user = deck.getCreatedBy();
+        Long otherUserId = user.getId() + 1;
+
+        mvc.perform(put("/api/v1/users/{userId}/favorites/{deckId}", otherUserId, deck.getId())
+            .with(login(user.getAuthId())))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void addFavorite_withUnknownDeckId_throwsNotFound() throws Exception {
+        User user = givenApplicationUser();
+
+        mvc.perform(put("/api/v1/users/{userId}/favorites/{deckId}", user.getId(), 0L)
+            .with(login(user.getAuthId())))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void getFavorites() throws Exception {
+        Deck favorite = givenFavorite();
+        User user = favorite.getCreatedBy();
+
+        mvc.perform(get("/api/v1/users/{userId}/favorites", user.getId())
+            .queryParam("offset", "0")
+            .queryParam("limit", "10")
+            .with(login(user.getAuthId())))
+            .andExpect(status().isOk())
+            .andExpect((jsonPath("content[0].id").value(favorite.getId())))
+            .andExpect((jsonPath("content[0].name").value(favorite.getName())))
+            .andExpect(jsonPath("numberOfElements").value(1))
+            .andExpect(jsonPath("totalElements").value(1))
+            .andExpect(jsonPath("totalPages").value(1))
+            .andExpect(jsonPath("first").value(true))
+            .andExpect(jsonPath("last").value(true))
+            .andExpect(jsonPath("pageable.pageNumber").value(0))
+            .andExpect(jsonPath("pageable.pageSize").value(10));
+    }
+
+    @Test
+    public void getFavorites_withNoAuthentication_throwsForbidden() throws Exception {
+        User user = givenApplicationUser();
+
+        mvc.perform(get("/api/v1/users/{userId}/favorites", user.getId())
+            .queryParam("limit", "10")
+            .queryParam("offset", "0"))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void getFavorites_forOtherUser_throwsForbidden() throws Exception {
+        User user = givenApplicationUser();
+        Long otherUserId = user.getId() + 1;
+
+        mvc.perform(get("/api/v1/users/{userId}/favorites", otherUserId)
+            .queryParam("limit", "10")
+            .queryParam("offset", "0")
+            .with(login(user.getAuthId())))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void hasFavorite_returnsNoContent() throws Exception {
+        Deck favorite = givenFavorite();
+        User user = favorite.getCreatedBy();
+
+        mvc.perform(get("/api/v1/users/{userId}/favorites/{deckId}", user.getId(), favorite.getId())
+            .with(login(user.getAuthId())))
+            .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void hasFavorite_whenNotFavorite_throwNotFound() throws Exception {
+        Deck deck = givenDeck();
+        User user = deck.getCreatedBy();
+
+        mvc.perform(get("/api/v1/users/{userId}/favorites/{deckId}", user.getId(), deck.getId())
+            .with(login(user.getAuthId())))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void hasFavorite_whenUnknownDeck_throwNotFound() throws Exception {
+        User user = givenApplicationUser();
+
+        mvc.perform(get("/api/v1/users/{userId}/favorites/{deckId}", user.getId(), 0L)
+            .with(login(user.getAuthId())))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void hasFavorite_withNoAuthentication_throwsForbidden() throws Exception {
+        Deck deck = givenDeck();
+        User user = deck.getCreatedBy();
+
+        mvc.perform(get("/api/v1/users/{userId}/favorites/{deckId}", user.getId(), deck.getId()))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void hasFavorite_forOtherUser_throwsForbidden() throws Exception {
+        Deck deck = givenDeck();
+        User user = givenApplicationUser();
+        Long otherUserId = user.getId() + 1;
+
+        mvc.perform(get("/api/v1/users/{userId}/favorites/{deckId}", otherUserId, deck.getId())
+            .with(login(user.getAuthId())))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void removeFavorite() throws Exception {
+        Deck favorite = givenFavorite();
+        User user = favorite.getCreatedBy();
+
+        mvc.perform(delete("/api/v1/users/{userId}/favorites/{deckId}", user.getId(), favorite.getId())
+            .with(login(user.getAuthId())))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    public void removeFavorite_withUnknownDeckId_throwsNotFound() throws Exception {
+        User user = givenApplicationUser();
+
+        mvc.perform(delete("/api/v1/users/{userId}/favorites/{deckId}", user.getId(), 0L)
+            .with(login(user.getAuthId())))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void removeFavorite_withNoFavorite_throwsNotFound() throws Exception {
+        User user = givenApplicationUser();
+        Deck deck = givenDeck();
+
+        mvc.perform(delete("/api/v1/users/{userId}/favorites/{deckId}", user.getId(), deck.getId())
+            .with(login(user.getAuthId())))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void removeFavorite_withNoAuthentication_throwsForbidden() throws Exception {
+        Deck favorite = givenFavorite();
+        User user = favorite.getCreatedBy();
+
+        mvc.perform(delete("/api/v1/users/{userId}/favorites/{deckId}", user.getId(), favorite.getId()))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void removeFavorite_forOtherUser_throwsForbidden() throws Exception {
+        Deck favorite = givenFavorite();
+        User user = favorite.getCreatedBy();
+        Long otherUserId = user.getId() + 1;
+
+        mvc.perform(delete("/api/v1/users/{userId}/favorites/{deckId}", otherUserId, favorite.getId())
+            .with(login(user.getAuthId())))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
     public void editUser() throws  Exception {
         User user = givenApplicationUser();
 
@@ -258,7 +447,7 @@ public class UserEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    public void editOtherUserNotFound() throws  Exception {
+    public void editOtherUserForbidden() throws  Exception {
         User user1 = givenApplicationUser();
         User user2 = givenApplicationUser();
 
@@ -268,7 +457,7 @@ public class UserEndpointTest extends TestDataGenerator {
         mvc.perform(patch("/api/v1/users/{userid}", user1.getId())
             .with(login(user2.getAuthId()))
             .contentType("application/json").content(input.toString()))
-            .andExpect(status().isNotFound());
+            .andExpect(status().isForbidden());
     }
 
     private static String longestCommonSubstring(String S1, String S2)
