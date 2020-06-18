@@ -1,9 +1,7 @@
 package at.ac.tuwien.sepm.groupphase.backend.unittests;
 
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
-import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
-import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
-import at.ac.tuwien.sepm.groupphase.backend.entity.User;
+import at.ac.tuwien.sepm.groupphase.backend.entity.*;
 import at.ac.tuwien.sepm.groupphase.backend.repository.RevisionRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,8 +30,9 @@ public class RevisionRepositoryTest extends TestDataGenerator {
     @Test
     public void givenUser_whenSaveRevisionWithoutCard_throwsDataIntegrityViolationException() {
         User user = givenApplicationUser();
-        Revision revision = new Revision();
-        revision.setType(Revision.Type.CREATE);
+        RevisionCreate revision = new RevisionCreate();
+        revision.setTextFront("foo");
+        revision.setTextBack("foo");
         revision.setMessage(REVISION_MESSAGE);
         revision.setCreatedBy(user);
 
@@ -43,10 +42,11 @@ public class RevisionRepositoryTest extends TestDataGenerator {
     @Test
     public void givenCard_whenSaveRevisionWithoutUser_throwsDataIntegrityViolationException() {
         Card card = givenCard();
-        Revision revision = new Revision();
-        revision.setType(Revision.Type.CREATE);
+        RevisionCreate revision = new RevisionCreate();
         revision.setMessage(REVISION_MESSAGE);
         revision.setCard(card);
+        revision.setTextFront("foo");
+        revision.setTextBack("foo");
 
         assertThrows(DataIntegrityViolationException.class, () -> revisionRepository.save(revision));
     }
@@ -56,27 +56,15 @@ public class RevisionRepositoryTest extends TestDataGenerator {
         Card card = givenCard();
         User user = givenApplicationUser();
 
-        Revision revision = new Revision();
-        revision.setType(Revision.Type.EDIT);
+        RevisionEdit revision = new RevisionEdit();
         revision.setMessage(REVISION_MESSAGE);
         revision.setCard(card);
         revision.setCreatedBy(user);
+        revision.setTextFront("foo");
+        revision.setTextBack("foo");
         revisionRepository.save(revision);
 
         assertEquals(revision, revisionRepository.findById(revision.getId()).orElseThrow());
-    }
-
-    @Test
-    public void givenCardAndUser_whenSaveRevisionWithoutType_thenThrowConstraintViolationException() {
-        Card card = givenCard();
-        User user = givenApplicationUser();
-
-        Revision revision = new Revision();
-        revision.setMessage(REVISION_MESSAGE);
-        revision.setCard(card);
-        revision.setCreatedBy(user);
-
-        assertThrows(DataIntegrityViolationException.class, () -> revisionRepository.save(revision));
     }
 
     @Test
@@ -84,10 +72,11 @@ public class RevisionRepositoryTest extends TestDataGenerator {
         Card card = givenCard();
         User user = givenApplicationUser();
 
-        Revision revision = new Revision();
-        revision.setType(Revision.Type.EDIT);
+        RevisionEdit revision = new RevisionEdit();
         revision.setMessage("x".repeat(Revision.MAX_MESSAGE_SIZE + 1));
         revision.setCard(card);
+        revision.setTextFront("foo");
+        revision.setTextBack("foo");
         revision.setCreatedBy(user);
 
         assertThrows(ConstraintViolationException.class, () -> revisionRepository.save(revision));
@@ -98,10 +87,11 @@ public class RevisionRepositoryTest extends TestDataGenerator {
         Card card = givenCard();
         User user = givenApplicationUser();
 
-        Revision revision = new Revision();
-        revision.setType(Revision.Type.EDIT);
+        RevisionEdit revision = new RevisionEdit();
         revision.setMessage("   ");
         revision.setCard(card);
+        revision.setTextFront("foo");
+        revision.setTextBack("foo");
         revision.setCreatedBy(user);
 
         assertThrows(ConstraintViolationException.class, () -> revisionRepository.save(revision));
@@ -109,7 +99,7 @@ public class RevisionRepositoryTest extends TestDataGenerator {
 
     @Test
     public void givenRevision_whenDeleteById_thenExistsIsFalse() {
-        Revision revision = givenRevision();
+        Revision revision = givenCreateRevision();
 
         revisionRepository.deleteById(revision.getId());
 

@@ -5,6 +5,7 @@ import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.UserDetailsDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionEdit;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
+import at.ac.tuwien.sepm.groupphase.backend.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static at.ac.tuwien.sepm.groupphase.backend.integrationtest.security.MockedLogins.*;
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -31,6 +33,9 @@ public class UserEndpointTest extends TestDataGenerator {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private UserRepository userRepository;
 
     // TODO: test user updating
 
@@ -161,32 +166,18 @@ public class UserEndpointTest extends TestDataGenerator {
 
     @Test
     public void searchUsers() throws Exception {
-        User user1 = givenApplicationUser();
-        User user2 = givenApplicationUser();
-        String searchinput = longestCommonSubstring(user1.getUsername(), user2.getUsername());
-
-        UserDetailsDto response1 = new UserDetailsDto();
-        UserDetailsDto response2 = new UserDetailsDto();
-        response1.setId(user1.getId());
-        response1.setUsername(user1.getUsername());
-        response1.setDescription(user1.getDescription());
-        response1.setAdmin(user1.isAdmin());
-        response1.setCreatedAt(user1.getCreatedAt());
-        response1.setUpdatedAt(user1.getUpdatedAt());
-        response2.setId(user2.getId());
-        response2.setUsername(user2.getUsername());
-        response2.setDescription(user2.getDescription());
-        response2.setAdmin(user2.isAdmin());
-        response2.setCreatedAt(user2.getCreatedAt());
-        response2.setUpdatedAt(user2.getUpdatedAt());
+        userRepository.saveAndFlush(validUser("fooBar"));
+        userRepository.saveAndFlush(validUser("BuzFooBarBuz"));
 
         mvc.perform(get("/api/v1/users/")
-            .queryParam("username", searchinput)
+            .queryParam("username", "foobar")
             .queryParam("limit", "10")
             .queryParam("offset", "0")
-            .contentType("application/json"))
+        )
             .andExpect(status().isOk())
-            .andExpect(content().json(objectMapper.writeValueAsString(Arrays.asList(response1, response2))));
+            .andExpect(jsonPath("$", hasSize(2)))
+            .andExpect(jsonPath("$[0].username").value("BuzFooBarBuz"))
+            .andExpect(jsonPath("$[1].username").value("fooBar"));
     }
 
     @Test
@@ -206,7 +197,7 @@ public class UserEndpointTest extends TestDataGenerator {
     public void getRevisions() throws Exception {
         RevisionEdit revisionEdit = givenRevisionEdit();
 
-        mvc.perform(get("/api/v1/users/{userid}/revisions", revisionEdit.getRevision().getCreatedBy().getId())
+        mvc.perform(get("/api/v1/users/{userid}/revisions", revisionEdit.getCreatedBy().getId())
             .queryParam("limit", "10")
             .queryParam("offset", "0")
             .contentType("application/json"))
@@ -458,29 +449,5 @@ public class UserEndpointTest extends TestDataGenerator {
             .with(login(user2.getAuthId()))
             .contentType("application/json").content(input.toString()))
             .andExpect(status().isForbidden());
-    }
-
-    private static String longestCommonSubstring(String S1, String S2)
-    {
-        int Start = 0;
-        int Max = 0;
-        for (int i = 0; i < S1.length(); i++)
-        {
-            for (int j = 0; j < S2.length(); j++)
-            {
-                int x = 0;
-                while (S1.charAt(i + x) == S2.charAt(j + x))
-                {
-                    x++;
-                    if (((i + x) >= S1.length()) || ((j + x) >= S2.length())) break;
-                }
-                if (x > Max)
-                {
-                    Max = x;
-                    Start = i;
-                }
-            }
-        }
-        return S1.substring(Start, (Start + Max));
     }
 }

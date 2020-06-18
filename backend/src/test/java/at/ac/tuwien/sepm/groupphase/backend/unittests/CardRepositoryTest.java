@@ -12,6 +12,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -51,9 +53,10 @@ public class CardRepositoryTest extends TestDataGenerator {
         Card card = new Card();
         card.setDeck(deck);
         deck.getCards().add(card);
-        Revision revision = new Revision();
-        revision.setType(Revision.Type.CREATE);
+        RevisionCreate revision = new RevisionCreate();
         revision.setMessage("some message");
+        revision.setTextBack("foo");
+        revision.setTextFront("foo");
         card.setLatestRevision(revision);
         revision.setCard(card);
         revision.setCreatedBy(user);
@@ -69,12 +72,13 @@ public class CardRepositoryTest extends TestDataGenerator {
         User user = givenApplicationUser();
 
         // When
-        Revision revision = new Revision();
-        revision.setType(Revision.Type.EDIT);
+        RevisionEdit revision = new RevisionEdit();
         revision.setMessage("some message");
         card.setLatestRevision(revision);
         revision.setCard(card);
         revision.setCreatedBy(user);
+        revision.setTextBack("foo");
+        revision.setTextFront("foo");
         cardRepository.saveAndFlush(card);
 
         // Then
@@ -104,8 +108,10 @@ public class CardRepositoryTest extends TestDataGenerator {
 
     @Test
     public void givenCardAndRevisionEdit_whenDeleteById_thenNotExistsById() {
-        RevisionEdit edit = givenRevisionEdit();
-        Card card = edit.getRevision().getCard();
+        User user = validUser("gustav");
+        Card card = emptyCard(validDeck(user));
+        validRevisionEdit(user, card);
+        cardRepository.saveAndFlush(card);
 
         // When
         cardRepository.deleteById(card.getId());
@@ -115,8 +121,7 @@ public class CardRepositoryTest extends TestDataGenerator {
 
     @Test
     public void givenCardAndRevisionEdit_whenDeleteRevision_thenRevisionsIsEmpty() {
-        RevisionEdit edit = givenRevisionEdit();
-        Revision revision = edit.getRevision();
+        RevisionEdit revision = givenRevisionEdit();
         Card card = revision.getCard();
 
         // When
@@ -142,27 +147,25 @@ public class CardRepositoryTest extends TestDataGenerator {
 
     @Test
     public void givenDeck_whenFindCardsWithContentByDeckId_thenFindCardsWithContentOfDeck() {
-        RevisionEdit revisionEdit = givenRevisionEdit();
-        Revision revision = revisionEdit.getRevision();
+        RevisionEdit revision = givenRevisionEdit();
         Card card = revision.getCard();
         Deck deck = card.getDeck();
 
-        List<Card> cards = cardRepository.findCardsWithContentByDeck_Id(deck.getId());
+        List<Card> cards = cardRepository.findCardsWithContentByDeck_Id(deck.getId()).collect(Collectors.toList());
         assertTrue(cards.contains(card));
         for (Card returnedCard: cards) {
             assertEquals(deck, returnedCard.getDeck());
         }
 
         User user = givenApplicationUser();
-        Revision deleteRevision = new Revision();
-        deleteRevision.setType(Revision.Type.DELETE);
+        RevisionDelete deleteRevision = new RevisionDelete();
         deleteRevision.setCard(card);
         deleteRevision.setMessage("Delete");
         card.setLatestRevision(deleteRevision);
         deleteRevision.setCreatedBy(user);
         cardRepository.saveAndFlush(card);
 
-        cards = cardRepository.findCardsWithContentByDeck_Id(deck.getId());
+        cards = cardRepository.findCardsWithContentByDeck_Id(deck.getId()).collect(Collectors.toList());
 
         assertFalse(cards.contains(card));
     }

@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.lang.invoke.MethodHandles;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Service
 public class SimpleDeckService implements DeckService {
@@ -100,36 +99,22 @@ public class SimpleDeckService implements DeckService {
             category.getDecks().add(deck);
         }
         deckRepository.save(deck);
+        List<Card> cards = cardRepository.findLatestEditRevisionsByDeck_Id(id).map(sourceRevision -> {
+            Card card = new Card();
+            card.setDeck(deck);
+            RevisionCreate rev = new RevisionCreate();
+            rev.setMessage(String.format("Copied from deck %s.", id));
+            rev.setCreatedBy(currentUser);
+            rev.setCard(card);
+            rev.setTextFront(sourceRevision.getTextFront());
+            rev.setTextBack(sourceRevision.getTextBack());
+            card.setLatestRevision(rev);
+            return card;
+        }).collect(Collectors.toList());
 
-        List<Card> srcCards = cardRepository.findCardsWithContentByDeck_Id(id);
-        List<Card> destCards = srcCards.stream()
-            .map(srcCard -> {
-                Card card = new Card();
-                card.setDeck(deck);
-                Revision revision = new Revision();
-                revision.setMessage(String.format("Copied from deck %s.", id));
-                revision.setCreatedBy(currentUser);
-                revision.setCard(card);
-                card.setLatestRevision(revision);
-                return card;
-            })
-            .collect(Collectors.toList());
-        cardRepository.saveAll(destCards);
+        cardRepository.saveAll(cards);
         cardRepository.flush();
-
-        IntStream
-            .range(0, destCards.size())
-            .forEach(i -> {
-                RevisionEdit revisionEdit = new RevisionEdit();
-                revisionEdit.setTextFront(srcCards.get(i).getLatestRevision().getRevisionEdit().getTextFront());
-                revisionEdit.setTextBack(srcCards.get(i).getLatestRevision().getRevisionEdit().getTextBack());
-                destCards.get(i).getLatestRevision().setRevisionEdit(revisionEdit);
-                revisionEdit.setRevision(destCards.get(i).getLatestRevision());
-            });
-        cardRepository.saveAll(destCards);
-        cardRepository.flush();
-        deck.getCards().addAll(destCards);
-
+        deck.getCards().addAll(cards);
         return deck;
     }
 }

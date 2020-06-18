@@ -1,8 +1,9 @@
 package at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper;
 
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.RevisionDetailedDto;
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.RevisionSimpleDto;
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.*;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
+import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionCreate;
+import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionEdit;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -15,10 +16,18 @@ public interface RevisionMapper {
     RevisionSimpleDto revisionToRevisionSimpleDto(Revision revision);
 
     @Mapping(source = "revision.card", target = "card")
-    @Mapping(source = "revision.revisionEdit.textFront", target = "card.textFront")
-    @Mapping(source = "revision.revisionEdit.textBack", target = "card.textBack")
     RevisionDetailedDto revisionToRevisionDetailedDto(Revision revision);
 
     List<RevisionSimpleDto> revisionsToRevisionSimpleDtoList(List<Revision> revisions);
+
+    CardContentDto revisionEditToCardContentDto(RevisionEdit edit);
+
+    RevisionEdit revisionEditDtoToRevisionEdit(RevisionEditDto dto);
+
+    RevisionCreate revisionEditDtoToRevisionCreate(RevisionEditDto dto);
+
+    @Mapping(source = "revision.card.id", target = "id")
+    @Mapping(source = "revision.card.deck", target = "deck")
+    CardSimpleDto revisionEditToCardSimpleDto(RevisionEdit revision);
 }
 

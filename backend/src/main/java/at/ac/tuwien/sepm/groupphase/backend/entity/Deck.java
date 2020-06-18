@@ -21,7 +21,7 @@ public class Deck {
     @Column(nullable = false)
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "created_by", nullable = false, updatable = false)
     private User createdBy;
 
