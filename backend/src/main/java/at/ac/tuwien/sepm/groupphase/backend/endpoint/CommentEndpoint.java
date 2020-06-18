@@ -74,6 +74,7 @@ public class CommentEndpoint {
 
     @Secured("ROLE_USER")
     @DeleteMapping(value = "/comments/{commentId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiOperation(value = "Delete a comment", authorizations = {@Authorization(value = "ROLE_USER")})
     public void deleteComment(@PathVariable Long commentId) {
         LOGGER.info("DELETE /api/v1/comments/{}", commentId);

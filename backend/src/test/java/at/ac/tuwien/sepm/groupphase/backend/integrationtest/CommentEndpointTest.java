@@ -8,14 +8,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-
 import java.util.Arrays;
+import java.util.stream.Stream;
 
 import static at.ac.tuwien.sepm.groupphase.backend.integrationtest.security.MockedLogins.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -34,11 +37,15 @@ public class CommentEndpointTest extends TestDataGenerator {
 
     private static final String UTF_16_SAMPLE_TEXT = "ユ简크로أفضل البحوثΣὲ γνДесแผ∮E⋅∞∑çéèñé";
 
-    @Test
-    public void createCommentReturnsCommentSimpleDto() throws Exception {
+    private static Stream<String> provideInvalidCommentMessages() {
+        return Stream.of(null, "\t ", "x".repeat(501));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"this is a message", UTF_16_SAMPLE_TEXT})
+    public void createCommentReturnsCommentSimpleDto(String message) throws Exception {
         Deck deck = givenDeck();
         User user = givenApplicationUser();
-        String message = "this is a message";
 
         ObjectNode input = objectMapper.createObjectNode();
         input.put("message", message);
@@ -57,22 +64,6 @@ public class CommentEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    public void createCommentWithSpecialUtf16CharsReturnsSameText() throws Exception {
-        Deck deck = givenDeck();
-        User user = givenApplicationUser();
-
-        ObjectNode input = objectMapper.createObjectNode();
-        input.put("message", UTF_16_SAMPLE_TEXT);
-
-        mvc.perform(post("/api/v1/decks/{deckId}/comments", deck.getId())
-            .with(login(user.getAuthId()))
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(input.toString()))
-            .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.message").value(UTF_16_SAMPLE_TEXT));
-    }
-
-    @Test
     public void createCommentWithInvalidDeckIdThrowsNotFoundException() throws Exception {
         User user = givenApplicationUser();
 
@@ -86,25 +77,13 @@ public class CommentEndpointTest extends TestDataGenerator {
             .andExpect(status().isNotFound());
     }
 
-    @Test
-    public void createCommentWithNullMessageThrowsBadRequest() throws Exception {
+    @ParameterizedTest
+    @MethodSource("provideInvalidCommentMessages")
+    public void createCommentWithInvalidMessageThrowsBadRequest(String message) throws Exception {
         User user = givenApplicationUser();
 
         ObjectNode input = objectMapper.createObjectNode();
-
-        mvc.perform(post("/api/v1/decks/{deckId}/comments", 0L)
-            .with(login(user.getAuthId()))
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(input.toString()))
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    public void createCommentWithBlankMessageThrowsBadRequest() throws Exception {
-        User user = givenApplicationUser();
-
-        ObjectNode input = objectMapper.createObjectNode();
-        input.put("message", "\t ");
+        input.put("message", message);
 
         mvc.perform(post("/api/v1/decks/{deckId}/comments", 0L)
             .with(login(user.getAuthId()))
@@ -238,27 +217,14 @@ public class CommentEndpointTest extends TestDataGenerator {
             .andExpect(status().isNotFound());
     }
 
-    @Test
-    public void editCommentWithNullMessageThrowsBadRequest() throws Exception {
+    @ParameterizedTest
+    @MethodSource("provideInvalidCommentMessages")
+    public void editCommentWithNullMessageThrowsBadRequest(String message) throws Exception {
         Comment comment = givenComment();
         User user = comment.getCreatedBy();
 
         ObjectNode input = objectMapper.createObjectNode();
-
-        mvc.perform(put("/api/v1/comments/{commentId}", comment.getId())
-            .with(login(user.getAuthId()))
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(input.toString()))
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    public void editCommentWithBlankMessageThrowsBadRequest() throws Exception {
-        Comment comment = givenComment();
-        User user = comment.getCreatedBy();
-
-        ObjectNode input = objectMapper.createObjectNode();
-        input.put("message", "     ");
+        input.put("message", message);
 
         mvc.perform(put("/api/v1/comments/{commentId}", comment.getId())
             .with(login(user.getAuthId()))
@@ -296,13 +262,13 @@ public class CommentEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    public void deleteCommentReturnsOk() throws Exception {
+    public void deleteCommentReturnsNoContent() throws Exception {
         Comment comment = givenComment();
         User user = comment.getCreatedBy();
 
         mvc.perform(delete("/api/v1/comments/{commentId}", comment.getId())
             .with(login(user.getAuthId())))
-            .andExpect(status().isOk());
+            .andExpect(status().isNoContent());
     }
 
     @Test
@@ -312,7 +278,7 @@ public class CommentEndpointTest extends TestDataGenerator {
 
         mvc.perform(delete("/api/v1/comments/{commentId}", comment.getId())
             .with(login(user.getAuthId())))
-            .andExpect(status().isOk());
+            .andExpect(status().isNoContent());
 
         mvc.perform(get("/api/v1/comments/{commentId}", comment.getId()))
             .andExpect(status().isNotFound());
@@ -338,12 +304,12 @@ public class CommentEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    public void deleteCommentAsAdminReturnsOk() throws Exception {
+    public void deleteCommentAsAdminReturnsNoContent() throws Exception {
         Comment comment = givenComment();
         User admin = givenAdmin();
 
         mvc.perform(delete("/api/v1/comments/{commentId}", comment.getId())
             .with(login(admin.getAuthId())))
-            .andExpect(status().isOk());
+            .andExpect(status().isNoContent());
     }
 }
