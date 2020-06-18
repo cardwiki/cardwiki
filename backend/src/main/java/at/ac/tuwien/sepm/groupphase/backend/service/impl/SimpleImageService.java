@@ -75,6 +75,12 @@ public class SimpleImageService implements ImageService {
         }
         String filename = bytesToHex(hash) + "." + contentType;
 
+        // Check if image already exists
+        Image existingImage = imageRepository.findByFilename(filename);
+        if (existingImage != null) {
+            return existingImage;
+        }
+
         // Save file to filesystem
         try {
            Files.write(imageSavedPath.resolve(filename), bytes);

@@ -2,7 +2,10 @@ package at.ac.tuwien.sepm.groupphase.backend.integrationtest;
 
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.config.PropertyOverrideContextInitializer;
+import at.ac.tuwien.sepm.groupphase.backend.entity.Image;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
+import at.ac.tuwien.sepm.groupphase.backend.repository.ImageRepository;
+import at.ac.tuwien.sepm.groupphase.backend.service.ImageService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +39,9 @@ public class ImageEndpointTest extends TestDataGenerator {
 
     @Value("${cawi.image-served-path}")
     private String imageServedPath;
+
+    @Autowired
+    private ImageRepository imageRepository;
 
     private static final String testImagePath = "src/test/resources/test.png";
     private static final String testImageHash = "b18ce9558fe729bcc7edcf20d8a81f12c0637359df5f930370ca5fff072ee175.png";
@@ -91,6 +97,28 @@ public class ImageEndpointTest extends TestDataGenerator {
             .file(multipartFile)
             .with(mockLogin(USER_ROLES, user.getAuthId())))
             .andExpect(status().is(400));
+    }
+
+    @Test
+    public void uploadAlreadyStoredFileReturnsExistingImage() throws Exception {
+        User user = givenApplicationUser();
+        Image image = new Image();
+        image.setCreatedBy(user);
+        image.setFilename(testImageHash);
+        image = imageRepository.save(image);
+
+        FileInputStream fileInputStream = new FileInputStream(testImagePath);
+        MockMultipartFile multipartFile = new MockMultipartFile("file", fileInputStream);
+
+        mvc.perform(multipart("/api/v1/images")
+            .file(multipartFile)
+            .with(mockLogin(USER_ROLES, user.getAuthId())))
+            .andExpect(status().is(201))
+            .andExpect(jsonPath("$.id").value(image.getId()))
+            .andExpect(jsonPath("$.filename").value(testImageHash))
+            .andExpect(jsonPath("$.url").value(Paths.get(imageServedPath, testImageHash).toString()));
+
+        Paths.get(imageSavedPath, testImageHash).toFile().delete();
     }
 
 }
