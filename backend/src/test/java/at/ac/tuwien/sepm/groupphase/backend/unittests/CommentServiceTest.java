@@ -113,7 +113,7 @@ public class CommentServiceTest extends TestDataGenerator {
         Page<Comment> commentPage = mock(Page.class);
 
         when(deckService.findOneOrThrow(deckId)).thenReturn(deck);
-        when(commentRepository.findByDeckIdOrderByCreatedAtDesc(deckId, pageable)).thenReturn(commentPage);
+        when(commentRepository.findByDeckId(deckId, pageable)).thenReturn(commentPage);
 
         assertEquals(commentPage, commentService.findCommentsByDeckId(deckId, pageable));
     }

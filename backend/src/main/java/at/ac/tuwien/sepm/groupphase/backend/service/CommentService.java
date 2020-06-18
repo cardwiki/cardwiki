@@ -31,7 +31,7 @@ public interface CommentService {
     Comment findOneOrThrow(Long commentId);
 
     /**
-     * Get page of comments for a deck ordered by creation date
+     * Get page of comments for a deck
      *
      * @param deckId of the deck
      * @param pageable pagination for the query

@@ -13,6 +13,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -114,7 +115,7 @@ public class CommentRepositoryTest extends TestDataGenerator {
     }
 
     @Test
-    public void givenComments_whenfindByDeckIdOrderByCreatedAtDesc_thenReturnOrderedCommentsOfDeck() {
+    public void givenComments_whenfindByDeckIdWithSortByCreatedAtDesc_thenReturnOrderedCommentsOfDeck() {
         Deck firstDeck = givenDeck();
         Deck secondDeck = givenDeck();
         User user = givenApplicationUser();
@@ -137,8 +138,8 @@ public class CommentRepositoryTest extends TestDataGenerator {
         thirdComment.setCreatedBy(user);
         commentRepository.saveAndFlush(thirdComment);
 
-        Pageable pageable = PageRequest.of(0, 10);
-        Page<Comment> commentPage = commentRepository.findByDeckIdOrderByCreatedAtDesc(firstDeck.getId(), pageable);
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<Comment> commentPage = commentRepository.findByDeckId(firstDeck.getId(), pageable);
 
         assertAll(
             () -> assertEquals(2, commentPage.getNumberOfElements(), "finds all comments from deck one"),

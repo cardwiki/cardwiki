@@ -58,7 +58,7 @@ public class SimpleCommentService implements CommentService {
     public Page<Comment> findCommentsByDeckId(Long deckId, Pageable pageable) {
         LOGGER.debug("find comments by deckId {}: {}", deckId, pageable);
         deckService.findOneOrThrow(deckId);
-        return commentRepository.findByDeckIdOrderByCreatedAtDesc(deckId, pageable);
+        return commentRepository.findByDeckId(deckId, pageable);
     }
 
     @Override

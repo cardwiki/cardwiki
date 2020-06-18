@@ -15,6 +15,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Arrays;
+
 import static at.ac.tuwien.sepm.groupphase.backend.integrationtest.security.MockedLogins.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -150,13 +152,13 @@ public class CommentEndpointTest extends TestDataGenerator {
 
         mvc.perform(get("/api/v1/decks/{deckId}/comments", deck.getId())
             .queryParam("offset", "0")
-            .queryParam("limit", "10"))
+            .queryParam("limit", "1"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.numberOfElements").value(1))
             .andExpect(jsonPath("$.totalElements").value(1))
             .andExpect(jsonPath("$.last").value(true))
             .andExpect(jsonPath("$.pageable.pageNumber").value(0))
-            .andExpect(jsonPath("$.pageable.pageSize").value(10))
+            .andExpect(jsonPath("$.pageable.pageSize").value(1))
             .andExpect(jsonPath("$.content[0].id").value(comment.getId()))
             .andExpect(jsonPath("$.content[0].message").value(comment.getMessage()))
             .andExpect(jsonPath("$.content[0].createdAt", validIsoDateTime()))
@@ -166,10 +168,36 @@ public class CommentEndpointTest extends TestDataGenerator {
     }
 
     @Test
+    public void addTwoComments_thenGetCommentsByDeckId_returnsSortedCommentPage() throws Exception {
+        Deck deck = givenDeck();
+        User user = givenApplicationUser();
+        String firstMessage = "this is a message";
+        String secondMessage = "this is a message";
+
+        // Create comments
+        for (String message : Arrays.asList(firstMessage, secondMessage)) {
+            ObjectNode input = objectMapper.createObjectNode();
+            input.put("message", message);
+
+            mvc.perform(post("/api/v1/decks/{deckId}/comments", deck.getId())
+                .with(login(user.getAuthId()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(input.toString()))
+                .andExpect(status().isCreated());
+        }
+
+        // Get comments and check if newest message is first
+        mvc.perform(get("/api/v1/decks/{deckId}/comments", deck.getId()))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.numberOfElements").value(2))
+            .andExpect(jsonPath("$.last").value(true))
+            .andExpect(jsonPath("$.content[0].message").value(secondMessage))
+            .andExpect(jsonPath("$.content[1].message").value(firstMessage));
+    }
+
+    @Test
     public void getCommentsByDeckIdForUnknownDeckThrowsNotFound() throws Exception {
-        mvc.perform(get("/api/v1/decks/{deckId}/comments", 0L)
-            .queryParam("offset", "0")
-            .queryParam("limit", "10"))
+        mvc.perform(get("/api/v1/decks/{deckId}/comments", 0L))
             .andExpect(status().isNotFound());
     }
 
@@ -191,6 +219,7 @@ public class CommentEndpointTest extends TestDataGenerator {
             .andExpect(jsonPath("$.message").value(newMessage))
             .andExpect(jsonPath("$.createdAt", validIsoDateTime()))
             .andExpect(jsonPath("$.updatedAt", validIsoDateTime()))
+            .andExpect(jsonPath("$[?(@.createdAt < @.updatedAt)]").isNotEmpty())
             .andExpect(jsonPath("$.createdBy.id").value(user.getId()))
             .andExpect(jsonPath("$.createdBy.username").value(user.getUsername()));
     }

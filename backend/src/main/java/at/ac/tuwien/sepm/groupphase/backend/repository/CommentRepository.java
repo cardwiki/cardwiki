@@ -21,12 +21,12 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     Optional<Comment> findById(Long commentId);
 
     /**
-     * Find page of comments for a deck ordered by creation date with newest first
+     * Find page of comments for a deck
      *
      * @param deckId id of the deck with the comments
      * @param pageable pagination parameters for the query
      * @return page of comments from this deck
      */
     @EntityGraph(attributePaths = {"createdBy"})
-    Page<Comment> findByDeckIdOrderByCreatedAtDesc(Long deckId, Pageable pageable);
+    Page<Comment> findByDeckId(Long deckId, Pageable pageable);
 }

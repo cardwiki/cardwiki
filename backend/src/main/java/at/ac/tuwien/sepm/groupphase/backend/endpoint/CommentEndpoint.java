@@ -10,8 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -47,9 +48,8 @@ public class CommentEndpoint {
 
     @GetMapping(value = "/decks/{deckId}/comments")
     @ApiOperation(value = "Get page of comments for a deck")
-    public Page<CommentSimpleDto> getCommentsByDeckId(@PathVariable Long deckId, @RequestParam Integer limit, @RequestParam Integer offset) {
+    public Page<CommentSimpleDto> getCommentsByDeckId(@PathVariable Long deckId, @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         LOGGER.info("GET /api/v1/decks/{}/comments", deckId);
-        Pageable pageable = PageRequest.of(offset, limit);
         return commentService.findCommentsByDeckId(deckId, pageable)
             .map(commentMapper::commentToCommentSimpleDto);
     }
