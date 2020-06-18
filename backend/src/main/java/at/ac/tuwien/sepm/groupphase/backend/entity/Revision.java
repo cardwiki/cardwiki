@@ -36,15 +36,6 @@ public class Revision {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @PreRemove
-    private void dismissContainers() {
-        // Necessary to sync card in same session if revision is directly deleted
-        card.dismissRevision(this);
-        card = null;
-        createdBy.dismissRevision(this);
-        createdBy = null;
-    }
-
     public Long getId() {
         return id;
     }

@@ -43,7 +43,7 @@ export class CardService {
    */
   removeCardFromDeck(deckId: number, cardId: number): Observable<CardSimple> {
     console.log(`remove card with id ${cardId} from deck ${deckId}`);
-    return this.httpClient.delete<CardSimple>(this.getCardUri(deckId, cardId))
+    return this.httpClient.post<CardSimple>(this.getCardUri(deckId, cardId), {})
       .pipe(tap(null, this.errorHandler.handleError('Could not remove Card')))
   }
 

@@ -25,9 +25,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class RevisionEditRepositoryTest extends TestDataGenerator {
 
     @Autowired
-    private RevisionRepository revisionRepository;
-
-    @Autowired
     private RevisionEditRepository revisionEditRepository;
 
     private static final String UTF_16_SAMPLE_TEXT = "ユ简크로أفضل البحوثΣὲ γνДесแผ∮E⋅∞∑çéèñé";
@@ -97,18 +94,5 @@ public class RevisionEditRepositoryTest extends TestDataGenerator {
 
         // Then
         assertEquals(edit.getTextFront(), UTF_16_SAMPLE_TEXT);
-    }
-
-    @Test
-    public void givenRevisionEdit_whenDeleteRevisionById_thenExistsByIdReturnsFalse() {
-        RevisionEdit revisionEdit = givenRevisionEdit();
-        Revision revision = revisionEdit.getRevision();
-
-        // When
-        revisionRepository.deleteById(revision.getId());
-        revisionRepository.flush();
-
-        // Then
-        assertFalse(revisionEditRepository.existsById(revisionEdit.getId()));
     }
 }

@@ -296,10 +296,10 @@ public class CardEndpointTest extends TestDataGenerator {
         Deck deck = card.getDeck();
         User user = givenApplicationUser();
 
-        mvc.perform(delete("/api/v1/decks/{deckId}/cards/{cardId}", deck.getId(), card.getId())
+        mvc.perform(post("/api/v1/decks/{deckId}/cards/{cardId}", deck.getId(), card.getId())
             .with(mockLogin(USER_ROLES, user.getAuthId()))
             .contentType("application/json"))
-            .andExpect(status().is(200))
+            .andExpect(status().isCreated())
             .andExpect(jsonPath("$.id").isNumber());
     }
 
@@ -308,7 +308,7 @@ public class CardEndpointTest extends TestDataGenerator {
         Card card = givenCard();
         User user = givenApplicationUser();
 
-        mvc.perform(delete("/api/v1/decks/{deckId}/cards/{cardId}", 123, card.getId())
+        mvc.perform(post("/api/v1/decks/{deckId}/cards/{cardId}", 123, card.getId())
             .with(mockLogin(USER_ROLES, user.getAuthId()))
             .contentType("application/json"))
             .andExpect(status().is(404));
@@ -321,7 +321,7 @@ public class CardEndpointTest extends TestDataGenerator {
         Deck deck = revisionEdit.getRevision().getCard().getDeck();
         User user = givenApplicationUser();
 
-        mvc.perform(delete("/api/v1/decks/{deckId}/cards/{cardId}", deck.getId(), 123)
+        mvc.perform(post("/api/v1/decks/{deckId}/cards/{cardId}", deck.getId(), 123)
             .with(mockLogin(USER_ROLES, user.getAuthId()))
             .contentType("application/json"))
             .andExpect(status().is(404));
@@ -329,7 +329,7 @@ public class CardEndpointTest extends TestDataGenerator {
 
     @Test
     public void deleteCardForAnonymousThrowsForbidden() throws Exception {
-        mvc.perform(delete("/api/v1/decks/{deckId}/cards/{cardId}", 123, 123)
+        mvc.perform(post("/api/v1/decks/{deckId}/cards/{cardId}", 123, 123)
             .with(mockLogin(ANONYMOUS_ROLES, "foo:123"))
             .contentType("application/json"))
             .andExpect(status().is(403));
@@ -342,9 +342,52 @@ public class CardEndpointTest extends TestDataGenerator {
         Card card = revisionEdit.getRevision().getCard();
         Deck deck = givenDeck();
         User user = givenApplicationUser();
-        mvc.perform(delete("/api/v1/decks/{deckId}/cards/{cardId}", deck.getId(), card.getId())
+        mvc.perform(post("/api/v1/decks/{deckId}/cards/{cardId}", deck.getId(), card.getId())
             .with(mockLogin(USER_ROLES, user.getAuthId()))
             .contentType("application/json"))
             .andExpect(status().is(404));
+    }
+
+    @Test
+    public void userDeletesCardReturnsForbidden() throws Exception {
+        User user = givenApplicationUser();
+        Card card = givenCard();
+
+        mvc.perform(delete("/api/v1/decks/{deckId}/cards/{cardId}", card.getDeck().getId(), card.getId())
+            .with(login(user.getAuthId())))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void adminDeletesCardInNonExistentDeckReturnsNotFound() throws Exception {
+        User admin = givenApplicationUser();
+        admin.setAdmin(true);
+        Card card = givenCard();
+
+        mvc.perform(delete("/api/v1/decks/{deckId}/cards/{cardId}", 404, card.getId())
+            .with(login(admin.getAuthId())))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void adminDeletesNonExistentCardReturnsOk() throws Exception {
+        User admin = givenApplicationUser();
+        admin.setAdmin(true);
+        Deck deck = givenDeck();
+
+        mvc.perform(delete("/api/v1/decks/{deckId}/cards/{cardId}", deck.getId(), 404)
+            .with(login(admin.getAuthId())))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    public void adminDeletesCardReturnsOk() throws Exception {
+        User admin = givenApplicationUser();
+        admin.setAdmin(true);
+        Card card = givenCard();
+
+        mvc.perform(delete("/api/v1/decks/{deckId}/cards/{cardId}", card.getDeck().getId(), card.getId())
+            .with(login(admin.getAuthId())))
+            .andExpect(status().isOk());
     }
 }

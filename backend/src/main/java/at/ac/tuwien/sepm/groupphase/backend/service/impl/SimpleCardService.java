@@ -8,6 +8,7 @@ import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -114,5 +115,14 @@ public class SimpleCardService implements CardService {
             return cardRepository.saveAndFlush(card);
         }
         else throw new NotFoundException(String.format("Could not find card with id %s in deck with id %s", cardId, deckId));
+    }
+
+    @Override
+    @Transactional
+    public void delete(Long deckId, Long cardId) {
+        deckService.findOne(deckId);
+        try {
+            cardRepository.deleteById(cardId);
+        } catch (EmptyResultDataAccessException ignored) {}
     }
 }

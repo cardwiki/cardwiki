@@ -57,4 +57,13 @@ public interface CardService {
      * @return card with added delete-revision
      */
     Card addDeleteRevisionToCard(Long deckId, Long cardId);
+
+    /**
+     * Delete a card.
+     *
+     * @param deckId of the deck
+     * @param cardId of the card to delete
+     * @throws DeckNotFoundException if no deck with {@code deckId} exists
+     */
+    void delete(Long deckId, Long cardId);
 }

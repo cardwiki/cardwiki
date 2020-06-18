@@ -3,6 +3,8 @@ package at.ac.tuwien.sepm.groupphase.backend.unittests;
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
+import at.ac.tuwien.sepm.groupphase.backend.repository.RevisionEditRepository;
+import at.ac.tuwien.sepm.groupphase.backend.repository.RevisionRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,12 @@ public class CardRepositoryTest extends TestDataGenerator {
 
     @Autowired
     private CardRepository cardRepository;
+
+    @Autowired
+    private RevisionRepository revisionRepository;
+
+    @Autowired
+    private RevisionEditRepository revisionEditRepository;
 
     @Test
     public void givenNothing_whenSaveCardWithoutDeck_thenThrowDataIntegrityViolationException() {
@@ -162,5 +170,17 @@ public class CardRepositoryTest extends TestDataGenerator {
         cards = cardRepository.findCardsWithContentByDeck_Id(deck.getId());
 
         assertFalse(cards.contains(card));
+    }
+
+    @Test
+    public void givenRevisionEdit_whenDeleteCard_thenDeleteRevisions() {
+        RevisionEdit revisionEdit = givenRevisionEdit();
+        Card card = revisionEdit.getRevision().getCard();
+
+        cardRepository.deleteById(card.getId());
+
+        assertFalse(cardRepository.existsById(card.getId()));
+        assertFalse(revisionRepository.existsById(revisionEdit.getRevision().getId()));
+        assertFalse(revisionEditRepository.existsById(revisionEdit.getId()));
     }
 }

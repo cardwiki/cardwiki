@@ -67,11 +67,20 @@ public class CardEndpoint {
     }
 
     @Secured("ROLE_USER")
-    @ResponseStatus(HttpStatus.OK)
-    @DeleteMapping(value = "/{cardId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping(value = "/{cardId}")
     @ApiOperation(value = "Removes card from deck", authorizations = {@Authorization(value = "ROLE_USER")})
     public CardContentDto addDeleteRevisionToCard(@PathVariable Long deckId, @PathVariable Long cardId) {
         LOGGER.info("DELETE /api/v1/decks/{}/cards/{}", deckId, cardId);
         return cardMapper.cardToCardContentDto(cardService.addDeleteRevisionToCard(deckId, cardId));
+    }
+
+    @Secured("ROLE_ADMIN")
+    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping(value = "/{cardId}")
+    @ApiOperation(value = "Deletes a card", authorizations = {@Authorization(value = "apiKey")})
+    public void delete(@PathVariable Long deckId, @PathVariable Long cardId) {
+        LOGGER.info("DELETE card {} from deck {}", cardId, deckId);
+        cardService.delete(deckId, cardId);
     }
 }
