@@ -45,15 +45,8 @@ public class SimpleCardService implements CardService {
         revisionCreate.setCard(card);
         revisionCreate.setCreatedBy(user);
 
-        card = cardRepository.saveAndFlush(card);
-        return cardRepository.save(card);
+        return cardRepository.saveAndFlush(card);
     }
-
-//    @Override
-//    public Stream<Card> findCardsByDeckId(Long deckId) {
-//        LOGGER.debug("Find all cards for deck with id {}", deckId);
-//        return cardRepository.findCardsWithContentByDeck_Id(deckId);
-//    }
 
     @Override
     public Stream<RevisionEdit> findLatestEditRevisionsByDeckId(Long deckId) {
