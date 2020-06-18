@@ -41,8 +41,8 @@ public class RevisionEditRepositoryTest extends TestDataGenerator {
     @Test
     public void givenRevision_whenSaveRevisionEditWithTooLongText_thenFindByIdReturnsRevisionEdit() {
         // When
-        Agent user = transientAgent();
-        RevisionEdit edit = user.editCard(user.createCardIn(user.createDeck()));
+        Agent user = persistentAgent();
+        RevisionEdit edit = user.unpersist().editCard(user.createCardIn(user.createDeck()));
         edit.setTextFront("x".repeat(RevisionEdit.MAX_TEXT_SIZE + 1));
         edit.setTextBack("back text");
 
@@ -53,8 +53,8 @@ public class RevisionEditRepositoryTest extends TestDataGenerator {
     @Test
     public void givenRevision_whenSaveRevisionEditWithBlankText_thenFindByIdReturnsRevisionEdit() {
         // When
-        Agent user = transientAgent();
-        RevisionEdit edit = user.editCard(user.createCardIn(user.createDeck()));
+        Agent user = persistentAgent();
+        RevisionEdit edit = user.unpersist().editCard(user.createCardIn(user.createDeck()));
         edit.setTextFront("  ");
 
         // Then
@@ -64,8 +64,8 @@ public class RevisionEditRepositoryTest extends TestDataGenerator {
     @Test
     public void givenRevision_whenSaveRevisionEditWithSpecialCharacters_thenFindByIdReturnsWithSpecialCharacters() {
         // When
-        Agent user = transientAgent();
-        RevisionEdit edit = user.editCard(user.createCardIn(user.createDeck()));
+        Agent user = persistentAgent();
+        RevisionEdit edit = user.unpersist().editCard(user.createCardIn(user.createDeck()));
         edit.setTextFront(UTF_16_SAMPLE_TEXT);
         edit = revisionRepository.saveAndFlush(edit);
 
