@@ -111,6 +111,7 @@ public interface UserService {
      *
      * @param id of the user to be deleted.
      * @throws AccessDeniedException if the user to be deleted is an admin.
+     * @throws UserNotFoundException if the user to be deleted does not exist.
      */
     void delete(Long id);
 }

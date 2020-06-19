@@ -110,9 +110,9 @@ public class UserServiceTest extends TestDataGenerator {
     }
 
     @Test
-    public void givenNothing_whenDeleteNonExistentUser_thenDoNotThrow() {
+    public void givenNothing_whenDeleteNonExistentUser_thenThrowUserNotFoundException() {
         Mockito.when(userRepository.findById(404L)).thenReturn(Optional.empty());
-        assertDoesNotThrow(() -> userService.delete(404L));
+        assertThrows(UserNotFoundException.class, () -> userService.delete(404L));
     }
 
     @Test

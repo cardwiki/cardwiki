@@ -14,8 +14,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.constraints.Null;
-
 import static at.ac.tuwien.sepm.groupphase.backend.integrationtest.security.MockedLogins.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -370,14 +368,14 @@ public class CardEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    public void adminDeletesNonExistentCardReturnsOk() throws Exception {
+    public void adminDeletesNonExistentCardReturnsNotFound() throws Exception {
         User admin = givenApplicationUser();
         admin.setAdmin(true);
         Deck deck = givenDeck();
 
         mvc.perform(delete("/api/v1/decks/{deckId}/cards/{cardId}", deck.getId(), 404)
             .with(login(admin.getAuthId())))
-            .andExpect(status().isOk());
+            .andExpect(status().isNotFound());
     }
 
     @Test

@@ -3,6 +3,7 @@ package at.ac.tuwien.sepm.groupphase.backend.service;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
 import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionEdit;
 import at.ac.tuwien.sepm.groupphase.backend.exception.DeckNotFoundException;
+import at.ac.tuwien.sepm.groupphase.backend.exception.CardNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
 
 import java.util.List;
@@ -64,6 +65,7 @@ public interface CardService {
      * @param deckId of the deck
      * @param cardId of the card to delete
      * @throws DeckNotFoundException if no deck with {@code deckId} exists
+     * @throws CardNotFoundException if no card with {@code cardId} exists
      */
     void delete(Long deckId, Long cardId);
 }

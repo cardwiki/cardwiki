@@ -1,7 +1,7 @@
 package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
-import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
+import at.ac.tuwien.sepm.groupphase.backend.exception.CardNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.CardService;
 import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
@@ -88,7 +88,7 @@ public class SimpleCardService implements CardService {
         if (card.isPresent() && card.get().getDeck().getId().equals(deck.getId())) {
             return card.get();
         }
-        else throw new NotFoundException(String.format("Could not find card with id %s in deck with id %s", cardId, deckId));
+        else throw new CardNotFoundException(String.format("Could not find card with id %s in deck with id %s", cardId, deckId));
     }
 
     @Override
@@ -114,7 +114,7 @@ public class SimpleCardService implements CardService {
 
             return cardRepository.saveAndFlush(card);
         }
-        else throw new NotFoundException(String.format("Could not find card with id %s in deck with id %s", cardId, deckId));
+        else throw new CardNotFoundException(String.format("Could not find card with id %s in deck with id %s", cardId, deckId));
     }
 
     @Override
@@ -123,6 +123,8 @@ public class SimpleCardService implements CardService {
         deckService.findOne(deckId);
         try {
             cardRepository.deleteById(cardId);
-        } catch (EmptyResultDataAccessException ignored) {}
+        } catch (EmptyResultDataAccessException e) {
+            throw new CardNotFoundException(String.format("Could not find card with id %s in deck with id %s", cardId, deckId));
+        }
     }
 }

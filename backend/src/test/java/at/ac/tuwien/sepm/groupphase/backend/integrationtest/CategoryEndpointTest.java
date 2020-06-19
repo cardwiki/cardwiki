@@ -268,13 +268,13 @@ public class CategoryEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    public void adminDeletesNonExistentCategoryReturnOk() throws Exception {
+    public void adminDeletesNonExistentCategoryReturnNotFound() throws Exception {
         User admin = givenApplicationUser();
         admin.setAdmin(true);
 
         mvc.perform(delete("/api/v1/categories/{id}", 404)
             .with(login(admin.getAuthId())))
-            .andExpect(status().isOk());
+            .andExpect(status().isNotFound());
     }
 
     @Test

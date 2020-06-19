@@ -108,7 +108,9 @@ public class CategoryServiceImpl implements CategoryService {
         LOGGER.debug("Delete category with id {}", id);
         try {
             categoryRepository.deleteById(id);
-        } catch (EmptyResultDataAccessException ignored) {}
+        } catch (EmptyResultDataAccessException e) {
+            throw new CategoryNotFoundException("Category not found.");
+        }
     }
 
     private String handleDataIntegrityViolationException (DataIntegrityViolationException e) {

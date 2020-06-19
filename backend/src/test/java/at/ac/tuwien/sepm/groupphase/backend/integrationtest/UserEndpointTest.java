@@ -407,13 +407,13 @@ public class UserEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    public void adminDeleteNonExistentUser_NoContent() throws Exception {
+    public void adminDeleteNonExistentUser_notFound() throws Exception {
         User admin = givenApplicationUser();
         admin.setAdmin(true);
 
         mvc.perform(delete("/api/v1/users/{userId}", admin.getId() + 1)
             .with(login(admin.getAuthId())))
-            .andExpect(status().isOk());
+            .andExpect(status().isNotFound());
     }
 
     @Test

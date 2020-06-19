@@ -42,14 +42,6 @@ public class Card {
             revisions.add(latestRevision);
     }
 
-    public void dismissRevision(Revision revision) {
-        if (!revisions.remove(revision))
-            throw new NoSuchElementException("Tried to dismiss revision which is not yet associated with card");
-
-        if (latestRevision == revision)
-            latestRevision = revisions.stream().max(Comparator.comparing(Revision::getCreatedAt)).orElse(null);
-    }
-
     public Long getId() {
         return id;
     }

@@ -163,12 +163,7 @@ public class SimpleUserService implements UserService {
     @Override
     public void delete(Long id) {
         LOGGER.debug("Delete user with id {}", id);
-        User user;
-        try {
-            user = loadUserById(id);
-        } catch (UserNotFoundException e) {
-            return;
-        }
+        User user = loadUserById(id);
 
         if (user.isAdmin()) {
             throw new AccessDeniedException("Admins cannot be deleted.");

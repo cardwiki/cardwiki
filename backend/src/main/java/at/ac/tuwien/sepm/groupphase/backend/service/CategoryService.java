@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepm.groupphase.backend.service;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
+import at.ac.tuwien.sepm.groupphase.backend.exception.CategoryNotFoundException;
 
 import java.util.List;
 
@@ -43,6 +44,7 @@ public interface CategoryService  {
      * Deletes a category.
      *
      * @param id of the category to delete.
+     * @throws CategoryNotFoundException if no category with id {@code id} exists.
      */
     void deleteCategory(Long id);
 }
