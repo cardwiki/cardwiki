@@ -8,13 +8,13 @@ import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Optional;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class SimpleCardService implements CardService {
@@ -51,9 +51,10 @@ public class SimpleCardService implements CardService {
 
     @Override
     @Transactional
-    public List<RevisionEdit> findLatestEditRevisionsByDeckId(Long deckId) {
-        LOGGER.debug("Find latest edit revisions id {}", deckId);
-        return cardRepository.findLatestEditRevisionsByDeck_Id(deckId).collect(Collectors.toList());
+    public Page<RevisionEdit> findLatestEditRevisionsByDeckId(Long deckId, Pageable pageable) {
+        LOGGER.debug("Find latest edit revisions id {} {}", deckId, pageable); // TODO
+        findOneOrThrow(deckId);
+        return cardRepository.findLatestEditRevisionsByDeck_Id(deckId, pageable);
     }
 
     @Override

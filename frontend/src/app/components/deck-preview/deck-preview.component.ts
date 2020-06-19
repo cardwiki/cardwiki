@@ -4,6 +4,8 @@ import {DeckDetails} from "../../dtos/deckDetails";
 import {CardSimple} from "../../dtos/cardSimple";
 import {DeckService} from "../../services/deck.service";
 import {CardService} from "../../services/card.service";
+import { Pageable } from 'src/app/dtos/pageable';
+import { Page } from 'src/app/dtos/page';
 
 @Component({
   selector: 'app-deck-preview',
@@ -22,14 +24,21 @@ export class DeckPreviewComponent implements OnInit {
     else if (event.key === ' ') this.flip();
   }
 
+  readonly fetchSize = 25;
+  readonly minPrefetched = 10; // fetch next cards when (remaining cards <= minPrefetched) 
+
   deck: DeckDetails;
+  page: Page<CardSimple>;
   cards: CardSimple[];
+  currentCardIndex = 0;
   currentcard: CardSimple;
   flipped: boolean = false;
 
   constructor(private deckService: DeckService, private cardService: CardService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
+    this.deck = this.page = this.currentcard = null;
+    this.cards = []
     this.route.paramMap.subscribe(params => {
       this.loadDeck(Number(params.get('id')));
     });
@@ -38,12 +47,20 @@ export class DeckPreviewComponent implements OnInit {
   loadDeck(id: number) {
     this.deckService.getDeckById(id).subscribe(deck => {
       this.deck = deck;
-      this.cardService.getCardsByDeckId(id).subscribe(cards => {
-        console.log("Loaded cards: " + cards[0].textFront);
-        this.cards = cards;
-        this.currentcard = cards[0];
-      });
+      this.loadNextCards();
     });
+  }
+
+  loadNextCards() {
+    const nextPageNumber = this.page ? this.page.pageable.pageNumber + 1 : 0
+    this.cardService.getCardsByDeckId(this.deck.id, new Pageable(nextPageNumber, this.fetchSize))
+      .subscribe(page => {
+        console.log("Fetched next cards", page);
+        this.page = page;
+        this.cards.push(...page.content);
+        if (this.currentcard === null)
+          this.gotoCard(0);
+      });
   }
 
   flipTo(to: 'front' | 'back'): void {
@@ -55,15 +72,23 @@ export class DeckPreviewComponent implements OnInit {
   }
 
   nextCard(): void {
-    this.flipped = false;
-    const nextCardId = this.cards.indexOf(this.currentcard) + 1;
-    this.currentcard = this.cards[nextCardId % this.cards.length];
+    this.gotoCard(this.currentCardIndex + 1);
   }
 
   previousCard(): void {
-    this.flipped = false;
-    const previousCardId = this.cards.indexOf(this.currentcard) - 1;
-    this.currentcard = this.cards[(previousCardId + this.cards.length) % this.cards.length];
+    this.gotoCard(this.currentCardIndex - 1);
   }
 
+  gotoCard(index: number): void {
+    this.flipped = false;
+    this.currentcard = this.cards[index % this.cards.length];
+    this.currentCardIndex = index;
+
+    if (this.shouldPreLoadNextCards())
+      this.loadNextCards();
+  }
+
+  shouldPreLoadNextCards() {
+    return !this.page.last && (this.cards.length - this.currentCardIndex <= this.minPrefetched);
+  }
 }

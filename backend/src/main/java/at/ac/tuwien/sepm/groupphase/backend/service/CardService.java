@@ -8,6 +8,8 @@ import at.ac.tuwien.sepm.groupphase.backend.exception.CardNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.DeckNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.AuthenticationRequiredException;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -45,12 +47,13 @@ public interface CardService {
     Card editCardInDeck(Long cardId, RevisionEdit revision);
 
     /**
-     * Get all cards for a specific deck
+     * Find newest RevisionEdits of a deck
      *
      * @param deckId of the deck
-     * @return list of cards of the deck
+     * @param pageable config for pagination
+     * @return page of revision edits
      */
-    List<RevisionEdit> findLatestEditRevisionsByDeckId(Long deckId);
+    Page<RevisionEdit> findLatestEditRevisionsByDeckId(Long deckId, Pageable pageable);
 
     /**
      * Add delete-revision to card

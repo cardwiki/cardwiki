@@ -11,6 +11,9 @@ import io.swagger.annotations.Authorization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
@@ -19,8 +22,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 import java.lang.invoke.MethodHandles;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/api/v1")
@@ -50,12 +51,10 @@ public class CardEndpoint {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/decks/{deckId}/cards")
     @ApiOperation(value = "Get all cards for a specific deck")
-    public List<CardContentDto> getCardsByDeckId(@PathVariable Long deckId) {
-        LOGGER.info("GET /api/v1/decks/{}/cards", deckId);
-        return cardService.findLatestEditRevisionsByDeckId(deckId)
-            .stream()
-            .map(revisionMapper::revisionEditToCardContentDto)
-            .collect(Collectors.toList());
+    public Page<CardContentDto> getCardsByDeckId(@PathVariable Long deckId, @SortDefault("createdAt") Pageable pageable) {
+        LOGGER.info("GET /api/v1/decks/{}/cards {}", deckId, pageable);
+        return cardService.findLatestEditRevisionsByDeckId(deckId, pageable)
+            .map(revisionMapper::revisionEditToCardContentDto);
     }
 
     @GetMapping(value = "/cards/{cardId}")

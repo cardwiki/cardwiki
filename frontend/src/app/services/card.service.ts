@@ -8,6 +8,8 @@ import { ErrorHandlerService } from './error-handler.service';
 import { tap } from 'rxjs/operators';
 import { CardUpdate } from '../dtos/cardUpdate';
 import { CardContent } from '../dtos/cardContent';
+import { Page } from '../dtos/page';
+import { Pageable } from '../dtos/pageable';
 
 @Injectable({
   providedIn: 'root'
@@ -31,12 +33,14 @@ export class CardService {
   }
 
   /**
-   * Gets all cards for a specific deck
-   * @param deckId of the deck for which cards to get
+   * Fetch page of cards from a deck
+   * 
+   * @param deckId for which the cards should be fetched
+   * @param pageable config for pagination
    */
-  getCardsByDeckId(deckId: number): Observable<CardSimple[]> {
+  getCardsByDeckId(deckId: number, pageable: Pageable): Observable<Page<CardSimple>> {
     console.log('get cards for deck with id ' + deckId);
-    return this.httpClient.get<CardSimple[]>(`${this.deckBaseUri}/${deckId}/cards`)
+    return this.httpClient.get<Page<CardSimple>>(`${this.deckBaseUri}/${deckId}/cards`, { params: pageable.toHttpParams() })
       .pipe(tap(null, this.errorHandler.handleError('Could not fetch Cards')))
   }
 

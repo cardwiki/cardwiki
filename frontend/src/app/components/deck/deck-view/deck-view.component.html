@@ -11,7 +11,7 @@
           <ng-template #notFavorite>
             <button type="button" class="btn btn-light float-right mr-1" (click)="saveToFavorites()"><i class="far fa-star"></i> Save</button> 
           </ng-template>
-          <button *ngIf="cards && cards.length > 0" type="button" class="btn btn-light mr-1" (click)="openForkModal()">
+          <button *ngIf="cards.length" type="button" class="btn btn-light mr-1" (click)="openForkModal()">
             <i class="fas fa-code-branch"></i> Fork 
           </button>
         </ng-template>
@@ -36,7 +36,7 @@
         <a routerLink="/decks/{{deck.id}}/preview" class="btn btn-light ml-1">Preview</a>
       </div>
     </div>
-    <div class="col" *ngIf="deck">
+    <div class="col">
       <div class="btn-toolbar float-right">
         <button type="button" class="btn btn-light float-right mr-1"><i class="fas fa-undo"></i> Flip</button>
         <a routerLink="/decks/{{deck.id}}/cards/new" class="btn btn-primary float-right"><i class="fas fa-plus"></i> Add new card</a>
@@ -45,7 +45,7 @@
   </div>
 </div>
 
-<table class="table table-hover table-striped" *ngIf="cards">
+<table class="table table-hover table-striped" *ngIf="cards.length">
   <thead class="thead-light">
   <tr class="">
     <th scope="col">Front</th>
@@ -68,3 +68,9 @@
   </tr>
   </tbody>
 </table>
+<div *ngIf="loading" class="spinner-grow text-primary" role="status">
+    <span class="sr-only">Loading...</span>
+</div>
+<div class="my-4">
+    <button *ngIf="page && !page.last" class="btn btn-secondary" (click)="loadMoreCards()" [disabled]="loading">Load more</button>
+</div>

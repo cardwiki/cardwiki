@@ -11,6 +11,8 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {AuthService} from '../../../services/auth.service';
 import {FavoriteService} from 'src/app/services/favorite.service';
 import { CardRemoveModalComponent } from '../card-remove-modal/card-remove-modal.component';
+import { Pageable } from 'src/app/dtos/pageable';
+import { Page } from 'src/app/dtos/page';
 
 @Component({
   selector: 'app-deck-view',
@@ -19,14 +21,20 @@ import { CardRemoveModalComponent } from '../card-remove-modal/card-remove-modal
 })
 export class DeckViewComponent implements OnInit {
 
+  readonly limit = 50;
+
   deck: DeckDetails;
+  page: Page<CardSimple>;
   cards: CardSimple[];
-  isFavorite$: Subject<boolean>
+  isFavorite$: Subject<boolean>;
+  loading: boolean;
 
   constructor(private deckService: DeckService, private cardService: CardService, private route: ActivatedRoute, private favoriteService: FavoriteService,
               private router: Router, private modalService: NgbModal, public authService: AuthService, private notificationService: NotificationService) { }
 
   ngOnInit(): void {
+    this.deck = this.page = null
+    this.cards = []
     this.route.paramMap.subscribe(params => {
       this.loadDeck(Number(params.get('id')));
     });
@@ -36,10 +44,21 @@ export class DeckViewComponent implements OnInit {
   loadDeck(id: number) {
     this.deckService.getDeckById(id).subscribe(deck => {
       this.deck = deck;
-      this.cardService.getCardsByDeckId(id).subscribe(cards => this.cards = cards);
+      this.cards = [];
+      this.loadMoreCards();
     });
     if (this.authService.isLoggedIn())
       this.favoriteService.hasFavorite(id).subscribe(isFavorite => this.isFavorite$.next(isFavorite))
+  }
+
+  loadMoreCards() {
+    const nextPageNumber = this.page ? this.page.pageable.pageNumber + 1 : 0
+    this.loading = true
+    this.cardService.getCardsByDeckId(this.deck.id, new Pageable(nextPageNumber, this.limit))
+      .subscribe(page => {
+        this.page = page;
+        this.cards.push(...page.content)
+      }).add(() => this.loading = false);
   }
 
   openCardRemoveModal(card: CardSimple) {
