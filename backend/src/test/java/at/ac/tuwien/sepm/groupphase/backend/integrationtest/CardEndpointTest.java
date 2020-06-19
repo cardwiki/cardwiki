@@ -1,7 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.integrationtest;
 
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.ImageDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.RevisionEditDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,7 +13,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static at.ac.tuwien.sepm.groupphase.backend.integrationtest.security.MockedLogins.*;
@@ -115,8 +113,8 @@ public class CardEndpointTest extends TestDataGenerator {
         Image image = givenImage();
 
         RevisionEditDto dto = new RevisionEditDto();
-        dto.setImageFront(image.getFilename());
-        dto.setImageBack(image.getFilename());
+        dto.setImageFrontFilename(image.getFilename());
+        dto.setImageBackFilename(image.getFilename());
 
         mvc.perform(post("/api/v1/decks/{deckId}/cards", deck.getId())
             .with(mockLogin(USER_ROLES, user.getAuthId()))
@@ -125,8 +123,8 @@ public class CardEndpointTest extends TestDataGenerator {
             .andExpect(status().is(201))
             .andExpect(jsonPath("$.deck.id").value(deck.getId()))
             .andExpect(jsonPath("$.id").isNumber())
-            .andExpect(jsonPath("$.imageFront").value(Paths.get(imageServedPath, dto.getImageFront()).toString()))
-            .andExpect(jsonPath("$.imageBack").value(Paths.get(imageServedPath, dto.getImageFront()).toString()));
+            .andExpect(jsonPath("$.imageFrontUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString()))
+            .andExpect(jsonPath("$.imageBackUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString()));
     }
 
     @Test void createCardWithTextAndImagesReturnsCardDetails() throws Exception {
@@ -137,8 +135,8 @@ public class CardEndpointTest extends TestDataGenerator {
         RevisionEditDto dto = new RevisionEditDto();
         dto.setTextFront(FRONT_TEXT);
         dto.setTextBack(BACK_TEXT);
-        dto.setImageFront(image.getFilename());
-        dto.setImageBack(image.getFilename());
+        dto.setImageFrontFilename(image.getFilename());
+        dto.setImageBackFilename(image.getFilename());
 
         mvc.perform(post("/api/v1/decks/{deckId}/cards", deck.getId())
             .with(mockLogin(USER_ROLES, user.getAuthId()))
@@ -149,8 +147,8 @@ public class CardEndpointTest extends TestDataGenerator {
             .andExpect(jsonPath("$.id").isNumber())
             .andExpect(jsonPath("$.textFront").value(FRONT_TEXT))
             .andExpect(jsonPath("$.textBack").value(BACK_TEXT))
-            .andExpect(jsonPath("$.imageFront").value(Paths.get(imageServedPath, dto.getImageFront()).toString()))
-            .andExpect(jsonPath("$.imageBack").value(Paths.get(imageServedPath, dto.getImageFront()).toString()));
+            .andExpect(jsonPath("$.imageFrontUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString()))
+            .andExpect(jsonPath("$.imageBackUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString()));
     }
 
     @Test
@@ -205,17 +203,18 @@ public class CardEndpointTest extends TestDataGenerator {
 
     @Test
     @Transactional
-    public void getCardReturnsCardSimple() throws Exception {
+    public void getCardReturnsCardUpdate() throws Exception {
         RevisionEdit revisionEdit = givenRevisionEdit();
         Card card = revisionEdit.getCard();
-        Deck deck = card.getDeck();
         mvc.perform(get("/api/v1/cards/{cardId}", card.getId())
             .contentType("application/json"))
             .andExpect(status().is(200))
-            .andExpect(jsonPath("$.deck.id").value(deck.getId()))
-            .andExpect(jsonPath("$.id").value(card.getId()))
             .andExpect(jsonPath("$.textFront").value(revisionEdit.getTextFront()))
-            .andExpect(jsonPath("$.textBack").value(revisionEdit.getTextBack()));
+            .andExpect(jsonPath("$.textBack").value(revisionEdit.getTextBack()))
+            .andExpect(jsonPath("$.imageFront.filename").value(revisionEdit.getImageFront().getFilename()))
+            .andExpect(jsonPath("$.imageFront.url").value(Paths.get(imageServedPath, revisionEdit.getImageFront().getFilename()).toString()))
+            .andExpect(jsonPath("$.imageBack.filename").value(revisionEdit.getImageBack().getFilename()))
+            .andExpect(jsonPath("$.imageBack.url").value(Paths.get(imageServedPath, revisionEdit.getImageBack().getFilename()).toString()));
     }
 
     @Test
@@ -254,8 +253,8 @@ public class CardEndpointTest extends TestDataGenerator {
 
         RevisionEditDto dto = new RevisionEditDto();
         Image image = givenImage();
-        dto.setImageFront(image.getFilename());
-        dto.setImageBack(image.getFilename());
+        dto.setImageFrontFilename(image.getFilename());
+        dto.setImageBackFilename(image.getFilename());
 
         mvc.perform(patch("/api/v1/cards/{cardId}", card.getId())
             .with(mockLogin(USER_ROLES, user.getAuthId()))
@@ -264,8 +263,8 @@ public class CardEndpointTest extends TestDataGenerator {
             .andExpect(status().is(200))
             .andExpect(jsonPath("$.deck.id").value(deck.getId()))
             .andExpect(jsonPath("$.id").isNumber())
-            .andExpect(jsonPath("$.imageFront").value(Paths.get(imageServedPath, dto.getImageFront()).toString()))
-            .andExpect(jsonPath("$.imageBack").value(Paths.get(imageServedPath, dto.getImageFront()).toString()));
+            .andExpect(jsonPath("$.imageFrontUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString()))
+            .andExpect(jsonPath("$.imageBackUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString()));
     }
 
     @Test
@@ -278,8 +277,8 @@ public class CardEndpointTest extends TestDataGenerator {
         dto.setTextFront(FRONT_TEXT);
         dto.setTextBack(BACK_TEXT);
         Image image = givenImage();
-        dto.setImageFront(image.getFilename());
-        dto.setImageBack(image.getFilename());
+        dto.setImageFrontFilename(image.getFilename());
+        dto.setImageBackFilename(image.getFilename());
 
         mvc.perform(patch("/api/v1/cards/{cardId}", card.getId())
             .with(mockLogin(USER_ROLES, user.getAuthId()))
@@ -290,8 +289,8 @@ public class CardEndpointTest extends TestDataGenerator {
             .andExpect(jsonPath("$.id").isNumber())
             .andExpect(jsonPath("$.textFront").value(FRONT_TEXT))
             .andExpect(jsonPath("$.textBack").value(BACK_TEXT))
-            .andExpect(jsonPath("$.imageFront").value(Paths.get(imageServedPath, dto.getImageFront()).toString()))
-            .andExpect(jsonPath("$.imageBack").value(Paths.get(imageServedPath, dto.getImageFront()).toString()));
+            .andExpect(jsonPath("$.imageFrontUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString()))
+            .andExpect(jsonPath("$.imageBackUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString()));
     }
 
     @Test

@@ -50,14 +50,6 @@ public class SimpleCardService implements CardService {
         revisionCreate.setCard(card);
         revisionCreate.setCreatedBy(user);
 
-        // Add revision edit to image(s)
-        if (revisionCreate.getImageFront() != null) {
-            imageService.findByFilename(revisionCreate.getImageFront().getFilename()).getFrontSides().add(revisionCreate);
-        }
-        if (revisionCreate.getImageBack() != null) {
-            imageService.findByFilename(revisionCreate.getImageBack().getFilename()).getBackSides().add(revisionCreate);
-        }
-
         return cardRepository.saveAndFlush(card);
     }
 
@@ -87,7 +79,7 @@ public class SimpleCardService implements CardService {
     @Transactional
     public Card findOneOrThrow(Long cardId) {
         LOGGER.debug("Find card with id {}", cardId);
-        Optional<Card> card = cardRepository.findSimpleById(cardId);
+        Optional<Card> card = cardRepository.findById(cardId);
         return card.orElseThrow(() -> new NotFoundException("Could not find card with id " + cardId));
     }
 
@@ -102,14 +94,6 @@ public class SimpleCardService implements CardService {
         card.setLatestRevision(revisionEdit);
         revisionEdit.setCard(card);
         revisionEdit.setCreatedBy(user);
-
-        // Add revision edit to image(s)
-        if (revisionEdit.getImageFront() != null) {
-            imageService.findByFilename(revisionEdit.getImageFront().getFilename()).getFrontSides().add(revisionEdit);
-        }
-        if (revisionEdit.getImageBack() != null) {
-            imageService.findByFilename(revisionEdit.getImageBack().getFilename()).getBackSides().add(revisionEdit);
-        }
 
         return cardRepository.saveAndFlush(card);
     }

@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { CardContent } from 'src/app/dtos/cardContent';
 import {Globals} from '../../../global/globals';
+import {CardUpdateContent} from '../../../dtos/cardUpdateContent';
 
 @Component({
   selector: 'app-card-view',
@@ -9,7 +9,7 @@ import {Globals} from '../../../global/globals';
 })
 export class CardViewComponent implements OnInit {
 
-  @Input() card: CardContent
+  @Input() card: CardUpdateContent
   @Input() side: 'front' | 'back'
 
   constructor(public globals: Globals) { }

@@ -16,8 +16,8 @@ public class ContentNotNullValidator implements ConstraintValidator<ContentNotNu
                && (revisionEdit.getTextBack() != null || revisionEdit.getImageBack() != null);
        } else if (object instanceof RevisionEditDto) {
            RevisionEditDto revisionInputDto = (RevisionEditDto) object;
-           return (revisionInputDto.getTextFront() != null || revisionInputDto.getImageFront() != null)
-               && (revisionInputDto.getTextBack() != null || revisionInputDto.getImageBack() != null);
+           return (revisionInputDto.getTextFront() != null || revisionInputDto.getImageFrontFilename() != null)
+               && (revisionInputDto.getTextBack() != null || revisionInputDto.getImageBackFilename() != null);
        } else {
            throw new IllegalArgumentException("@ContentNotNull only applies to RevisionEdit and RevisionInputDto");
        }

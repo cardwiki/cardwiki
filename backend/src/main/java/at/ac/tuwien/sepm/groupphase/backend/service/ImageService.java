@@ -13,12 +13,4 @@ public interface ImageService {
      */
     Image create(MultipartFile file);
 
-    /**
-     * Find a single image by id.
-     *
-     * @param filename the filename of the image entry
-     * @return the image entry
-     */
-    Image findByFilename(String filename);
-
 }

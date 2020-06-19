@@ -2,7 +2,6 @@ package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.Image;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
-import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.ImageRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.ImageService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
@@ -20,11 +19,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Objects;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -40,15 +36,6 @@ public class SimpleImageService implements ImageService {
         this.imageSavedPath = Paths.get(imageSavedPath);
         this.imageRepository = imageRepository;
         this.userService = userService;
-    }
-
-    @Transactional
-    @Override
-    public Image findByFilename(String filename) {
-        LOGGER.debug("Find image with filename {}", filename);
-        Objects.requireNonNull(filename, "id argument must not be null");
-        Optional<Image> image = imageRepository.findById(filename);
-        return image.orElseThrow(() -> new NotFoundException(String.format("Could not find image with filename %s", filename)));
     }
 
     @Override

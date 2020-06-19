@@ -4,6 +4,7 @@ import {ActivatedRoute} from '@angular/router';
 import { Location } from '@angular/common';
 import { NotificationService } from 'src/app/services/notification.service';
 import { CardUpdate } from 'src/app/dtos/cardUpdate';
+import {CardUpdateDto} from '../../../dtos/cardUpdateDto';
 
 @Component({
   selector: 'app-card-edit',
@@ -27,18 +28,22 @@ export class CardEditComponent implements OnInit {
   fetchCardContent(): void {
     console.log('CardEditComponent.fetchCardContent', this.cardId);
     this.cardService.fetchCard(this.cardId)
-      .subscribe(cardDetails => {
-        console.log('fetched card', cardDetails);
-        this.card.textFront = cardDetails.textFront;
-        this.card.textBack = cardDetails.textBack;
-        this.card.imageFront = cardDetails.imageFront;
-        this.card.imageBack = cardDetails.imageBack;
+      .subscribe(cardUpdate => {
+        console.log('fetched card', cardUpdate);
+        this.card = cardUpdate;
       })
   }
 
   cardSubmit(): void {
     console.log('CardEditComponent.onSubmit', this.cardId, this.card);
-    this.cardService.editCard(this.cardId, this.card)
+    const cardUpdateDto = new CardUpdateDto(this.card.textFront, this.card.textBack, null, null, this.card.message);
+    if (this.card.imageFront) {
+      cardUpdateDto.imageFrontFilename = this.card.imageFront.filename;
+    }
+    if (this.card.imageBack) {
+      cardUpdateDto.imageBackFilename = this.card.imageBack.filename;
+    }
+    this.cardService.editCard(this.cardId, cardUpdateDto)
       .subscribe(cardDetails => {
         console.log('edited card', cardDetails);
         this.notificationService.success('Updated Card')

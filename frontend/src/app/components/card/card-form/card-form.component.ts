@@ -11,8 +11,8 @@ import {ImageService} from '../../../services/image.service';
 })
 export class CardFormComponent implements OnInit {
 
-  filenameFront: string = 'Choose file';
-  filenameBack: string = 'Choose file';
+  originalFilenameFront: string = 'Choose file';
+  originalFilenameBack: string = 'Choose file';
   @Input() card: CardUpdate
   @Output() cardSubmit: EventEmitter<CardUpdate> = new EventEmitter();
   @Output() cancel: EventEmitter<void> = new EventEmitter();
@@ -47,10 +47,10 @@ export class CardFormComponent implements OnInit {
 
       if (side === 'front') {
         this.card.imageFront = await this.imageService.upload(formData).toPromise();
-        this.filenameFront = file.name;
+        this.originalFilenameFront = file.name;
       } else {
         this.card.imageBack = await this.imageService.upload(formData).toPromise();
-        this.filenameBack = file.name;
+        this.originalFilenameBack = file.name;
       }
     }
   }

@@ -45,13 +45,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(AccessDeniedException.class)
     protected ResponseEntity<Object> handleUnauthorized(RuntimeException ex, WebRequest request) {
-        LOGGER.warn(ex.getMessage());
+        LOGGER.error(ex.getMessage());
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.FORBIDDEN, request);
     }
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     protected ResponseEntity<Object> handleSizeLimitExceeded(RuntimeException ex, WebRequest request) {
-        LOGGER.warn(ex.getMessage());
+        LOGGER.error(ex.getMessage());
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
@@ -66,25 +66,25 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(value = {NotFoundException.class})
     protected ResponseEntity<Object> handleNotFound(RuntimeException ex, WebRequest request) {
-        LOGGER.warn(ex.getMessage());
+        LOGGER.error(ex.getMessage());
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
 
     @ExceptionHandler(value = {ConflictException.class})
     protected ResponseEntity<Object> handleConflict(RuntimeException ex, WebRequest request) {
-        LOGGER.warn(ex.getMessage());
+        LOGGER.error(ex.getMessage());
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.CONFLICT, request);
     }
 
     @ExceptionHandler(value = {IllegalArgumentException.class})
     protected ResponseEntity<Object> handleIllegalArgument(RuntimeException ex, WebRequest request) {
-        LOGGER.warn(ex.getMessage());
+        LOGGER.error(ex.getMessage());
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
     @ExceptionHandler(value = {InsufficientAuthorizationException.class})
     protected ResponseEntity<Object> handleInsufficientAuthorization(RuntimeException ex, WebRequest request) {
-        LOGGER.warn(ex.getMessage());
+        LOGGER.error(ex.getMessage());
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.FORBIDDEN, request);
     }
 
@@ -94,7 +94,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(value = {ConstraintViolationException.class})
     public ResponseEntity<Object> handleValidationFailure(ConstraintViolationException ex, WebRequest request) {
-        LOGGER.warn(ex.getMessage());
+        LOGGER.error(ex.getMessage());
 
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }

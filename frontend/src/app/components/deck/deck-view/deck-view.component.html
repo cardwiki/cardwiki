@@ -60,18 +60,18 @@
         <th scope="row" class="align-middle">{{cards.indexOf(card) + 1}}</th>
         <td class="w-50 align-middle">
           <div class="card-cell-container">
-            <div *ngIf="card.imageFront" class="mr-3">
-              <img src="{{globals.backendBaseUri}}{{card.imageFront.url}}" class="float-left img-fluid img-thumbnail">
+            <div *ngIf="card.imageFrontUrl" class="mr-3">
+              <img src="{{globals.backendBaseUri}}{{card.imageFrontUrl}}" class="float-left img-fluid img-thumbnail">
             </div>
-            <div class="txt"  *ngIf="card.textFront" [innerHtml]="card.textFront | md2html"></div>
+            <div *ngIf="card.textFront" [innerHtml]="card.textFront | md2html"></div>
           </div>
         </td>
         <td class="w-50 align-middle">
           <div class="card-cell-container">
-            <div *ngIf="card.imageBack" class="mr-3">
-              <img src="{{globals.backendBaseUri}}{{card.imageBack.url}}" class="float-left img-fluid img-thumbnail">
+            <div *ngIf="card.imageBackUrl" class="mr-3">
+              <img src="{{globals.backendBaseUri}}{{card.imageBackUrl}}" class="float-left img-fluid img-thumbnail">
             </div>
-            <div class="txt" *ngIf="card.textBack" [innerHtml]="card.textBack | md2html"></div>
+            <div *ngIf="card.textBack" [innerHtml]="card.textBack | md2html"></div>
           </div>
         </td>
         <td class="align-middle">

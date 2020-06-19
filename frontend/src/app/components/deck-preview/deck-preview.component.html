@@ -21,9 +21,9 @@
       Preview ({{flipped ? "Back" : "Front"}})
     </div>
     <div class="card-body card-content d-flex flex-column justify-content-around" (click)="flip()" style="min-height: 300px">
-      <img class="align-self-center img-fluid img-thumbnail m-0" *ngIf="!flipped && currentcard.imageFront" src="{{globals.backendBaseUri}}{{currentcard.imageFront.url}}">
+      <img class="align-self-center img-fluid img-thumbnail m-0" *ngIf="!flipped && currentcard.imageFrontUrl" src="{{globals.backendBaseUri}}{{currentcard.imageFrontUrl}}">
       <h5 class="card-title align-self-center m-0" *ngIf="!flipped && currentcard.textFront" [innerHtml]="currentcard.textFront | md2html"></h5>
-      <img class="align-self-center img-fluid img-thumbnail m-0" *ngIf="flipped && currentcard.imageBack" src="{{globals.backendBaseUri}}{{currentcard.imageBack.url}}">
+      <img class="align-self-center img-fluid img-thumbnail m-0" *ngIf="flipped && currentcard.imageBackUrl" src="{{globals.backendBaseUri}}{{currentcard.imageBackUrl}}">
       <h5 class="card-title align-self-center m-0" *ngIf="flipped && currentcard.textBack" [innerHtml]="currentcard.textBack | md2html"></h5>
     </div>
 

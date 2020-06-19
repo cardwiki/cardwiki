@@ -3,10 +3,8 @@ package at.ac.tuwien.sepm.groupphase.backend.entity;
 import at.ac.tuwien.sepm.groupphase.backend.validation.ContentNotNull;
 import at.ac.tuwien.sepm.groupphase.backend.validation.NullOrNotBlank;
 
-import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
 import javax.persistence.*;
 import javax.validation.constraints.Size;
-import java.util.Objects;
 
 @ContentNotNull
 @Entity
@@ -74,22 +72,6 @@ public class RevisionEdit extends Revision {
 
     public void setImageBack(Image imageBack) {
         this.imageBack = imageBack;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        RevisionEdit that = (RevisionEdit) o;
-        return Objects.equals(getTextFront(), that.getTextFront()) &&
-            Objects.equals(getImageFront(), that.getImageFront()) &&
-            Objects.equals(getTextBack(), that.getTextBack()) &&
-            Objects.equals(getImageBack(), that.getImageBack());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getTextFront(), getImageFront(), getTextBack(), getImageBack());
     }
 
     @Override

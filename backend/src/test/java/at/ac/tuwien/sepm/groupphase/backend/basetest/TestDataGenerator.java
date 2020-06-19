@@ -279,6 +279,8 @@ public abstract class TestDataGenerator {
         revisionEdit.setTextFront("front");
         revisionEdit.setTextBack("back");
         revisionEdit.setMessage("test message");
+        revisionEdit.setImageFront(givenImage());
+        revisionEdit.setImageBack(givenImage());
         revisionEdit.setCreatedBy(givenApplicationUser());
 
         Card card = givenCard();

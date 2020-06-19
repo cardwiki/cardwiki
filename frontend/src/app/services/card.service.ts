@@ -8,6 +8,7 @@ import { ErrorHandlerService } from './error-handler.service';
 import { tap } from 'rxjs/operators';
 import { CardUpdate } from '../dtos/cardUpdate';
 import { CardContent } from '../dtos/cardContent';
+import {CardUpdateDto} from '../dtos/cardUpdateDto';
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +25,7 @@ export class CardService {
    * Persists card to the backend
    * @param card to persist
    */
-  createCard(deckId: number, card: CardUpdate): Observable<CardDetails> {
+  createCard(deckId: number, card: CardUpdateDto): Observable<CardDetails> {
     console.log('create card', deckId, card);
     return this.httpClient.post<CardDetails>(`${this.deckBaseUri}/${deckId}/cards`, card)
       .pipe(tap(null, this.errorHandler.handleError('Could not create Card')))
@@ -52,15 +53,15 @@ export class CardService {
       .pipe(tap(null, this.errorHandler.handleError('Could not remove Card')))
   }
 
-  editCard(cardId: number, card: CardUpdate): Observable<CardDetails> {
+  editCard(cardId: number, card: CardUpdateDto): Observable<CardDetails> {
     console.log(`edit card with id ${cardId}: ${card}`);
     return this.httpClient.patch<CardDetails>(`${this.cardBaseUri}/${cardId}`, card)
       .pipe(tap(null, this.errorHandler.handleError('Could not edit Card')))
   }
 
-  fetchCard(cardId: number): Observable<CardDetails> {
+  fetchCard(cardId: number): Observable<CardUpdate> {
     console.log(`fetch card with id ${cardId}`);
-    return this.httpClient.get<CardDetails>(`${this.cardBaseUri}/${cardId}`)
+    return this.httpClient.get<CardUpdate>(`${this.cardBaseUri}/${cardId}`)
       .pipe(tap(null, this.errorHandler.handleError('Could not fetch Card')))
   }
 }

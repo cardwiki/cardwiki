@@ -107,6 +107,8 @@ public class SimpleDeckService implements DeckService {
             rev.setCard(card);
             rev.setTextFront(sourceRevision.getTextFront());
             rev.setTextBack(sourceRevision.getTextBack());
+            rev.setImageFront(sourceRevision.getImageFront());
+            rev.setImageBack(sourceRevision.getImageBack());
             card.setLatestRevision(rev);
             return card;
         }).collect(Collectors.toList());

@@ -20,10 +20,10 @@ public class RevisionEditDto {
     private String textBack;
 
     @NullOrNotBlank
-    private String imageFront;
+    private String imageFrontFilename;
 
     @NullOrNotBlank
-    private String imageBack;
+    private String imageBackFilename;
 
     @Size(max = Revision.MAX_MESSAGE_SIZE)
     private String message;

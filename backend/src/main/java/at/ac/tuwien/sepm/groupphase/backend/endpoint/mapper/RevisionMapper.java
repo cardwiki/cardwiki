@@ -23,23 +23,29 @@ abstract public class RevisionMapper {
     public abstract List<RevisionSimpleDto> revisionsToRevisionSimpleDtoList(List<Revision> revisions);
 
     @Mapping(source = "edit.card.id", target = "id")
-    @Mapping(source = "edit.imageFront.filename", target = "imageFront", qualifiedByName = "prefixImagesServedPath")
-    @Mapping(source = "edit.imageBack.filename", target = "imageBack", qualifiedByName = "prefixImagesServedPath")
+    @Mapping(source = "edit.imageFront.filename", target = "imageFrontUrl", qualifiedByName = "prefixImagesServedPath")
+    @Mapping(source = "edit.imageBack.filename", target = "imageBackUrl", qualifiedByName = "prefixImagesServedPath")
     public abstract CardContentDto revisionEditToCardContentDto(RevisionEdit edit);
 
-    @Mapping(source = "edit.imageFront", target = "imageFront", qualifiedByName = "filenameToImage")
-    @Mapping(source = "edit.imageBack", target = "imageBack", qualifiedByName = "filenameToImage")
+    @Mapping(source = "edit.imageFrontFilename", target = "imageFront", qualifiedByName = "filenameToImage")
+    @Mapping(source = "edit.imageBackFilename", target = "imageBack", qualifiedByName = "filenameToImage")
     public abstract RevisionEdit revisionEditDtoToRevisionEdit(RevisionEditDto edit);
 
-    @Mapping(source = "edit.imageFront", target = "imageFront", qualifiedByName = "filenameToImage")
-    @Mapping(source = "edit.imageBack", target = "imageBack", qualifiedByName = "filenameToImage")
+    @Mapping(source = "edit.imageFrontFilename", target = "imageFront", qualifiedByName = "filenameToImage")
+    @Mapping(source = "edit.imageBackFilename", target = "imageBack", qualifiedByName = "filenameToImage")
     public abstract RevisionCreate revisionEditDtoToRevisionCreate(RevisionEditDto edit);
 
     @Mapping(source = "edit.card.id", target = "id")
     @Mapping(source = "edit.card.deck", target = "deck")
-    @Mapping(source = "edit.imageFront.filename", target = "imageFront", qualifiedByName = "prefixImagesServedPath")
-    @Mapping(source = "edit.imageBack.filename", target = "imageBack", qualifiedByName = "prefixImagesServedPath")
+    @Mapping(source = "edit.imageFront.filename", target = "imageFrontUrl", qualifiedByName = "prefixImagesServedPath")
+    @Mapping(source = "edit.imageBack.filename", target = "imageBackUrl", qualifiedByName = "prefixImagesServedPath")
     public abstract CardSimpleDto revisionEditToCardSimpleDto(RevisionEdit edit);
+
+    @Mapping(source = "edit.imageFront.filename", target = "imageFront.filename")
+    @Mapping(source = "edit.imageBack.filename", target = "imageBack.filename")
+    @Mapping(source = "edit.imageFront.filename", target = "imageFront.url", qualifiedByName = "prefixImagesServedPath")
+    @Mapping(source = "edit.imageBack.filename", target = "imageBack.url", qualifiedByName = "prefixImagesServedPath")
+    public abstract CardUpdateDto revisionEditToCardUpdateDto(RevisionEdit edit);
 
     @Value("${cawi.image-served-path}")
     String imageServedPath;
@@ -59,5 +65,6 @@ abstract public class RevisionMapper {
             return null;
         return Paths.get(imageServedPath, filename).toString();
     }
+
 }
 

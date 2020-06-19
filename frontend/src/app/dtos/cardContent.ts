@@ -1,9 +1,8 @@
-import {Image} from './image';
 
-export class CardContent {
+export class CardContent implements CardTextContent {
   constructor(
     public textFront: string,
     public textBack: string,
-    public imageFront: Image,
-    public imageBack: Image) {}
+    public imageFrontUrl: string,
+    public imageBackUrl: string) {}
 }
