@@ -76,13 +76,17 @@ public abstract class TestDataGenerator {
             }
         }
 
-        public void beforeReturn(Object o){
+        private void beforeReturn(Object o){
             if (persist) {
                 em.persist(o);
                 em.flush();
-                if (o.getClass().equals(Deck.class))
-                    System.out.println("IT's HAPPENING " + ((Deck) o).getId());
             }
+        }
+
+        public Agent makeAdmin() {
+            user.setAdmin(true);
+            beforeReturn(user);
+            return this;
         }
 
         public Deck createDeck(){
@@ -116,6 +120,21 @@ public abstract class TestDataGenerator {
             revisionCreate.setCreatedBy(user);
             user.getRevisions().add(revisionCreate);
             return createCardIn(deck, revisionCreate);
+        }
+
+        public Comment createCommentIn(Deck deck){
+            return createCommentIn(deck, "What a beautiful deck");
+        }
+
+        public Comment createCommentIn(Deck deck, String message) {
+            Comment comment = new Comment();
+            comment.setMessage(message);
+            comment.setDeck(deck);
+            comment.setCreatedBy(user);
+            deck.setCreatedAt(LocalDateTime.of(2020, 1, 1, 1, 1));
+            deck.setUpdatedAt(LocalDateTime.of(2020, 2, 1, 1, 1));
+            beforeReturn(comment);
+            return comment;
         }
 
         public RevisionEdit editCard(Card card, RevisionEdit revisionEdit){
@@ -160,8 +179,18 @@ public abstract class TestDataGenerator {
         }
     }
 
+    // Auth id to login as a persisted user
+    public String givenUserAuthId() {
+        return persistentAgent("normal-user").getUser().getAuthId();
+    }
+
+    // Auth id to login as a persisted admin
+    public String givenAdminAuthId() {
+        return persistentAgent("im-a-admin").makeAdmin().getUser().getAuthId();
+    }
+
     public Matcher<String> validIsoDateTime() {
-        return new TypeSafeMatcher<String>() {
+        return new TypeSafeMatcher<>() {
             @Override
             protected boolean matchesSafely(String s) {
                 try {
@@ -189,8 +218,6 @@ public abstract class TestDataGenerator {
     private CardRepository cardRepository;
     @Autowired
     private RevisionRepository revisionRepository;
-    @Autowired
-    private CommentRepository commentRepository;
     @Autowired
     private CategoryRepository categoryRepository;
     @Autowired
@@ -243,18 +270,6 @@ public abstract class TestDataGenerator {
         deck.getCards().add(card);
 
         return cardRepository.saveAndFlush(card);
-    }
-
-    @Deprecated
-    public Comment givenComment() {
-        Deck deck = givenDeck();
-        User user = givenApplicationUser();
-        Comment comment = new Comment();
-        comment.setMessage("some message");
-        comment.setCreatedBy(user);
-        comment.setDeck(deck);
-
-        return commentRepository.saveAndFlush(comment);
     }
 
     @Deprecated
@@ -346,15 +361,6 @@ public abstract class TestDataGenerator {
     }
 
     @Deprecated
-    public Comment getUnconnectedSampleComment() {
-        Comment comment = new Comment();
-        comment.setMessage("beautiful comment");
-        comment.setCreatedAt(CREATED_AT);
-        comment.setUpdatedAt(UPDATED_AT);
-        return comment;
-    }
-
-    @Deprecated
     public Card getUnconnectedSampleCard() {
         Card card = new Card();
         card.setId(CARD_ID);
@@ -410,14 +416,6 @@ public abstract class TestDataGenerator {
         Deck deck = getUnconnectedSampleDeck();
         deck.setCreatedBy(getSampleUser());
         return deck;
-    }
-
-    @Deprecated
-    public Comment getSampleComment() {
-        Comment comment = getUnconnectedSampleComment();
-        comment.setCreatedBy(getSampleUser());
-        comment.setDeck(getSampleDeck());
-        return comment;
     }
 
     @Deprecated

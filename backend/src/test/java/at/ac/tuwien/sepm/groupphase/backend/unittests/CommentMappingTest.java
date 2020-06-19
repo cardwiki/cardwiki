@@ -4,12 +4,15 @@ import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.*;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.CommentMapper;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Comment;
+import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,7 +26,16 @@ public class CommentMappingTest extends TestDataGenerator {
 
     @Test
     public void givenComment_whenMapToCommentSimpleDto_thenDtoHasAllProperties() {
-        Comment comment = getSampleComment();
+        User user = new User();
+        user.setUsername("cool-user-2000");
+        user.setId(1L);
+        Comment comment = new Comment();
+        comment.setId(2L);
+        comment.setCreatedBy(user);
+        comment.setMessage("I found this deck yesteryear. Still amazed");
+        comment.setCreatedAt(LocalDateTime.now().minusDays(1L));
+        comment.setUpdatedAt(LocalDateTime.now());
+
         CommentSimpleDto dto = commentMapper.commentToCommentSimpleDto(comment);
 
         assertAll(
