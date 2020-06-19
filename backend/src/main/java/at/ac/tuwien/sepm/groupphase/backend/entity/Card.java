@@ -29,12 +29,6 @@ public class Card {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @PreRemove
-    private void dismissContainers() {
-        deck.dismissCard(this);
-        deck = null;
-    }
-
     @PrePersist
     @PreUpdate
     private void syncRevisions() {
