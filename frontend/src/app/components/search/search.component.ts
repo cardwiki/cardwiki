@@ -19,7 +19,8 @@ export class SearchComponent implements OnInit {
   public decks: DeckDetails[] = []
   public canLoadMore: boolean = false
   public loading: boolean = false
-  
+  public admin: boolean = false;
+
   constructor(private deckService: DeckService, private route: ActivatedRoute, private router: Router) { }
 
   ngOnInit(): void {
@@ -32,8 +33,11 @@ export class SearchComponent implements OnInit {
 
       // Don't fetch when visited without search term
       if (paramMap.has('name'))
-        this.fetchSearchResults() 
+        this.fetchSearchResults()
     })
+    if (localStorage.getItem('whoami')) {
+      this.admin = JSON.parse(localStorage.getItem('whoami')).admin;
+    }
   }
 
   /**
@@ -71,5 +75,13 @@ export class SearchComponent implements OnInit {
 
   onSubmit(): void {
     this.updateQueryUrl()
+  }
+
+  deleteDeck(event: any, deck: DeckDetails): void {
+    event.stopPropagation();
+    event.preventDefault();
+    this.deckService.delete(deck.id).subscribe(_ => {
+      this.decks = this.decks.filter(d => d !== deck);
+    });
   }
 }
