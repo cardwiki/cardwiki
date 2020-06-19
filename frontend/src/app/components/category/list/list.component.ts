@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import { CategorySimple } from 'src/app/dtos/categorySimple';
+import {CategoryService} from '../../../services/category.service';
 
 @Component({
   selector: 'app-list',
@@ -12,7 +13,9 @@ export class ListComponent implements OnInit {
   @Input() specs: { listSize: number, pageSize: number, page: number };
   @Input() path: string;
 
-  constructor() {
+  admin: boolean = false;
+
+  constructor(private categoryService: CategoryService) {
   }
 
   trackChange(index: number, item: any) {
@@ -20,5 +23,14 @@ export class ListComponent implements OnInit {
   }
 
   ngOnInit() {
+    if (localStorage.getItem('whoami')) {
+      this.admin = JSON.parse(localStorage.getItem('whoami')).admin;
+    }
+  }
+
+  deleteCategory(category: CategorySimple) {
+    this.categoryService.deleteCategory(category.id).subscribe(_ => {
+      this.list = this.list.filter(c => c !== category);
+    });
   }
 }
