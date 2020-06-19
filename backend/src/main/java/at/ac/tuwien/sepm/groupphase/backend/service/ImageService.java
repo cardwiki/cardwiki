@@ -16,9 +16,9 @@ public interface ImageService {
     /**
      * Find a single image by id.
      *
-     * @param id the id of the image entry
+     * @param filename the filename of the image entry
      * @return the image entry
      */
-    Image findById(Long id);
+    Image findByFilename(String filename);
 
 }

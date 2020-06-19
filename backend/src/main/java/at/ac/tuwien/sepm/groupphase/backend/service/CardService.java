@@ -2,6 +2,9 @@ package at.ac.tuwien.sepm.groupphase.backend.service;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
+import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionCreate;
+import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionEdit;
+import at.ac.tuwien.sepm.groupphase.backend.exception.CardNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.DeckNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.AuthenticationRequiredException;
 
@@ -20,15 +23,16 @@ public interface CardService {
      * @throws DeckNotFoundException if no deck with this id exists
      * @throws AuthenticationRequiredException if no authenticated user could be found
      */
-    Card addCardToDeck(Long deckId, Revision revision);
+    Card addCardToDeck(Long deckId, RevisionCreate revision);
 
     /**
      * Find a single card by id.
      *
      * @param cardId id of the card
      * @return the card entry
+     * @throws CardNotFoundException if no card with this id exists
      */
-    Card findOne(Long cardId);
+    Card findOneOrThrow(Long cardId);
 
 
     /**
@@ -38,7 +42,7 @@ public interface CardService {
      * @param cardId id of the card
      * @return edited card
      */
-    Card editCardInDeck(Long cardId, Revision revision);
+    Card editCardInDeck(Long cardId, RevisionEdit revision);
 
     /**
      * Get all cards for a specific deck
@@ -46,7 +50,7 @@ public interface CardService {
      * @param deckId of the deck
      * @return list of cards of the deck
      */
-    List<Card> findCardsByDeckId(Long deckId);
+    List<RevisionEdit> findLatestEditRevisionsByDeckId(Long deckId);
 
     /**
      * Add delete-revision to card
@@ -55,5 +59,5 @@ public interface CardService {
      * @param revisionMessage optional message for the delete-revision
      * @return card with added delete-revision
      */
-    Card addDeleteRevisionToCard(Long cardId, String revisionMessage);
+    void addDeleteRevisionToCard(Long cardId, String revisionMessage);
 }

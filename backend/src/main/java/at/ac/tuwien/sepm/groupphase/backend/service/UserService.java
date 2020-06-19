@@ -19,7 +19,7 @@ public interface UserService {
      * @return the user entity
      * @throws UserNotFoundException is thrown if the specified user does not exists
      */
-    User loadUserById(Long id);
+    User findUserByIdOrThrow(Long id);
 
     /**
      * Find a user in the context of Spring Security based on the email address
@@ -31,21 +31,21 @@ public interface UserService {
      * @return the user entity
      * @throws UserNotFoundException is thrown if the specified user does not exists
      */
-    User loadUserByUsername(String username);
+    User findUserByUsernameOrThrow(String username);
 
     /**
      * Loads an user for an Auth ID.
      * @param authId authorization ID of the user to load
      * @return the user entity
      */
-    Optional<User> loadUserByAuthId(String authId);
+    Optional<User> findUserByAuthId(String authId);
 
     /**
      * Loads the currently authenticated user.
      * @return the user entity
      * @throws AuthenticationRequiredException if no authentication is provided or the current user is not stored in the repository
      */
-    User loadCurrentUser();
+    User loadCurrentUserOrThrow();
 
     /**
      * Create a new user.

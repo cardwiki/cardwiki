@@ -38,7 +38,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<Object> internalServerError(RuntimeException ex, WebRequest request){
         // TODO: return proper JSON
-        LOGGER.error(ex.getMessage());
+        ex.printStackTrace();
         // Don't leak exception messages by default.
         return handleExceptionInternal(ex, "internal server error", new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
     }

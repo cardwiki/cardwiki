@@ -1,9 +1,8 @@
 package at.ac.tuwien.sepm.groupphase.backend.unittests;
 
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
-import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
 import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionEdit;
-import at.ac.tuwien.sepm.groupphase.backend.repository.RevisionEditRepository;
+import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.repository.RevisionRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,73 +26,48 @@ public class RevisionEditRepositoryTest extends TestDataGenerator {
     @Autowired
     private RevisionRepository revisionRepository;
 
-    @Autowired
-    private RevisionEditRepository revisionEditRepository;
-
-    private static final String UTF_16_SAMPLE_TEXT = "ユ简크로أفضل البحوثΣὲ γνДесแผ∮E⋅∞∑çéèñé";
-
-    @Test
-    public void givenNothing_whenSaveRevisionEditWithoutRevision_throwsJpaSystemException() {
-        RevisionEdit edit = new RevisionEdit();
-        edit.setTextFront("front text");
-        edit.setTextBack("back text");
-
-        assertThrows(JpaSystemException.class, () -> revisionEditRepository.save(edit));
-    }
-
     @Test
     public void givenRevision_whenSaveRevisionEdit_thenFindByIdReturnsRevisionEdit() {
-        Revision revision = givenRevision();
-
         // When
-        RevisionEdit edit = new RevisionEdit();
-        edit.setTextFront("front text");
-        edit.setTextBack("back text");
-        edit.setRevision(revision);
-        edit = revisionEditRepository.saveAndFlush(edit);
+        Agent persistentAgent = persistentAgent();
+
+        RevisionEdit edit = persistentAgent.unpersist().editCard(persistentAgent.createCardIn(persistentAgent.createDeck()));
+        edit = revisionRepository.saveAndFlush(edit);
 
         // Then
-        assertEquals(edit, revisionEditRepository.findById(edit.getId()).orElseThrow());
+        assertEquals(edit, revisionRepository.findById(edit.getId()).orElseThrow());
     }
 
     @Test
     public void givenRevision_whenSaveRevisionEditWithTooLongText_thenFindByIdReturnsRevisionEdit() {
-        Revision revision = givenRevision();
-
         // When
-        RevisionEdit edit = new RevisionEdit();
+        Agent user = persistentAgent();
+        RevisionEdit edit = user.unpersist().editCard(user.createCardIn(user.createDeck()));
         edit.setTextFront("x".repeat(RevisionEdit.MAX_TEXT_SIZE + 1));
         edit.setTextBack("back text");
-        edit.setRevision(revision);
 
         // Then
-        assertThrows(ConstraintViolationException.class, () -> revisionEditRepository.saveAndFlush(edit));
+        assertThrows(ConstraintViolationException.class, () -> revisionRepository.saveAndFlush(edit));
     }
 
     @Test
     public void givenRevision_whenSaveRevisionEditWithBlankText_thenFindByIdReturnsRevisionEdit() {
-        Revision revision = givenRevision();
-
         // When
-        RevisionEdit edit = new RevisionEdit();
+        Agent user = persistentAgent();
+        RevisionEdit edit = user.unpersist().editCard(user.createCardIn(user.createDeck()));
         edit.setTextFront("  ");
-        edit.setTextBack("back text");
-        edit.setRevision(revision);
 
         // Then
-        assertThrows(ConstraintViolationException.class, () -> revisionEditRepository.saveAndFlush(edit));
+        assertThrows(ConstraintViolationException.class, () -> revisionRepository.saveAndFlush(edit));
     }
 
     @Test
     public void givenRevision_whenSaveRevisionEditWithSpecialCharacters_thenFindByIdReturnsWithSpecialCharacters() {
-        Revision revision = givenRevision();
-
         // When
-        RevisionEdit edit = new RevisionEdit();
+        Agent user = persistentAgent();
+        RevisionEdit edit = user.unpersist().editCard(user.createCardIn(user.createDeck()));
         edit.setTextFront(UTF_16_SAMPLE_TEXT);
-        edit.setTextBack("back text");
-        edit.setRevision(revision);
-        edit = revisionEditRepository.saveAndFlush(edit);
+        edit = revisionRepository.saveAndFlush(edit);
 
         // Then
         assertEquals(edit.getTextFront(), UTF_16_SAMPLE_TEXT);
@@ -101,14 +75,14 @@ public class RevisionEditRepositoryTest extends TestDataGenerator {
 
     @Test
     public void givenRevisionEdit_whenDeleteRevisionById_thenExistsByIdReturnsFalse() {
-        RevisionEdit revisionEdit = givenRevisionEdit();
-        Revision revision = revisionEdit.getRevision();
+        Agent user = persistentAgent();
+        RevisionEdit revisionEdit = user.editCard(user.createCardIn(user.createDeck()));
 
         // When
-        revisionRepository.deleteById(revision.getId());
+        revisionRepository.deleteById(revisionEdit.getId());
         revisionRepository.flush();
 
         // Then
-        assertFalse(revisionEditRepository.existsById(revisionEdit.getId()));
+        assertFalse(revisionRepository.existsById(revisionEdit.getId()));
     }
 }

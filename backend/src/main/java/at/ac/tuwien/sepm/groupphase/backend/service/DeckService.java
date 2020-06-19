@@ -16,7 +16,7 @@ public interface DeckService {
      * @return the deck entry
      * @throws DeckNotFoundException if the specified deck does not exist
      */
-    Deck findOne(Long id);
+    Deck findOneOrThrow(Long id);
 
     /**
      * Find all card decks containing {@code name} (case insensitive)

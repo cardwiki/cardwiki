@@ -42,7 +42,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public Category findOneById(Long id) {
+    public Category findOneOrThrow(Long id) {
         LOGGER.debug("Find category with id {}.", id);
         Category category = categoryRepository.findCategoryById(id).orElseThrow(
             () -> new CategoryNotFoundException("Category not found."));
@@ -63,7 +63,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public Category createCategory(Category category) {
         LOGGER.debug("Create category {}", category);
-        User user = userService.loadCurrentUser();
+        User user = userService.loadCurrentUserOrThrow();
         category.setCreatedBy(user);
         category.setName(category.getName().trim().replaceAll(" +", " "));
         try {
@@ -77,7 +77,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public Category updateCategory(Long id, Category categoryUpdate) {
         LOGGER.debug("Update category with id {}", id);
-        Category category = findOneById(id);
+        Category category = findOneOrThrow(id);
 
         Category parent = null;
         Category newParent = categoryUpdate.getParent();
@@ -88,7 +88,7 @@ public class CategoryServiceImpl implements CategoryService {
             if (categoryRepository.ancestorExistsWithId(id, newParent.getId())) {
                 throw new IllegalArgumentException("Circular child-parent relation.");
             }
-            parent = findOneById(newParent.getId());
+            parent = findOneOrThrow(newParent.getId());
         }
 
         category.setParent(parent);

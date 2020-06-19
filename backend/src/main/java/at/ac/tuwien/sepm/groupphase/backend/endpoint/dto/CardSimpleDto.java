@@ -9,6 +9,6 @@ public class CardSimpleDto {
     private DeckSimpleDto deck;
     private String textFront;
     private String textBack;
-    private ImageDto imageFront;
-    private ImageDto imageBack;
+    private String imageFront;
+    private String imageBack;
 }

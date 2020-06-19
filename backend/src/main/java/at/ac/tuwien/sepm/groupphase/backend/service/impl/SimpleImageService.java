@@ -44,11 +44,11 @@ public class SimpleImageService implements ImageService {
 
     @Transactional
     @Override
-    public Image findById(Long id) {
-        LOGGER.debug("Find image with id {}", id);
-        Objects.requireNonNull(id, "id argument must not be null");
-        Optional<Image> image = imageRepository.findById(id);
-        return image.orElseThrow(() -> new NotFoundException(String.format("Could not find image with id %s", id)));
+    public Image findByFilename(String filename) {
+        LOGGER.debug("Find image with filename {}", filename);
+        Objects.requireNonNull(filename, "id argument must not be null");
+        Optional<Image> image = imageRepository.findById(filename);
+        return image.orElseThrow(() -> new NotFoundException(String.format("Could not find image with filename %s", filename)));
     }
 
     @Override
@@ -76,7 +76,7 @@ public class SimpleImageService implements ImageService {
         String filename = bytesToHex(hash) + "." + contentType;
 
         // Check if image already exists
-        Image existingImage = imageRepository.findByFilename(filename);
+        Image existingImage = imageRepository.findByFilename(filename).orElse(null);
         if (existingImage != null) {
             return existingImage;
         }
@@ -89,7 +89,7 @@ public class SimpleImageService implements ImageService {
         }
 
         // Create image entity
-        User user = userService.loadCurrentUser();
+        User user = userService.loadCurrentUserOrThrow();
         Image image = new Image();
         image.setCreatedBy(user);
         image.setFilename(filename);

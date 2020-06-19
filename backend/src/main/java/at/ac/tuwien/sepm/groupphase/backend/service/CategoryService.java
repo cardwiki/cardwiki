@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepm.groupphase.backend.service;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
+import at.ac.tuwien.sepm.groupphase.backend.exception.CategoryNotFoundException;
 
 import java.util.List;
 
@@ -18,8 +19,9 @@ public interface CategoryService  {
      *
      * @param id of the entry to find
      * @return category entry found
+     * @throws CategoryNotFoundException if no category with this id exists
      */
-    Category findOneById(Long id);
+    Category findOneOrThrow(Long id);
 
 
     /**

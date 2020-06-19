@@ -56,7 +56,6 @@ public class ImageEndpointTest extends TestDataGenerator {
             .file(multipartFile)
             .with(mockLogin(USER_ROLES, user.getAuthId())))
             .andExpect(status().is(201))
-            .andExpect(jsonPath("$.id").isNumber())
             .andExpect(jsonPath("$.filename").value(testImageHash))
             .andExpect(jsonPath("$.url").value(Paths.get(imageServedPath, testImageHash).toString()));
 
@@ -113,7 +112,6 @@ public class ImageEndpointTest extends TestDataGenerator {
             .file(multipartFile)
             .with(mockLogin(USER_ROLES, user.getAuthId())))
             .andExpect(status().is(201))
-            .andExpect(jsonPath("$.id").value(image.getId()))
             .andExpect(jsonPath("$.filename").value(testImageHash))
             .andExpect(jsonPath("$.url").value(Paths.get(imageServedPath, testImageHash).toString()));
 

@@ -42,7 +42,8 @@ public class AuthEndpointTest extends TestDataGenerator {
 
     @Test
     public void whoAmIUser() throws Exception {
-        User user = givenApplicationUser();
+        User user = persistentAgent().getUser();
+
         mvc.perform(
             get("/api/v1/auth/whoami")
             .with(login(user.getAuthId()))
@@ -56,8 +57,9 @@ public class AuthEndpointTest extends TestDataGenerator {
 
     @Test
     public void whoAmIAdmin() throws Exception {
-        User user = givenApplicationUser();
+        User user = persistentAgent().getUser();
         user.setAdmin(true);
+
         mvc.perform(
             get("/api/v1/auth/whoami")
                 .with(login(user.getAuthId()))

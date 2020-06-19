@@ -8,7 +8,7 @@ import java.util.Optional;
 
 
 @Repository
-public interface ImageRepository extends JpaRepository<Image, Long> {
+public interface ImageRepository extends JpaRepository<Image, String> {
 
     /**
      * Find image with filename
@@ -16,12 +16,5 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
      * @param filename of the image
      * @return image with passed filename
      */
-    Image findByFilename(String filename);
-
-    /**
-     * Find a specific image by id
-     * @param id of the image to find
-     * @return image found
-     */
-    Optional<Image> findById(Long id);
+    Optional<Image> findByFilename(String filename);
 }

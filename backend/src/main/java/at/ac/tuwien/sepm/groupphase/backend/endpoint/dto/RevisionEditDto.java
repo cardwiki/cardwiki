@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
 
 @ContentNotNull
 @Data
-public class RevisionInputDto {
+public class RevisionEditDto {
 
     @Size(max = RevisionEdit.MAX_TEXT_SIZE)
     @NullOrNotBlank
@@ -19,9 +19,11 @@ public class RevisionInputDto {
     @NullOrNotBlank
     private String textBack;
 
-    private ImageDto imageFront;
+    @NullOrNotBlank
+    private String imageFront;
 
-    private ImageDto imageBack;
+    @NullOrNotBlank
+    private String imageBack;
 
     @Size(max = Revision.MAX_MESSAGE_SIZE)
     private String message;

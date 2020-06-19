@@ -94,7 +94,7 @@ public class CategoryServiceTest extends TestDataGenerator {
             return children;
         });
 
-        Category result = categoryService.findOneById(category.getId());
+        Category result = categoryService.findOneOrThrow(category.getId());
         assertAll(
             () -> assertEquals(result, category),
             () -> assertEquals(result.getParent(), category.getParent()),
@@ -110,7 +110,7 @@ public class CategoryServiceTest extends TestDataGenerator {
     @Test
     public void givenNothing_whenFindOneByIdNonExistentCategory_thenThrowsCategoryNotFoundException() {
         when(categoryRepository.findCategoryById(any(Long.class))).thenReturn(Optional.empty());
-        assertThrows(CategoryNotFoundException.class, () -> categoryService.findOneById(1L));
+        assertThrows(CategoryNotFoundException.class, () -> categoryService.findOneOrThrow(1L));
     }
 
     @Test
@@ -120,7 +120,7 @@ public class CategoryServiceTest extends TestDataGenerator {
         when(categoryRepository.findCategoryById(category.getId())).thenReturn(Optional.of(category));
         when(categoryRepository.findCategoryById(category.getParent().getId())).thenReturn(Optional.empty());
 
-        assertThrows(CategoryNotFoundException.class, () -> categoryService.findOneById(category.getId()));
+        assertThrows(CategoryNotFoundException.class, () -> categoryService.findOneOrThrow(category.getId()));
     }
 
     @Test
@@ -132,7 +132,7 @@ public class CategoryServiceTest extends TestDataGenerator {
         category.setChildren(new HashSet<>());
         category.setDecks(new HashSet<>());
 
-        when(userService.loadCurrentUser()).thenReturn(user);
+        when(userService.loadCurrentUserOrThrow()).thenReturn(user);
         when(categoryRepository.saveAndFlush(any(Category.class))).thenAnswer(i -> {
             Category cat = i.getArgument(0);
             LocalDateTime now = LocalDateTime.now();

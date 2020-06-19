@@ -1,6 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.validation;
 
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.RevisionInputDto;
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.RevisionEditDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionEdit;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -14,8 +14,8 @@ public class ContentNotNullValidator implements ConstraintValidator<ContentNotNu
            RevisionEdit revisionEdit = (RevisionEdit) object;
            return (revisionEdit.getTextFront() != null || revisionEdit.getImageFront() != null)
                && (revisionEdit.getTextBack() != null || revisionEdit.getImageBack() != null);
-       } else if (object instanceof RevisionInputDto) {
-           RevisionInputDto revisionInputDto = (RevisionInputDto) object;
+       } else if (object instanceof RevisionEditDto) {
+           RevisionEditDto revisionInputDto = (RevisionEditDto) object;
            return (revisionInputDto.getTextFront() != null || revisionInputDto.getImageFront() != null)
                && (revisionInputDto.getTextBack() != null || revisionInputDto.getImageBack() != null);
        } else {

@@ -20,7 +20,7 @@ public class AdminCreator {
 
     @PostConstruct
     private void makeAdmin() {
-        User user = userService.loadUserByUsername(username);
+        User user = userService.findUserByUsernameOrThrow(username);
         user.setAdmin(true);
         userService.updateUser(user.getId(), user);
     }

@@ -3,6 +3,7 @@ package at.ac.tuwien.sepm.groupphase.backend.entity;
 import at.ac.tuwien.sepm.groupphase.backend.validation.ContentNotNull;
 import at.ac.tuwien.sepm.groupphase.backend.validation.NullOrNotBlank;
 
+import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.util.Objects;
@@ -10,16 +11,12 @@ import java.util.Objects;
 @ContentNotNull
 @Entity
 @Table(name = "revision_edits")
-public class RevisionEdit {
+@DiscriminatorValue(Revision.Type.Values.EDIT)
+public class RevisionEdit extends Revision {
     public static final int MAX_TEXT_SIZE = 1000;
 
     @Id
     private Long id;
-
-    @OneToOne
-    @MapsId
-    @JoinColumn(name = "revision_id", updatable = false)
-    private Revision revision;
 
     @Size(max = MAX_TEXT_SIZE)
     @NullOrNotBlank
@@ -45,14 +42,6 @@ public class RevisionEdit {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Revision getRevision() {
-        return revision;
-    }
-
-    public void setRevision(Revision revision) {
-        this.revision = revision;
     }
 
     public String getTextFront() {
@@ -108,6 +97,7 @@ public class RevisionEdit {
         return "RevisionEdit{" +
             "textFront='" + textFront + '\'' +
             ", imageFront='" + imageFront + '\'' +
+            ", textFront='" + textFront + '\'' +
             ", textBack='" + textBack + '\'' +
             ", imageBack='" + imageBack + '\'' +
             '}';

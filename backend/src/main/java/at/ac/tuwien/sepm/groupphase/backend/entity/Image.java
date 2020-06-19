@@ -11,12 +11,7 @@ import java.util.Set;
 @Entity
 @Table(name = "images")
 public class Image {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false)
     private String filename;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -32,14 +27,6 @@ public class Image {
 
     @OneToMany(mappedBy = "imageBack")
     private Set<RevisionEdit> backSides = new HashSet<>();
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getFilename() {
         return filename;
@@ -82,25 +69,8 @@ public class Image {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Image image = (Image) o;
-        return getId().equals(image.getId()) &&
-            getFilename().equals(image.getFilename()) &&
-            getCreatedBy().equals(image.getCreatedBy()) &&
-            getCreatedAt().equals(image.getCreatedAt());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getFilename(), getCreatedBy(), getCreatedAt());
-    }
-
-    @Override
     public String toString() {
         return "Image{" +
-            "id=" + id +
             ", filename='" + filename + '\'' +
             ", createdBy=" + createdBy +
             ", createdAt=" + createdAt +
