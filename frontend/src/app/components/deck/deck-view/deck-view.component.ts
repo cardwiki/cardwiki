@@ -19,6 +19,7 @@ export class DeckViewComponent implements OnInit {
 
   deck: DeckDetails;
   cards: CardSimple[];
+  admin: boolean = false;
 
   constructor(private deckService: DeckService, private cardService: CardService, private route: ActivatedRoute,
               private router: Router, private modalService: NgbModal, public authService: AuthService, private notificationService: NotificationService) { }
@@ -27,6 +28,9 @@ export class DeckViewComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       this.loadDeck(Number(params.get('id')));
     });
+    if (localStorage.getItem('whoami')) {
+      this.admin = JSON.parse(localStorage.getItem('whoami')).admin;
+    }
   }
 
   loadDeck(id: number) {
@@ -54,5 +58,11 @@ export class DeckViewComponent implements OnInit {
         (deck: DeckDetails) => this.router.navigate(['decks', deck.id])
       )
     ).catch(() => {});
+  }
+
+  deleteCard(card: CardSimple) {
+    this.cardService.deleteCard(this.deck.id, card.id).subscribe(_ => {
+      this.cards = this.cards.filter(c => c !== card);
+    });
   }
 }

@@ -59,6 +59,18 @@ export class CardService {
       .pipe(tap(null, this.errorHandler.handleError('Could not fetch Card')))
   }
 
+  /**
+   * Permanently deletes a card.
+   *
+   * @param deckId of the card deck
+   * @param cardId of the card to delete.
+   */
+  deleteCard(deckId: number, cardId: number): Observable<void> {
+    console.log(`Delete card ${cardId} from deck ${deckId}`);
+    return this.httpClient.delete<void>(this.getCardUri(deckId, cardId))
+      .pipe(tap(null, this.errorHandler.handleError('Could not delete Card')));
+  }
+
   private getCardUri(deckId: number, cardId?: number) {
     return typeof cardId !== 'undefined' ?
       `${this.globals.backendUri}/decks/${deckId}/cards/${cardId}`
