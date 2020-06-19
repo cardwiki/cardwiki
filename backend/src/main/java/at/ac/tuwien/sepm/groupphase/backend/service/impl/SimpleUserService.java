@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -43,13 +44,13 @@ public class SimpleUserService implements UserService {
     }
 
     @Override
-    public List<Deck> getDecks(Long id, Pageable pageable) {
+    public Page<Deck> getDecks(Long id, Pageable pageable) {
         LOGGER.debug("Load {} decks with offset {} from user {}", pageable.getPageSize(), pageable.getOffset(), id);
         return deckRepository.findByCreatedBy_Id(id, pageable);
     }
 
     @Override
-    public List<Revision> getRevisions(Long id, Pageable pageable) {
+    public Page<Revision> getRevisions(Long id, Pageable pageable) {
         LOGGER.debug("Load {} revisions with offset {} from user {}", pageable.getPageSize(), pageable.getOffset(), id);
         return revisionRepository.findByCreatedBy_Id(id, pageable);
     }
@@ -112,12 +113,7 @@ public class SimpleUserService implements UserService {
     }
 
     @Override
-    public List<User> getAll() {
-        return userRepository.findAll();
-    }
-
-    @Override
-    public List<User> searchByUsername(String username, Pageable pageable) {
+    public Page<User> searchByUsername(String username, Pageable pageable) {
         LOGGER.debug("Search users for username {} {}", username, pageable);
         Objects.requireNonNull(username, "name argument must not be null");
         return userRepository.findByUsernameContainingIgnoreCase(username, pageable);

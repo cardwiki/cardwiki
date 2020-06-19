@@ -32,10 +32,10 @@ public class DeckRepositoryTest extends TestDataGenerator {
 
         assertAll(
             () -> assertEquals(1,
-                deckRepository.findByNameContainingIgnoreCase(deck.getName(), Pageable.unpaged()).size()
+                deckRepository.findByNameContainingIgnoreCase(deck.getName(), Pageable.unpaged()).getTotalElements()
             ),
             () -> assertEquals(1,
-                deckRepository.findByNameContainingIgnoreCase(deck.getName().substring(1,3), Pageable.unpaged()).size()
+                deckRepository.findByNameContainingIgnoreCase(deck.getName().substring(1,3), Pageable.unpaged()).getTotalElements()
             )
         );
     }

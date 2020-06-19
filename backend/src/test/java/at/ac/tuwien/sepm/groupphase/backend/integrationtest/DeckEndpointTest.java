@@ -121,21 +121,6 @@ public class DeckEndpointTest extends TestDataGenerator {
     @Test
     public void givenNoAuthentication_whenSearchDecks_thenReturnDeck() throws Exception {
         Deck deck = givenDeck();
-        DeckDto response = new DeckDto();
-        response.setCreatedBy(deck.getCreatedBy().getId());
-        response.setCreatedAt(deck.getCreatedAt());
-        response.setUpdatedAt(deck.getUpdatedAt());
-        response.setName(deck.getName());
-        response.setId(deck.getId());
-        response.setCategories(
-            deck.getCategories().stream()
-                .map((x) -> {
-                    CategorySimpleDto category = new CategorySimpleDto();
-                    category.setName(x.getName());
-                    category.setId(x.getId());
-                    return category;
-                }).collect(Collectors.toList())
-            );
 
         mvc.perform(
             get("/api/v1/decks")
@@ -145,7 +130,13 @@ public class DeckEndpointTest extends TestDataGenerator {
                 .queryParam("offset", "0")
         )
             .andExpect(status().isOk())
-            .andExpect(content().json(objectMapper.writeValueAsString(Collections.singletonList(response))));
+            .andExpect(jsonPath("$.totalElements").value(1))
+            .andExpect(jsonPath("$.content[0].id").value(deck.getId()))
+            .andExpect(jsonPath("$.content[0].name").value(deck.getName()))
+            .andExpect(jsonPath("$.content[0].createdAt", validIsoDateTime()))
+            .andExpect(jsonPath("$.content[0].updatedAt", validIsoDateTime()))
+            .andExpect(jsonPath("$.content[0].createdBy").value(deck.getCreatedBy().getId()))
+            .andExpect(jsonPath("$.content[0].categories").isEmpty()); // TODO: Test with categories
     }
 
     @Test
@@ -158,7 +149,7 @@ public class DeckEndpointTest extends TestDataGenerator {
                 .queryParam("offset", "0")
         )
             .andExpect(status().isOk())
-            .andExpect(content().json(objectMapper.writeValueAsString(Collections.emptyList())));
+            .andExpect(jsonPath("$.content").isEmpty());
     }
 
     @Test
@@ -166,22 +157,6 @@ public class DeckEndpointTest extends TestDataGenerator {
         Deck deck = givenDeck();
         deck.setName("\u82B1");
         deck = deckRepository.saveAndFlush(deck);
-
-        DeckDto response = new DeckDto();
-        response.setCreatedBy(deck.getCreatedBy().getId());
-        response.setCreatedAt(deck.getCreatedAt());
-        response.setUpdatedAt(deck.getUpdatedAt());
-        response.setName(deck.getName());
-        response.setId(deck.getId());
-        response.setCategories(
-            deck.getCategories().stream()
-                .map((x) -> {
-                    CategorySimpleDto category = new CategorySimpleDto();
-                    category.setName(x.getName());
-                    category.setId(x.getId());
-                    return category;
-                }).collect(Collectors.toList())
-        );
 
         mvc.perform(
             get("/api/v1/decks")
@@ -191,8 +166,11 @@ public class DeckEndpointTest extends TestDataGenerator {
                 .queryParam("offset", "0")
         )
             .andExpect(status().isOk())
-            .andExpect(content().json(objectMapper.writeValueAsString(Collections.singletonList(response))));
+            .andExpect(jsonPath("$.content").isNotEmpty())
+            .andExpect(jsonPath("$.content[0].id").value(deck.getId()))
+            .andExpect(jsonPath("$.content[0].name").value(deck.getName()));
     }
+
     @Test
     public void givenAuthenticatedUser_whenCopyDeck_thenReturnDeckCopy() throws Exception {
         Deck deck = givenDeck();

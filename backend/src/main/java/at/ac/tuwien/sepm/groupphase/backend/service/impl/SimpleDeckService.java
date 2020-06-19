@@ -9,6 +9,7 @@ import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,7 +44,7 @@ public class SimpleDeckService implements DeckService {
     }
 
     @Override
-    public List<Deck> searchByName(String name, Pageable pageable) {
+    public Page<Deck> searchByName(String name, Pageable pageable) {
         LOGGER.debug("Search card decks for name {} {}", name, pageable);
         Objects.requireNonNull(name, "name argument must not be null");
         return deckRepository.findByNameContainingIgnoreCase(name, pageable);

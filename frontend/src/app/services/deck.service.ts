@@ -8,6 +8,8 @@ import {DeckSimple} from '../dtos/deckSimple';
 import {DeckUpdate} from '../dtos/deckUpdate';
 import { ErrorHandlerService } from './error-handler.service';
 import { tap } from 'rxjs/operators';
+import { Page } from '../dtos/page';
+import { Pageable } from '../dtos/pageable';
 
 @Injectable({
   providedIn: 'root'
@@ -52,23 +54,18 @@ export class DeckService {
   }
 
   /**
-   * Load all card decks containing {@code name} from
-   * the backend.
+   * Fetch page of decks containing {@code name}
    *
    * @param name to search for
-   * @param offset of the page.
-   * @param limit of results returned.
+   * @param pageable config for pagination
    */
-  searchByName(name: string, offset: number, limit: number): Observable<DeckDetails[]> {
+  searchByName(name: string, pageable: Pageable): Observable<Page<DeckDetails>> {
     console.log('search card decks: ' + name);
-    const params = new HttpParams({
-      fromObject: {
-        name,
-        offset: offset.toString(10),
-        limit: limit.toString(10)
-      }
-    });
-    return this.httpClient.get<DeckDetails[]>(this.deckBaseUri, { params })
+    const params = {
+      name,
+      ...pageable.toObject(),
+    }
+    return this.httpClient.get<Page<DeckDetails>>(this.deckBaseUri, { params })
       .pipe(tap(null, this.errorHandler.handleError('Could not search for Decks')));
   }
 

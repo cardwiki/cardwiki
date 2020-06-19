@@ -3,6 +3,8 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {UserProfile} from "../../dtos/userProfile";
 import {UserService} from "../../services/user.service";
+import { Page } from 'src/app/dtos/page';
+import { Pageable } from 'src/app/dtos/pageable';
 
 @Component({
   selector: 'app-user-search',
@@ -14,24 +16,22 @@ export class UserSearchComponent implements OnInit {
   readonly USER_PAGINATION_LIMIT = 10;
 
   searchTerm = '';
+  page: Page<UserProfile>
   users: UserProfile[] = [];
-  maxUsersLoaded: boolean = false;
-  noUsersFound: boolean = false;
 
-  constructor(private route: ActivatedRoute, private router: Router, private modalService: NgbModal, private userService: UserService) {
+  constructor(private route: ActivatedRoute, private router: Router, private userService: UserService) {
     this.route.queryParams.subscribe(params => {
       this.searchTerm = params['username'] || '';
     });
   }
 
   ngOnInit() {
-    if (this.searchTerm) this.loadUsers(0)
+    if (this.searchTerm)
+      this.loadUsers()
   }
 
   onSubmit() {
     console.log('search', this.searchTerm);
-    this.maxUsersLoaded = false;
-    this.noUsersFound = false;
     this.users = [];
     this.router.navigate(
       [],
@@ -40,15 +40,17 @@ export class UserSearchComponent implements OnInit {
         queryParams: { username: this.searchTerm },
         queryParamsHandling: 'merge'
       });
-    this.loadUsers(0)
+    this.loadUsers()
   }
 
-  loadUsers(offset: number = this.users.length/this.USER_PAGINATION_LIMIT): void {
-    this.userService.searchUsers(this.searchTerm, this.USER_PAGINATION_LIMIT, offset).subscribe(users => {
-      this.users.push(...users);
-      if (users.length + this.users.length === 0) this.noUsersFound = true;
-      if (users.length < this.USER_PAGINATION_LIMIT) this.maxUsersLoaded = true;
-    })
+  loadUsers(): void {
+    const nextPage = this.page ? this.page.pageable.pageNumber + 1 : 0
+    this.userService.searchUsers(this.searchTerm, new Pageable(nextPage, this.USER_PAGINATION_LIMIT))
+      .subscribe(userPage => {
+        this.page.numberOfElements
+        this.page = userPage
+        this.users.push(...userPage.content);
+      })
   }
 
 }

@@ -174,13 +174,13 @@ public class UserEndpointTest extends TestDataGenerator {
             .queryParam("offset", "0")
         )
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$", hasSize(2)))
-            .andExpect(jsonPath("$[0].username").value("BuzFooBarBuz"))
-            .andExpect(jsonPath("$[1].username").value("fooBar"));
+            .andExpect(jsonPath("$.content", hasSize(2)))
+            .andExpect(jsonPath("$.content[0].username").value("BuzFooBarBuz"))
+            .andExpect(jsonPath("$.content[1].username").value("fooBar"));
     }
 
     @Test
-    public void searchNonExistantEmpty() throws Exception {
+    public void searchNonExistentEmpty() throws Exception {
         User user = givenApplicationUser();
 
         mvc.perform(get("/api/v1/users/")
@@ -189,7 +189,7 @@ public class UserEndpointTest extends TestDataGenerator {
             .queryParam("offset", "0")
             .contentType("application/json"))
             .andExpect(status().isOk())
-            .andExpect(content().json(objectMapper.writeValueAsString(Collections.emptyList())));
+            .andExpect(jsonPath("$.content").isEmpty());
     }
 
     @Test
@@ -201,7 +201,7 @@ public class UserEndpointTest extends TestDataGenerator {
             .queryParam("offset", "0")
             .contentType("application/json"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$[0].id").value(revisionEdit.getId()));
+            .andExpect(jsonPath("$.content[0].id").value(revisionEdit.getId()));
     }
 
     @Test
@@ -213,7 +213,7 @@ public class UserEndpointTest extends TestDataGenerator {
             .queryParam("offset", "0")
             .contentType("application/json"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$[0].id").value(deck.getId()));
+            .andExpect(jsonPath("$.content[0].id").value(deck.getId()));
     }
 
     @Test

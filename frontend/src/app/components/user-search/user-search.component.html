@@ -8,9 +8,9 @@
     </div>
   </form>
 
-  <div *ngIf="noUsersFound" class="alert-danger mt-4">No users found.</div>
+  <div *ngIf="page && !users.length" class="alert-danger mt-4">No users found.</div>
 
-  <div *ngIf="users.length>0" class="card mt-4">
+  <div *ngIf="users.length" class="card mt-4">
     <div class="card-header">
       Results
     </div>
@@ -19,7 +19,7 @@
         <a routerLink="/users/{{user.username}}/profile">{{user.username}}</a>
       </li>
     </ul>
-    <button *ngIf="!maxUsersLoaded" class="card-footer btn p-1" (click)="loadUsers()">
+    <button *ngIf="!page.last" class="card-footer btn p-1" (click)="loadUsers()">
       Load more...
     </button>
   </div>

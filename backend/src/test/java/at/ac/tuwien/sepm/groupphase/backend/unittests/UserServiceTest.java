@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -24,6 +25,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -63,26 +65,16 @@ public class UserServiceTest extends TestDataGenerator {
     @Test
     public void givenNothing_whenSearchByNameNotExistent_thenReturnEmptyList() {
         Mockito.when(userRepository.findByUsernameContainingIgnoreCase("", Pageable.unpaged()))
-            .thenReturn(Collections.emptyList());
+            .thenReturn(new PageImpl<>(Collections.emptyList()));
         assertTrue(userService.searchByUsername("", Pageable.unpaged()).isEmpty());
     }
 
     @Test
     public void givenNothing_whenSearchByNameExistent_thenReturnUser() {
-        User user = getSampleUser();
-        Mockito.when(userRepository.findByUsernameContainingIgnoreCase(user.getUsername(), Pageable.unpaged()))
-            .thenReturn(Collections.singletonList(user));
-        assertTrue(userService.searchByUsername(user.getUsername(), Pageable.unpaged()).contains(user));
-    }
-
-    @Test
-    public void givenMultipleUsers_whenGetAll_thenReturnAllUsers() {
-        User user1 = getSampleUser();
-        User user2 = getSampleUser();
-        User user3 = getSampleUser();
-        Mockito.when(userRepository.findAll())
-            .thenReturn(Arrays.asList(user1, user2, user3));
-        assertEquals(Arrays.asList(user1, user2, user3), userService.getAll());
+        User user = mock(User.class);
+        Mockito.when(userRepository.findByUsernameContainingIgnoreCase("foo", Pageable.unpaged()))
+            .thenReturn(new PageImpl<>(Collections.singletonList(user)));
+        assertTrue(userService.searchByUsername("foo", Pageable.unpaged()).getContent().contains(user));
     }
 
     @Test

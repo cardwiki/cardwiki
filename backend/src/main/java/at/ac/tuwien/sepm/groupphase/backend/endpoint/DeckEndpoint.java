@@ -11,7 +11,10 @@ import io.swagger.annotations.Authorization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -54,12 +57,10 @@ public class DeckEndpoint {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Search for card decks")
-    public List<DeckDto> search(@RequestParam String name, @RequestParam Integer limit, @RequestParam Integer offset) {
-        LOGGER.info("GET /api/v1/decks?name={}&limit={}&offset={}", name, limit, offset);
-        return deckService.searchByName(name, PageRequest.of(offset, limit))
-            .stream()
-            .map(deckMapper::deckToDeckDto)
-            .collect(Collectors.toList());
+    public Page<DeckDto> search(@RequestParam String name, @SortDefault("name") Pageable pageable) {
+        LOGGER.info("GET /api/v1/decks?name={} {}", name, pageable);
+        return deckService.searchByName(name, pageable)
+            .map(deckMapper::deckToDeckDto);
     }
 
     @GetMapping(value = "/{id}")

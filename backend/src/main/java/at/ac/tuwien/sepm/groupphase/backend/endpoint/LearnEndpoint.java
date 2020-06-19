@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -45,9 +46,9 @@ public class LearnEndpoint {
     @Secured("ROLE_USER")
     @GetMapping("/next")
     @ApiOperation(value = "Get the next cards of a deck to learn", authorizations = {@Authorization(value = "apiKey")})
-    public List<CardSimpleDto> getNextCards(@RequestParam Long deckId, @RequestParam(defaultValue = "10") Integer limit, @RequestParam(defaultValue = "0") Integer offset){
-        LOGGER.info("GET /api/v1/learn/next?deckId={}&limit={}&offset={}", deckId, limit, offset);
-        return learnService.findNextCardsByDeckId(deckId, PageRequest.of(offset, limit)).stream()
+    public List<CardSimpleDto> getNextCards(@RequestParam Long deckId, Pageable pageable){
+        LOGGER.info("GET /api/v1/learn/next?deckId={} {}", deckId, pageable);
+        return learnService.findNextCardsByDeckId(deckId, pageable).stream()
             .map(card -> revisionMapper.revisionEditToCardSimpleDto((RevisionEdit) card.getLatestRevision()))
             .collect(Collectors.toList());
     }

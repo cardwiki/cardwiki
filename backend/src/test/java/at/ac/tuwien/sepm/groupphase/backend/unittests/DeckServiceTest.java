@@ -15,6 +15,8 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -71,16 +73,16 @@ public class DeckServiceTest extends TestDataGenerator {
     @Test
     public void givenNothing_whenSearchByNameNotExistent_thenReturnEmptyList() {
         Mockito.when(deckRepository.findByNameContainingIgnoreCase("", Pageable.unpaged()))
-            .thenReturn(Collections.emptyList());
+            .thenReturn(new PageImpl<>(Collections.emptyList()));
         assertTrue(deckService.searchByName("", Pageable.unpaged()).isEmpty());
     }
 
     @Test
     public void givenNothing_whenSearchByNameExistent_thenReturnDeck() {
-        Deck deck = getSampleDeck();
-        Mockito.when(deckRepository.findByNameContainingIgnoreCase(deck.getName(), Pageable.unpaged()))
-            .thenReturn(Collections.singletonList(deck));
-        assertTrue(deckService.searchByName(deck.getName(), Pageable.unpaged()).contains(deck));
+        Deck deck = mock(Deck.class);
+        Mockito.when(deckRepository.findByNameContainingIgnoreCase("foo", Pageable.unpaged()))
+            .thenReturn(new PageImpl<>(Collections.singletonList(deck)));
+        assertTrue(deckService.searchByName("foo", Pageable.unpaged()).getContent().contains(deck));
     }
 
     @Test

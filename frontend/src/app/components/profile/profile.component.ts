@@ -7,6 +7,8 @@ import {RevisionDetailed} from "../../dtos/revisionDetailed";
 import {Globals} from "../../global/globals";
 import {AuthService} from "../../services/auth.service";
 import {RevisionType} from 'src/app/dtos/revisionSimple';
+import { Page } from 'src/app/dtos/page';
+import { Pageable } from 'src/app/dtos/pageable';
 
 @Component({
   selector: 'app-profile',
@@ -20,10 +22,10 @@ export class ProfileComponent implements OnInit {
   readonly REVISIONTEXT_TRUNCATE: number = 30;
 
   profile: UserProfile;
+  deckPage: Page<DeckSimple>;
   decks: DeckSimple[] = [];
+  revisionPage: Page<RevisionDetailed>;
   revisions: RevisionDetailed[] = [];
-  maxDecksLoaded: boolean = false;
-  maxRevisionsLoaded: boolean = false;
 
   me: boolean = false;
   editingDescription: boolean = false;
@@ -50,23 +52,27 @@ export class ProfileComponent implements OnInit {
   loadProfile(username: string): void {
     this.userService.getProfile(username).subscribe(profile => {
       this.profile = profile;
-      this.loadDecks(0);
-      this.loadRevisions(0);
+      this.loadDecks();
+      this.loadRevisions();
     })
   }
 
-  loadDecks(offset: number = this.decks.length/this.DECK_PAGINATION_LIMIT): void {
-    this.userService.getDecks(this.profile.id, this.DECK_PAGINATION_LIMIT, offset).subscribe(decks => {
-      this.decks.push(...decks);
-      if (decks.length < this.DECK_PAGINATION_LIMIT) this.maxDecksLoaded = true;
-    })
+  loadDecks(): void {
+    const nextPageNumber = this.deckPage ? this.deckPage.pageable.pageNumber + 1 : 0;
+    this.userService.getDecks(this.profile.id, new Pageable(nextPageNumber, this.DECK_PAGINATION_LIMIT))
+      .subscribe(deckPage => {
+        this.deckPage = deckPage;
+        this.decks.push(...deckPage.content);
+      })
   }
 
-  loadRevisions(offset: number = this.revisions.length/this.REVISION_PAGINATION_LIMIT): void {
-    this.userService.getRevisions(this.profile.id, this.REVISION_PAGINATION_LIMIT, offset).subscribe(revisions => {
-      this.revisions.push(...revisions);
-      if (revisions.length < this.REVISION_PAGINATION_LIMIT) this.maxRevisionsLoaded = true;
-    })
+  loadRevisions(): void {
+    const nextPageNumber = this.revisionPage ? this.revisionPage.pageable.pageNumber + 1 : 0;
+    this.userService.getRevisions(this.profile.id, new Pageable(nextPageNumber, this.REVISION_PAGINATION_LIMIT))
+      .subscribe(revisionPage => {
+        this.revisionPage = revisionPage
+        this.revisions.push(...revisionPage.content)
+      })
   }
 
   saveDescription(): void {

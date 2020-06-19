@@ -20,5 +20,5 @@
     <span class="sr-only">Loading...</span>
 </div>
 <div class="my-4">
-    <button *ngIf="canLoadMore" class="btn btn-secondary" (click)="loadMore()" [disabled]="loading">Load more</button>
+    <button *ngIf="page && !page.last" class="btn btn-secondary" (click)="loadMore()" [disabled]="loading">Load more</button>
 </div>

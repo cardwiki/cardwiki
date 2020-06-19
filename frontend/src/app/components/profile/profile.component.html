@@ -26,7 +26,7 @@
             <a routerLink="/decks/{{deck.id}}">{{deck.name}}</a>
           </li>
         </ul>
-        <button *ngIf="!maxDecksLoaded" class="card-footer btn p-1" (click)="loadDecks()">
+        <button *ngIf="!deckPage.last" class="card-footer btn p-1" (click)="loadDecks()">
           Load more...
         </button>
       </div>
@@ -47,7 +47,7 @@
             <a routerLink="/decks/{{revision.card.deck.id}}">{{revision.card.deck.name}}</a>.
           </li>
         </ul>
-        <button *ngIf="!maxRevisionsLoaded" class="card-footer btn p-1" (click)="loadRevisions()">
+        <button *ngIf="!revisionPage.last" class="card-footer btn p-1" (click)="loadRevisions()">
           Load more...
         </button>
       </div>

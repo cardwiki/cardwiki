@@ -21,7 +21,7 @@ public interface DeckRepository extends JpaRepository<Deck, Long> {
      * @return ordered list of all decks with names containing {@code name}
      */
     @EntityGraph(attributePaths = {"createdBy", "categories"})
-    List<Deck> findByNameContainingIgnoreCase(String name, Pageable pageable);
+    Page<Deck> findByNameContainingIgnoreCase(String name, Pageable pageable);
 
     /**
      * Find a specific deck by id
@@ -39,7 +39,7 @@ public interface DeckRepository extends JpaRepository<Deck, Long> {
      * @return ordered list of all decks created by user
      */
     @EntityGraph(attributePaths = {"createdBy"})
-    List<Deck> findByCreatedBy_Id(long id, Pageable pageable);
+    Page<Deck> findByCreatedBy_Id(long id, Pageable pageable);
 
     /**
      * Find favorites of user
