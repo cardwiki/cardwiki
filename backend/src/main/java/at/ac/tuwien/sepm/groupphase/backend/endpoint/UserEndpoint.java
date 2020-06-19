@@ -127,6 +127,7 @@ public class UserEndpoint {
 
     @Secured("ROLE_USER")
     @DeleteMapping(value = "/{userId}/favorites/{deckId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiOperation(value = "Remove a deck from favorites of user")
     public void removeFavorite(@PathVariable Long userId, @PathVariable Long deckId) {
         LOGGER.info("GET /api/v1/users/{}/favorites/{}", userId, deckId);

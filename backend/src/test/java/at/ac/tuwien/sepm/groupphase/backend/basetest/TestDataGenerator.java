@@ -177,6 +177,13 @@ public abstract class TestDataGenerator {
             revisionDelete.setMessage("test message");
             deleteCard(card, revisionDelete);
         }
+
+        public Deck addFavorite(Deck deck) {
+            user.getFavorites().add(deck);
+            deck.getFavoredBy().add(user);
+            beforeReturn(deck);
+            return deck;
+        }
     }
 
     // Auth id to login as a persisted user
@@ -238,27 +245,11 @@ public abstract class TestDataGenerator {
     }
 
     @Deprecated
-    public User givenAdmin() {
-        User user = givenApplicationUser();
-        user.setAdmin(true);
-        return userRepository.saveAndFlush(user);
-    }
-
-    @Deprecated
     public Deck givenDeck() {
         User user = givenApplicationUser();
         Deck deck = new Deck();
         deck.setName("deck name");
         deck.setCreatedBy(user);
-        return deckRepository.saveAndFlush(deck);
-    }
-
-    @Deprecated
-    public Deck givenFavorite() {
-        Deck deck = givenDeck();
-        User user = deck.getCreatedBy();
-        user.getFavorites().add(deck);
-        deck.getFavoredBy().add(user);
         return deckRepository.saveAndFlush(deck);
     }
 
@@ -438,11 +429,6 @@ public abstract class TestDataGenerator {
     }
 
     @Deprecated
-    public RevisionEdit getSampleRevisionEdit() {
-        return getUnconnectedSampleRevisionEdit();
-    }
-
-    @Deprecated
     public Category getSampleCategoryWithoutParent() {
         Category category = getUnconnectedSampleCategory();
         category.setCreatedBy(getSampleUser());
@@ -468,26 +454,6 @@ public abstract class TestDataGenerator {
         attempt.setStatus(AttemptInputDto.Status.GOOD);
 
         return attempt;
-    }
-
-    @Deprecated
-    public UserRepository getUserRepository() {
-        return userRepository;
-    }
-
-    @Deprecated
-    public DeckRepository getDeckRepository() {
-        return deckRepository;
-    }
-
-    @Deprecated
-    public CardRepository getCardRepository() {
-        return cardRepository;
-    }
-
-    @Deprecated
-    public RevisionRepository getRevisionRepository() {
-        return revisionRepository;
     }
 
     @Deprecated

@@ -81,7 +81,7 @@ public class DeckRepositoryTest extends TestDataGenerator {
     }
 
     @Test void givenUser_whenFindFavoredById_thenReturnEmpty() {
-        Long userId = givenApplicationUser().getId();
+        Long userId = persistentAgent().getUser().getId();
         Pageable pageable = PageRequest.of(0, 10);
 
         Page<Deck> result = deckRepository.findByFavoredById(userId, pageable);
@@ -90,8 +90,9 @@ public class DeckRepositoryTest extends TestDataGenerator {
     }
 
     @Test void givenFavorite_whenFindFavoredById_thenReturnFavorite() {
-        Deck deck = givenFavorite();
-        Long userId = deck.getCreatedBy().getId();
+        Agent agent = persistentAgent();
+        Long userId = agent.getUser().getId();
+        Deck deck = agent.addFavorite(agent.createDeck());
         Pageable pageable = PageRequest.of(0, 10);
 
         Page<Deck> result = deckRepository.findByFavoredById(userId, pageable);
@@ -105,22 +106,23 @@ public class DeckRepositoryTest extends TestDataGenerator {
         );
     }
 
-    @Test void givenDeckAndUser_whenexistsByIdAndFavoredById_thenReturnFalse() {
-        Long deckId = givenDeck().getId();
-        Long userId = givenApplicationUser().getId();
+    @Test void givenDeckAndUser_whenExistsByIdAndFavoredById_thenReturnFalse() {
+        Agent agent = persistentAgent();
+        Long userId = agent.getUser().getId();
+        Long deckId = agent.createDeck().getId();
 
         assertFalse(deckRepository.existsByIdAndFavoredById(deckId, userId));
     }
 
-    @Test void givenFavorite_whenexistsByIdAndFavoredById_thenReturnTrue() {
-        Deck deck = givenFavorite();
-        Long userId = deck.getCreatedBy().getId();
-        Long deckId = deck.getId();
+    @Test void givenFavorite_whenExistsByIdAndFavoredById_thenReturnTrue() {
+        Agent agent = persistentAgent();
+        Long userId = agent.getUser().getId();
+        Long deckId = agent.addFavorite(agent.createDeck()).getId();
 
         assertTrue(deckRepository.existsByIdAndFavoredById(deckId, userId));
     }
 
-    @Test void givenNothing_whenexistsByIdAndFavoredById_thenThrow() {
+    @Test void givenNothing_whenExistsByIdAndFavoredById_thenThrow() {
         assertFalse(() -> deckRepository.existsByIdAndFavoredById(0L, 0L));
     }
 }
