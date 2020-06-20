@@ -1,0 +1,27 @@
+<ul class="list-unstyled">
+    <li *ngFor="let comment of comments" class="list-group-item">
+        <div class="container">
+            <div class="row">
+                <div class="col small">
+                    <a routerLink="/users/{{comment.createdBy.username}}/profile">{{comment.createdBy.username}}</a>
+                    on the {{comment.createdAt | date}}
+                    <span *ngIf="false">(updated on {{comment.updatedAt | date}})</span>
+                    <div *ngIf="comment.createdBy.username === (activeUserName$ | async)" class="btn-group float-right">
+                        <button type="button" class="btn btn-light" (click)="editComment(comment.id)"><i class="fas fa-pencil-alt" title="Edit Comment"><span class="sr-only">Edit Comment</span></i></button>
+                        <button type="button" class="btn btn-light" (click)="deleteComment(comment.id)"><i class="fas fa-trash-alt" title="Delete Comment"></i><span class="sr-only">Delete Comment</span></button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div [innerHtml]="comment.message | md2html"></div>
+                </div>
+            </div>
+            <app-comment-form *ngIf="comment.id === editingCommentId"
+                action="Update"
+                [message]="comment.message"
+                (commentSubmit)="editCommentSubmit($event)">
+            </app-comment-form>
+        </div>
+    </li>
+</ul>
