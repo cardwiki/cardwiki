@@ -3,7 +3,6 @@ package at.ac.tuwien.sepm.groupphase.backend.unittests;
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
-import at.ac.tuwien.sepm.groupphase.backend.repository.RevisionRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +25,6 @@ public class CardRepositoryTest extends TestDataGenerator {
 
     @Autowired
     private CardRepository cardRepository;
-
-    @Autowired
-    private RevisionRepository revisionRepository;
 
     @Test
     public void givenNothing_whenSaveCardWithoutDeck_thenThrowDataIntegrityViolationException() {
@@ -90,37 +86,6 @@ public class CardRepositoryTest extends TestDataGenerator {
     }
 
     @Test
-    public void givenCard_whenDeleteById_thenExistsByIdIsFalse() {
-        Card card = givenCard();
-
-        cardRepository.deleteById(card.getId());
-
-        assertFalse(cardRepository.existsById(card.getId()));
-    }
-
-    @Test
-    public void givenCard_whenDeleteById_thenDeckDoesNotContainCard() {
-        Card card = givenCard();
-        Deck deck = card.getDeck();
-
-        assertTrue(deck.getCards().contains(card));
-        cardRepository.deleteById(card.getId());
-
-        assertFalse(deck.getCards().contains(card));
-    }
-
-    @Test
-    public void givenCardAndRevisionEdit_whenDeleteById_thenNotExistsById() {
-        Agent user = persistentAgent();
-        Card card = user.createCardIn(user.createDeck());
-
-        // When
-        cardRepository.deleteById(card.getId());
-        // Then
-        assertFalse(cardRepository.existsById(card.getId()));
-    }
-
-    @Test
     public void givenCardAndRevisionEdit_whenDeleteRevision_thenRevisionsIsEmpty() {
         RevisionEdit revision = givenRevisionEdit();
         Card card = revision.getCard();
@@ -169,16 +134,5 @@ public class CardRepositoryTest extends TestDataGenerator {
         cards = cardRepository.findCardsWithContentByDeck_Id(deck.getId()).collect(Collectors.toList());
 
         assertFalse(cards.contains(card));
-    }
-
-    @Test
-    public void givenRevisionEdit_whenDeleteCard_thenDeleteRevisions() {
-        RevisionEdit revisionEdit = givenRevisionEdit();
-        Card card = revisionEdit.getCard();
-
-        cardRepository.deleteById(card.getId());
-
-        assertFalse(cardRepository.existsById(card.getId()));
-        assertFalse(revisionRepository.existsById(revisionEdit.getId()));
     }
 }

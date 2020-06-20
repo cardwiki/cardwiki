@@ -70,17 +70,4 @@ public class RevisionEditRepositoryTest extends TestDataGenerator {
         // Then
         assertEquals(edit.getTextFront(), UTF_16_SAMPLE_TEXT);
     }
-
-    @Test
-    public void givenRevisionEdit_whenDeleteRevisionById_thenExistsByIdReturnsFalse() {
-        Agent user = persistentAgent();
-        RevisionEdit revisionEdit = user.editCard(user.createCardIn(user.createDeck()));
-
-        // When
-        revisionRepository.deleteById(revisionEdit.getId());
-        revisionRepository.flush();
-
-        // Then
-        assertFalse(revisionRepository.existsById(revisionEdit.getId()));
-    }
 }
