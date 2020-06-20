@@ -76,8 +76,10 @@ export class SearchComponent implements OnInit {
   deleteDeck(event: any, deck: DeckDetails): void {
     event.stopPropagation();
     event.preventDefault();
-    this.deckService.delete(deck.id).subscribe(_ => {
-      this.decks = this.decks.filter(d => d !== deck);
-    });
+    if (confirm(`Are you sure you want to permanently delete deck '${deck.name}'?`)) {
+      this.deckService.delete(deck.id).subscribe(_ => {
+        this.decks = this.decks.filter(d => d !== deck);
+      });
+    }
   }
 }

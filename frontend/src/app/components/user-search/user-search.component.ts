@@ -53,21 +53,26 @@ export class UserSearchComponent implements OnInit {
   }
 
   grantAdminRights(user: UserProfile): void {
-    this.userService.editAdminStatus(user.id, true).subscribe( updatedUser => {
-      user.admin = updatedUser.admin;
-    });
+    if (confirm(`Are you sure you want to grant admin rights to user '${user.username}'`)) {
+      this.userService.editAdminStatus(user.id, true).subscribe(updatedUser => {
+        user.admin = updatedUser.admin;
+      });
+    }
   }
 
   editEnabledStatus(user: UserProfile, enabled: boolean): void {
-    this.userService.editEnabledStatus(user.id, enabled).subscribe(updatedUser => {
-      user.enabled = updatedUser.enabled;
-    });
+    if (confirm(`Are you sure you want to ${enabled ? 'enable' : 'disable'} user '${user.username}'`)) {
+      this.userService.editEnabledStatus(user.id, enabled).subscribe(updatedUser => {
+        user.enabled = updatedUser.enabled;
+      });
+    }
   }
 
   delete(user: UserProfile): void {
-    this.userService.delete(user.id).subscribe( _ => {
-      user.username = '[deleted]';
-      user.deleted = true;
-    });
+    if (confirm(`Are you sure you want to permanently delete user '${user.username}'?`)) {
+      this.userService.delete(user.id).subscribe(_ => {
+        this.users = this.users.filter(u => u !== user);
+      });
+    }
   }
 }

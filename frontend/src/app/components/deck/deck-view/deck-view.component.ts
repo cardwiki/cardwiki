@@ -68,9 +68,11 @@ export class DeckViewComponent implements OnInit {
   }
 
   deleteCard(card: CardSimple) {
-    this.cardService.deleteCard(card.id).subscribe(_ => {
-      this.cards = this.cards.filter(c => c !== card);
-    });
+    if (confirm('Are you sure you want to permanently delete this card?')) {
+      this.cardService.deleteCard(card.id).subscribe(_ => {
+        this.cards = this.cards.filter(c => c !== card);
+      });
+    }
   }
 
   saveToFavorites() {
