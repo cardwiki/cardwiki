@@ -4,7 +4,6 @@ import { CardService } from 'src/app/services/card.service';
 import { Location } from '@angular/common';
 import { NotificationService } from 'src/app/services/notification.service';
 import { CardUpdate } from 'src/app/dtos/cardUpdate';
-import {CardUpdateDto} from '../../../dtos/cardUpdateDto';
 
 @Component({
   selector: 'app-card-create',
@@ -25,18 +24,11 @@ export class CardCreateComponent implements OnInit {
 
   cardSubmit(): void {
     console.log('CardCreateComponent.onSubmit', this.deckId, this.card);
-    const cardUpdateDto = new CardUpdateDto(this.card.textFront, this.card.textBack, null, null, this.card.message);
-    if (this.card.imageFront) {
-      cardUpdateDto.imageFrontFilename = this.card.imageFront.filename;
-    }
-    if (this.card.imageBack) {
-      cardUpdateDto.imageBackFilename = this.card.imageBack.filename;
-    }
 
-    this.cardService.createCard(this.deckId, cardUpdateDto)
+    this.cardService.createCard(this.deckId, this.card)
       .subscribe(
-        cardDetails => {
-          console.log('created card', cardDetails);
+        card => {
+          console.log('created card', card);
           this.notificationService.success('Created new Card');
           this.location.back();
         });

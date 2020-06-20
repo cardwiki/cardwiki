@@ -4,7 +4,6 @@ import {ActivatedRoute} from '@angular/router';
 import { Location } from '@angular/common';
 import { NotificationService } from 'src/app/services/notification.service';
 import { CardUpdate } from 'src/app/dtos/cardUpdate';
-import {CardUpdateDto} from '../../../dtos/cardUpdateDto';
 
 @Component({
   selector: 'app-card-edit',
@@ -36,16 +35,10 @@ export class CardEditComponent implements OnInit {
 
   cardSubmit(): void {
     console.log('CardEditComponent.onSubmit', this.cardId, this.card);
-    const cardUpdateDto = new CardUpdateDto(this.card.textFront, this.card.textBack, null, null, this.card.message);
-    if (this.card.imageFront) {
-      cardUpdateDto.imageFrontFilename = this.card.imageFront.filename;
-    }
-    if (this.card.imageBack) {
-      cardUpdateDto.imageBackFilename = this.card.imageBack.filename;
-    }
-    this.cardService.editCard(this.cardId, cardUpdateDto)
-      .subscribe(cardDetails => {
-        console.log('edited card', cardDetails);
+
+    this.cardService.editCard(this.cardId, this.card)
+      .subscribe(card => {
+        console.log('edited card', card);
         this.notificationService.success('Updated Card')
         this.location.back()
       })
