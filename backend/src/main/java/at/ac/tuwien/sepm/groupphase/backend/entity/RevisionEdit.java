@@ -15,12 +15,12 @@ public class RevisionEdit extends Revision {
 
     @Size(max = MAX_TEXT_SIZE)
     @NullOrNotBlank
-    @Column(name = "text_front", length = MAX_TEXT_SIZE, updatable = false)
+    @Column(name = "text_front", length = MAX_TEXT_SIZE, nullable = true, updatable = false)
     private String textFront;
 
     @Size(max = MAX_TEXT_SIZE)
     @NullOrNotBlank
-    @Column(name = "text_back", length = MAX_TEXT_SIZE, updatable = false)
+    @Column(name = "text_back", length = MAX_TEXT_SIZE, nullable = true, updatable = false)
     private String textBack;
 
     @ManyToOne(optional = true, fetch = FetchType.LAZY)

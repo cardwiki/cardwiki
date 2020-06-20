@@ -16,6 +16,9 @@
             <input type="file" class="custom-file-input" id="input-front-image" (change)="onFileChange($event, 'front')">
             <label class="custom-file-label" for="input-front-image">{{originalFilenameFront}}</label>
         </div>
+        <div class="input-group-append">
+          <button *ngIf="card.imageFront" type="button" class="btn btn-outline-dark" (click)="removeImage('front')"><i class="fas fa-trash-alt"></i> Remove</button>
+        </div>
     </div>
     <div class="form-group">
         <div class="input-group">
@@ -33,7 +36,11 @@
             <input type="file" class="custom-file-input" id="input-back-image" (change)="onFileChange($event, 'back')">
             <label class="custom-file-label" for="input-back-image">{{originalFilenameBack}}</label>
         </div>
+        <div class="input-group-append">
+          <button *ngIf="card.imageBack" type="button" class="btn btn-outline-dark" (click)="removeImage('back')"><i class="fas fa-trash-alt"></i> Remove</button>
+        </div>
     </div>
+
 
     <div class="form-group">
         <input type="text" name="message" class="form-control form-control-sm"

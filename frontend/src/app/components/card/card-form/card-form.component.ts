@@ -54,4 +54,12 @@ export class CardFormComponent implements OnInit {
       }
     }
   }
+
+  removeImage(side: string) {
+    if (side === 'front') {
+      this.card.imageFront = null;
+    } else {
+      this.card.imageBack = null;
+    }
+  }
 }
