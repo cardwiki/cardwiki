@@ -2,6 +2,8 @@ package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.Image;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
+import at.ac.tuwien.sepm.groupphase.backend.exception.BadRequestException;
+import at.ac.tuwien.sepm.groupphase.backend.exception.ImageNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.ImageRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.ImageService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
@@ -19,8 +21,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -49,7 +53,7 @@ public class SimpleImageService implements ImageService {
         }
 
         if (bytes.length == 0) {
-            throw new IllegalArgumentException("Empty file");
+            throw new BadRequestException("Empty file");
         }
 
         // Create filename
@@ -84,6 +88,14 @@ public class SimpleImageService implements ImageService {
         return imageRepository.save(image);
     }
 
+    @Transactional
+    @Override
+    public Image findOneOrThrow(String filename) {
+        LOGGER.debug("Find image with filename {}", filename);
+        Optional<Image> image = imageRepository.findByFilename(filename);
+        return image.orElseThrow(() -> new ImageNotFoundException("Could not find image with filename " + filename));
+    }
+
     private String getContentTypeFromBytes(byte[] bytes) {
         String contentType;
         try {
@@ -92,11 +104,11 @@ public class SimpleImageService implements ImageService {
             throw new RuntimeException("Could not store image. Error: " + ex.getMessage());
         }
         if (contentType == null) {
-            throw new IllegalArgumentException("Content type could not be determined");
+            throw new BadRequestException("Content type could not be determined");
         }
         contentType = contentType.split("/")[1].toLowerCase();
         if (!(contentType.equals("png") || contentType.equals("jpeg"))) {
-            throw new IllegalArgumentException("Content type " + contentType + " is not supported");
+            throw new BadRequestException("Content type " + contentType + " is not supported");
         }
         return contentType;
     }

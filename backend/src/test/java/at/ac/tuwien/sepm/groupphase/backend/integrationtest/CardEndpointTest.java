@@ -107,7 +107,8 @@ public class CardEndpointTest extends TestDataGenerator {
             .andExpect(jsonPath("$.textBack").value(UTF_16_SAMPLE_TEXT));
     }
 
-    @Test void createCardWithImagesReturnsCardDetailsWithImageDtos() throws Exception {
+    @Test
+    public void createCardWithImagesReturnsCardDetailsWithImageDtos() throws Exception {
         Deck deck = givenDeck();
         User user = givenApplicationUser();
         Image image = givenImage();
@@ -127,7 +128,8 @@ public class CardEndpointTest extends TestDataGenerator {
             .andExpect(jsonPath("$.imageBackUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString()));
     }
 
-    @Test void createCardWithTextAndImagesReturnsCardDetails() throws Exception {
+    @Test
+    public void createCardWithTextAndImagesReturnsCardDetails() throws Exception {
         Deck deck = givenDeck();
         User user = givenApplicationUser();
         Image image = givenImage();
@@ -149,6 +151,22 @@ public class CardEndpointTest extends TestDataGenerator {
             .andExpect(jsonPath("$.textBack").value(BACK_TEXT))
             .andExpect(jsonPath("$.imageFrontUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString()))
             .andExpect(jsonPath("$.imageBackUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString()));
+    }
+
+    @Test
+    public void createCardWithNonExistingImageThrowsBadRequest() throws Exception {
+        Agent user = persistentAgent();
+        Deck deck = user.createDeck();
+
+        RevisionEditDto dto = new RevisionEditDto();
+        dto.setImageFrontFilename("i don't exist");
+        dto.setImageBackFilename("me neither");
+
+        mvc.perform(post("/api/v1/decks/{deckId}/cards", deck.getId())
+            .with(login(user.getUser().getAuthId()))
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(dto)))
+            .andExpect(status().is(400));
     }
 
     @Test

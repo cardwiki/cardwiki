@@ -1,6 +1,9 @@
 package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
+import at.ac.tuwien.sepm.groupphase.backend.exception.BadRequestException;
+import at.ac.tuwien.sepm.groupphase.backend.exception.CardNotFoundException;
+import at.ac.tuwien.sepm.groupphase.backend.exception.ImageNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.CardService;
@@ -46,6 +49,14 @@ public class SimpleCardService implements CardService {
         card.setDeck(deck);
 
         revisionCreate.setMessage(revisionCreate.getMessage() != null ? revisionCreate.getMessage() : "Created");
+        try {
+            if (revisionCreate.getImageFront() != null)
+                imageService.findOneOrThrow(revisionCreate.getImageFront().getFilename());
+            if (revisionCreate.getImageBack() != null)
+                imageService.findOneOrThrow(revisionCreate.getImageBack().getFilename());
+        } catch (ImageNotFoundException ex) {
+            throw new BadRequestException(ex.getMessage());
+        }
         card.setLatestRevision(revisionCreate);
         revisionCreate.setCard(card);
         revisionCreate.setCreatedBy(user);
@@ -80,7 +91,7 @@ public class SimpleCardService implements CardService {
     public Card findOneOrThrow(Long cardId) {
         LOGGER.debug("Find card with id {}", cardId);
         Optional<Card> card = cardRepository.findById(cardId);
-        return card.orElseThrow(() -> new NotFoundException("Could not find card with id " + cardId));
+        return card.orElseThrow(() -> new CardNotFoundException(("Could not find card with id " + cardId)));
     }
 
     @Override
@@ -91,6 +102,14 @@ public class SimpleCardService implements CardService {
         Card card = findOneOrThrow(cardId);
 
         revisionEdit.setMessage(revisionEdit.getMessage() != null ? revisionEdit.getMessage() : "Edited");
+        try {
+            if (revisionEdit.getImageFront() != null)
+                imageService.findOneOrThrow(revisionEdit.getImageFront().getFilename());
+            if (revisionEdit.getImageBack() != null)
+                imageService.findOneOrThrow(revisionEdit.getImageBack().getFilename());
+        } catch (ImageNotFoundException ex) {
+            throw new BadRequestException(ex.getMessage());
+        }
         card.setLatestRevision(revisionEdit);
         revisionEdit.setCard(card);
         revisionEdit.setCreatedBy(user);
