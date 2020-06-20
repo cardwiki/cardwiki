@@ -85,9 +85,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(value = {BadRequestException.class})
-    protected ResponseEntity<Object> handleBadRequest(RuntimeException ex, WebRequest request) {
+    protected ResponseEntity<Object> handleBadRequest(BadRequestException ex, WebRequest request) {
         LOGGER.error(ex.getMessage());
-        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+        Map<String, Object> body = new LinkedHashMap<>();
+        if (ex.getFieldname() != null && ex.getDescription() != null) {
+            List<Map<String, String>> errors = Collections.singletonList(Map.of(ex.getFieldname(), ex.getDescription()));
+            body.put("validation", errors);
+        }
+        return new ResponseEntity<>(body, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = {InsufficientAuthorizationException.class})
@@ -128,14 +133,5 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         body.put("validation", errors);
 
         return new ResponseEntity<>(body, headers, status);
-    }
-
-    @ExceptionHandler(value = {ValidationException.class})
-    protected ResponseEntity<Object> handleValidationException(ValidationException ex) {
-        LOGGER.error("Validation error: " + ex.getMessage());
-        List<Map<String, String>> errors = Collections.singletonList(Map.of("Issue", ex.getMessage()));
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("validation", errors);
-        return new ResponseEntity<>(body, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 }

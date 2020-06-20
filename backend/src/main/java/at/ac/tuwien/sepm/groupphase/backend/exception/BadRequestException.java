@@ -2,19 +2,32 @@ package at.ac.tuwien.sepm.groupphase.backend.exception;
 
 public class BadRequestException extends RuntimeException {
 
-    public BadRequestException() {
-        super();
-    }
+    private String fieldname;
+    private String description;
 
     public BadRequestException(String message) {
         super(message);
     }
 
-    public BadRequestException(String message, Throwable cause) {
-        super(message, cause);
+    public BadRequestException(String fieldname, String description, String message) {
+        super(message);
+        this.fieldname = fieldname;
+        this.description = description;
     }
 
-    public BadRequestException(Exception e) {
-        super(e);
+    public String getFieldname() {
+        return fieldname;
+    }
+
+    public void setFieldname(String fieldname) {
+        this.fieldname = fieldname;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
