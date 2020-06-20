@@ -3,6 +3,7 @@ package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
 import at.ac.tuwien.sepm.groupphase.backend.exception.CardNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
+import at.ac.tuwien.sepm.groupphase.backend.repository.ProgressRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.CardService;
 import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
@@ -24,11 +25,18 @@ public class SimpleCardService implements CardService {
     private final UserService userService;
     private final DeckService deckService;
     private final CardRepository cardRepository;
+    private final ProgressRepository progressRepository;
 
-    public SimpleCardService(CardRepository cardRepository, DeckService deckService, UserService userService) {
+    public SimpleCardService(
+        CardRepository cardRepository,
+        DeckService deckService,
+        UserService userService,
+        ProgressRepository progressRepository)
+    {
         this.cardRepository = cardRepository;
         this.userService = userService;
         this.deckService = deckService;
+        this.progressRepository = progressRepository;
     }
 
     @Override
@@ -81,8 +89,12 @@ public class SimpleCardService implements CardService {
     }
 
     @Override
+    @Transactional
     public void delete(Long cardId) {
         LOGGER.debug("Delete card with id {}", cardId);
+        if (progressRepository.existsCardWithProgress(cardId)) {
+            progressRepository.deleteCardProgress(cardId);
+        }
         try {
             cardRepository.deleteById(cardId);
         } catch (EmptyResultDataAccessException e) {
