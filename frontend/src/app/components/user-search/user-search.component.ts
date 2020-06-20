@@ -17,7 +17,6 @@ export class UserSearchComponent implements OnInit {
   users: UserProfile[] = [];
   maxUsersLoaded: boolean = false;
   noUsersFound: boolean = false;
-  admin: boolean = false;
 
   constructor(private route: ActivatedRoute, private router: Router, private modalService: NgbModal, private userService: UserService) {
     this.route.queryParams.subscribe(params => {
@@ -27,7 +26,6 @@ export class UserSearchComponent implements OnInit {
 
   ngOnInit() {
     if (this.searchTerm) this.loadUsers(0)
-    if (localStorage.getItem("whoami")) this.admin = JSON.parse(localStorage.getItem("whoami")).admin;
   }
 
   onSubmit() {

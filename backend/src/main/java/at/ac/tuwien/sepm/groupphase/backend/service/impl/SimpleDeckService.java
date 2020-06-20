@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.lang.invoke.MethodHandles;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Service
 public class SimpleDeckService implements DeckService {
@@ -37,7 +36,7 @@ public class SimpleDeckService implements DeckService {
 
     @Transactional
     @Override
-    public Deck findOne(Long id) {
+    public Deck findOneOrThrow(Long id) {
         LOGGER.debug("Find deck with id {}", id);
         Objects.requireNonNull(id, "id argument must not be null");
         Optional<Deck> deck = deckRepository.findById(id);
@@ -56,9 +55,8 @@ public class SimpleDeckService implements DeckService {
     public Deck create(Deck deck) {
         LOGGER.debug("Create new deck {}", deck);
         Objects.requireNonNull(deck, "deck argument must not be null");
-        deck.setCreatedBy(userService.loadCurrentUser());
-        User user = userService.loadCurrentUser();
-        if (user == null) throw new IllegalStateException("current user was null in secured api operation");
+        User user = userService.loadCurrentUserOrThrow();
+        deck.setCreatedBy(user);
         deck.setCreatedBy(user);
         return deckRepository.save(deck);
     }
@@ -67,20 +65,20 @@ public class SimpleDeckService implements DeckService {
     @Override
     public Deck update(Long id, Deck deckUpdate) {
         LOGGER.debug("Update deck with id: {}", id);
-        Deck deck = findOne(id);
+        Deck deck = findOneOrThrow(id);
         deck.setName(deckUpdate.getName());
         Set<Category> categories = deck.getCategories();
 
         if (deckUpdate.getCategories() != null) {
             //add deck to new categories
             for (Category category : deckUpdate.getCategories()) {
-                category = categoryService.findOneById(category.getId());
+                category = categoryService.findOneOrThrow(category.getId());
                 category.getDecks().add(deck);
                 categories.remove(category);
             }
             //remove deck from removed categories
             for (Category category : categories) {
-                category = categoryService.findOneById(category.getId());
+                category = categoryService.findOneOrThrow(category.getId());
                 category.getDecks().remove(deck);
             }
         }
@@ -92,8 +90,8 @@ public class SimpleDeckService implements DeckService {
     @Override
     public Deck copy(Long id, Deck deckCopy) {
         LOGGER.debug("Copy deck with id: {}", id);
-        User currentUser = userService.loadCurrentUser();
-        Deck source = findOne(id);
+        User currentUser = userService.loadCurrentUserOrThrow();
+        Deck source = findOneOrThrow(id);
 
         Deck deck = create(deckCopy);
         deck.setCategories(new HashSet<>(source.getCategories()));
@@ -101,36 +99,22 @@ public class SimpleDeckService implements DeckService {
             category.getDecks().add(deck);
         }
         deckRepository.save(deck);
+        List<Card> cards = cardRepository.findLatestEditRevisionsByDeck_Id(id).map(sourceRevision -> {
+            Card card = new Card();
+            card.setDeck(deck);
+            RevisionCreate rev = new RevisionCreate();
+            rev.setMessage(String.format("Copied from deck %s.", id));
+            rev.setCreatedBy(currentUser);
+            rev.setCard(card);
+            rev.setTextFront(sourceRevision.getTextFront());
+            rev.setTextBack(sourceRevision.getTextBack());
+            card.setLatestRevision(rev);
+            return card;
+        }).collect(Collectors.toList());
 
-        List<Card> srcCards = cardRepository.findCardsWithContentByDeck_Id(id);
-        List<Card> destCards = srcCards.stream()
-            .map(srcCard -> {
-                Card card = new Card();
-                card.setDeck(deck);
-                Revision revision = new Revision();
-                revision.setMessage(String.format("Copied from deck %s.", id));
-                revision.setCreatedBy(currentUser);
-                revision.setCard(card);
-                card.setLatestRevision(revision);
-                return card;
-            })
-            .collect(Collectors.toList());
-        cardRepository.saveAll(destCards);
+        cardRepository.saveAll(cards);
         cardRepository.flush();
-
-        IntStream
-            .range(0, destCards.size())
-            .forEach(i -> {
-                RevisionEdit revisionEdit = new RevisionEdit();
-                revisionEdit.setTextFront(srcCards.get(i).getLatestRevision().getRevisionEdit().getTextFront());
-                revisionEdit.setTextBack(srcCards.get(i).getLatestRevision().getRevisionEdit().getTextBack());
-                destCards.get(i).getLatestRevision().setRevisionEdit(revisionEdit);
-                revisionEdit.setRevision(destCards.get(i).getLatestRevision());
-            });
-        cardRepository.saveAll(destCards);
-        cardRepository.flush();
-        deck.getCards().addAll(destCards);
-
+        deck.getCards().addAll(cards);
         return deck;
     }
 

@@ -1,31 +1,26 @@
-<div *ngIf="authService.isLoggedIn(); then logged_in else logged_out"></div>
-<ng-template #logged_in>
-  <app-dashboard></app-dashboard>
-</ng-template>
-<ng-template #logged_out>
-  <div class="jumbotron mt-5">
+<app-dashboard *appUserRole="'USER'"></app-dashboard>
+<div *appUserRole="'ANONYMOUS'" class="jumbotron mt-5">
 
-    <h1 class="display-4">Welcome to CardWiki!</h1>
-    <hr class="my-4">
+  <h1 class="display-4">Welcome to CardWiki!</h1>
+  <hr class="my-4">
 
-    <h2 class="mt-4">Start Learning</h2>
-    <p class="lead">
-        <a routerLink="/search">Search</a> for existing decks and start learning.<br>
-        <a routerLink="/login">Sign in</a> for a better learning experience.
-    </p>
+  <h2 class="mt-4">Start Learning</h2>
+  <p class="lead">
+      <a routerLink="/search">Search</a> for existing decks and start learning.<br>
+      <a routerLink="/login">Sign in</a> for a better learning experience.
+  </p>
 
-    <h2 class="mt-4">Create Decks</h2>
-    <p class="lead">
-        Sign in and create a new deck of cards.
-        <br>Use <a routerLink="/help/markdown-syntax" fragment="markdown">Markdown</a>, <a routerLink="/help/markdown-syntax" fragment="katex">KaTeX</a> or simple text to format your cards.
-    </p>
+  <h2 class="mt-4">Create Decks</h2>
+  <p class="lead">
+      Sign in and create a new deck of cards.
+      <br>Use <a routerLink="/help/markdown-syntax" fragment="markdown">Markdown</a>, <a routerLink="/help/markdown-syntax" fragment="katex">KaTeX</a> or simple text to format your cards.
+  </p>
 
-    <h2 class="mt-4">Collaborate</h2>
-    <p class="lead">
-        Contribute to existing decks by creating new cards, adding category tags, or just fixing typos.
-    </p>
+  <h2 class="mt-4">Collaborate</h2>
+  <p class="lead">
+      Contribute to existing decks by creating new cards, adding category tags, or just fixing typos.
+  </p>
 
-    <h2 class="mt-4">And more...</h2>
-    <p class="lead">Read more about CardWiki on the <a routerLink="/about">About</a> page.</p>
-  </div>
-</ng-template>
+  <h2 class="mt-4">And more...</h2>
+  <p class="lead">Read more about CardWiki on the <a routerLink="/about">About</a> page.</p>
+</div>

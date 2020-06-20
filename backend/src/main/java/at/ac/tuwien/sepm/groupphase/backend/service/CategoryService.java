@@ -19,8 +19,9 @@ public interface CategoryService  {
      *
      * @param id of the entry to find
      * @return category entry found
+     * @throws CategoryNotFoundException if no category with this id exists
      */
-    Category findOneById(Long id);
+    Category findOneOrThrow(Long id);
 
 
     /**

@@ -1,2 +1,18 @@
-<p>dashboard works!</p>
-<p>to be implemented...</p>
+<h2>Favorites</h2>
+<div *ngIf="favorites">
+    <div *ngIf="favorites.content.length">
+        <ul class="list-group">
+            <a *ngFor="let deck of favorites.content" routerLink="/decks/{{deck.id}}" class="list-group-item list-group-item-action">
+                {{deck.name}}
+                <button class="btn btn-outline-danger float-right" (click)="$event.preventDefault(); $event.stopPropagation(); removeFavorite(deck.id)">Remove</button>
+            </a>
+        </ul>
+        <ngb-pagination *ngIf="favorites.totalPages > 1"
+            [maxSize]="10" [page]="favorites.pageable.pageNumber + 1" [rotate]="true"
+            [collectionSize]="favorites.totalElements" [pageSize]="favorites.pageable.pageSize"
+            (pageChange)="loadFavoritePage($event)"></ngb-pagination>
+    </div>
+    <div *ngIf="!favorites.content.length">
+        No favorites added. When viewing decks you can click "Save" to easily find them later on.
+    </div>
+</div>

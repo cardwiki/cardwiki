@@ -6,7 +6,7 @@
                   trackBy: trackChange"
       >
         <a routerLink="/{{path}}/{{item.id}}">{{item.name}}</a>
-        <button *ngIf="admin" class="btn btn-outline-danger ml-2 mb-1" (click)="deleteCategory(item)">Delete</button>
+        <button *appUserRole="'ADMIN'" class="btn btn-outline-danger ml-2 mb-1" (click)="deleteCategory(item)">Delete</button>
       </li>
     </ul>
     <div class="xyz" id="pagination">

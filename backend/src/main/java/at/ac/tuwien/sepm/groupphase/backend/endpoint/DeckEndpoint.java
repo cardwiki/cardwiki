@@ -68,7 +68,7 @@ public class DeckEndpoint {
     public DeckDto findOne(@PathVariable Long id) {
         LOGGER.info("GET /api/v1/decks/{}", id);
         try {
-            return deckMapper.deckToDeckDto(deckService.findOne(id));
+            return deckMapper.deckToDeckDto(deckService.findOneOrThrow(id));
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -98,8 +98,8 @@ public class DeckEndpoint {
 
     @Secured("ROLE_ADMIN")
     @DeleteMapping(value = "/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "delete deck", authorizations = @Authorization("ROLE_ADMIN"))
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiOperation(value = "delete deck", authorizations = @Authorization("apiKey"))
     public void deleteDeck(@PathVariable Long id) {
         LOGGER.info("DELETE /api/v1/decks/{}", id);
         deckService.delete(id);

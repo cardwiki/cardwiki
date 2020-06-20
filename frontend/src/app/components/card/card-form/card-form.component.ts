@@ -1,7 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { CardContent } from 'src/app/dtos/cardContent';
 import { Globals } from "../../../global/globals";
-import {HttpClient} from "@angular/common/http";
+import { CardUpdate } from 'src/app/dtos/cardUpdate';
 
 @Component({
   selector: 'app-card-form',
@@ -10,8 +9,8 @@ import {HttpClient} from "@angular/common/http";
 })
 export class CardFormComponent implements OnInit {
 
-  @Input() card: CardContent
-  @Output() cardSubmit: EventEmitter<CardContent> = new EventEmitter();
+  @Input() card: CardUpdate
+  @Output() cardSubmit: EventEmitter<CardUpdate> = new EventEmitter();
   @Output() cancel: EventEmitter<void> = new EventEmitter();
   constructor(public globals: Globals) { }
 
@@ -19,6 +18,7 @@ export class CardFormComponent implements OnInit {
   }
 
   onSubmit() {
+    this.card.message = this.card.message || null
     console.log('submitting card form', this.card)
     this.cardSubmit.emit(this.card)
   }

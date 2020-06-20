@@ -13,8 +13,6 @@ export class ListComponent implements OnInit {
   @Input() specs: { listSize: number, pageSize: number, page: number };
   @Input() path: string;
 
-  admin: boolean = false;
-
   constructor(private categoryService: CategoryService) {
   }
 
@@ -22,11 +20,7 @@ export class ListComponent implements OnInit {
     return item.id;
   }
 
-  ngOnInit() {
-    if (localStorage.getItem('whoami')) {
-      this.admin = JSON.parse(localStorage.getItem('whoami')).admin;
-    }
-  }
+  ngOnInit() {}
 
   deleteCategory(category: CategorySimple) {
     this.categoryService.deleteCategory(category.id).subscribe(_ => {

@@ -19,7 +19,6 @@ export class SearchComponent implements OnInit {
   public decks: DeckDetails[] = []
   public canLoadMore: boolean = false
   public loading: boolean = false
-  public admin: boolean = false;
 
   constructor(private deckService: DeckService, private route: ActivatedRoute, private router: Router) { }
 
@@ -35,9 +34,6 @@ export class SearchComponent implements OnInit {
       if (paramMap.has('name'))
         this.fetchSearchResults()
     })
-    if (localStorage.getItem('whoami')) {
-      this.admin = JSON.parse(localStorage.getItem('whoami')).admin;
-    }
   }
 
   /**

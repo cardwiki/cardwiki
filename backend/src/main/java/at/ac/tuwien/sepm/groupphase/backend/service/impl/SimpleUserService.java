@@ -3,6 +3,8 @@ package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
+import at.ac.tuwien.sepm.groupphase.backend.exception.AuthenticationRequiredException;
+import at.ac.tuwien.sepm.groupphase.backend.exception.InsufficientAuthorizationException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
@@ -17,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,35 +66,40 @@ public class SimpleUserService implements UserService {
     @Override
     @Transactional
     public User editSettings(Long id, User user) {
-        User currentUser = loadCurrentUser();
-        if (!id.equals(currentUser.getId())) throw new UserNotFoundException(); //TODO throw correct error
+        User currentUser = loadCurrentUserOrThrow();
+        if (!id.equals(currentUser.getId()))
+            throw new InsufficientAuthorizationException("Cannot edit settings for other users");
+
         currentUser.setDescription(user.getDescription());
 
         return userRepository.save(currentUser);
     }
 
     @Override
-    public User loadUserById(Long id) {
+    public User findUserByIdOrThrow(Long id) {
         LOGGER.debug("Load user by id {}", id);
         return userRepository.findById(id).orElseThrow(UserNotFoundException::new);
     }
 
     @Override
-    public User loadUserByUsername(String username) {
+    public User findUserByUsernameOrThrow(String username) {
         LOGGER.debug("Load user by username {}", username);
         return userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
     }
 
     @Override
-    public Optional<User> loadUserByAuthId(String authId) {
+    public Optional<User> findUserByAuthId(String authId) {
         LOGGER.debug("Load user by AuthId {}",  authId);
         return userRepository.findByAuthId(authId);
     }
 
     @Override
-    public User loadCurrentUser() {
+    public User loadCurrentUserOrThrow() {
         LOGGER.debug("Load current user");
-        return loadUserByAuthId(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow(UserNotFoundException::new);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || auth.getName() == null)
+            throw new AuthenticationRequiredException("Cannot load active user because not authentication is given");
+        return findUserByAuthId(auth.getName()).orElseThrow(() -> new AuthenticationRequiredException("No user with this authentication exists"));
     }
 
     @Override
@@ -128,17 +136,17 @@ public class SimpleUserService implements UserService {
     @Override
     public User updateUser(Long id, User user) {
         LOGGER.debug("Update user with id {}: {}", id, user);
-        User currentUser = loadCurrentUser();
+        User currentUser = loadCurrentUserOrThrow();
 
         if (!currentUser.getId().equals(id) && !currentUser.isAdmin()) {
             throw new AccessDeniedException("You are not allowed to edit users other than your own.");
         }
 
         if (!currentUser.isAdmin() && (user.isAdmin() != null || user.isEnabled() != null)) {
-            throw new AccessDeniedException("This operation needs admin rights.");
+            throw new InsufficientAuthorizationException("This operation needs admin rights.");
         }
 
-        User updatedUser = currentUser.getId().equals(id) ? currentUser : loadUserById(id);
+        User updatedUser = currentUser.getId().equals(id) ? currentUser : findUserByIdOrThrow(id);
 
         if (currentUser.isAdmin() && !currentUser.getId().equals(id) && updatedUser.isAdmin()) {
             throw new AccessDeniedException("You are not allowed to update other admins.");
@@ -163,7 +171,7 @@ public class SimpleUserService implements UserService {
     @Override
     public void delete(Long id) {
         LOGGER.debug("Delete user with id {}", id);
-        User user = loadUserById(id);
+        User user = findUserByIdOrThrow(id);
 
         if (user.isAdmin()) {
             throw new AccessDeniedException("Admins cannot be deleted.");

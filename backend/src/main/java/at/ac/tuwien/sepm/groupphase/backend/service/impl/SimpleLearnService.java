@@ -44,9 +44,9 @@ public class SimpleLearnService implements LearnService {
             throw new IllegalArgumentException("deckId does not exist");
         }
 
-        return progressRepository.findNextCards(deckId, userService.loadCurrentUser().getId(), pageable).stream()
+        return progressRepository.findNextCards(deckId, userService.loadCurrentUserOrThrow().getId(), pageable).stream()
             .peek((x) -> x.setDeck(null))
-            .filter(card -> card.getLatestRevision() != null && card.getLatestRevision().getRevisionEdit() != null) // TODO: do this in the SQL query
+            .filter(card -> card.getLatestRevision() != null && card.getLatestRevision() != null) // TODO: do this in the SQL query
             .collect(Collectors.toList());
     }
 
@@ -58,7 +58,7 @@ public class SimpleLearnService implements LearnService {
     @Override
     public void saveAttempt(AttemptInputDto attempt) {
         LOGGER.debug("Save new attempt {}", attempt);
-        User user = userService.loadCurrentUser();
+        User user = userService.loadCurrentUserOrThrow();
         Card card = new Card();
         card.setId(attempt.getCardId());
 
@@ -100,7 +100,7 @@ public class SimpleLearnService implements LearnService {
         } else {
             switch (attempt.getStatus()) {
                 case EASY:
-                    progress.setEasinessFactor(progress.getEasinessFactor() + 15);
+                    progress.setEasinessFactor(progress.getEasinessFactor() + 0.15);
                     progress.setInterval((int) Math.ceil(progress.getInterval() * progress.getEasinessFactor() * EASY_BONUS));
                     break;
 
@@ -109,7 +109,7 @@ public class SimpleLearnService implements LearnService {
                     break;
 
                 case AGAIN:
-                    progress.setEasinessFactor(Math.max(progress.getEasinessFactor() - 20, 1.3));
+                    progress.setEasinessFactor(Math.max(progress.getEasinessFactor() - 0.2, 1.3));
                     progress.setInterval((int) Math.ceil(progress.getInterval() * 0.2));
                     break;
             }

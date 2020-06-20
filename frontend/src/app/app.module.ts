@@ -39,6 +39,8 @@ import { UserSearchComponent } from './components/user-search/user-search.compon
 import { ToastsContainerComponent } from './components/toasts-container/toasts-container.component';
 import { LearnDeckComponent } from './components/learn-deck/learn-deck.component';
 import { DeckForkModalComponent } from './components/deck/deck-fork-modal/deck-fork-modal.component';
+import { CardRemoveModalComponent } from './components/deck/card-remove-modal/card-remove-modal.component';
+import { UserRoleDirective } from './directives/user-role.directive';
 
 @NgModule({
   declarations: [
@@ -75,6 +77,8 @@ import { DeckForkModalComponent } from './components/deck/deck-fork-modal/deck-f
     ToastsContainerComponent,
     LearnDeckComponent,
     DeckForkModalComponent,
+    CardRemoveModalComponent,
+    UserRoleDirective,
   ],
   imports: [
     BrowserModule,

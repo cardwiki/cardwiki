@@ -8,9 +8,22 @@ import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "type")
 @Table(name = "revisions")
-public class Revision {
-    public static final int MAX_MESSAGE_SIZE = 500;
+public abstract class Revision {
+    public static final int MAX_MESSAGE_SIZE = 150;
+
+    public enum Type {
+        EDIT, DELETE, CREATE;
+
+        // Values must match properties so mapping type from string to enum works
+        public static class Values {
+            public static final String EDIT = "EDIT";
+            public static final String DELETE = "DELETE";
+            public static final String CREATE = "CREATE";
+        }
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,9 +37,6 @@ public class Revision {
     @JoinColumn(name="created_by", nullable = false, updatable = false)
     private User createdBy;
 
-    @OneToOne(mappedBy = "revision", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private RevisionEdit revisionEdit;
-
     @Size(max = MAX_MESSAGE_SIZE)
     @NotBlank
     @Column(nullable = false, length = MAX_MESSAGE_SIZE, updatable = false)
@@ -35,6 +45,9 @@ public class Revision {
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(insertable = false, updatable = false)
+    private String type;
 
     public Long getId() {
         return id;
@@ -50,14 +63,6 @@ public class Revision {
 
     public void setCard(Card card) {
         this.card = card;
-    }
-
-    public RevisionEdit getRevisionEdit() {
-        return revisionEdit;
-    }
-
-    public void setRevisionEdit(RevisionEdit revisionEdit) {
-        this.revisionEdit = revisionEdit;
     }
 
     public String getMessage() {
@@ -84,14 +89,18 @@ public class Revision {
         this.createdBy = createdBy;
     }
 
+    public String getType() {
+        return type;
+    }
+
     @Override
     public String toString() {
         return "Revision{" +
             "id=" + id +
+            ", type=" + type +
             ", createdBy=" + createdBy +
             ", card=" + (card != null ? card.getId() : null) +
             ", message='" + message + "'" +
-            ", revisionEdit=" + revisionEdit.getId() +
             '}';
     }
 }

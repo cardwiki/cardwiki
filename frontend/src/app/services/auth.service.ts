@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
+import {Observable, BehaviorSubject} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
-import {tap} from 'rxjs/operators';
+import {tap, distinctUntilChanged} from 'rxjs/operators';
 import * as jwt_decode from 'jwt-decode';
 import {Globals} from '../global/globals';
 import { OAuth2ProviderDto } from '../dtos/oAuth2Provider';
@@ -14,9 +14,25 @@ import { ErrorHandlerService } from './error-handler.service';
 })
 export class AuthService {
 
+  public userRoles$: Observable<UserRole[]>
+  public userName$: Observable<string> // null if not logged in
+
+  private userRoleSubject$: BehaviorSubject<UserRole[]>
+  private userNameSubject$: BehaviorSubject<string>
+
   private baseUri: string = this.globals.backendUri + '/auth';
 
   constructor(private httpClient: HttpClient, private globals: Globals, private errorHandler: ErrorHandlerService) {
+    this.userRoleSubject$ = new BehaviorSubject(this.getStoredUserRoles())
+    this.userRoles$ = this.userRoleSubject$.asObservable()
+      .pipe(distinctUntilChanged((a, b) => a.length === b.length && a.every(role => b.includes(role))))
+
+    this.userNameSubject$ = new BehaviorSubject(this.getStoredUserName())
+    this.userName$ = this.userNameSubject$.asObservable()
+      .pipe(distinctUntilChanged())
+
+    this.userRoles$.subscribe(roles => console.log('user roles changed to', roles))
+    this.userName$.subscribe(username => console.log('username changed to ', username))
   }
 
   getAuthProviders(): Observable<OAuth2ProviderDto[]> {
@@ -28,7 +44,7 @@ export class AuthService {
     return this.httpClient.get<WhoAmI>(this.baseUri + '/whoami')
       .pipe(
         tap(null, this.errorHandler.handleError('Could not fetch user info')),
-        tap(res => localStorage.setItem('hasAccount', String(res.hasAccount)))
+        tap(whoAmI => this.updateWhoAmI(whoAmI))
       )
   }
 
@@ -40,45 +56,90 @@ export class AuthService {
     return this.httpClient.post<UserRegistration>(this.globals.backendUri + '/users', {username: username, description: ''})
       .pipe(
         tap(null, this.errorHandler.handleError('Could not register')),
-        tap(res => localStorage.setItem('hasAccount', 'true'))
+        tap(res => this.updateWhoAmI({ ...this.getStoredAuth().whoAmI, hasAccount: true, id: res.id, username: res.username, admin: res.admin }))
       )
   }
 
-  getToken(): string {
-    return localStorage.getItem('authToken');
+  isLoggedIn(): boolean {
+    return this.getUserRoles().includes('USER')
   }
 
-  /**
-   * Check if a valid JWT token is saved in the localStorage
-   */
-  isLoggedIn(): boolean {
-    return !!this.getToken()
-      && (this.getTokenExpirationDate(this.getToken()).valueOf() > new Date().valueOf())
-      && localStorage.getItem('hasAccount') == 'true';
+  getUserRoles(): UserRole[] {
+    return this.userRoleSubject$.value
+  }
+
+  getUserName(): string {
+    return this.userNameSubject$.value
   }
 
   logoutUser(): void {
-    localStorage.removeItem('authToken');
+    this.updateWhoAmI(undefined)
+    this.updateToken(undefined)
   }
 
   /**
-   * Returns the user role based on the current token
+   * Update stored token and update user roles
+   * @param token 
    */
-  getUserRole() {
-    //if (this.getToken() != null) {
-    //  const decoded: any = jwt_decode(this.getToken());
-    //  const authInfo: string[] = decoded.rol;
-    //  if (authInfo.includes('ROLE_ADMIN')) {
-    //    return 'ADMIN';
-    //  } else if (authInfo.includes('ROLE_USER')) {
-    //    return 'USER';
-    //  }
-    //}
-    return 'UNDEFINED';
+  updateToken(token: string): void {
+    this.storeAuth({
+      ...this.getStoredAuth(),
+      token,
+    })
+    this.refreshUserRoles()
   }
 
-  setToken(token: string): void {
-    localStorage.setItem('authToken', token);
+  getToken(): string {
+    return this.getStoredAuth().token
+  }
+
+  getUserId(): number | undefined {
+    return this.getStoredAuth().whoAmI?.id
+  }
+
+  /**
+   * Update stored whoAmI and udpate user roles
+   * @param whoAmI 
+   */
+  private updateWhoAmI(whoAmI: WhoAmI): void {
+    this.storeAuth({
+      ...this.getStoredAuth(),
+      whoAmI,
+    })
+    this.refreshUserRoles()
+  }
+
+  /**
+   * Update user roles based on stored auth data
+   */
+  private refreshUserRoles(): void {
+    this.userRoleSubject$.next(this.getStoredUserRoles())
+    this.userNameSubject$.next(this.getStoredUserName())
+  }
+
+  /**
+   * Get stored user roles if they are not expired yet
+   */
+  private getStoredUserRoles(): UserRole[] {
+    const auth = this.getStoredAuth()
+
+    // Token expired
+    if (auth.token && this.getTokenExpirationDate(auth.token).valueOf() < new Date().valueOf()) {
+      // Remove invalid token so anonymous requests succeed
+      this.updateToken(undefined)
+      return ['ANONYMOUS']
+    }
+
+    // Not logged in
+    if (!auth.whoAmI?.hasAccount || !auth.token)
+      return ['ANONYMOUS']
+
+    return auth.whoAmI.admin ?
+      ['USER', 'ADMIN'] : ['USER']
+  }
+
+  private getStoredUserName(): string {
+    return this.getStoredAuth().whoAmI?.username || null
   }
 
   private getTokenExpirationDate(token: string): Date {
@@ -92,4 +153,31 @@ export class AuthService {
     date.setUTCSeconds(decoded.exp);
     return date;
   }
+
+  /**
+   * Read-only copy of current auth data
+   */
+  private getStoredAuth(): AuthStore {
+    const serialized = localStorage.getItem('auth')
+    const authData = serialized ? JSON.parse(serialized) : {}
+    Object.freeze(authData) // Prevent trying to update this object instead of updating it in localStorage
+    return authData
+  }
+
+  /**
+   * Store auth data in localStorage
+   * @param auth auth data to be stored
+   */
+  private storeAuth(auth: AuthStore) {
+    const serialized = JSON.stringify(auth)
+    localStorage.setItem('auth', serialized)
+  }
+}
+
+// No enum so it's easy for direct use in html templates
+export type UserRole = 'ANONYMOUS' | 'USER' | 'ADMIN'
+
+interface AuthStore {
+  whoAmI?: WhoAmI,
+  token?: string,
 }

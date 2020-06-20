@@ -6,6 +6,7 @@ import {DeckSimple} from "../../dtos/deckSimple";
 import {RevisionDetailed} from "../../dtos/revisionDetailed";
 import {Globals} from "../../global/globals";
 import {AuthService} from "../../services/auth.service";
+import {RevisionType} from 'src/app/dtos/revisionSimple';
 
 @Component({
   selector: 'app-profile',
@@ -14,9 +15,9 @@ import {AuthService} from "../../services/auth.service";
 })
 export class ProfileComponent implements OnInit {
 
-  DECK_PAGINATION_LIMIT: number = 10;
-  REVISION_PAGINATION_LIMIT: number = 10;
-  REVISIONTEXT_TRUNCATE: number = 30;
+  readonly DECK_PAGINATION_LIMIT: number = 10;
+  readonly REVISION_PAGINATION_LIMIT: number = 10;
+  readonly REVISIONTEXT_TRUNCATE: number = 30;
 
   profile: UserProfile;
   decks: DeckSimple[] = [];
@@ -29,6 +30,12 @@ export class ProfileComponent implements OnInit {
   editingDescription: boolean = false;
   editingSuccess: boolean = false;
 
+  readonly revisionTypeToString: { [key in RevisionType]: string } = {
+    [RevisionType.CREATE] : 'Created',
+    [RevisionType.EDIT] : 'Edited',
+    [RevisionType.DELETE] : 'Deleted',
+  }
+
   constructor(public globals: Globals, private authService: AuthService, private userService: UserService, private route: ActivatedRoute) {
   }
 
@@ -36,7 +43,7 @@ export class ProfileComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       this.revisions = [];
       this.decks = [];
-      if (localStorage.getItem("whoami")) this.me = (params.get('username') === JSON.parse(localStorage.getItem("whoami")).username);
+      this.me = this.authService.getUserName() === params.get('username')
       this.loadProfile(params.get('username'));
     });
     if (localStorage.getItem("whoami")) this.admin = JSON.parse(localStorage.getItem("whoami")).admin;
@@ -75,5 +82,4 @@ export class ProfileComponent implements OnInit {
       }
     );
   }
-
 }

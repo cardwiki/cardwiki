@@ -5,6 +5,7 @@ import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategorySimpleDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
+import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionEdit;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
@@ -300,7 +301,7 @@ public class DeckEndpointTest extends TestDataGenerator {
         mvc.perform(
             delete("/api/v1/decks/" + deckId)
             .with(login(user.getAuthId()))
-        ).andExpect(status().isOk());
+        ).andExpect(status().isNoContent());
 
         assertTrue(deckRepository.findById(deckId).isEmpty());
         assertTrue(cardRepository.findById(cardId).isEmpty());

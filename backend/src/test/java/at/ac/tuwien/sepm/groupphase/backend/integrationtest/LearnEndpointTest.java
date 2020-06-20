@@ -68,7 +68,7 @@ public class LearnEndpointTest extends TestDataGenerator {
         RevisionEdit edit = givenRevisionEdit();
 
         mvc.perform(
-            get("/api/v1/learn/next").queryParam("deckId", edit.getRevision().getCard().getDeck().getId().toString())
+            get("/api/v1/learn/next").queryParam("deckId", edit.getCard().getDeck().getId().toString())
                 .with(mockLogin(USER_ROLES, user.getAuthId()))
                 .contentType("application/json")
         ).andExpect(status().isOk()).andExpect(jsonPath("$[0].textFront").value(edit.getTextFront()));

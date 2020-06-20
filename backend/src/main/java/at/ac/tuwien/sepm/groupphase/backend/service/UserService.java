@@ -3,6 +3,7 @@ package at.ac.tuwien.sepm.groupphase.backend.service;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
+import at.ac.tuwien.sepm.groupphase.backend.exception.AuthenticationRequiredException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +20,7 @@ public interface UserService {
      * @return the user entity
      * @throws UserNotFoundException is thrown if the specified user does not exists
      */
-    User loadUserById(Long id);
+    User findUserByIdOrThrow(Long id);
 
     /**
      * Find a user in the context of Spring Security based on the email address
@@ -31,21 +32,21 @@ public interface UserService {
      * @return the user entity
      * @throws UserNotFoundException is thrown if the specified user does not exists
      */
-    User loadUserByUsername(String username);
+    User findUserByUsernameOrThrow(String username);
 
     /**
      * Loads an user for an Auth ID.
      * @param authId authorization ID of the user to load
      * @return the user entity
      */
-    Optional<User> loadUserByAuthId(String authId);
+    Optional<User> findUserByAuthId(String authId);
 
     /**
      * Loads the currently authenticated user.
      * @return the user entity
-     * @throws UserNotFoundException if the current user is not stored in the repository
+     * @throws AuthenticationRequiredException if no authentication is provided or the current user is not stored in the repository
      */
-    User loadCurrentUser();
+    User loadCurrentUserOrThrow();
 
     /**
      * Create a new user.

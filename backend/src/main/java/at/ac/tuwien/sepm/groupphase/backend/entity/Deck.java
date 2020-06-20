@@ -36,11 +36,14 @@ public class Deck {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "deck")
     private Set<Card> cards = new HashSet<>();
 
-    //@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "deck")
-    //private Set<Comment> comments = new HashSet<>();
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "deck")
+    private Set<Comment> comments = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "decks")
     private Set<Category> categories = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "favorites")
+    private Set<User> favoredBy = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -105,6 +108,14 @@ public class Deck {
 
     public void setCategories(Set<Category> categories) {
         this.categories = categories;
+    }
+
+    public Set<User> getFavoredBy() {
+        return favoredBy;
+    }
+
+    public void setFavoredBy(Set<User> favoredBy) {
+        this.favoredBy = favoredBy;
     }
 
     @Override

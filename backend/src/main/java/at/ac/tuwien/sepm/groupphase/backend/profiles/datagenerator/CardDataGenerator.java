@@ -63,26 +63,18 @@ public class CardDataGenerator {
         while (scanner.hasNextLine()){
             String[] parts = scanner.nextLine().split(",", 2);
             Card card = new Card();
-            Revision revision = new Revision();
+            RevisionCreate revision = new RevisionCreate();
 
             card.setDeck(deck);
             deck.getCards().add(card);
 
             card.setLatestRevision(revision);
-            revision.setCard(card);
-            revision.setMessage("Test Revision ");
-            revision.setCreatedBy(user);
             user.getRevisions().add(revision);
-
-            card = cardRepository.save(card);
-
-            // Add content
-            RevisionEdit edit = new RevisionEdit();
-            edit.setTextFront(parts[0]);
-            edit.setTextBack(parts[1]);
-
-            revision.setRevisionEdit(edit);
-            edit.setRevision(revision);
+            revision.setCard(card);
+            revision.setCreatedBy(user);
+            revision.setMessage("Test Revision ");
+            revision.setTextFront(parts[0]);
+            revision.setTextBack(parts[1]);
 
             card = cardRepository.save(card);
         }
@@ -96,7 +88,7 @@ public class CardDataGenerator {
         user.setAdmin(false);
         user.setEnabled(false);
         user.setDeleted(false);
-        user.setUsername("NutCase");
+        user.setUsername("nununu");
         userRepository.saveAndFlush(user);
 
         Deck deck = new Deck();
@@ -118,7 +110,7 @@ public class CardDataGenerator {
         user.setAdmin(false);
         user.setEnabled(false);
         user.setDeleted(false);
-        user.setUsername("CamelCase");
+        user.setUsername("nocamelcase");
         userRepository.saveAndFlush(user);
 
         Deck deck = new Deck();
@@ -136,7 +128,7 @@ public class CardDataGenerator {
         Card card = new Card();
         card.setDeck(deck);
         deck.getCards().add(card);
-        Revision revision = new Revision();
+        RevisionCreate revision = new RevisionCreate();
 
         card.setLatestRevision(revision);
         revision.setCard(card);
@@ -144,14 +136,8 @@ public class CardDataGenerator {
         revision.setCreatedBy(user);
         user.getRevisions().add(revision);
 
-        card = cardRepository.save(card);
-
-        // Add content
-        RevisionEdit edit = new RevisionEdit();
-        edit.setTextFront(deckSize + " test set card " + index + " front");
-        edit.setTextBack(deckSize + " test set card " + index + " back");
-        revision.setRevisionEdit(edit);
-        edit.setRevision(revision);
+        revision.setTextFront(deckSize + " test set card " + index + " front");
+        revision.setTextBack(deckSize + " test set card " + index + " back");
 
         card = cardRepository.save(card);
     }

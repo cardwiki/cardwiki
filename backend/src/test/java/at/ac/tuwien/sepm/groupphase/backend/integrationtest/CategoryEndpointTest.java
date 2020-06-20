@@ -285,6 +285,6 @@ public class CategoryEndpointTest extends TestDataGenerator {
 
         mvc.perform(delete("/api/v1/categories/{id}", category.getId())
             .with(login(admin.getAuthId())))
-            .andExpect(status().isOk());
+            .andExpect(status().isNoContent());
     }
 }

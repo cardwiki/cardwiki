@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -82,5 +84,49 @@ public class DeckRepositoryTest extends TestDataGenerator {
     @Test
     public void givenNoDecks_whenDeleteById_thenThrowEmptyResultDataAccessException() {
         assertThrows(EmptyResultDataAccessException.class, () -> deckRepository.deleteById(1L));
+    }
+
+    @Test void givenUser_whenFindFavoredById_thenReturnEmpty() {
+        Long userId = givenApplicationUser().getId();
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Page<Deck> result = deckRepository.findByFavoredById(userId, pageable);
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test void givenFavorite_whenFindFavoredById_thenReturnFavorite() {
+        Deck deck = givenFavorite();
+        Long userId = deck.getCreatedBy().getId();
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Page<Deck> result = deckRepository.findByFavoredById(userId, pageable);
+
+        assertEquals(1, result.getNumberOfElements());
+        Deck resultDeck = result.iterator().next();
+        assertNotNull(resultDeck);
+        assertAll(
+            () -> assertEquals(deck.getId(), resultDeck.getId()),
+            () -> assertEquals(deck.getName(), resultDeck.getName())
+        );
+    }
+
+    @Test void givenDeckAndUser_whenexistsByIdAndFavoredById_thenReturnFalse() {
+        Long deckId = givenDeck().getId();
+        Long userId = givenApplicationUser().getId();
+
+        assertFalse(deckRepository.existsByIdAndFavoredById(deckId, userId));
+    }
+
+    @Test void givenFavorite_whenexistsByIdAndFavoredById_thenReturnTrue() {
+        Deck deck = givenFavorite();
+        Long userId = deck.getCreatedBy().getId();
+        Long deckId = deck.getId();
+
+        assertTrue(deckRepository.existsByIdAndFavoredById(deckId, userId));
+    }
+
+    @Test void givenNothing_whenexistsByIdAndFavoredById_thenThrow() {
+        assertFalse(() -> deckRepository.existsByIdAndFavoredById(0L, 0L));
     }
 }

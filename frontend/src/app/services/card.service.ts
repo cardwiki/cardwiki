@@ -2,16 +2,20 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Globals} from '../global/globals';
 import {Observable} from 'rxjs';
-import { CardContent } from '../dtos/cardContent';
 import { CardDetails } from '../dtos/cardDetails';
 import {CardSimple} from '../dtos/cardSimple';
 import { ErrorHandlerService } from './error-handler.service';
 import { tap } from 'rxjs/operators';
+import { CardUpdate } from '../dtos/cardUpdate';
+import { CardContent } from '../dtos/cardContent';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CardService {
+
+  private deckBaseUri = this.globals.backendUri + '/decks'
+  private cardBaseUri = this.globals.backendUri + '/cards'
 
   constructor(private httpClient: HttpClient, private globals: Globals, private errorHandler: ErrorHandlerService) {
   }
@@ -20,9 +24,9 @@ export class CardService {
    * Persists card to the backend
    * @param card to persist
    */
-  createCard(deckId: number, card: CardContent): Observable<CardDetails> {
+  createCard(deckId: number, card: CardUpdate): Observable<CardDetails> {
     console.log('create card', deckId, card);
-    return this.httpClient.post<CardDetails>(this.getCardUri(deckId), card)
+    return this.httpClient.post<CardDetails>(`${this.deckBaseUri}/${deckId}/cards`, card)
       .pipe(tap(null, this.errorHandler.handleError('Could not create Card')))
   }
 
@@ -32,48 +36,42 @@ export class CardService {
    */
   getCardsByDeckId(deckId: number): Observable<CardSimple[]> {
     console.log('get cards for deck with id ' + deckId);
-    return this.httpClient.get<CardSimple[]>(this.getCardUri(deckId))
+    return this.httpClient.get<CardSimple[]>(`${this.deckBaseUri}/${deckId}/cards`)
       .pipe(tap(null, this.errorHandler.handleError('Could not fetch Cards')))
   }
 
   /**
    * Removes a card from its deck
-   * @param deckId of the card's deck
    * @param cardId of the card to remove
+   * @param message optional description why the card will be removed
    */
-  removeCardFromDeck(deckId: number, cardId: number): Observable<CardSimple> {
-    console.log(`remove card with id ${cardId} from deck ${deckId}`);
-    return this.httpClient.post<CardSimple>(this.getCardUri(deckId, cardId), {})
+  removeCard(cardId: number, message?: string): Observable<CardContent> {
+    console.log(`remove card with id ${cardId}`);
+    const params = message ? { message } : {}
+    return this.httpClient.delete<CardContent>(`${this.cardBaseUri}/${cardId}`, { params })
       .pipe(tap(null, this.errorHandler.handleError('Could not remove Card')))
   }
 
-  editCard(deckId: number, cardId: number, card: CardContent): Observable<CardDetails> {
-    console.log(`edit card with id ${cardId} from deck ${deckId}: ${card}`);
-    return this.httpClient.patch<CardDetails>(this.getCardUri(deckId, cardId), card)
+  editCard(cardId: number, card: CardUpdate): Observable<CardDetails> {
+    console.log(`edit card with id ${cardId}: ${card}`);
+    return this.httpClient.patch<CardDetails>(`${this.cardBaseUri}/${cardId}`, card)
       .pipe(tap(null, this.errorHandler.handleError('Could not edit Card')))
   }
 
-  fetchCard(deckId: number, cardId: number): Observable<CardDetails> {
-    console.log(`fetch card with id ${cardId} from deck ${deckId}`);
-    return this.httpClient.get<CardDetails>(this.getCardUri(deckId, cardId))
+  fetchCard(cardId: number): Observable<CardDetails> {
+    console.log(`fetch card with id ${cardId}`);
+    return this.httpClient.get<CardDetails>(`${this.cardBaseUri}/${cardId}`)
       .pipe(tap(null, this.errorHandler.handleError('Could not fetch Card')))
   }
 
   /**
    * Permanently deletes a card.
    *
-   * @param deckId of the card deck
    * @param cardId of the card to delete.
    */
-  deleteCard(deckId: number, cardId: number): Observable<void> {
-    console.log(`Delete card ${cardId} from deck ${deckId}`);
-    return this.httpClient.delete<void>(this.getCardUri(deckId, cardId))
+  deleteCard(cardId: number): Observable<void> {
+    console.log(`Delete card ${cardId}`);
+    return this.httpClient.delete<void>(`${this.cardBaseUri}/${cardId}`)
       .pipe(tap(null, this.errorHandler.handleError('Could not delete Card')));
-  }
-
-  private getCardUri(deckId: number, cardId?: number) {
-    return typeof cardId !== 'undefined' ?
-      `${this.globals.backendUri}/decks/${deckId}/cards/${cardId}`
-      : `${this.globals.backendUri}/decks/${deckId}/cards`;
   }
 }

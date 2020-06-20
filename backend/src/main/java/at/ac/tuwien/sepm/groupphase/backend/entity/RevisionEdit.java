@@ -7,16 +7,9 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "revision_edits")
-public class RevisionEdit {
+@DiscriminatorValue(Revision.Type.Values.EDIT)
+public class RevisionEdit extends Revision {
     public static final int MAX_TEXT_SIZE = 1000;
-
-    @Id
-    private Long id;
-
-    @OneToOne
-    @MapsId
-    @JoinColumn(name = "revision_id", updatable = false)
-    private Revision revision;
 
     @Size(max = MAX_TEXT_SIZE)
     @NotBlank
@@ -27,22 +20,6 @@ public class RevisionEdit {
     @NotBlank
     @Column(nullable = false, name = "text_back", length = MAX_TEXT_SIZE, updatable = false)
     private String textBack;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Revision getRevision() {
-        return revision;
-    }
-
-    public void setRevision(Revision revision) {
-        this.revision = revision;
-    }
 
     public String getTextFront() {
         return textFront;
@@ -77,7 +54,6 @@ public class RevisionEdit {
     @Override
     public String toString() {
         return "RevisionEdit{" +
-            "id=" + id +
             ", textFront='" + textFront + '\'' +
             ", textBack='" + textBack + '\'' +
             '}';

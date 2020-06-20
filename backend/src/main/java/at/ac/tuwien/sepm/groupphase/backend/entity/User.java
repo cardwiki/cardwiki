@@ -6,7 +6,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.NoSuchElementException;
 import java.util.Set;
 
 @Entity
@@ -48,6 +47,13 @@ public class User {
 
     @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY)
     private Set<Revision> revisions = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "favorites",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "deck_id")
+    )
+    private Set<Deck> favorites = new HashSet<>();
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -144,6 +150,14 @@ public class User {
         this.deleted = deleted;
     }
 
+    public Set<Deck> getFavorites() {
+        return favorites;
+    }
+
+    public void setFavorites(Set<Deck> favorites) {
+        this.favorites = favorites;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -153,7 +167,6 @@ public class User {
             ", admin=" + admin +
             ", enabled=" + enabled +
             ", description='" + description + '\'' +
-            ", revisions=" + revisions +
             ", createdAt=" + createdAt +
             ", updatedAt=" + updatedAt +
             '}';
