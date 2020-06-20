@@ -1,10 +1,7 @@
 package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
-import at.ac.tuwien.sepm.groupphase.backend.exception.BadRequestException;
-import at.ac.tuwien.sepm.groupphase.backend.exception.CardNotFoundException;
-import at.ac.tuwien.sepm.groupphase.backend.exception.ImageNotFoundException;
-import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
+import at.ac.tuwien.sepm.groupphase.backend.exception.*;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.CardService;
 import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
@@ -41,6 +38,7 @@ public class SimpleCardService implements CardService {
     @Transactional
     public Card addCardToDeck(Long deckId, RevisionCreate revisionCreate) {
         LOGGER.debug("Add Card to Deck: {} {}", revisionCreate, deckId);
+        validateRevisionEdit(revisionCreate);
         User user = userService.loadCurrentUserOrThrow();
         Deck deck = deckService.findOneOrThrow(deckId);
 
@@ -98,6 +96,7 @@ public class SimpleCardService implements CardService {
     @Transactional
     public Card editCardInDeck(Long cardId, RevisionEdit revisionEdit) {
         LOGGER.debug("Edit Card {}: {}", cardId, revisionEdit);
+        validateRevisionEdit(revisionEdit);
         User user = userService.loadCurrentUserOrThrow();
         Card card = findOneOrThrow(cardId);
 
@@ -115,6 +114,13 @@ public class SimpleCardService implements CardService {
         revisionEdit.setCreatedBy(user);
 
         return cardRepository.saveAndFlush(card);
+    }
+
+    public void validateRevisionEdit(RevisionEdit revisionEdit) {
+        if ((revisionEdit.getTextFront() == null && revisionEdit.getImageFront() == null)
+            || (revisionEdit.getTextBack() == null && revisionEdit.getImageBack() == null)) {
+            throw new ValidationException("Cannot save card with an empty side.");
+        }
     }
 
 }

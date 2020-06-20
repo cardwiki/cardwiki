@@ -1,12 +1,9 @@
 package at.ac.tuwien.sepm.groupphase.backend.entity;
 
-import at.ac.tuwien.sepm.groupphase.backend.validation.ContentNotNull;
 import at.ac.tuwien.sepm.groupphase.backend.validation.NullOrNotBlank;
-
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 
-@ContentNotNull
 @Entity
 @Table(name = "revision_edits")
 @DiscriminatorValue(Revision.Type.Values.EDIT)
