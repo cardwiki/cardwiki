@@ -184,12 +184,18 @@ public class CardEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    public void createCardWithNullTextThrowsBadRequest() throws Exception {
+    public void createCardWithoutContentThrowsBadRequest() throws Exception {
+        Agent user = persistentAgent();
+        Deck deck = user.createDeck();
+
         RevisionEditDto dto = new RevisionEditDto();
         dto.setTextFront(null);
         dto.setTextBack(null);
+        dto.setImageFrontFilename(null);
+        dto.setImageBackFilename(null);
 
-        mvc.perform(post("/api/v1/decks/{deckId}/cards", 123)
+        mvc.perform(post("/api/v1/decks/{deckId}/cards", deck.getId())
+            .with(login(user.getUser().getAuthId()))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(400));
@@ -327,13 +333,19 @@ public class CardEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    public void editCardWithNullTextThrowsBadRequest() throws Exception {
-        Card card = givenCard();
+    public void editCardWithoutContentThrowsBadRequest() throws Exception {
+        Agent user = persistentAgent();
+        Deck deck = user.createDeck();
+        Card card = user.createCardIn(deck);
+
         RevisionEditDto dto = new RevisionEditDto();
         dto.setTextFront(null);
         dto.setTextBack(null);
+        dto.setImageFrontFilename(null);
+        dto.setImageBackFilename(null);
 
         mvc.perform(patch("/api/v1/cards/{cardId}", card.getId())
+            .with(login(user.getUser().getAuthId()))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(400));

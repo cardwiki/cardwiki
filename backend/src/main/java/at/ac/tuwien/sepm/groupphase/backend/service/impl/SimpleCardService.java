@@ -38,9 +38,9 @@ public class SimpleCardService implements CardService {
     @Transactional
     public Card addCardToDeck(Long deckId, RevisionCreate revisionCreate) {
         LOGGER.debug("Add Card to Deck: {} {}", revisionCreate, deckId);
-        validateRevisionEdit(revisionCreate);
         User user = userService.loadCurrentUserOrThrow();
         Deck deck = deckService.findOneOrThrow(deckId);
+        validateRevisionEdit(revisionCreate);
 
         // Save Card with initial revision
         Card card = new Card();
@@ -96,9 +96,9 @@ public class SimpleCardService implements CardService {
     @Transactional
     public Card editCardInDeck(Long cardId, RevisionEdit revisionEdit) {
         LOGGER.debug("Edit Card {}: {}", cardId, revisionEdit);
-        validateRevisionEdit(revisionEdit);
         User user = userService.loadCurrentUserOrThrow();
         Card card = findOneOrThrow(cardId);
+        validateRevisionEdit(revisionEdit);
 
         revisionEdit.setMessage(revisionEdit.getMessage() != null ? revisionEdit.getMessage() : "Edited");
         try {
