@@ -599,7 +599,6 @@ public class UserEndpointTest extends TestDataGenerator {
             .andExpect(status().isNoContent());
 
         assertFalse(user.isEnabled());
-        assertEquals("[deleted]", user.getUsername());
         assertEquals("[removed]", user.getDescription());
     }
 

@@ -177,7 +177,6 @@ public class SimpleUserService implements UserService {
             throw new AccessDeniedException("Admins cannot be deleted.");
         }
 
-        user.setUsername("[deleted]");
         user.setDescription("[removed]");
         user.setEnabled(false);
         user.setDeleted(true);
