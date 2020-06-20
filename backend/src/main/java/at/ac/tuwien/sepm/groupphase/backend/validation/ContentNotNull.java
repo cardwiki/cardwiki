@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ContentNotNull {
-    String message() default "{error.address}";
+    String message() default "Cannot save card with an empty side.";
     Class<?>[] groups() default { };
     Class<? extends Payload>[] payload() default { };
 }

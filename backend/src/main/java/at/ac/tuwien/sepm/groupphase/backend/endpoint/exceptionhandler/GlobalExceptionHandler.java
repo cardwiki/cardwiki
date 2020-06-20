@@ -6,10 +6,12 @@ import at.ac.tuwien.sepm.groupphase.backend.exception.InsufficientAuthorizationE
 import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.util.unit.DataSize;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -36,6 +38,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+    @Value("${spring.servlet.multipart.max-file-size}")
+    private DataSize maxFileSize;
+
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<Object> internalServerError(RuntimeException ex, WebRequest request){
         // TODO: return proper JSON
@@ -53,7 +58,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     protected ResponseEntity<Object> handleSizeLimitExceeded(RuntimeException ex, WebRequest request) {
         LOGGER.error(ex.getMessage());
-        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+        String message = String.format("Uploads cannot be larger than %d MB", maxFileSize.toMegabytes());
+        return handleExceptionInternal(ex, message, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
     @ExceptionHandler(ResponseStatusException.class)
