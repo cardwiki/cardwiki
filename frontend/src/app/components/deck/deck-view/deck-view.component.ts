@@ -9,8 +9,9 @@ import {DeckForkModalComponent} from '../deck-fork-modal/deck-fork-modal.compone
 import {Observable, Subject, BehaviorSubject} from 'rxjs';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {AuthService} from '../../../services/auth.service';
+import {Globals} from '../../../global/globals';
 import {FavoriteService} from 'src/app/services/favorite.service';
-import { CardRemoveModalComponent } from '../card-remove-modal/card-remove-modal.component';
+import {CardRemoveModalComponent} from '../card-remove-modal/card-remove-modal.component';
 
 @Component({
   selector: 'app-deck-view',
@@ -23,8 +24,9 @@ export class DeckViewComponent implements OnInit {
   cards: CardSimple[];
   isFavorite$: Subject<boolean>;
 
-  constructor(private deckService: DeckService, private cardService: CardService, private route: ActivatedRoute, private favoriteService: FavoriteService,
-              private router: Router, private modalService: NgbModal, public authService: AuthService, private notificationService: NotificationService) { }
+  constructor(private deckService: DeckService, private cardService: CardService, private route: ActivatedRoute,
+              private favoriteService: FavoriteService, private router: Router, private modalService: NgbModal,
+              public authService: AuthService, private notificationService: NotificationService, public globals: Globals) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {

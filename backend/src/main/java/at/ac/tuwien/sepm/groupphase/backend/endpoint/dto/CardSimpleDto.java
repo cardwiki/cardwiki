@@ -9,4 +9,6 @@ public class CardSimpleDto {
     private DeckSimpleDto deck;
     private String textFront;
     private String textBack;
+    private String imageFrontUrl;
+    private String imageBackUrl;
 }

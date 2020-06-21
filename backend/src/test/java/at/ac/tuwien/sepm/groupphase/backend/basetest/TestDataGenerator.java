@@ -78,13 +78,17 @@ public abstract class TestDataGenerator {
             }
         }
 
-        public void beforeReturn(Object o){
+        private void beforeReturn(Object o){
             if (persist) {
                 em.persist(o);
                 em.flush();
-                if (o.getClass().equals(Deck.class))
-                    System.out.println("IT's HAPPENING " + ((Deck) o).getId());
             }
+        }
+
+        public Agent makeAdmin() {
+            user.setAdmin(true);
+            beforeReturn(user);
+            return this;
         }
 
         public Deck createDeck(){
@@ -118,6 +122,21 @@ public abstract class TestDataGenerator {
             revisionCreate.setCreatedBy(user);
             user.getRevisions().add(revisionCreate);
             return createCardIn(deck, revisionCreate);
+        }
+
+        public Comment createCommentIn(Deck deck){
+            return createCommentIn(deck, "What a beautiful deck");
+        }
+
+        public Comment createCommentIn(Deck deck, String message) {
+            Comment comment = new Comment();
+            comment.setMessage(message);
+            comment.setDeck(deck);
+            comment.setCreatedBy(user);
+            deck.setCreatedAt(LocalDateTime.of(2020, 1, 1, 1, 1));
+            deck.setUpdatedAt(LocalDateTime.of(2020, 2, 1, 1, 1));
+            beforeReturn(comment);
+            return comment;
         }
 
         public RevisionEdit editCard(Card card, RevisionEdit revisionEdit){
@@ -160,10 +179,27 @@ public abstract class TestDataGenerator {
             revisionDelete.setMessage("test message");
             deleteCard(card, revisionDelete);
         }
+
+        public Deck addFavorite(Deck deck) {
+            user.getFavorites().add(deck);
+            deck.getFavoredBy().add(user);
+            beforeReturn(deck);
+            return deck;
+        }
+    }
+
+    // Auth id to login as a persisted user
+    public String givenUserAuthId() {
+        return persistentAgent("normal-user").getUser().getAuthId();
+    }
+
+    // Auth id to login as a persisted admin
+    public String givenAdminAuthId() {
+        return persistentAgent("im-a-admin").makeAdmin().getUser().getAuthId();
     }
 
     public Matcher<String> validIsoDateTime() {
-        return new TypeSafeMatcher<String>() {
+        return new TypeSafeMatcher<>() {
             @Override
             protected boolean matchesSafely(String s) {
                 try {
@@ -192,11 +228,9 @@ public abstract class TestDataGenerator {
     @Autowired
     private RevisionRepository revisionRepository;
     @Autowired
-    private CommentRepository commentRepository;
-    @Autowired
     private CategoryRepository categoryRepository;
     @Autowired
-    private ProgressRepository progressRepository;
+    private ImageRepository imageRepository;
 
     private long userCounter = 0;
 
@@ -215,27 +249,11 @@ public abstract class TestDataGenerator {
     }
 
     @Deprecated
-    public User givenAdmin() {
-        User user = givenApplicationUser();
-        user.setAdmin(true);
-        return userRepository.saveAndFlush(user);
-    }
-
-    @Deprecated
     public Deck givenDeck() {
         User user = givenApplicationUser();
         Deck deck = new Deck();
         deck.setName("deck name");
         deck.setCreatedBy(user);
-        return deckRepository.saveAndFlush(deck);
-    }
-
-    @Deprecated
-    public Deck givenFavorite() {
-        Deck deck = givenDeck();
-        User user = deck.getCreatedBy();
-        user.getFavorites().add(deck);
-        deck.getFavoredBy().add(user);
         return deckRepository.saveAndFlush(deck);
     }
 
@@ -247,18 +265,6 @@ public abstract class TestDataGenerator {
         deck.getCards().add(card);
 
         return cardRepository.saveAndFlush(card);
-    }
-
-    @Deprecated
-    public Comment givenComment() {
-        Deck deck = givenDeck();
-        User user = givenApplicationUser();
-        Comment comment = new Comment();
-        comment.setMessage("some message");
-        comment.setCreatedBy(user);
-        comment.setDeck(deck);
-
-        return commentRepository.saveAndFlush(comment);
     }
 
     @Deprecated
@@ -283,6 +289,8 @@ public abstract class TestDataGenerator {
         revisionEdit.setTextFront("front");
         revisionEdit.setTextBack("back");
         revisionEdit.setMessage("test message");
+        revisionEdit.setImageFront(givenImage());
+        revisionEdit.setImageBack(givenImage());
         revisionEdit.setCreatedBy(givenApplicationUser());
 
         Card card = givenCard();
@@ -314,7 +322,19 @@ public abstract class TestDataGenerator {
         Progress progress = new Progress(id);
         progress.setDue(LocalDateTime.now());
 
-        return progressRepository.saveAndFlush(progress);
+        em.persist(progress);
+        em.flush();
+
+        return progress;
+    }
+
+    public Image givenImage() {
+        User user = givenApplicationUser();
+        Image image = new Image();
+        image.setCreatedBy(user);
+        image.setFilename("test.png");
+
+        return imageRepository.saveAndFlush(image);
     }
 
     Long DECK_ID = 0L;
@@ -348,15 +368,6 @@ public abstract class TestDataGenerator {
         deck.setCreatedAt(CREATED_AT);
         deck.setUpdatedAt(UPDATED_AT);
         return deck;
-    }
-
-    @Deprecated
-    public Comment getUnconnectedSampleComment() {
-        Comment comment = new Comment();
-        comment.setMessage("beautiful comment");
-        comment.setCreatedAt(CREATED_AT);
-        comment.setUpdatedAt(UPDATED_AT);
-        return comment;
     }
 
     @Deprecated
@@ -418,14 +429,6 @@ public abstract class TestDataGenerator {
     }
 
     @Deprecated
-    public Comment getSampleComment() {
-        Comment comment = getUnconnectedSampleComment();
-        comment.setCreatedBy(getSampleUser());
-        comment.setDeck(getSampleDeck());
-        return comment;
-    }
-
-    @Deprecated
     public Card getSampleCard() {
         Card card = getUnconnectedSampleCard();
         card.setDeck(getSampleDeck());
@@ -442,11 +445,6 @@ public abstract class TestDataGenerator {
         revision.getCard().getRevisions().add(revision);
         revision.getCard().setLatestRevision(revision);
         return revision;
-    }
-
-    @Deprecated
-    public RevisionEdit getSampleRevisionEdit() {
-        return getUnconnectedSampleRevisionEdit();
     }
 
     @Deprecated
@@ -478,27 +476,11 @@ public abstract class TestDataGenerator {
     }
 
     @Deprecated
-    public UserRepository getUserRepository() {
-        return userRepository;
-    }
-
-    @Deprecated
-    public DeckRepository getDeckRepository() {
-        return deckRepository;
-    }
-
-    @Deprecated
-    public CardRepository getCardRepository() {
-        return cardRepository;
-    }
-
-    @Deprecated
-    public RevisionRepository getRevisionRepository() {
-        return revisionRepository;
-    }
-
-    @Deprecated
     public CategoryRepository getCategoryRepository() {
         return categoryRepository;
+    }
+
+    public ImageRepository getImageRepository() {
+        return imageRepository;
     }
 }
