@@ -16,4 +16,6 @@ public class UserUpdateDto {
     private Boolean admin;
 
     private Boolean enabled;
+
+    private String reason;
 }

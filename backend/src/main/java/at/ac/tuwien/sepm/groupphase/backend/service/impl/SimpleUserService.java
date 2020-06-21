@@ -3,10 +3,7 @@ package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
-import at.ac.tuwien.sepm.groupphase.backend.exception.AuthenticationRequiredException;
-import at.ac.tuwien.sepm.groupphase.backend.exception.InsufficientAuthorizationException;
-import at.ac.tuwien.sepm.groupphase.backend.exception.ConflictException;
-import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
+import at.ac.tuwien.sepm.groupphase.backend.exception.*;
 import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.ProgressRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.RevisionRepository;
@@ -161,6 +158,14 @@ public class SimpleUserService implements UserService {
         }
 
         if (currentUser.isAdmin() && user.isEnabled() != null) {
+            if (user.isEnabled()) {
+                if (!updatedUser.isDeleted())
+                    updatedUser.setReason(null);
+            } else {
+                if (user.getReason() == null)
+                    throw new BadRequestException("A reason is required to disable a user.");
+                updatedUser.setReason(user.getReason());
+            }
             updatedUser.setEnabled(user.isEnabled());
         }
 
@@ -169,17 +174,18 @@ public class SimpleUserService implements UserService {
 
     @Transactional
     @Override
-    public void delete(Long id) {
-        LOGGER.debug("Delete user with id {}", id);
+    public void delete(Long id, String reason) {
+        LOGGER.debug("Delete user with id {} Reason: {}", id, reason);
         User user = findUserByIdOrThrow(id);
 
         if (user.isAdmin()) {
             throw new AccessDeniedException("Admins cannot be deleted.");
         }
 
-        user.setDescription("[removed]");
+        user.setDescription("This user was deleted.");
         user.setEnabled(false);
         user.setDeleted(true);
+        user.setReason(reason);
         userRepository.save(user);
         progressRepository.deleteUserProgress(id);
     }

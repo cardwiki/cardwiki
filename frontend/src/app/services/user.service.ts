@@ -106,11 +106,12 @@ export class UserService {
    *
    * @param userid of the user to update.
    * @param enabled the 'enabled' status to set.
+   * @param reason why this user is disabled
    */
-  editEnabledStatus(userid: number, enabled: boolean): Observable<UserProfile> {
+  editEnabledStatus(userid: number, enabled: boolean, reason?: string): Observable<UserProfile> {
     const msg = enabled ? 'enable user' : 'disable user';
     console.log(`${msg} ${userid}`);
-    return this.httpClient.patch<UserProfile>(`${this.userBaseUri}/${userid}`, {enabled: enabled})
+    return this.httpClient.patch<UserProfile>(`${this.userBaseUri}/${userid}`, {enabled: enabled, reason: reason})
       .pipe(tap(null, this.errorHandler.handleError('Could not ' + msg)));
   }
 
@@ -118,7 +119,7 @@ export class UserService {
    * Makes a user an admin or removes your own admin rights.
    *
    * @param userid of the user to update.
-   * @param enabled the 'admin' status to set.
+   * @param admin the 'admin' status to set.
    */
   editAdminStatus(userid: number, admin: boolean): Observable<UserProfile> {
     const msg = admin ? 'promote user' : 'demote user';
@@ -131,10 +132,16 @@ export class UserService {
    * Deletes a user.
    *
    * @param userid of the user to delete.
+   * @param reason why the user is deleted.
    */
-  delete(userid: number): Observable<void> {
+  delete(userid: number, reason: string): Observable<void> {
     console.log('delete user ' + userid);
-    return this.httpClient.delete<void>(`${this.userBaseUri}/${userid}`)
+    const params = new HttpParams({
+      fromObject: {
+        reason: reason
+      }
+    });
+    return this.httpClient.delete<void>(`${this.userBaseUri}/${userid}`, {params: params})
       .pipe(tap(null, this.errorHandler.handleError('Could not delete user ' + userid)));
   }
 }

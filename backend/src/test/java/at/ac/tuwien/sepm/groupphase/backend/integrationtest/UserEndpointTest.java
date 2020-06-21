@@ -337,6 +337,7 @@ public class UserEndpointTest extends TestDataGenerator {
 
         ObjectNode input = objectMapper.createObjectNode();
         input.put("enabled", false);
+        input.put("reason", "reason");
 
         mvc.perform(patch("/api/v1/users/{userid}", user.getId())
             .with(login(admin.getAuthId()))
@@ -348,6 +349,22 @@ public class UserEndpointTest extends TestDataGenerator {
             .contentType("application/json"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.hasAccount").value(false));
+    }
+
+    @Test
+    public void adminDisableUserWithoutReason_badRequest() throws Exception {
+        User admin = givenApplicationUser();
+        admin.setAdmin(true);
+        User user = givenApplicationUser();
+        user.setEnabled(true);
+
+        ObjectNode input = objectMapper.createObjectNode();
+        input.put("enabled", false);
+
+        mvc.perform(patch("/api/v1/users/{userid}", user.getId())
+            .with(login(admin.getAuthId()))
+            .contentType("application/json").content(input.toString()))
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -369,7 +386,7 @@ public class UserEndpointTest extends TestDataGenerator {
         User user1 = givenApplicationUser();
         User user2 = givenApplicationUser();
 
-        mvc.perform(delete("/api/v1/users/{userId}", user2.getId())
+        mvc.perform(delete("/api/v1/users/{userId}?reason=reason", user2.getId())
             .with(login(user1.getAuthId())))
             .andExpect(status().isForbidden());
     }
@@ -381,7 +398,7 @@ public class UserEndpointTest extends TestDataGenerator {
         User admin2 = givenApplicationUser();
         admin2.setAdmin(true);
 
-        mvc.perform(delete("/api/v1/users/{userId}", admin2.getId())
+        mvc.perform(delete("/api/v1/users/{userId}?reason=reason", admin2.getId())
             .with(login(admin1.getAuthId())))
             .andExpect(status().isForbidden());
     }
@@ -391,7 +408,7 @@ public class UserEndpointTest extends TestDataGenerator {
         User admin = givenApplicationUser();
         admin.setAdmin(true);
 
-        mvc.perform(delete("/api/v1/users/{userId}", admin.getId() + 1)
+        mvc.perform(delete("/api/v1/users/{userId}?reason=reason", admin.getId() + 1)
             .with(login(admin.getAuthId())))
             .andExpect(status().isNotFound());
     }
@@ -403,12 +420,25 @@ public class UserEndpointTest extends TestDataGenerator {
         Progress progress = givenProgress();
         User user = progress.getId().getUser();
 
-        mvc.perform(delete("/api/v1/users/{userId}", user.getId())
+        mvc.perform(delete("/api/v1/users/{userId}?reason=reason", user.getId())
             .with(login(admin.getAuthId())))
             .andExpect(status().isNoContent());
 
         assertFalse(user.isEnabled());
-        assertEquals("[removed]", user.getDescription());
+        assertEquals("This user was deleted.", user.getDescription());
+        assertEquals("reason", user.getReason());
+    }
+
+    @Test
+    public void adminDeleteUserWithoutReason_badRequest() throws Exception {
+        User admin = givenApplicationUser();
+        admin.setAdmin(true);
+        Progress progress = givenProgress();
+        User user = progress.getId().getUser();
+
+        mvc.perform(delete("/api/v1/users/{userId}", user.getId())
+            .with(login(admin.getAuthId())))
+            .andExpect(status().isBadRequest());
     }
 
     private static String longestCommonSubstring(String S1, String S2)

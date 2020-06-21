@@ -149,8 +149,8 @@ public class UserEndpoint {
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiOperation(value = "Delete user", authorizations = {@Authorization("apiKey")})
-    public void delete(@PathVariable long id) {
-        LOGGER.info("DELETE /api/v1/users/{}", id);
-        userService.delete(id);
+    public void delete(@PathVariable long id, @RequestParam String reason) {
+        LOGGER.info("DELETE /api/v1/users/{} Reason: {}", id, reason);
+        userService.delete(id, reason);
     }
 }

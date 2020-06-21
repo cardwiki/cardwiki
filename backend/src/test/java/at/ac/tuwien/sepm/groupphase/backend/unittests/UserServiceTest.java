@@ -112,7 +112,7 @@ public class UserServiceTest extends TestDataGenerator {
     @Test
     public void givenNothing_whenDeleteNonExistentUser_thenThrowUserNotFoundException() {
         Mockito.when(userRepository.findById(404L)).thenReturn(Optional.empty());
-        assertThrows(UserNotFoundException.class, () -> userService.delete(404L));
+        assertThrows(UserNotFoundException.class, () -> userService.delete(404L, "reason"));
     }
 
     @Test
@@ -124,14 +124,15 @@ public class UserServiceTest extends TestDataGenerator {
 
         Mockito.when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 
-        userService.delete(user.getId());
+        userService.delete(user.getId(), "pls delete");
 
         Mockito.verify(progressRepository).deleteUserProgress(user.getId());
         Mockito.verify(userRepository).save(argumentCaptor.capture());
         assertFalse(argumentCaptor.getValue().isEnabled());
-        assertEquals("[removed]", argumentCaptor.getValue().getDescription());
+        assertEquals("This user was deleted.", argumentCaptor.getValue().getDescription());
         assertFalse(argumentCaptor.getValue().isEnabled());
         assertTrue(argumentCaptor.getValue().isDeleted());
+        assertEquals("pls delete", argumentCaptor.getValue().getReason());
     }
 
     @Test
@@ -141,6 +142,6 @@ public class UserServiceTest extends TestDataGenerator {
 
         Mockito.when(userRepository.findById(admin.getId())).thenReturn(Optional.of(admin));
 
-        assertThrows(AccessDeniedException.class, () -> userService.delete(admin.getId()));
+        assertThrows(AccessDeniedException.class, () -> userService.delete(admin.getId(), "delete pls"));
     }
 }

@@ -42,6 +42,8 @@ public class User {
     @Column(nullable = false)
     private Boolean deleted;
 
+    private String reason;
+
     @Column(nullable = false, length = MAX_DESCRIPTION_LENGTH)
     private String description;
 
@@ -158,6 +160,14 @@ public class User {
         this.favorites = favorites;
     }
 
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -166,6 +176,8 @@ public class User {
             ", username='" + username + '\'' +
             ", admin=" + admin +
             ", enabled=" + enabled +
+            ", deleted=" + deleted +
+            ", reason='" + reason + '\'' +
             ", description='" + description + '\'' +
             ", createdAt=" + createdAt +
             ", updatedAt=" + updatedAt +

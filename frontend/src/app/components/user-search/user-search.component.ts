@@ -61,16 +61,26 @@ export class UserSearchComponent implements OnInit {
   }
 
   editEnabledStatus(user: UserProfile, enabled: boolean): void {
-    if (confirm(`Are you sure you want to ${enabled ? 'enable' : 'disable'} user '${user.username}'`)) {
-      this.userService.editEnabledStatus(user.id, enabled).subscribe(updatedUser => {
-        user.enabled = updatedUser.enabled;
-      });
+    let reason = null;
+    if (enabled) {
+      if (!confirm(`Are you sure you want to enable user '${user.username}'?`)) {
+        return;
+      }
+    } else {
+      reason = prompt(`Why do you want to disable user '${user.username}'?`);
+      if (reason === null) {
+        return;
+      }
     }
+    this.userService.editEnabledStatus(user.id, enabled, reason).subscribe(updatedUser => {
+      user.enabled = updatedUser.enabled;
+    });
   }
 
   delete(user: UserProfile): void {
-    if (confirm(`Are you sure you want to permanently delete user '${user.username}'?`)) {
-      this.userService.delete(user.id).subscribe(_ => {
+    const reason = prompt(`Why do you want to permanently delete user '${user.username}'?`);
+    if (reason !== null) {
+      this.userService.delete(user.id, reason).subscribe(_ => {
         this.users = this.users.filter(u => u !== user);
       });
     }
