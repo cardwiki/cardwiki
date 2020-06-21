@@ -44,7 +44,7 @@ public class CategoryEndpoint {
     @PostMapping
     @Secured("ROLE_USER")
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation(value = "Create new Category", authorizations = {@Authorization(value = "ROLE_USER")})
+    @ApiOperation(value = "Create new Category", authorizations = {@Authorization("user")})
     public CategoryDetailedDto createCategory(@RequestBody @Valid CategoryInputDto categoryInputDto) {
         LOGGER.info("POST /api/v1/categories");
         return categoryMapper.categoryToCategoryDetailedDto(
@@ -61,7 +61,7 @@ public class CategoryEndpoint {
 
     @Secured("ROLE_USER")
     @PutMapping(value = "/{id}")
-    @ApiOperation(value = "Update category with specific id", authorizations = {@Authorization(value = "ROLE_USER")})
+    @ApiOperation(value = "Update category with specific id", authorizations = {@Authorization("user")})
     public CategoryDetailedDto updateCategory(@PathVariable Long id,
                                               @RequestBody @Valid CategoryInputDto categoryInputDto) {
         LOGGER.info("PUT /api/v1/categories/{}", id);
@@ -74,7 +74,7 @@ public class CategoryEndpoint {
     @Secured("ROLE_ADMIN")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping(value = "/{id}")
-    @ApiOperation(value = "Permanently delete a category", authorizations = {@Authorization(value = "apiKey")})
+    @ApiOperation(value = "Permanently delete a category", authorizations = {@Authorization("admin")})
     public void deleteCategory(@PathVariable Long id) {
         LOGGER.info("DELETE /api/v1/categories/{}", id);
         categoryService.deleteCategory(id);

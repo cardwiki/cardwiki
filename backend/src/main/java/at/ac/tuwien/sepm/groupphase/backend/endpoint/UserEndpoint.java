@@ -53,7 +53,7 @@ public class UserEndpoint {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    @ApiOperation(value = "Register the authenticated user")
+    @ApiOperation(value = "Register the authenticated user", authorizations = {@Authorization("user")})
     public UserDetailsDto register(Authentication token, @Valid @RequestBody UserInputDto userInputDto) {
         LOGGER.info("POST /api/v1/users {} {}", token, userInputDto);
         if (token == null)
@@ -102,7 +102,7 @@ public class UserEndpoint {
     @Secured("ROLE_USER")
     @PutMapping(value = "/{userId}/favorites/{deckId}")
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation(value = "Add deck to user favorites")
+    @ApiOperation(value = "Add deck to user favorites", authorizations = {@Authorization("user")})
     public DeckSimpleDto addFavorite(@PathVariable Long userId, @PathVariable Long deckId) {
         LOGGER.info("PUT /api/v1/users/{}/favorites/{}", userId, deckId);
         return deckMapper.deckToDeckSimpleDto(favoriteService.addFavorite(userId, deckId));
@@ -110,7 +110,7 @@ public class UserEndpoint {
 
     @Secured("ROLE_USER")
     @GetMapping(value = "/{userId}/favorites")
-    @ApiOperation(value = "Get favorites of user")
+    @ApiOperation(value = "Get favorites of user", authorizations = {@Authorization("user")})
     public Page<DeckSimpleDto> getFavorites(@PathVariable Long userId, @RequestParam Integer limit, @RequestParam Integer offset) {
         LOGGER.info("GET /api/v1/users/{}/favorites?limit={}&offset={}", userId, limit, offset);
         return favoriteService.getFavorites(userId, PageRequest.of(offset, limit, Sort.by("name")))
@@ -120,7 +120,7 @@ public class UserEndpoint {
     @Secured("ROLE_USER")
     @GetMapping(value = "/{userId}/favorites/{deckId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ApiOperation(value = "Check if a deck is a favorite of the user")
+    @ApiOperation(value = "Check if a deck is a favorite of the user", authorizations = {@Authorization("user")})
     public void hasFavorite(@PathVariable Long userId, @PathVariable Long deckId) {
         LOGGER.info("GET /api/v1/users/{}/favorites/{}", userId, deckId);
         if (!favoriteService.hasFavorite(userId, deckId)) {
@@ -131,7 +131,7 @@ public class UserEndpoint {
     @Secured("ROLE_USER")
     @DeleteMapping(value = "/{userId}/favorites/{deckId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ApiOperation(value = "Remove a deck from favorites of user")
+    @ApiOperation(value = "Remove a deck from favorites of user", authorizations = {@Authorization("user")})
     public void removeFavorite(@PathVariable Long userId, @PathVariable Long deckId) {
         LOGGER.info("GET /api/v1/users/{}/favorites/{}", userId, deckId);
         favoriteService.removeFavorite(userId, deckId);
@@ -139,7 +139,7 @@ public class UserEndpoint {
 
     @Secured("ROLE_USER")
     @PatchMapping(value = "/{id}")
-    @ApiOperation(value = "Change settings of logged in user", authorizations = {@Authorization("apiKey")})
+    @ApiOperation(value = "Change settings of logged in user", authorizations = {@Authorization("user")})
     public UserDetailsDto updateUser(@PathVariable long id, @Valid @RequestBody UserUpdateDto userUpdateDto) {
         LOGGER.info("PATCH /api/v1/users/{} {}", id, userUpdateDto);
         return userMapper.userToUserDetailsDto(userService.updateUser(id, userMapper.userUpdateDtoToUser(userUpdateDto)));
@@ -148,7 +148,7 @@ public class UserEndpoint {
     @Secured("ROLE_ADMIN")
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ApiOperation(value = "Delete user", authorizations = {@Authorization("apiKey")})
+    @ApiOperation(value = "Delete user", authorizations = {@Authorization("user")})
     public void delete(@PathVariable long id, @RequestParam String reason) {
         LOGGER.info("DELETE /api/v1/users/{} Reason: {}", id, reason);
         userService.delete(id, reason);

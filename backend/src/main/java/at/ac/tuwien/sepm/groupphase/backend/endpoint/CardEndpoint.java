@@ -40,7 +40,7 @@ public class CardEndpoint {
     @Secured("ROLE_USER")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/decks/{deckId}/cards")
-    @ApiOperation(value = "Create a new card", authorizations = {@Authorization(value = "ROLE_USER")})
+    @ApiOperation(value = "Create a new card", authorizations = {@Authorization("user")})
     public CardSimpleDto create(@Valid  @RequestBody RevisionEditDto revisionEditDto, @PathVariable Long deckId) {
         LOGGER.info("POST /api/v1/decks/{}/cards body: {}", deckId, revisionEditDto);
         RevisionCreate revision = revisionMapper.revisionEditDtoToRevisionCreate(revisionEditDto);
@@ -68,7 +68,7 @@ public class CardEndpoint {
     @Secured("ROLE_USER")
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping(value = "/cards/{cardId}")
-    @ApiOperation(value = "Edit a specific card in a deck", authorizations = {@Authorization(value = "ROLE_USER")})
+    @ApiOperation(value = "Edit a specific card in a deck", authorizations = {@Authorization("user")})
     public CardSimpleDto edit(@Valid  @RequestBody RevisionEditDto revisionEditDto, @PathVariable Long cardId) {
         LOGGER.info("PATCH /api/v1/cards/{} body: {}", cardId, revisionEditDto);
         RevisionEdit revision = revisionMapper.revisionEditDtoToRevisionEdit(revisionEditDto);
@@ -78,7 +78,7 @@ public class CardEndpoint {
     @Secured("ROLE_USER")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping(value = "/cards/{cardId}")
-    @ApiOperation(value = "Removes card from deck", authorizations = {@Authorization(value = "ROLE_USER")})
+    @ApiOperation(value = "Removes card from deck", authorizations = {@Authorization("user")})
     public void addDeleteRevisionToCard(@PathVariable Long cardId, @RequestParam(required = false) @Size(max = Revision.MAX_MESSAGE_SIZE) String message) {
         LOGGER.info("DELETE /api/v1/cards/{}?message=", message);
         cardService.addDeleteRevisionToCard(cardId, message);
@@ -87,7 +87,7 @@ public class CardEndpoint {
     @Secured("ROLE_ADMIN")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping(value = "/cards/{cardId}")
-    @ApiOperation(value = "Deletes a card", authorizations = {@Authorization(value = "apiKey")})
+    @ApiOperation(value = "Deletes a card", authorizations = {@Authorization("admin")})
     public void delete(@PathVariable Long cardId) {
         LOGGER.info("DELETE card {}", cardId);
         cardService.delete(cardId);

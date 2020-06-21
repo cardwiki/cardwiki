@@ -41,7 +41,7 @@ public class DeckEndpoint {
     @Secured("ROLE_USER")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    @ApiOperation(value = "Create a new card deck", authorizations = @Authorization("ROLE_USER"))
+    @ApiOperation(value = "Create a new card deck", authorizations = @Authorization("user"))
     public DeckDto create(@Valid @RequestBody DeckInputDto deckInputDto) {
         LOGGER.info("POST /api/v1/decks body: {}", deckInputDto);
         return deckMapper.deckToDeckDto(
@@ -77,7 +77,7 @@ public class DeckEndpoint {
     @Secured("ROLE_USER")
     @PatchMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "Update deck", authorizations = @Authorization("ROLE_USER"))
+    @ApiOperation(value = "Update deck", authorizations = @Authorization("user"))
     public DeckDto updateDeck(@PathVariable Long id, @Valid @RequestBody DeckUpdateDto deckUpdateDto) {
         LOGGER.info("PATCH /api/v1/decks/{} body: {}", id, deckUpdateDto);
         try {
@@ -90,7 +90,7 @@ public class DeckEndpoint {
     @Secured("ROLE_USER")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/{id}/copy")
-    @ApiOperation(value = "Copy a deck", authorizations = @Authorization("ROLE_USER"))
+    @ApiOperation(value = "Copy a deck", authorizations = @Authorization("user"))
     public DeckDto copy(@PathVariable Long id, @Valid @RequestBody DeckInputDto deckInputDto) {
         LOGGER.info("Post /api/v1/decks/{}/copy body={}", id, deckInputDto);
         return deckMapper.deckToDeckDto(deckService.copy(id, deckMapper.deckInputDtoToDeck(deckInputDto)));
@@ -99,7 +99,7 @@ public class DeckEndpoint {
     @Secured("ROLE_ADMIN")
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ApiOperation(value = "delete deck", authorizations = @Authorization("apiKey"))
+    @ApiOperation(value = "delete deck", authorizations = @Authorization("admin"))
     public void deleteDeck(@PathVariable Long id) {
         LOGGER.info("DELETE /api/v1/decks/{}", id);
         deckService.delete(id);
