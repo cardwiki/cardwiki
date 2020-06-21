@@ -85,14 +85,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(value = {BadRequestException.class})
-    protected ResponseEntity<Object> handleBadRequest(BadRequestException ex, WebRequest request) {
+    protected ResponseEntity<Object> handleBadRequest(RuntimeException ex, WebRequest request) {
         LOGGER.error(ex.getMessage());
-        Map<String, Object> body = new LinkedHashMap<>();
-        if (ex.getFieldname() != null && ex.getDescription() != null) {
-            List<Map<String, String>> errors = Collections.singletonList(Map.of(ex.getFieldname(), ex.getDescription()));
-            body.put("validation", errors);
-        }
-        return new ResponseEntity<>(body, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
     @ExceptionHandler(value = {InsufficientAuthorizationException.class})

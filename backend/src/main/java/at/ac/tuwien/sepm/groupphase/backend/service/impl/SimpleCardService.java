@@ -118,10 +118,10 @@ public class SimpleCardService implements CardService {
 
     public void validateRevisionEdit(RevisionEdit revisionEdit) {
         if (revisionEdit.getTextFront() == null && revisionEdit.getImageFront() == null) {
-            throw new BadRequestException("Front Side", "Cannot save card with an empty side.", "Validation error");
+            throw new BadRequestException("Front side cannot be empty");
         }
         if (revisionEdit.getTextBack() == null && revisionEdit.getImageBack() == null) {
-            throw new BadRequestException("Back Side", "Cannot save card with an empty side.", "Validation error");
+            throw new BadRequestException("Back side cannot be empty");
         }
     }
 
