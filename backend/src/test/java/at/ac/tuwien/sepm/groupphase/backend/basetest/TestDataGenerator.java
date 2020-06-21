@@ -32,6 +32,8 @@ public abstract class TestDataGenerator {
         user.setDescription("some description");
         user.setAuthId(username);
         user.setEnabled(true);
+        user.setAdmin(false);
+        user.setDeleted(false);
         return user;
     }
 
@@ -230,7 +232,7 @@ public abstract class TestDataGenerator {
     @Autowired
     private ImageRepository imageRepository;
 
-    private static long userCounter = 0;
+    private long userCounter = 0;
 
     @Deprecated
     public User givenApplicationUser() {
@@ -240,7 +242,9 @@ public abstract class TestDataGenerator {
         user.setUsername("username-" + userCounter);
         user.setDescription("some user");
         user.setAuthId("service:" + userCounter);
+        user.setAdmin(false);
         user.setEnabled(true);
+        user.setDeleted(false);
         return userRepository.saveAndFlush(user);
     }
 
@@ -351,6 +355,7 @@ public abstract class TestDataGenerator {
         user.setUsername("username" + userCounter);
         user.setAdmin(false);
         user.setEnabled(true);
+        user.setDeleted(false);
         user.setDescription("some user");
         return user;
     }

@@ -10,6 +10,7 @@ import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.service.FavoriteService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Authorization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +61,9 @@ public class UserEndpoint {
 
         User u = userMapper.userInputDtoToUser(userInputDto);
         u.setAuthId(SecurityContextHolder.getContext().getAuthentication().getName());
+        u.setAdmin(false);
         u.setEnabled(true);
+        u.setDeleted(false);
         u = userService.createUser(u);
         return userMapper.userToUserDetailsDto(u);
     }
@@ -136,9 +139,18 @@ public class UserEndpoint {
 
     @Secured("ROLE_USER")
     @PatchMapping(value = "/{id}")
-    @ApiOperation(value = "Change settings of logged in user")
-    public UserDetailsDto editSettings(@PathVariable long id, @Valid @RequestBody UserEditInquiryDto userEditInquiryDto) {
-        LOGGER.info("PATCH /api/v1/users/{} {}", id, userEditInquiryDto);
-        return userMapper.userToUserDetailsDto(userService.editSettings(id, userMapper.userEditInquiryDtoToUser(userEditInquiryDto)));
+    @ApiOperation(value = "Change settings of logged in user", authorizations = {@Authorization("apiKey")})
+    public UserDetailsDto updateUser(@PathVariable long id, @Valid @RequestBody UserUpdateDto userUpdateDto) {
+        LOGGER.info("PATCH /api/v1/users/{} {}", id, userUpdateDto);
+        return userMapper.userToUserDetailsDto(userService.updateUser(id, userMapper.userUpdateDtoToUser(userUpdateDto)));
+    }
+
+    @Secured("ROLE_ADMIN")
+    @DeleteMapping(value = "/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiOperation(value = "Delete user", authorizations = {@Authorization("apiKey")})
+    public void delete(@PathVariable long id, @RequestParam String reason) {
+        LOGGER.info("DELETE /api/v1/users/{} Reason: {}", id, reason);
+        userService.delete(id, reason);
     }
 }

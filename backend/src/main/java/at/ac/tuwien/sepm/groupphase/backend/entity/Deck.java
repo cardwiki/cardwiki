@@ -45,11 +45,6 @@ public class Deck {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "favorites")
     private Set<User> favoredBy = new HashSet<>();
 
-    public void dismissCard(Card card) {
-        if (!cards.remove(card))
-            throw new NoSuchElementException("Tried to dismiss card which is not yet associated with deck");
-    }
-
     public Long getId() {
         return id;
     }

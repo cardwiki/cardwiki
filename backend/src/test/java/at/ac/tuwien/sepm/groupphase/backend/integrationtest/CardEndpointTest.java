@@ -414,7 +414,7 @@ public class CardEndpointTest extends TestDataGenerator {
         Card card = givenCard();
         User user = givenApplicationUser();
 
-        mvc.perform(delete("/api/v1/cards/{cardId}", card.getId())
+        mvc.perform(post("/api/v1/cards/{cardId}", card.getId())
             .with(login(user.getAuthId()))
             .contentType("application/json"))
             .andExpect(status().isNoContent())
@@ -427,7 +427,7 @@ public class CardEndpointTest extends TestDataGenerator {
         RevisionEdit revisionEdit = givenRevisionEdit();
         User user = givenApplicationUser();
 
-        mvc.perform(delete("/api/v1/cards/{cardId}", 123)
+        mvc.perform(post("/api/v1/cards/{cardId}", 123)
             .with(login(user.getAuthId()))
             .contentType("application/json"))
             .andExpect(status().is(404));
@@ -435,7 +435,7 @@ public class CardEndpointTest extends TestDataGenerator {
 
     @Test
     public void deleteCardForAnonymousThrowsForbidden() throws Exception {
-        mvc.perform(delete("/api/v1/cards/{cardId}", 123)
+        mvc.perform(post("/api/v1/cards/{cardId}", 123)
             .contentType("application/json"))
             .andExpect(status().is(403));
     }
@@ -446,7 +446,7 @@ public class CardEndpointTest extends TestDataGenerator {
         User user = givenApplicationUser();
         String message = "this is my message";
 
-        mvc.perform(delete("/api/v1/cards/{cardId}", card.getId())
+        mvc.perform(post("/api/v1/cards/{cardId}", card.getId())
             .queryParam("message", message)
             .with(login(user.getAuthId())))
             .andExpect(status().isNoContent())
@@ -459,9 +459,40 @@ public class CardEndpointTest extends TestDataGenerator {
         User user = givenApplicationUser();
         String message = "x".repeat(Revision.MAX_MESSAGE_SIZE + 1);
 
-        mvc.perform(delete("/api/v1/cards/{cardId}", card.getId())
+        mvc.perform(post("/api/v1/cards/{cardId}", card.getId())
             .queryParam("message", message)
             .with(login(user.getAuthId())))
             .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void userDeletesCardReturnsForbidden() throws Exception {
+        User user = givenApplicationUser();
+        Card card = givenCard();
+
+        mvc.perform(delete("/api/v1/cards/{cardId}", card.getId())
+            .with(login(user.getAuthId())))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void adminDeletesNonExistentCardReturnsNotFound() throws Exception {
+        User admin = givenApplicationUser();
+        admin.setAdmin(true);
+
+        mvc.perform(delete("/api/v1/cards/{cardId}", 404)
+            .with(login(admin.getAuthId())))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void adminDeletesCardReturnsNoContent() throws Exception {
+        User admin = givenApplicationUser();
+        admin.setAdmin(true);
+        Card card = givenCard();
+
+        mvc.perform(delete("/api/v1/cards/{cardId}", card.getId())
+            .with(login(admin.getAuthId())))
+            .andExpect(status().isNoContent());
     }
 }

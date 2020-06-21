@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -78,6 +79,11 @@ public class DeckRepositoryTest extends TestDataGenerator {
 
     @Test void givenNothing_whenFindById_thenResultIsNull() {
         assertTrue(deckRepository.findById(1L).isEmpty());
+    }
+
+    @Test
+    public void givenNoDecks_whenDeleteById_thenThrowEmptyResultDataAccessException() {
+        assertThrows(EmptyResultDataAccessException.class, () -> deckRepository.deleteById(1L));
     }
 
     @Test void givenUser_whenFindFavoredById_thenReturnEmpty() {

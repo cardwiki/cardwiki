@@ -64,6 +64,17 @@ export class CardService {
       .pipe(tap(null, this.errorHandler.handleError('Could not fetch Card')))
   }
 
+  /**
+   * Permanently deletes a card.
+   *
+   * @param cardId of the card to delete.
+   */
+  deleteCard(cardId: number): Observable<void> {
+    console.log(`Delete card ${cardId}`);
+    return this.httpClient.delete<void>(`${this.cardBaseUri}/${cardId}`)
+      .pipe(tap(null, this.errorHandler.handleError('Could not delete Card')));
+  }
+
   private toCardUpdateDto(card: CardUpdate): CardUpdateDto {
     const cardUpdateDto = new CardUpdateDto(card.textFront, card.textBack, null, null, card.message);
     cardUpdateDto.imageFrontFilename = card.imageFront?.filename || null;

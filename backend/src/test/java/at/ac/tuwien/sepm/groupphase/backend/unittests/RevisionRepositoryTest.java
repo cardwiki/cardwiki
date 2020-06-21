@@ -96,16 +96,4 @@ public class RevisionRepositoryTest extends TestDataGenerator {
 
         assertThrows(ConstraintViolationException.class, () -> revisionRepository.save(revision));
     }
-
-    @Test
-    public void givenRevision_whenDeleteById_thenExistsIsFalse() {
-        Revision revision = givenCreateRevision();
-
-        revisionRepository.deleteById(revision.getId());
-
-        assertAll(
-            () -> assertEquals(0, revisionRepository.count()),
-            () -> assertFalse(revisionRepository.existsById(revision.getId()))
-        );
-    }
 }

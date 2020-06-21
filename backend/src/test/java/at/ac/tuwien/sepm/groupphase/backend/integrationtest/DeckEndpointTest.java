@@ -7,6 +7,7 @@ import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionEdit;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
+import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -16,7 +17,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.stream.Collectors;
@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import static at.ac.tuwien.sepm.groupphase.backend.integrationtest.security.MockedLogins.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -37,6 +38,9 @@ public class DeckEndpointTest extends TestDataGenerator {
 
     @Autowired
     private DeckRepository deckRepository;
+
+    @Autowired
+    private CardRepository cardRepository;
 
     @Test
     public void givenAuthenticatedUser_whenCreateDeck_thenReturnDeck() throws Exception {
@@ -193,6 +197,7 @@ public class DeckEndpointTest extends TestDataGenerator {
             .andExpect(status().isOk())
             .andExpect(content().json(objectMapper.writeValueAsString(Collections.singletonList(response))));
     }
+
     @Test
     public void givenAuthenticatedUser_whenCopyDeck_thenReturnDeckCopy() throws Exception {
         Deck deck = givenDeck();
@@ -252,4 +257,53 @@ public class DeckEndpointTest extends TestDataGenerator {
         ).andExpect(status().isNotFound());
     }
 
+    @Test
+    public void givenAuthenticatedAdmin_whenDeleteNonExistent_then404() throws Exception {
+        User user = givenApplicationUser();
+        user.setAdmin(true);
+
+        mvc.perform(
+            delete("/api/v1/decks/1")
+                .with(login(user.getAuthId()))
+        )
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void givenNoAuthentication_whenDeleteDeck_then403() throws Exception {
+        Deck deck = givenDeck();
+
+        mvc.perform(
+            delete("/api/v1/decks/" + deck.getId())
+        ).andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void givenAuthenticatedUser_whenDeleteDeck_then403() throws Exception {
+        User user = givenApplicationUser();
+        Deck deck = givenDeck();
+
+        mvc.perform(
+            delete("/api/v1/decks/" + deck.getId())
+            .with(login(user.getAuthId()))
+        ).andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void givenAuthenticatedAdmin_whenDeleteDeck_thenDeckDeleted() throws Exception {
+        User user = givenApplicationUser();
+        user.setAdmin(true);
+        Card card = givenCard();
+
+        long deckId = card.getDeck().getId();
+        long cardId = card.getId();
+
+        mvc.perform(
+            delete("/api/v1/decks/" + deckId)
+            .with(login(user.getAuthId()))
+        ).andExpect(status().isNoContent());
+
+        assertTrue(deckRepository.findById(deckId).isEmpty());
+        assertTrue(cardRepository.findById(cardId).isEmpty());
+    }
 }

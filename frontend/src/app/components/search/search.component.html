@@ -14,6 +14,7 @@
             <a *ngFor="let category of deck.categories" routerLink="/categories/{{category.id}}"
                 class="badge badge-light border mr-1 font-weight-normal">{{category.name}}</a>
         </span>
+        <button *appUserRole="'ADMIN'" class="btn btn-outline-danger float-right" (click)="deleteDeck($event, deck)">Delete</button>
     </a>
 </ul>
 <div *ngIf="loading" class="spinner-grow text-primary" role="status">

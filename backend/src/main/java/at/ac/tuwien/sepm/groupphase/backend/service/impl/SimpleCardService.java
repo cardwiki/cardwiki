@@ -1,14 +1,17 @@
 package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
+import at.ac.tuwien.sepm.groupphase.backend.exception.CardNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.*;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
+import at.ac.tuwien.sepm.groupphase.backend.repository.ProgressRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.CardService;
 import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
 import at.ac.tuwien.sepm.groupphase.backend.service.ImageService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,13 +27,20 @@ public class SimpleCardService implements CardService {
     private final UserService userService;
     private final DeckService deckService;
     private final CardRepository cardRepository;
+    private final ProgressRepository progressRepository;
     private final ImageService imageService;
 
-    public SimpleCardService(CardRepository cardRepository, DeckService deckService,
-                             UserService userService, ImageService imageService) {
+    public SimpleCardService(
+        CardRepository cardRepository,
+        DeckService deckService,
+        UserService userService,
+        ProgressRepository progressRepository,
+        ImageService imageService)
+    {
         this.cardRepository = cardRepository;
         this.userService = userService;
         this.deckService = deckService;
+        this.progressRepository = progressRepository;
         this.imageService = imageService;
     }
 
@@ -90,6 +100,20 @@ public class SimpleCardService implements CardService {
         LOGGER.debug("Find card with id {}", cardId);
         Optional<Card> card = cardRepository.findById(cardId);
         return card.orElseThrow(() -> new CardNotFoundException(("Could not find card with id " + cardId)));
+    }
+
+    @Override
+    @Transactional
+    public void delete(Long cardId) {
+        LOGGER.debug("Delete card with id {}", cardId);
+        if (progressRepository.existsCardWithProgress(cardId)) {
+            progressRepository.deleteCardProgress(cardId);
+        }
+        try {
+            cardRepository.deleteById(cardId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new CardNotFoundException("Could not find card with id " + cardId);
+        }
     }
 
     @Override

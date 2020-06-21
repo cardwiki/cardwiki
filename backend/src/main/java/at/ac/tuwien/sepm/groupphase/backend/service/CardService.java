@@ -7,7 +7,6 @@ import at.ac.tuwien.sepm.groupphase.backend.exception.CardNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.DeckNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.AuthenticationRequiredException;
 
-
 import java.util.List;
 
 public interface CardService {
@@ -59,4 +58,12 @@ public interface CardService {
      * @return card with added delete-revision
      */
     void addDeleteRevisionToCard(Long cardId, String revisionMessage);
+
+    /**
+     * Delete a card.
+     *
+     * @param cardId of the card to delete
+     * @throws CardNotFoundException if no card with {@code cardId} exists
+     */
+    void delete(Long cardId);
 }

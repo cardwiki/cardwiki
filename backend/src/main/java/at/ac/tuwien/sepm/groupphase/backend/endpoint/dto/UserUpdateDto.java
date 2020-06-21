@@ -6,13 +6,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserEditInquiryDto {
+public class UserUpdateDto {
     @Length(max = User.MAX_DESCRIPTION_LENGTH)
     private String description;
+
+    private Boolean admin;
+
+    private Boolean enabled;
+
+    private String reason;
 }

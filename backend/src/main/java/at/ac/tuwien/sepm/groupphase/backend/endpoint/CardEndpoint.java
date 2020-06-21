@@ -77,10 +77,19 @@ public class CardEndpoint {
 
     @Secured("ROLE_USER")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping(value = "/cards/{cardId}")
+    @PostMapping(value = "/cards/{cardId}")
     @ApiOperation(value = "Removes card from deck", authorizations = {@Authorization(value = "ROLE_USER")})
     public void addDeleteRevisionToCard(@PathVariable Long cardId, @RequestParam(required = false) @Size(max = Revision.MAX_MESSAGE_SIZE) String message) {
         LOGGER.info("DELETE /api/v1/cards/{}?message=", message);
         cardService.addDeleteRevisionToCard(cardId, message);
+    }
+
+    @Secured("ROLE_ADMIN")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping(value = "/cards/{cardId}")
+    @ApiOperation(value = "Deletes a card", authorizations = {@Authorization(value = "apiKey")})
+    public void delete(@PathVariable Long cardId) {
+        LOGGER.info("DELETE card {}", cardId);
+        cardService.delete(cardId);
     }
 }

@@ -82,4 +82,10 @@ export class DeckService {
     return this.httpClient.post<DeckDetails>(this.deckBaseUri + '/' + deckId + '/copy', deck)
       .pipe(tap(null, this.errorHandler.handleError('Could not fork Deck')));
   }
+
+  delete(deckId: number): Observable<void> {
+    console.log('Delete deck ' + deckId);
+    return this.httpClient.delete<void>(this.deckBaseUri + '/' + deckId)
+      .pipe(tap(null, this.errorHandler.handleError('Could not delete deck ' + deckId)));
+  }
 }

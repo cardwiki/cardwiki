@@ -19,7 +19,7 @@ export class SearchComponent implements OnInit {
   public decks: DeckDetails[] = []
   public canLoadMore: boolean = false
   public loading: boolean = false
-  
+
   constructor(private deckService: DeckService, private route: ActivatedRoute, private router: Router) { }
 
   ngOnInit(): void {
@@ -32,7 +32,7 @@ export class SearchComponent implements OnInit {
 
       // Don't fetch when visited without search term
       if (paramMap.has('name'))
-        this.fetchSearchResults() 
+        this.fetchSearchResults()
     })
   }
 
@@ -71,5 +71,15 @@ export class SearchComponent implements OnInit {
 
   onSubmit(): void {
     this.updateQueryUrl()
+  }
+
+  deleteDeck(event: any, deck: DeckDetails): void {
+    event.stopPropagation();
+    event.preventDefault();
+    if (confirm(`Are you sure you want to permanently delete deck '${deck.name}'?`)) {
+      this.deckService.delete(deck.id).subscribe(_ => {
+        this.decks = this.decks.filter(d => d !== deck);
+      });
+    }
   }
 }

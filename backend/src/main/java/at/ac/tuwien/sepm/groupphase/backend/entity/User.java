@@ -1,14 +1,11 @@
 package at.ac.tuwien.sepm.groupphase.backend.entity;
 
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckInputDto;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -37,10 +34,15 @@ public class User {
     private String username;
 
     @Column(nullable = false)
-    private boolean admin;
+    private Boolean admin;
 
     @Column(nullable = false)
-    private boolean enabled;
+    private Boolean enabled;
+
+    @Column(nullable = false)
+    private Boolean deleted;
+
+    private String reason;
 
     @Column(nullable = false, length = MAX_DESCRIPTION_LENGTH)
     private String description;
@@ -70,13 +72,6 @@ public class User {
     public User() {
     }
 
-    public void dismissRevision(Revision revision) {
-        if (!revisions.remove(revision))
-            throw new NoSuchElementException("Tried to dismiss revision which is not yet associated with user");
-    }
-
-    // Getters & Setters
-
     public Long getId() {
         return id;
     }
@@ -93,7 +88,7 @@ public class User {
         this.username = username;
     }
 
-    public boolean isAdmin() {
+    public Boolean isAdmin() {
         return admin;
     }
 
@@ -105,15 +100,15 @@ public class User {
         this.authId = authId;
     }
 
-    public void setAdmin(boolean admin) {
+    public void setAdmin(Boolean admin) {
         this.admin = admin;
     }
 
-    public void setEnabled(boolean enabled) {
+    public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
 
-    public boolean isEnabled(){
+    public Boolean isEnabled(){
         return enabled;
     }
 
@@ -149,12 +144,28 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
+    public Boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
+
     public Set<Deck> getFavorites() {
         return favorites;
     }
 
     public void setFavorites(Set<Deck> favorites) {
         this.favorites = favorites;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 
     @Override
@@ -165,6 +176,8 @@ public class User {
             ", username='" + username + '\'' +
             ", admin=" + admin +
             ", enabled=" + enabled +
+            ", deleted=" + deleted +
+            ", reason='" + reason + '\'' +
             ", description='" + description + '\'' +
             ", createdAt=" + createdAt +
             ", updatedAt=" + updatedAt +

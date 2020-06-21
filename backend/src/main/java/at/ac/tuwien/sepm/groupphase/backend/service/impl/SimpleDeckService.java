@@ -9,6 +9,7 @@ import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -117,5 +118,15 @@ public class SimpleDeckService implements DeckService {
         cardRepository.flush();
         deck.getCards().addAll(cards);
         return deck;
+    }
+
+    @Override
+    public void delete(Long id) {
+        LOGGER.debug("Delete deck with id {}", id);
+        try {
+            deckRepository.deleteById(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new DeckNotFoundException(String.format("Could not find card deck with id %d", id));
+        }
     }
 }

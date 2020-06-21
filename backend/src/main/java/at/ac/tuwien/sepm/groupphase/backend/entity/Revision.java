@@ -1,7 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.entity;
 
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.security.core.parameters.P;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -23,7 +22,7 @@ public abstract class Revision {
             public static final String EDIT = "EDIT";
             public static final String DELETE = "DELETE";
             public static final String CREATE = "CREATE";
-        }  
+        }
     }
 
     @Id
@@ -49,15 +48,6 @@ public abstract class Revision {
 
     @Column(insertable = false, updatable = false)
     private String type;
-
-    @PreRemove
-    private void dismissContainers() {
-        // Necessary to sync card in same session if revision is directly deleted
-        card.dismissRevision(this);
-        card = null;
-        createdBy.dismissRevision(this);
-        createdBy = null;
-    }
 
     public Long getId() {
         return id;

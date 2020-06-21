@@ -34,6 +34,7 @@ public class CategoryDataGenerator {
         user.setDescription("test user2");
         user.setAdmin(false);
         user.setEnabled(false);
+        user.setDeleted(false);
         user.setUsername("CoolFighter2006");
         userRepository.saveAndFlush(user);
 

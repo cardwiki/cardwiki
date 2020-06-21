@@ -27,7 +27,7 @@ export class DeckViewComponent implements OnInit {
 
   deck: DeckDetails;
   cards: CardSimple[];
-  isFavorite$: Subject<boolean>
+  isFavorite$: Subject<boolean>;
 
   displayComments = false
   comments: CommentSimple[]
@@ -109,6 +109,14 @@ export class DeckViewComponent implements OnInit {
         (deck: DeckDetails) => this.router.navigate(['decks', deck.id])
       )
     ).catch(() => {});
+  }
+
+  deleteCard(card: CardSimple) {
+    if (confirm('Are you sure you want to permanently delete this card?')) {
+      this.cardService.deleteCard(card.id).subscribe(_ => {
+        this.cards = this.cards.filter(c => c !== card);
+      });
+    }
   }
 
   saveToFavorites() {
