@@ -46,9 +46,9 @@ export class ProfileComponent implements OnInit {
       this.revisions = [];
       this.decks = [];
       this.me = this.authService.getUserName() === params.get('username')
+      this.admin = this.authService.getUserRoles().includes('ADMIN')
       this.loadProfile(params.get('username'));
     });
-    if (localStorage.getItem("whoami")) this.admin = JSON.parse(localStorage.getItem("whoami")).admin;
   }
 
   loadProfile(username: string): void {

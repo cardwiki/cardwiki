@@ -29,6 +29,11 @@ export class UserSearchComponent implements OnInit {
     if (this.searchTerm)
       this.loadUsers()
   }
+  
+  resetResults() {
+    this.page = null
+    this.users = []
+  }
 
   onSubmit() {
     console.log('search', this.searchTerm);
@@ -40,6 +45,7 @@ export class UserSearchComponent implements OnInit {
         queryParams: { username: this.searchTerm },
         queryParamsHandling: 'merge'
       });
+    this.resetResults()
     this.loadUsers()
   }
 
@@ -47,7 +53,6 @@ export class UserSearchComponent implements OnInit {
     const nextPage = this.page ? this.page.pageable.pageNumber + 1 : 0
     this.userService.searchUsers(this.searchTerm, new Pageable(nextPage, this.USER_PAGINATION_LIMIT))
       .subscribe(userPage => {
-        this.page.numberOfElements
         this.page = userPage
         this.users.push(...userPage.content);
       })
