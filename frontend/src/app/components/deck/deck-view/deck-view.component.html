@@ -1,4 +1,4 @@
-<div class="container mt-5 mb-5" *ngIf="deck">
+<div class="container mt-5" *ngIf="deck">
   <div class="row justify-content-between">
     <div class="col">
       <h1>{{deck.name}}</h1>
@@ -20,9 +20,28 @@
       </div>
     </div>
   </div>
-  <div class="row mt-3">
-    <h5 ><a routerLink="/categories/{{category.id}}" class="badge badge-light border mr-1" *ngFor="let category of deck.categories" style="font-weight:normal">{{category.name}}</a></h5>
+  <div class="row">
+    <div class="col">
+      <a routerLink="/categories/{{category.id}}" class="badge badge-light border mr-1" *ngFor="let category of deck.categories" style="font-weight:normal">{{category.name}}</a>
+    </div>
+    <div class="col" *ngIf="commentsPage">
+      <div class="btn-toolbar float-right">
+        <button type="button" class="btn float-right mr-1" [ngClass]="displayComments ? 'btn-secondary' : 'btn-light'" (click)="toggleComments()">
+          <i class="far fa-comments"></i> Comments ({{commentsPage.totalElements}})</button>
+        </div>
+    </div>
   </div>
+</div>
+
+<div class="container mt-5 mb-3" *ngIf="displayComments">
+  <h2>Comments</h2>
+  <div class="mb-2" *ngIf="!commentsPage.totalElements">There are no comments on this deck yet.</div>
+  <app-comment-list [comments]="comments"></app-comment-list>
+  <div class="my-4">
+    <button *ngIf="!commentsPage.last" class="btn btn-secondary" (click)="loadMoreComments()">Load more</button>
+  </div>
+  <app-comment-form *appUserRole="'USER'" #commentForm action="Post Comment" (commentSubmit)="addComment($event)"></app-comment-form>
+  <p *appUserRole="'ANONYMOUS'">Sign in to add comments.</p>
 </div>
 
 <div class="container mt-5 mb-3" *ngIf="deck">
@@ -38,7 +57,6 @@
     </div>
     <div class="col" *ngIf="deck">
       <div class="btn-toolbar float-right">
-        <button type="button" class="btn btn-light float-right mr-1"><i class="fas fa-undo"></i> Flip</button>
         <a routerLink="/decks/{{deck.id}}/cards/new" class="btn btn-primary float-right"><i class="fas fa-plus"></i> Add new card</a>
       </div>
     </div>
