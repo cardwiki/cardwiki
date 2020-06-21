@@ -6,7 +6,6 @@ import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -17,7 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import java.util.Arrays;
+
 import java.util.stream.Stream;
 
 import static at.ac.tuwien.sepm.groupphase.backend.integrationtest.security.MockedLogins.*;
@@ -41,11 +40,30 @@ public class CommentEndpointTest extends TestDataGenerator {
         return Stream.of(null, "\t ", "x".repeat(501));
     }
 
+    private Comment givenAnyComment() {
+        return givenAnyCommentWithMessage("it's a beautiful day");
+    }
+
+    private Comment givenAnyCommentWithMessage(String message) {
+        Deck deck = persistentAgent("any-deck-creator").createDeck();
+        return persistentAgent("any-commentator").createCommentIn(deck, message);
+    }
+
+    private Comment givenAnyCommentBy(Agent agent) {
+        return agent.createCommentIn(agent.createDeck());
+    }
+
+    private String validCommentInputJson() {
+        ObjectNode input = objectMapper.createObjectNode();
+        input.put("message", "some random comment");
+        return input.toString();
+    }
+
     @ParameterizedTest
     @ValueSource(strings = {"this is a message", UTF_16_SAMPLE_TEXT})
     public void createCommentReturnsCommentSimpleDto(String message) throws Exception {
-        Deck deck = givenDeck();
-        User user = givenApplicationUser();
+        Deck deck = persistentAgent("foo").createDeck();
+        User user = persistentAgent("bar").getUser();
 
         ObjectNode input = objectMapper.createObjectNode();
         input.put("message", message);
@@ -65,28 +83,21 @@ public class CommentEndpointTest extends TestDataGenerator {
 
     @Test
     public void createCommentWithInvalidDeckIdThrowsNotFoundException() throws Exception {
-        User user = givenApplicationUser();
-
-        ObjectNode input = objectMapper.createObjectNode();
-        input.put("message", UTF_16_SAMPLE_TEXT);
-
         mvc.perform(post("/api/v1/decks/{deckId}/comments", 0L)
-            .with(login(user.getAuthId()))
+            .with(login(givenUserAuthId()))
             .contentType(MediaType.APPLICATION_JSON)
-            .content(input.toString()))
+            .content(validCommentInputJson()))
             .andExpect(status().isNotFound());
     }
 
     @ParameterizedTest
     @MethodSource("provideInvalidCommentMessages")
     public void createCommentWithInvalidMessageThrowsBadRequest(String message) throws Exception {
-        User user = givenApplicationUser();
-
         ObjectNode input = objectMapper.createObjectNode();
         input.put("message", message);
 
         mvc.perform(post("/api/v1/decks/{deckId}/comments", 0L)
-            .with(login(user.getAuthId()))
+            .with(login(givenUserAuthId()))
             .contentType(MediaType.APPLICATION_JSON)
             .content(input.toString()))
             .andExpect(status().isBadRequest());
@@ -94,19 +105,16 @@ public class CommentEndpointTest extends TestDataGenerator {
 
     @Test
     public void createCommentForAnonymousThrowsForbidden() throws Exception {
-        ObjectNode input = objectMapper.createObjectNode();
-        input.put("message", "foo");
-
         mvc.perform(post("/api/v1/decks/{deckId}/comments", 0L)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(input.toString()))
+            .content(validCommentInputJson()))
             .andExpect(status().isForbidden());
     }
 
     @Test
     public void getCommentReturnsCommentSimpleDto() throws Exception {
-        Comment comment = givenComment();
-        User expectedUser = comment.getCreatedBy();
+        Comment comment = givenAnyComment();
+        User creator = comment.getCreatedBy();
 
         mvc.perform(get("/api/v1/comments/{commentId}", comment.getId()))
             .andExpect(status().isOk())
@@ -114,8 +122,8 @@ public class CommentEndpointTest extends TestDataGenerator {
             .andExpect(jsonPath("$.message").value(comment.getMessage()))
             .andExpect(jsonPath("$.createdAt", validIsoDateTime()))
             .andExpect(jsonPath("$.updatedAt", validIsoDateTime()))
-            .andExpect(jsonPath("$.createdBy.id").value(expectedUser.getId()))
-            .andExpect(jsonPath("$.createdBy.username").value(expectedUser.getUsername()));
+            .andExpect(jsonPath("$.createdBy.id").value(creator.getId()))
+            .andExpect(jsonPath("$.createdBy.username").value(creator.getUsername()));
     }
 
     @Test
@@ -126,8 +134,9 @@ public class CommentEndpointTest extends TestDataGenerator {
 
     @Test
     public void getCommentsByDeckIdReturnsCommentPage() throws Exception {
-        Comment comment = givenComment();
+        Comment comment = givenAnyComment();
         Deck deck = comment.getDeck();
+        User creator = comment.getCreatedBy();
 
         mvc.perform(get("/api/v1/decks/{deckId}/comments", deck.getId())
             .queryParam("offset", "0")
@@ -142,36 +151,22 @@ public class CommentEndpointTest extends TestDataGenerator {
             .andExpect(jsonPath("$.content[0].message").value(comment.getMessage()))
             .andExpect(jsonPath("$.content[0].createdAt", validIsoDateTime()))
             .andExpect(jsonPath("$.content[0].updatedAt", validIsoDateTime()))
-            .andExpect(jsonPath("$.content[0].createdBy.id").value(comment.getCreatedBy().getId()))
-            .andExpect(jsonPath("$.content[0].createdBy.username").value(comment.getCreatedBy().getUsername()));
+            .andExpect(jsonPath("$.content[0].createdBy.id").value(creator.getId()))
+            .andExpect(jsonPath("$.content[0].createdBy.username").value(creator.getUsername()));
     }
 
     @Test
     public void addTwoComments_thenGetCommentsByDeckId_returnsSortedCommentPage() throws Exception {
-        Deck deck = givenDeck();
-        User user = givenApplicationUser();
-        String firstMessage = "this is a message";
-        String secondMessage = "this is a message";
-
-        // Create comments
-        for (String message : Arrays.asList(firstMessage, secondMessage)) {
-            ObjectNode input = objectMapper.createObjectNode();
-            input.put("message", message);
-
-            mvc.perform(post("/api/v1/decks/{deckId}/comments", deck.getId())
-                .with(login(user.getAuthId()))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(input.toString()))
-                .andExpect(status().isCreated());
-        }
+        Agent agent = persistentAgent();
+        Deck deck = agent.createDeck();
+        agent.createCommentIn(deck, "first comment");
+        agent.createCommentIn(deck, "second comment");
 
         // Get comments and check if newest message is first
         mvc.perform(get("/api/v1/decks/{deckId}/comments", deck.getId()))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.numberOfElements").value(2))
-            .andExpect(jsonPath("$.last").value(true))
-            .andExpect(jsonPath("$.content[0].message").value(secondMessage))
-            .andExpect(jsonPath("$.content[1].message").value(firstMessage));
+            .andExpect(jsonPath("$.content[0].message").value("second comment"))
+            .andExpect(jsonPath("$.content[1].message").value("first comment"));
     }
 
     @Test
@@ -182,52 +177,46 @@ public class CommentEndpointTest extends TestDataGenerator {
 
     @Test
     public void editCommentReturnsCommentSimpleDto() throws Exception {
-        Comment comment = givenComment();
-        User user = comment.getCreatedBy();
-        String newMessage = "new fancy message";
+        Comment comment = givenAnyCommentWithMessage("old message");
+        User creator = comment.getCreatedBy();
 
         ObjectNode input = objectMapper.createObjectNode();
-        input.put("message", newMessage);
+        input.put("message", "new fancy message");
 
         mvc.perform(put("/api/v1/comments/{commentId}", comment.getId())
-            .with(login(user.getAuthId()))
+            .with(login(creator.getAuthId()))
             .contentType(MediaType.APPLICATION_JSON)
             .content(input.toString()))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(comment.getId()))
-            .andExpect(jsonPath("$.message").value(newMessage))
+            .andExpect(jsonPath("$.message").value("new fancy message"))
             .andExpect(jsonPath("$.createdAt", validIsoDateTime()))
             .andExpect(jsonPath("$.updatedAt", validIsoDateTime()))
             .andExpect(jsonPath("$[?(@.createdAt < @.updatedAt)]").isNotEmpty())
-            .andExpect(jsonPath("$.createdBy.id").value(user.getId()))
-            .andExpect(jsonPath("$.createdBy.username").value(user.getUsername()));
+            .andExpect(jsonPath("$.createdBy.id").value(creator.getId()))
+            .andExpect(jsonPath("$.createdBy.username").value(creator.getUsername()));
     }
 
     @Test
     public void editCommentWithUnknownCommentThrowsNotFoundException() throws Exception {
-        User user = givenApplicationUser();
-
-        ObjectNode input = objectMapper.createObjectNode();
-        input.put("message", "foo");
-
         mvc.perform(put("/api/v1/comments/{commentId}", 0L)
-            .with(login(user.getAuthId()))
+            .with(login(givenUserAuthId()))
             .contentType(MediaType.APPLICATION_JSON)
-            .content(input.toString()))
+            .content(validCommentInputJson()))
             .andExpect(status().isNotFound());
     }
 
     @ParameterizedTest
     @MethodSource("provideInvalidCommentMessages")
-    public void editCommentWithNullMessageThrowsBadRequest(String message) throws Exception {
-        Comment comment = givenComment();
-        User user = comment.getCreatedBy();
+    public void editCommentWithInvalidMessageThrowsBadRequest(String message) throws Exception {
+        Comment comment = givenAnyComment();
+        User creator = comment.getCreatedBy();
 
         ObjectNode input = objectMapper.createObjectNode();
         input.put("message", message);
 
         mvc.perform(put("/api/v1/comments/{commentId}", comment.getId())
-            .with(login(user.getAuthId()))
+            .with(login(creator.getAuthId()))
             .contentType(MediaType.APPLICATION_JSON)
             .content(input.toString()))
             .andExpect(status().isBadRequest());
@@ -235,49 +224,43 @@ public class CommentEndpointTest extends TestDataGenerator {
 
     @Test
     public void editCommentForAnonymousThrowsForbidden() throws Exception {
-        Comment comment = givenComment();
-
-        ObjectNode input = objectMapper.createObjectNode();
-        input.put("message", "foo");
+        Comment comment = givenAnyComment();
 
         mvc.perform(put("/api/v1/comments/{commentId}", comment.getId())
             .contentType(MediaType.APPLICATION_JSON)
-            .content(input.toString()))
+            .content(validCommentInputJson()))
             .andExpect(status().isForbidden());
     }
 
     @Test
     public void editCommentOfOtherUserThrowsForbidden() throws Exception {
-        Comment comment = givenComment();
-        User otherUser = givenApplicationUser();
-
-        ObjectNode input = objectMapper.createObjectNode();
-        input.put("message", "foo");
+        Comment comment = givenAnyCommentBy(persistentAgent("creator"));
+        User otherUser = persistentAgent("other").getUser();
 
         mvc.perform(put("/api/v1/comments/{commentId}", comment.getId())
             .with(login(otherUser.getAuthId()))
             .contentType(MediaType.APPLICATION_JSON)
-            .content(input.toString()))
+            .content(validCommentInputJson()))
             .andExpect(status().isForbidden());
     }
 
     @Test
     public void deleteCommentReturnsNoContent() throws Exception {
-        Comment comment = givenComment();
-        User user = comment.getCreatedBy();
+        Comment comment = givenAnyComment();
+        User creator = comment.getCreatedBy();
 
         mvc.perform(delete("/api/v1/comments/{commentId}", comment.getId())
-            .with(login(user.getAuthId())))
+            .with(login(creator.getAuthId())))
             .andExpect(status().isNoContent());
     }
 
     @Test
     public void deleteCommentThenGetReturnsNotFound() throws Exception {
-        Comment comment = givenComment();
-        User user = comment.getCreatedBy();
+        Comment comment = givenAnyComment();
+        User creator = comment.getCreatedBy();
 
         mvc.perform(delete("/api/v1/comments/{commentId}", comment.getId())
-            .with(login(user.getAuthId())))
+            .with(login(creator.getAuthId())))
             .andExpect(status().isNoContent());
 
         mvc.perform(get("/api/v1/comments/{commentId}", comment.getId()))
@@ -286,17 +269,15 @@ public class CommentEndpointTest extends TestDataGenerator {
 
     @Test
     public void deleteCommentForUnknownCommentThrowsNotFound() throws Exception {
-        User user = givenApplicationUser();
-
         mvc.perform(delete("/api/v1/comments/{commentId}", 0L)
-            .with(login(user.getAuthId())))
+            .with(login(givenUserAuthId())))
             .andExpect(status().isNotFound());
     }
 
     @Test
     public void deleteCommentOfOtherUserThrowsForbidden() throws Exception {
-        Comment comment = givenComment();
-        User otherUser = givenApplicationUser();
+        Comment comment = givenAnyCommentBy(persistentAgent("creator"));
+        User otherUser = persistentAgent("other").getUser();
 
         mvc.perform(delete("/api/v1/comments/{commentId}", comment.getId())
             .with(login(otherUser.getAuthId())))
@@ -305,11 +286,10 @@ public class CommentEndpointTest extends TestDataGenerator {
 
     @Test
     public void deleteCommentAsAdminReturnsNoContent() throws Exception {
-        Comment comment = givenComment();
-        User admin = givenAdmin();
+        Comment comment = givenAnyCommentBy(persistentAgent("creator"));
 
         mvc.perform(delete("/api/v1/comments/{commentId}", comment.getId())
-            .with(login(admin.getAuthId())))
+            .with(login(givenAdminAuthId())))
             .andExpect(status().isNoContent());
     }
 }
