@@ -184,6 +184,7 @@ public class SimpleUserService implements UserService {
 
         user.setDescription("This user was deleted.");
         user.setEnabled(false);
+        user.setAuthId(null);
         user.setDeleted(true);
         user.setReason(reason);
         userRepository.save(user);

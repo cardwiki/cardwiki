@@ -132,6 +132,7 @@ public class UserServiceTest extends TestDataGenerator {
         assertEquals("This user was deleted.", argumentCaptor.getValue().getDescription());
         assertFalse(argumentCaptor.getValue().isEnabled());
         assertTrue(argumentCaptor.getValue().isDeleted());
+        assertNull(argumentCaptor.getValue().getAuthId());
         assertEquals("pls delete", argumentCaptor.getValue().getReason());
     }
 
