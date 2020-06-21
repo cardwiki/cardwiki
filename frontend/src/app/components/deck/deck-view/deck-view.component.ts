@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {DeckDetails} from '../../../dtos/deckDetails';
 import {DeckService} from '../../../services/deck.service';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -16,6 +16,7 @@ import { CommentService } from 'src/app/services/comment.service';
 import { Pageable } from 'src/app/dtos/pageable';
 import { Page } from 'src/app/dtos/page';
 import { CommentSimple } from 'src/app/dtos/commentSimple';
+import { CommentFormComponent } from '../../comment/comment-form/comment-form.component';
 
 @Component({
   selector: 'app-deck-view',
@@ -32,6 +33,8 @@ export class DeckViewComponent implements OnInit {
   comments: CommentSimple[]
   commentsPage: Page<CommentSimple>
   readonly commentsPageSize = 10
+
+  @ViewChild('commentForm') private commentForm: CommentFormComponent
 
   constructor(private deckService: DeckService, private cardService: CardService, public globals: Globals,
               private favoriteService: FavoriteService, private commentService: CommentService,
@@ -79,6 +82,7 @@ export class DeckViewComponent implements OnInit {
         this.notificationService.success('Comment saved')
         this.comments.unshift(comment)
         this.commentsPage.totalElements += 1
+        this.commentForm.reset()
       })
   }
 

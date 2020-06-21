@@ -1,5 +1,6 @@
-import { Component, Output, EventEmitter, Input } from '@angular/core';
+import { Component, Output, EventEmitter, Input, ViewChild } from '@angular/core';
 import { Globals } from 'src/app/global/globals';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-comment-form',
@@ -10,10 +11,18 @@ export class CommentFormComponent {
 
   @Input() message: string
   @Input() action: string
-  @Output() commentSubmit: EventEmitter<string> = new EventEmitter();
+  @Output() private commentSubmit: EventEmitter<string> = new EventEmitter();
+
+  @ViewChild('commentForm') private commentForm: NgForm
+
   constructor(public globals: Globals) { }
 
   onSubmit() {
     this.commentSubmit.emit(this.message || null)
+  }
+
+  // Can be called from outside via @ViewChild
+  reset() {
+    this.commentForm.resetForm()
   }
 }

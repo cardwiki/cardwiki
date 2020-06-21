@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { CommentSimple } from 'src/app/dtos/commentSimple';
 import { CommentService } from 'src/app/services/comment.service';
 import { Observable } from 'rxjs';
@@ -7,6 +7,7 @@ import { NotificationService } from 'src/app/services/notification.service';
 import { map } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ConfirmModalComponent } from '../../utils/confirm-modal/confirm-modal.component';
+import { CommentFormComponent } from '../comment-form/comment-form.component';
 
 @Component({
   selector: 'app-comment-list',
@@ -20,6 +21,8 @@ export class CommentListComponent {
   activeUserName$: Observable<string>
   isAdmin$: Observable<boolean>
   editingCommentId = -1 // id of the comment currently edited or -1
+
+  @ViewChild('commentForm') private commentForm: CommentFormComponent
 
   constructor(private commentService: CommentService, private authService: AuthService, private notificationService: NotificationService,
               private modalService: NgbModal) {
@@ -39,6 +42,7 @@ export class CommentListComponent {
         const index = this.comments.findIndex(c => c.id === comment.id)
         this.comments[index] = comment
         this.editingCommentId = -1
+        this.commentForm.reset()
       })
   }
 

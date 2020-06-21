@@ -20,7 +20,7 @@
                     <div [innerHtml]="comment.message | md2html"></div>
                 </div>
             </div>
-            <app-comment-form *ngIf="comment.id === editingCommentId"
+            <app-comment-form #commentForm *ngIf="comment.id === editingCommentId"
                 action="Update"
                 [message]="comment.message"
                 (commentSubmit)="editCommentSubmit($event)">

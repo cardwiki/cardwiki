@@ -26,7 +26,7 @@
     </div>
     <div class="col" *ngIf="commentsPage">
       <div class="btn-toolbar float-right">
-        <button type="button" class="btn btn-light float-right mr-1" (click)="toggleComments()">
+        <button type="button" class="btn float-right mr-1" [ngClass]="displayComments ? 'btn-secondary' : 'btn-light'" (click)="toggleComments()">
           <i class="far fa-comments"></i> Comments ({{commentsPage.totalElements}})</button>
         </div>
     </div>
@@ -40,7 +40,7 @@
   <div class="my-4">
     <button *ngIf="!commentsPage.last" class="btn btn-secondary" (click)="loadMoreComments()">Load more</button>
   </div>
-  <app-comment-form *appUserRole="'USER'" action="Post Comment" (commentSubmit)="addComment($event)"></app-comment-form>
+  <app-comment-form *appUserRole="'USER'" #commentForm action="Post Comment" (commentSubmit)="addComment($event)"></app-comment-form>
   <p *appUserRole="'ANONYMOUS'">Sign in to add comments.</p>
 </div>
 
