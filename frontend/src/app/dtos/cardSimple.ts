@@ -7,7 +7,8 @@ export class CardSimple extends CardContent {
     public deck: DeckSimple,
     public textFront: string,
     public textBack: string,
-  ) {
-    super(textFront, textBack);
+    public imageFrontUrl: string,
+    public imageBackUrl: string) {
+    super(textFront, textBack, imageFrontUrl, imageBackUrl);
   }
 }

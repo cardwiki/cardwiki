@@ -34,6 +34,14 @@ spring:
     console:
       enabled: true
       path: /h2-console
+  resources:
+    static-locations: file:./${cawi.image-saved-path}
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 2MB
+  mvc:
+    static-path-pattern: ${cawi.image-served-path}/**
   security:
     oauth2:
       client:
@@ -59,7 +67,13 @@ spring:
             user-name-attribute: sub
             jwk-set-uri: https://gitlab.com/oauth/discovery/keys
 
+server:
+  tomcat:
+    max-swallow-size: -1
+
 cawi:
   jwt-secret: 72d76704e150c907dc05bb7f3dd96f5f2a10479ac54e6961bb7423a89243367d
   # 12 hours in milliseconds
   jwt-expiration-time: 43200000
+  image-saved-path: ./images
+  image-served-path: /images

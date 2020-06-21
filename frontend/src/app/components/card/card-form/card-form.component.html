@@ -8,6 +8,18 @@
             <textarea class="form-control" aria-label="Front Text" [(ngModel)]="card.textFront" name="textFront" required minlength="1" maxlength="{{globals.maxTextSize}}"></textarea>
         </div>
     </div>
+    <div class="input-group mb-4">
+        <div class="input-group-prepend">
+            <span class="input-group-text">Front Image</span>
+        </div>
+        <div class="custom-file">
+            <input type="file" class="custom-file-input" id="input-front-image" (change)="onFileChange($event, 'front')">
+            <label class="custom-file-label" for="input-front-image">{{originalFilenameFront}}</label>
+        </div>
+        <div class="input-group-append">
+          <button *ngIf="card.imageFront" type="button" class="btn btn-outline-dark" (click)="removeImage('front')"><i class="fas fa-trash-alt"></i> Remove</button>
+        </div>
+    </div>
     <div class="form-group">
         <div class="input-group">
             <div class="input-group-prepend">
@@ -16,6 +28,20 @@
             <textarea class="form-control" aria-label="Back Text" [(ngModel)]="card.textBack" name="textBack" required minlength="1" maxlength="{{globals.maxTextSize}}"></textarea>
         </div>
     </div>
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text">Back Image</span>
+        </div>
+        <div class="custom-file">
+            <input type="file" class="custom-file-input" id="input-back-image" (change)="onFileChange($event, 'back')">
+            <label class="custom-file-label" for="input-back-image">{{originalFilenameBack}}</label>
+        </div>
+        <div class="input-group-append">
+          <button *ngIf="card.imageBack" type="button" class="btn btn-outline-dark" (click)="removeImage('back')"><i class="fas fa-trash-alt"></i> Remove</button>
+        </div>
+    </div>
+
+
     <div class="form-group">
         <input type="text" name="message" class="form-control form-control-sm"
                 aria-label="Description of changes"

@@ -1,10 +1,11 @@
 package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
-import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
+import at.ac.tuwien.sepm.groupphase.backend.exception.*;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.CardService;
 import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
+import at.ac.tuwien.sepm.groupphase.backend.service.ImageService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,11 +24,14 @@ public class SimpleCardService implements CardService {
     private final UserService userService;
     private final DeckService deckService;
     private final CardRepository cardRepository;
+    private final ImageService imageService;
 
-    public SimpleCardService(CardRepository cardRepository, DeckService deckService, UserService userService) {
+    public SimpleCardService(CardRepository cardRepository, DeckService deckService,
+                             UserService userService, ImageService imageService) {
         this.cardRepository = cardRepository;
         this.userService = userService;
         this.deckService = deckService;
+        this.imageService = imageService;
     }
 
     @Override
@@ -36,12 +40,21 @@ public class SimpleCardService implements CardService {
         LOGGER.debug("Add Card to Deck: {} {}", revisionCreate, deckId);
         User user = userService.loadCurrentUserOrThrow();
         Deck deck = deckService.findOneOrThrow(deckId);
+        validateRevisionEdit(revisionCreate);
 
         // Save Card with initial revision
         Card card = new Card();
         card.setDeck(deck);
 
         revisionCreate.setMessage(revisionCreate.getMessage() != null ? revisionCreate.getMessage() : "Created");
+        try {
+            if (revisionCreate.getImageFront() != null)
+                imageService.findOneOrThrow(revisionCreate.getImageFront().getFilename());
+            if (revisionCreate.getImageBack() != null)
+                imageService.findOneOrThrow(revisionCreate.getImageBack().getFilename());
+        } catch (ImageNotFoundException ex) {
+            throw new BadRequestException(ex.getMessage());
+        }
         card.setLatestRevision(revisionCreate);
         revisionCreate.setCard(card);
         revisionCreate.setCreatedBy(user);
@@ -75,8 +88,8 @@ public class SimpleCardService implements CardService {
     @Transactional
     public Card findOneOrThrow(Long cardId) {
         LOGGER.debug("Find card with id {}", cardId);
-        Optional<Card> card = cardRepository.findSimpleById(cardId);
-        return card.orElseThrow(() -> new NotFoundException("Could not find card with id " + cardId));
+        Optional<Card> card = cardRepository.findById(cardId);
+        return card.orElseThrow(() -> new CardNotFoundException(("Could not find card with id " + cardId)));
     }
 
     @Override
@@ -85,12 +98,31 @@ public class SimpleCardService implements CardService {
         LOGGER.debug("Edit Card {}: {}", cardId, revisionEdit);
         User user = userService.loadCurrentUserOrThrow();
         Card card = findOneOrThrow(cardId);
+        validateRevisionEdit(revisionEdit);
 
         revisionEdit.setMessage(revisionEdit.getMessage() != null ? revisionEdit.getMessage() : "Edited");
+        try {
+            if (revisionEdit.getImageFront() != null)
+                imageService.findOneOrThrow(revisionEdit.getImageFront().getFilename());
+            if (revisionEdit.getImageBack() != null)
+                imageService.findOneOrThrow(revisionEdit.getImageBack().getFilename());
+        } catch (ImageNotFoundException ex) {
+            throw new BadRequestException(ex.getMessage());
+        }
         card.setLatestRevision(revisionEdit);
         revisionEdit.setCard(card);
         revisionEdit.setCreatedBy(user);
 
         return cardRepository.saveAndFlush(card);
     }
+
+    public void validateRevisionEdit(RevisionEdit revisionEdit) {
+        if (revisionEdit.getTextFront() == null && revisionEdit.getImageFront() == null) {
+            throw new BadRequestException("Front side cannot be empty");
+        }
+        if (revisionEdit.getTextBack() == null && revisionEdit.getImageBack() == null) {
+            throw new BadRequestException("Back side cannot be empty");
+        }
+    }
+
 }

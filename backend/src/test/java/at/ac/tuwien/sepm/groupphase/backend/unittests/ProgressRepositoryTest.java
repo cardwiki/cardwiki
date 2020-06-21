@@ -4,6 +4,7 @@ import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Progress;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
+import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.ProgressRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,6 +25,9 @@ public class ProgressRepositoryTest extends TestDataGenerator {
     @Autowired
     private ProgressRepository progressRepository;
 
+    @Autowired
+    private CardRepository cardRepository;
+
     @Test
     public void givenNewCard_whenFindNext_thenReturnCard() {
         User user = givenApplicationUser();
@@ -31,7 +35,7 @@ public class ProgressRepositoryTest extends TestDataGenerator {
 
         assertEquals(
             1,
-            progressRepository.findNextCards(
+            cardRepository.findNextCards(
                 card.getDeck().getId(),
                 user.getId(),
                 Pageable.unpaged()
@@ -46,7 +50,7 @@ public class ProgressRepositoryTest extends TestDataGenerator {
 
         assertEquals(
             1,
-            progressRepository.findNextCards(
+            cardRepository.findNextCards(
                 progress.getId().getCard().getDeck().getId(),
                 progress.getId().getUser().getId(),
                 Pageable.unpaged()
@@ -61,7 +65,7 @@ public class ProgressRepositoryTest extends TestDataGenerator {
 
         assertEquals(
             0,
-            progressRepository.findNextCards(
+            cardRepository.findNextCards(
                 progress.getId().getCard().getDeck().getId(),
                 progress.getId().getUser().getId(),
                 Pageable.unpaged()

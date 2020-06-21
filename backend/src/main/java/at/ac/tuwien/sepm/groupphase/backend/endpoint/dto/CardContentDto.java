@@ -8,4 +8,6 @@ public class CardContentDto {
     private Long id;
     private String textFront;
     private String textBack;
+    private String imageFrontUrl;
+    private String imageBackUrl;
 }

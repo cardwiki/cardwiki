@@ -194,7 +194,7 @@ public abstract class TestDataGenerator {
     @Autowired
     private CategoryRepository categoryRepository;
     @Autowired
-    private ProgressRepository progressRepository;
+    private ImageRepository imageRepository;
 
     private static long userCounter = 0;
 
@@ -279,6 +279,8 @@ public abstract class TestDataGenerator {
         revisionEdit.setTextFront("front");
         revisionEdit.setTextBack("back");
         revisionEdit.setMessage("test message");
+        revisionEdit.setImageFront(givenImage());
+        revisionEdit.setImageBack(givenImage());
         revisionEdit.setCreatedBy(givenApplicationUser());
 
         Card card = givenCard();
@@ -310,7 +312,19 @@ public abstract class TestDataGenerator {
         Progress progress = new Progress(id);
         progress.setDue(LocalDateTime.now());
 
-        return progressRepository.saveAndFlush(progress);
+        em.persist(progress);
+        em.flush();
+
+        return progress;
+    }
+
+    public Image givenImage() {
+        User user = givenApplicationUser();
+        Image image = new Image();
+        image.setCreatedBy(user);
+        image.setFilename("test.png");
+
+        return imageRepository.saveAndFlush(image);
     }
 
     Long DECK_ID = 0L;
@@ -495,5 +509,9 @@ public abstract class TestDataGenerator {
     @Deprecated
     public CategoryRepository getCategoryRepository() {
         return categoryRepository;
+    }
+
+    public ImageRepository getImageRepository() {
+        return imageRepository;
     }
 }

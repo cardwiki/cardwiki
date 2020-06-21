@@ -60,9 +60,9 @@ public class CardEndpoint {
 
     @GetMapping(value = "/cards/{cardId}")
     @ApiOperation(value = "Get information about a specific card in deck")
-    public CardSimpleDto findOne(@PathVariable Long cardId) {
+    public CardUpdateDto findOne(@PathVariable Long cardId) {
         LOGGER.info("GET /api/v1/cards/{}", cardId);
-        return revisionMapper.revisionEditToCardSimpleDto((RevisionEdit) cardService.findOneOrThrow(cardId).getLatestRevision());
+        return revisionMapper.revisionEditToCardUpdateDto((RevisionEdit) cardService.findOneOrThrow(cardId).getLatestRevision());
     }
 
     @Secured("ROLE_USER")

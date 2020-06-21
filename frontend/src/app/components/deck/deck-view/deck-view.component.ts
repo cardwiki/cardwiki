@@ -9,6 +9,7 @@ import {DeckForkModalComponent} from '../deck-fork-modal/deck-fork-modal.compone
 import {Observable, Subject} from 'rxjs';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {AuthService} from '../../../services/auth.service';
+import {Globals} from '../../../global/globals';
 import {FavoriteService} from 'src/app/services/favorite.service';
 import { CardRemoveModalComponent } from '../card-remove-modal/card-remove-modal.component';
 import { CommentService } from 'src/app/services/comment.service';
@@ -90,7 +91,7 @@ export class DeckViewComponent implements OnInit {
         () => {
           this.notificationService.success('Deleted Card')
           this.cards = this.cards.filter(c => c !== card)
-        }   
+        }
       )
     ).catch(err => console.error('Did not remove card', err));
   }
