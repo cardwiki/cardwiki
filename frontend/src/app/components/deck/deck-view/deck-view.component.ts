@@ -33,10 +33,10 @@ export class DeckViewComponent implements OnInit {
   commentsPage: Page<CommentSimple>
   readonly commentsPageSize = 10
 
-  constructor(private deckService: DeckService, private cardService: CardService,
+  constructor(private deckService: DeckService, private cardService: CardService, public globals: Globals,
               private favoriteService: FavoriteService, private commentService: CommentService,
               private route: ActivatedRoute, private router: Router, private modalService: NgbModal,
-              public authService: AuthService, private notificationService: NotificationService) { }
+              private authService: AuthService, private notificationService: NotificationService) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {

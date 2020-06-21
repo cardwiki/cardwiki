@@ -4,6 +4,7 @@ import { CommentService } from 'src/app/services/comment.service';
 import { Observable } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { NotificationService } from 'src/app/services/notification.service';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-comment-list',
@@ -15,10 +16,12 @@ export class CommentListComponent {
   @Input() comments: CommentSimple[]
 
   activeUserName$: Observable<string>
+  isAdmin$: Observable<boolean>
   editingCommentId = -1 // id of the comment currently edited or -1
 
   constructor(private commentService: CommentService, private authService: AuthService, private notificationService: NotificationService) {
     this.activeUserName$ = this.authService.userName$
+    this.isAdmin$ = this.authService.userRoles$.pipe(map(roles => roles.includes('ADMIN')))
   }
 
   editComment(id: number) {
