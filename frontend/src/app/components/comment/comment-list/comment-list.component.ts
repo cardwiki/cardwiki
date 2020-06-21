@@ -5,6 +5,8 @@ import { Observable } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { NotificationService } from 'src/app/services/notification.service';
 import { map } from 'rxjs/operators';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ConfirmModalComponent } from '../../utils/confirm-modal/confirm-modal.component';
 
 @Component({
   selector: 'app-comment-list',
@@ -19,7 +21,8 @@ export class CommentListComponent {
   isAdmin$: Observable<boolean>
   editingCommentId = -1 // id of the comment currently edited or -1
 
-  constructor(private commentService: CommentService, private authService: AuthService, private notificationService: NotificationService) {
+  constructor(private commentService: CommentService, private authService: AuthService, private notificationService: NotificationService,
+              private modalService: NgbModal) {
     this.activeUserName$ = this.authService.userName$
     this.isAdmin$ = this.authService.userRoles$.pipe(map(roles => roles.includes('ADMIN')))
   }
@@ -40,12 +43,19 @@ export class CommentListComponent {
   }
 
   deleteComment(id: number) {
-    this.commentService.deleteComment(id)
-      .subscribe(() => {
-        const index = this.comments.findIndex(c => c.id === id)
-        this.comments.splice(index, 1)
-        this.notificationService.success('Deleted comment')
-      })
+    const confirmationModal = this.modalService.open(ConfirmModalComponent)
+    confirmationModal.componentInstance.title = 'Delete Comment'
+    confirmationModal.componentInstance.message = 'Are you sure you want to delete this comment?'
+    confirmationModal.componentInstance.action = 'Delete'
+
+    confirmationModal.result.then(() => {
+      this.commentService.deleteComment(id)
+        .subscribe(() => {
+          const index = this.comments.findIndex(c => c.id === id)
+          this.comments.splice(index, 1)
+          this.notificationService.success('Deleted comment')
+        })
+    }).catch(err => console.log('Comment deletion cancelled', err))
   }
 
 }

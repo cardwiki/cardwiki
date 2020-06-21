@@ -43,6 +43,7 @@ import { CardRemoveModalComponent } from './components/deck/card-remove-modal/ca
 import { UserRoleDirective } from './directives/user-role.directive';
 import { CommentFormComponent } from './components/comment/comment-form/comment-form.component';
 import { CommentListComponent } from './components/comment/comment-list/comment-list.component';
+import { ConfirmModalComponent } from './components/utils/confirm-modal/confirm-modal.component';
 
 @NgModule({
   declarations: [
@@ -83,6 +84,7 @@ import { CommentListComponent } from './components/comment/comment-list/comment-
     UserRoleDirective,
     CommentFormComponent,
     CommentListComponent,
+    ConfirmModalComponent,
   ],
   imports: [
     BrowserModule,
