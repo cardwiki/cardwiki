@@ -5,6 +5,8 @@ export class UserProfile {
     public description: string,
     public createdAt: Date,
     public updatedAt: Date,
-    public isAdmin: boolean) {
+    public admin: boolean,
+    public enabled: boolean,
+    public deleted: boolean) {
   }
 }

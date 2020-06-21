@@ -59,9 +59,9 @@ public class CardEndpoint {
 
     @GetMapping(value = "/cards/{cardId}")
     @ApiOperation(value = "Get information about a specific card in deck")
-    public CardSimpleDto findOne(@PathVariable Long cardId) {
+    public CardUpdateDto findOne(@PathVariable Long cardId) {
         LOGGER.info("GET /api/v1/cards/{}", cardId);
-        return revisionMapper.revisionEditToCardSimpleDto((RevisionEdit) cardService.findOneOrThrow(cardId).getLatestRevision());
+        return revisionMapper.revisionEditToCardUpdateDto((RevisionEdit) cardService.findOneOrThrow(cardId).getLatestRevision());
     }
 
     @Secured("ROLE_USER")
@@ -76,10 +76,19 @@ public class CardEndpoint {
 
     @Secured("ROLE_USER")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping(value = "/cards/{cardId}")
+    @PostMapping(value = "/cards/{cardId}")
     @ApiOperation(value = "Removes card from deck", authorizations = {@Authorization(value = "ROLE_USER")})
     public void addDeleteRevisionToCard(@PathVariable Long cardId, @RequestParam(required = false) @Size(max = Revision.MAX_MESSAGE_SIZE) String message) {
         LOGGER.info("DELETE /api/v1/cards/{}?message=", message);
         cardService.addDeleteRevisionToCard(cardId, message);
+    }
+
+    @Secured("ROLE_ADMIN")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping(value = "/cards/{cardId}")
+    @ApiOperation(value = "Deletes a card", authorizations = {@Authorization(value = "apiKey")})
+    public void delete(@PathVariable Long cardId) {
+        LOGGER.info("DELETE card {}", cardId);
+        cardService.delete(cardId);
     }
 }

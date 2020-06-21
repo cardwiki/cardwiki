@@ -7,6 +7,7 @@ import at.ac.tuwien.sepm.groupphase.backend.exception.AuthenticationRequiredExce
 import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.util.Optional;
 
@@ -96,6 +97,18 @@ public interface UserService {
      * @param id of the user to be updated.
      * @param user containing the data to update the user with
      * @return the updated user
+     * @throws UserNotFoundException if the user to be updated does not exist.
+     * @throws AccessDeniedException if the update operation is not allowed.
      */
     User updateUser(Long id, User user);
+
+    /**
+     * Deletes a user.
+     *
+     * @param id of the user to be deleted.
+     * @param reason why the user is deleted.
+     * @throws AccessDeniedException if the user to be deleted is an admin.
+     * @throws UserNotFoundException if the user to be deleted does not exist.
+     */
+    void delete(Long id, String reason);
 }

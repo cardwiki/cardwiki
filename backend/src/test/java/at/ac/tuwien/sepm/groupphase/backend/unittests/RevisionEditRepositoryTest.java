@@ -2,13 +2,11 @@ package at.ac.tuwien.sepm.groupphase.backend.unittests;
 
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionEdit;
-import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.repository.RevisionRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -71,18 +69,5 @@ public class RevisionEditRepositoryTest extends TestDataGenerator {
 
         // Then
         assertEquals(edit.getTextFront(), UTF_16_SAMPLE_TEXT);
-    }
-
-    @Test
-    public void givenRevisionEdit_whenDeleteRevisionById_thenExistsByIdReturnsFalse() {
-        Agent user = persistentAgent();
-        RevisionEdit revisionEdit = user.editCard(user.createCardIn(user.createDeck()));
-
-        // When
-        revisionRepository.deleteById(revisionEdit.getId());
-        revisionRepository.flush();
-
-        // Then
-        assertFalse(revisionRepository.existsById(revisionEdit.getId()));
     }
 }

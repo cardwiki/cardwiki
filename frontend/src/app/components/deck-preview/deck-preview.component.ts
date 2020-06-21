@@ -1,11 +1,12 @@
 import {Component, HostListener, OnInit} from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {DeckDetails} from "../../dtos/deckDetails";
 import {CardSimple} from "../../dtos/cardSimple";
 import {DeckService} from "../../services/deck.service";
 import {CardService} from "../../services/card.service";
-import { Pageable } from 'src/app/dtos/pageable';
-import { Page } from 'src/app/dtos/page';
+import {Pageable} from 'src/app/dtos/pageable';
+import {Page} from 'src/app/dtos/page';
+import {Globals} from '../../global/globals';
 
 @Component({
   selector: 'app-deck-preview',
@@ -34,7 +35,7 @@ export class DeckPreviewComponent implements OnInit {
   currentcard: CardSimple;
   flipped: boolean = false;
 
-  constructor(private deckService: DeckService, private cardService: CardService, private route: ActivatedRoute) { }
+  constructor(private deckService: DeckService, private cardService: CardService, private route: ActivatedRoute, public globals: Globals) { }
 
   ngOnInit(): void {
     this.deck = this.page = this.currentcard = null;

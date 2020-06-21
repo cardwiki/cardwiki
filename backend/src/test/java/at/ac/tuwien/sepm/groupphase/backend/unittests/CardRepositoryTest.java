@@ -13,7 +13,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -84,37 +83,6 @@ public class CardRepositoryTest extends TestDataGenerator {
         // Then
         assertEquals(card.getLatestRevision(), cardRepository.findById(card.getId()).orElseThrow().getLatestRevision());
         assertFalse(cardRepository.findById(card.getId()).orElseThrow().getRevisions().isEmpty());
-    }
-
-    @Test
-    public void givenCard_whenDeleteById_thenExistsByIdIsFalse() {
-        Card card = givenCard();
-
-        cardRepository.deleteById(card.getId());
-
-        assertFalse(cardRepository.existsById(card.getId()));
-    }
-
-    @Test
-    public void givenCard_whenDeleteById_thenDeckDoesNotContainCard() {
-        Card card = givenCard();
-        Deck deck = card.getDeck();
-
-        assertTrue(deck.getCards().contains(card));
-        cardRepository.deleteById(card.getId());
-
-        assertFalse(deck.getCards().contains(card));
-    }
-
-    @Test
-    public void givenCardAndRevisionEdit_whenDeleteById_thenNotExistsById() {
-        Agent user = persistentAgent();
-        Card card = user.createCardIn(user.createDeck());
-
-        // When
-        cardRepository.deleteById(card.getId());
-        // Then
-        assertFalse(cardRepository.existsById(card.getId()));
     }
 
     @Test

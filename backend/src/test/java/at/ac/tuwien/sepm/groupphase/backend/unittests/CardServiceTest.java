@@ -44,10 +44,13 @@ public class CardServiceTest extends TestDataGenerator {
 
     @Test
     public void givenDeckAndUserExist_whenAddCardToDeck_thenReturnCard() {
-        RevisionCreate revision = getUnconnectedSampleRevisionCreate();
+        Agent gustav = persistentAgent();
+        User user = gustav.getUser();
+        Deck deck = gustav.createDeck();
 
-        User user = getUnconnectedSampleUser();
-        Deck deck = getUnconnectedSampleDeck();
+        RevisionCreate revision = new RevisionCreate();
+        revision.setTextFront("test");
+        revision.setTextBack("test");
 
         when(userService.loadCurrentUserOrThrow()).thenReturn(user);
         when(deckService.findOneOrThrow(DECK_ID)).thenReturn(deck);
@@ -73,10 +76,13 @@ public class CardServiceTest extends TestDataGenerator {
 
     @Test
     public void givenDeckAndUserExist_whenAddCardToDeckWithoutMessage_thenReturnCardWithDefaultMessage() {
-        RevisionCreate revision = getUnconnectedSampleRevisionCreate();
+        Agent gustav = persistentAgent();
+        User user = gustav.getUser();
+        Deck deck = gustav.createDeck();
+        RevisionCreate revision = new RevisionCreate();
+        revision.setTextFront("test");
+        revision.setTextBack("test");
         revision.setMessage(null);
-        User user = getUnconnectedSampleUser();
-        Deck deck = getUnconnectedSampleDeck();
 
         when(userService.loadCurrentUserOrThrow()).thenReturn(user);
         when(deckService.findOneOrThrow(DECK_ID)).thenReturn(deck);

@@ -41,6 +41,9 @@ import { LearnDeckComponent } from './components/learn-deck/learn-deck.component
 import { DeckForkModalComponent } from './components/deck/deck-fork-modal/deck-fork-modal.component';
 import { CardRemoveModalComponent } from './components/deck/card-remove-modal/card-remove-modal.component';
 import { UserRoleDirective } from './directives/user-role.directive';
+import { CommentFormComponent } from './components/comment/comment-form/comment-form.component';
+import { CommentListComponent } from './components/comment/comment-list/comment-list.component';
+import { ConfirmModalComponent } from './components/utils/confirm-modal/confirm-modal.component';
 
 @NgModule({
   declarations: [
@@ -79,6 +82,9 @@ import { UserRoleDirective } from './directives/user-role.directive';
     DeckForkModalComponent,
     CardRemoveModalComponent,
     UserRoleDirective,
+    CommentFormComponent,
+    CommentListComponent,
+    ConfirmModalComponent,
   ],
   imports: [
     BrowserModule,

@@ -6,11 +6,14 @@ import at.ac.tuwien.sepm.groupphase.backend.entity.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.nio.file.Paths;
 
 import static at.ac.tuwien.sepm.groupphase.backend.integrationtest.security.MockedLogins.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -25,6 +28,9 @@ public class CardEndpointTest extends TestDataGenerator {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Value("${cawi.image-served-path}")
+    private String imageServedPath;
 
     private static final String FRONT_TEXT = "Test Front";
     private static final String BACK_TEXT = "Back Front";
@@ -104,6 +110,68 @@ public class CardEndpointTest extends TestDataGenerator {
     }
 
     @Test
+    public void createCardWithImagesReturnsCardDetailsWithImageDtos() throws Exception {
+        Deck deck = givenDeck();
+        User user = givenApplicationUser();
+        Image image = givenImage();
+
+        RevisionEditDto dto = new RevisionEditDto();
+        dto.setImageFrontFilename(image.getFilename());
+        dto.setImageBackFilename(image.getFilename());
+
+        mvc.perform(post("/api/v1/decks/{deckId}/cards", deck.getId())
+            .with(mockLogin(USER_ROLES, user.getAuthId()))
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(dto)))
+            .andExpect(status().is(201))
+            .andExpect(jsonPath("$.deck.id").value(deck.getId()))
+            .andExpect(jsonPath("$.id").isNumber())
+            .andExpect(jsonPath("$.imageFrontUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString()))
+            .andExpect(jsonPath("$.imageBackUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString()));
+    }
+
+    @Test
+    public void createCardWithTextAndImagesReturnsCardDetails() throws Exception {
+        Deck deck = givenDeck();
+        User user = givenApplicationUser();
+        Image image = givenImage();
+
+        RevisionEditDto dto = new RevisionEditDto();
+        dto.setTextFront(FRONT_TEXT);
+        dto.setTextBack(BACK_TEXT);
+        dto.setImageFrontFilename(image.getFilename());
+        dto.setImageBackFilename(image.getFilename());
+
+        mvc.perform(post("/api/v1/decks/{deckId}/cards", deck.getId())
+            .with(mockLogin(USER_ROLES, user.getAuthId()))
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(dto)))
+            .andExpect(status().is(201))
+            .andExpect(jsonPath("$.deck.id").value(deck.getId()))
+            .andExpect(jsonPath("$.id").isNumber())
+            .andExpect(jsonPath("$.textFront").value(FRONT_TEXT))
+            .andExpect(jsonPath("$.textBack").value(BACK_TEXT))
+            .andExpect(jsonPath("$.imageFrontUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString()))
+            .andExpect(jsonPath("$.imageBackUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString()));
+    }
+
+    @Test
+    public void createCardWithNonExistingImageThrowsBadRequest() throws Exception {
+        Agent user = persistentAgent();
+        Deck deck = user.createDeck();
+
+        RevisionEditDto dto = new RevisionEditDto();
+        dto.setImageFrontFilename("i don't exist");
+        dto.setImageBackFilename("me neither");
+
+        mvc.perform(post("/api/v1/decks/{deckId}/cards", deck.getId())
+            .with(login(user.getUser().getAuthId()))
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(dto)))
+            .andExpect(status().is(400));
+    }
+
+    @Test
     public void createCardWithInvalidDeckIdThrowsNotFoundException() throws Exception {
         User user = givenApplicationUser();
         RevisionEditDto dto = new RevisionEditDto();
@@ -118,12 +186,18 @@ public class CardEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    public void createCardWithNullTextThrowsBadRequest() throws Exception {
+    public void createCardWithoutContentThrowsBadRequest() throws Exception {
+        Agent user = persistentAgent();
+        Deck deck = user.createDeck();
+
         RevisionEditDto dto = new RevisionEditDto();
         dto.setTextFront(null);
         dto.setTextBack(null);
+        dto.setImageFrontFilename(null);
+        dto.setImageBackFilename(null);
 
-        mvc.perform(post("/api/v1/decks/{deckId}/cards", 123)
+        mvc.perform(post("/api/v1/decks/{deckId}/cards", deck.getId())
+            .with(login(user.getUser().getAuthId()))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(400));
@@ -155,17 +229,18 @@ public class CardEndpointTest extends TestDataGenerator {
 
     @Test
     @Transactional
-    public void getCardReturnsCardSimple() throws Exception {
+    public void getCardReturnsCardUpdate() throws Exception {
         RevisionEdit revisionEdit = givenRevisionEdit();
         Card card = revisionEdit.getCard();
-        Deck deck = card.getDeck();
         mvc.perform(get("/api/v1/cards/{cardId}", card.getId())
             .contentType("application/json"))
             .andExpect(status().is(200))
-            .andExpect(jsonPath("$.deck.id").value(deck.getId()))
-            .andExpect(jsonPath("$.id").value(card.getId()))
             .andExpect(jsonPath("$.textFront").value(revisionEdit.getTextFront()))
-            .andExpect(jsonPath("$.textBack").value(revisionEdit.getTextBack()));
+            .andExpect(jsonPath("$.textBack").value(revisionEdit.getTextBack()))
+            .andExpect(jsonPath("$.imageFront.filename").value(revisionEdit.getImageFront().getFilename()))
+            .andExpect(jsonPath("$.imageFront.url").value(Paths.get(imageServedPath, revisionEdit.getImageFront().getFilename()).toString()))
+            .andExpect(jsonPath("$.imageBack.filename").value(revisionEdit.getImageBack().getFilename()))
+            .andExpect(jsonPath("$.imageBack.url").value(Paths.get(imageServedPath, revisionEdit.getImageBack().getFilename()).toString()));
     }
 
     @Test
@@ -197,6 +272,54 @@ public class CardEndpointTest extends TestDataGenerator {
     }
 
     @Test
+    public void editCardWithNewImagesReturnsCardDetails() throws Exception {
+        Card card = givenCard();
+        Deck deck = card.getDeck();
+        User user = givenApplicationUser();
+
+        RevisionEditDto dto = new RevisionEditDto();
+        Image image = givenImage();
+        dto.setImageFrontFilename(image.getFilename());
+        dto.setImageBackFilename(image.getFilename());
+
+        mvc.perform(patch("/api/v1/cards/{cardId}", card.getId())
+            .with(mockLogin(USER_ROLES, user.getAuthId()))
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(dto)))
+            .andExpect(status().is(200))
+            .andExpect(jsonPath("$.deck.id").value(deck.getId()))
+            .andExpect(jsonPath("$.id").isNumber())
+            .andExpect(jsonPath("$.imageFrontUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString()))
+            .andExpect(jsonPath("$.imageBackUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString()));
+    }
+
+    @Test
+    public void editCardWithTextAndNewImagesReturnsCardDetails() throws Exception {
+        Card card = givenCard();
+        Deck deck = card.getDeck();
+        User user = givenApplicationUser();
+
+        RevisionEditDto dto = new RevisionEditDto();
+        dto.setTextFront(FRONT_TEXT);
+        dto.setTextBack(BACK_TEXT);
+        Image image = givenImage();
+        dto.setImageFrontFilename(image.getFilename());
+        dto.setImageBackFilename(image.getFilename());
+
+        mvc.perform(patch("/api/v1/cards/{cardId}", card.getId())
+            .with(mockLogin(USER_ROLES, user.getAuthId()))
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(dto)))
+            .andExpect(status().is(200))
+            .andExpect(jsonPath("$.deck.id").value(deck.getId()))
+            .andExpect(jsonPath("$.id").isNumber())
+            .andExpect(jsonPath("$.textFront").value(FRONT_TEXT))
+            .andExpect(jsonPath("$.textBack").value(BACK_TEXT))
+            .andExpect(jsonPath("$.imageFrontUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString()))
+            .andExpect(jsonPath("$.imageBackUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString()));
+    }
+
+    @Test
     public void editCardWithInvalidCardIdThrowsNotFoundException() throws Exception {
         Card card = givenCard();
         User user = givenApplicationUser();
@@ -212,13 +335,19 @@ public class CardEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    public void editCardWithNullTextThrowsBadRequest() throws Exception {
-        Card card = givenCard();
+    public void editCardWithoutContentThrowsBadRequest() throws Exception {
+        Agent user = persistentAgent();
+        Deck deck = user.createDeck();
+        Card card = user.createCardIn(deck);
+
         RevisionEditDto dto = new RevisionEditDto();
         dto.setTextFront(null);
         dto.setTextBack(null);
+        dto.setImageFrontFilename(null);
+        dto.setImageBackFilename(null);
 
         mvc.perform(patch("/api/v1/cards/{cardId}", card.getId())
+            .with(login(user.getUser().getAuthId()))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(400));
@@ -287,7 +416,7 @@ public class CardEndpointTest extends TestDataGenerator {
         Card card = givenCard();
         User user = givenApplicationUser();
 
-        mvc.perform(delete("/api/v1/cards/{cardId}", card.getId())
+        mvc.perform(post("/api/v1/cards/{cardId}", card.getId())
             .with(login(user.getAuthId()))
             .contentType("application/json"))
             .andExpect(status().isNoContent())
@@ -300,7 +429,7 @@ public class CardEndpointTest extends TestDataGenerator {
         RevisionEdit revisionEdit = givenRevisionEdit();
         User user = givenApplicationUser();
 
-        mvc.perform(delete("/api/v1/cards/{cardId}", 123)
+        mvc.perform(post("/api/v1/cards/{cardId}", 123)
             .with(login(user.getAuthId()))
             .contentType("application/json"))
             .andExpect(status().is(404));
@@ -308,7 +437,7 @@ public class CardEndpointTest extends TestDataGenerator {
 
     @Test
     public void deleteCardForAnonymousThrowsForbidden() throws Exception {
-        mvc.perform(delete("/api/v1/cards/{cardId}", 123)
+        mvc.perform(post("/api/v1/cards/{cardId}", 123)
             .contentType("application/json"))
             .andExpect(status().is(403));
     }
@@ -319,7 +448,7 @@ public class CardEndpointTest extends TestDataGenerator {
         User user = givenApplicationUser();
         String message = "this is my message";
 
-        mvc.perform(delete("/api/v1/cards/{cardId}", card.getId())
+        mvc.perform(post("/api/v1/cards/{cardId}", card.getId())
             .queryParam("message", message)
             .with(login(user.getAuthId())))
             .andExpect(status().isNoContent())
@@ -332,9 +461,40 @@ public class CardEndpointTest extends TestDataGenerator {
         User user = givenApplicationUser();
         String message = "x".repeat(Revision.MAX_MESSAGE_SIZE + 1);
 
-        mvc.perform(delete("/api/v1/cards/{cardId}", card.getId())
+        mvc.perform(post("/api/v1/cards/{cardId}", card.getId())
             .queryParam("message", message)
             .with(login(user.getAuthId())))
             .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void userDeletesCardReturnsForbidden() throws Exception {
+        User user = givenApplicationUser();
+        Card card = givenCard();
+
+        mvc.perform(delete("/api/v1/cards/{cardId}", card.getId())
+            .with(login(user.getAuthId())))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void adminDeletesNonExistentCardReturnsNotFound() throws Exception {
+        User admin = givenApplicationUser();
+        admin.setAdmin(true);
+
+        mvc.perform(delete("/api/v1/cards/{cardId}", 404)
+            .with(login(admin.getAuthId())))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void adminDeletesCardReturnsNoContent() throws Exception {
+        User admin = givenApplicationUser();
+        admin.setAdmin(true);
+        Card card = givenCard();
+
+        mvc.perform(delete("/api/v1/cards/{cardId}", card.getId())
+            .with(login(admin.getAuthId())))
+            .andExpect(status().isNoContent());
     }
 }

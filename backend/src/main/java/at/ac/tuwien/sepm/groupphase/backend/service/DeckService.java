@@ -54,4 +54,12 @@ public interface DeckService {
      * @throws DeckNotFoundException if no deck with the given id can be found
      */
     Deck copy(Long id, Deck deckCopy);
+
+    /**
+     * Delete a card deck.
+     *
+     * @param id of the deck to delete
+     * @throws DeckNotFoundException if the specified deck does not exist
+     */
+    void delete(Long id);
 }

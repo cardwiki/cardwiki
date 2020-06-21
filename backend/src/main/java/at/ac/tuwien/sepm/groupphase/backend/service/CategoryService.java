@@ -40,4 +40,12 @@ public interface CategoryService  {
      * @return details of the category which has been updated
      */
     Category updateCategory(Long id, Category category);
+
+    /**
+     * Deletes a category.
+     *
+     * @param id of the category to delete.
+     * @throws CategoryNotFoundException if no category with id {@code id} exists.
+     */
+    void deleteCategory(Long id);
 }

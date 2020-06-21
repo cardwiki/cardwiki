@@ -5,6 +5,7 @@ import {ActivatedRoute} from '@angular/router';
 import {DeckSimple} from '../../dtos/deckSimple';
 import {LearnService} from '../../services/learn.service';
 import {LearnAttempt, AttemptStatus } from '../../dtos/learnAttempt';
+import {Globals} from '../../global/globals';
 
 @Component({
   selector: 'app-learn-deck',
@@ -17,7 +18,7 @@ export class LearnDeckComponent implements OnInit {
   card: CardSimple;
   flipped: boolean;
 
-  constructor(private deckService: DeckService, private learnService: LearnService, private route: ActivatedRoute) { }
+  constructor(private deckService: DeckService, private learnService: LearnService, private route: ActivatedRoute, public globals: Globals) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {

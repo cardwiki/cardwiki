@@ -3,6 +3,7 @@ package at.ac.tuwien.sepm.groupphase.backend.unittests;
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CategoryRepository;
+import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,6 +26,9 @@ public class CategoryRepositoryTest extends TestDataGenerator {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private DeckRepository deckRepository;
 
     @Test
     public void givenNothing_whenSaveCategoryWithParent_thenExistsByIdAndHasParent() {
@@ -103,5 +105,20 @@ public class CategoryRepositoryTest extends TestDataGenerator {
         Category parent = categoryRepository.save(new Category("blubb", null));
 
         assertFalse(categoryRepository.ancestorExistsWithId(category.getId(), parent.getId()));
+    }
+
+    @Test
+    public void givenCategoryWithParent_whenDeleteParent_thenDeleteChildCategoryAndNotDeck() {
+        Deck deck = givenDeck();
+        Category category = givenCategory();
+
+        category.getDecks().add(deck);
+        categoryRepository.save(category);
+
+        categoryRepository.deleteById(category.getParent().getId());
+
+        assertFalse(categoryRepository.existsById(category.getParent().getId()));
+        assertFalse(categoryRepository.existsById(category.getId()));
+        assertTrue(deckRepository.existsById(deck.getId()));
     }
 }

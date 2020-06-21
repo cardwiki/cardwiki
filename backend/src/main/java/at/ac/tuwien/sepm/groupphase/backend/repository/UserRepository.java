@@ -16,9 +16,9 @@ public interface UserRepository extends JpaRepository<User,Long> {
      *
      * @param name the search string
      * @param pageable the paging parameters
-     * @return ordered list of all users with names containing {@code name}
+     * @return page of all users with names containing {@code name}
      */
-    Page<User> findByUsernameContainingIgnoreCase(String name, Pageable pageable);
+    Page<User> findByUsernameContainingIgnoreCaseAndDeletedFalse(String name, Pageable pageable);
 
     Optional<User> findByUsername(String username);
     Optional<User> findByAuthId(String authId);

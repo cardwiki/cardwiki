@@ -56,4 +56,15 @@ export class CategoryService {
     return this.httpClient.put<CategoryDetails>(this.categoryBaseUri + '/' + id, category)
       .pipe(tap(null, this.errorHandler.handleError('Could not update Category')))
   }
+
+  /**
+   * Deletes a category.
+   *
+   * @param id of the category to delete.
+   */
+  deleteCategory(id: number) {
+    console.log('Delete category with id ' + id);
+    return this.httpClient.delete<void>(this.categoryBaseUri + '/' + id)
+      .pipe(tap(null, this.errorHandler.handleError('Could not delete Category')));
+  }
 }
