@@ -7,6 +7,7 @@ import {RevisionDetailed} from "../dtos/revisionDetailed";
 import {UserProfile} from "../dtos/userProfile";
 import {tap} from "rxjs/operators";
 import {ErrorHandlerService} from "./error-handler.service";
+import { Page } from '../dtos/page';
 
 @Injectable({
   providedIn: 'root'
@@ -77,7 +78,7 @@ export class UserService {
    * @param offset of the page.
    * @param limit of results returned.
    */
-  getRevisions(userid: number, limit: number, offset: number): Observable<RevisionDetailed[]> {
+  getRevisions(userid: number, limit: number, offset: number): Observable<Page<RevisionDetailed>> {
     console.log('load card revisions for user: ' + userid);
     const params = new HttpParams({
       fromObject: {
@@ -85,7 +86,7 @@ export class UserService {
         limit: limit.toString(10)
       }
     });
-    return this.httpClient.get<RevisionDetailed[]>(`${this.userBaseUri}/${userid}/revisions`, { params })
+    return this.httpClient.get<Page<RevisionDetailed>>(`${this.userBaseUri}/${userid}/revisions`, { params })
       .pipe(tap(null, this.errorHandler.handleError('Could not load User Revisions')));
   }
 

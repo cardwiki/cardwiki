@@ -9,16 +9,30 @@ import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.nio.file.Paths;
-import java.util.List;
 
 @Mapper
 abstract public class RevisionMapper {
 
-    @Mapping(source = "revision.createdBy.id", target = "createdBy")
-    public abstract RevisionSimpleDto revisionToRevisionSimpleDto(Revision revision);
+    @Mapping(source = "revision.card.id", target = "cardId")
+    @Mapping(source = "revision.card.deck", target = "deck")
+    public abstract RevisionDtoWithDeck revision_to_revisionDtoWithDeck(Revision revision);
 
-    @Mapping(source = "revision.card", target = "card")
-    public abstract RevisionDetailedDto revisionToRevisionDetailedDto(Revision revision);
+    @Mapping(source = "revision.createdBy", target = "createdBy")
+    @Mapping(source = "revision.card.id", target = "cardId")
+    abstract RevisionDtoWithContent _revision_to_revisionDtoWithContent(Revision revision);
+
+    @Mapping(source = "revision.createdBy", target = "createdBy")
+    @Mapping(source = "revision.card.id", target = "cardId")
+    @Mapping(source = "revision.imageFront.filename", target = "imageFront")
+    @Mapping(source = "revision.imageBack.filename", target = "imageBack")
+    abstract RevisionDtoWithContent _revisionEdit_to_revisionDtoWithContent(RevisionEdit revision);
+
+    public RevisionDtoWithContent revisionToRevisionDetailedDto(Revision revision){
+        if (revision instanceof RevisionEdit) {
+            return _revisionEdit_to_revisionDtoWithContent((RevisionEdit) revision);
+        } else
+            return _revision_to_revisionDtoWithContent(revision);
+    }
 
     @Mapping(source = "edit.card.id", target = "id")
     @Mapping(source = "edit.imageFront.filename", target = "imageFrontUrl", qualifiedByName = "prefixImagesServedPath")
@@ -27,11 +41,11 @@ abstract public class RevisionMapper {
 
     @Mapping(source = "edit.imageFrontFilename", target = "imageFront", qualifiedByName = "filenameToImage")
     @Mapping(source = "edit.imageBackFilename", target = "imageBack", qualifiedByName = "filenameToImage")
-    public abstract RevisionEdit revisionEditDtoToRevisionEdit(RevisionEditDto edit);
+    public abstract RevisionEdit revisionEditDtoToRevisionEdit(RevisionInputDto edit);
 
     @Mapping(source = "edit.imageFrontFilename", target = "imageFront", qualifiedByName = "filenameToImage")
     @Mapping(source = "edit.imageBackFilename", target = "imageBack", qualifiedByName = "filenameToImage")
-    public abstract RevisionCreate revisionEditDtoToRevisionCreate(RevisionEditDto edit);
+    public abstract RevisionCreate revisionEditDtoToRevisionCreate(RevisionInputDto edit);
 
     @Mapping(source = "edit.card.id", target = "id")
     @Mapping(source = "edit.card.deck", target = "deck")

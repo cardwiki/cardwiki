@@ -1,7 +1,7 @@
 package at.ac.tuwien.sepm.groupphase.backend.integrationtest;
 
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.RevisionEditDto;
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.RevisionInputDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
@@ -41,7 +41,7 @@ public class CardEndpointTest extends TestDataGenerator {
     public void createCardReturnsCardDetails() throws Exception {
         Deck deck = givenDeck();
         User user = givenApplicationUser();
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setTextFront(FRONT_TEXT);
         dto.setTextBack(BACK_TEXT);
 
@@ -60,7 +60,7 @@ public class CardEndpointTest extends TestDataGenerator {
     public void createCardWithMessageReturnsCardDetails() throws Exception {
         Deck deck = givenDeck();
         User user = givenApplicationUser();
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         String message = "this is my message";
         dto.setTextFront(FRONT_TEXT);
         dto.setTextBack(BACK_TEXT);
@@ -80,7 +80,7 @@ public class CardEndpointTest extends TestDataGenerator {
     @Test
     public void createCardWithTooLongMessageThrowsBadRequest() throws Exception {
         Deck deck = givenDeck();
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         String message = "x".repeat(Revision.MAX_MESSAGE_SIZE + 1);
         dto.setTextFront(FRONT_TEXT);
         dto.setTextBack(BACK_TEXT);
@@ -96,7 +96,7 @@ public class CardEndpointTest extends TestDataGenerator {
     public void createCardWithSpecialUtf16CharsReturnsSameText() throws Exception {
         Deck deck = givenDeck();
         User user = givenApplicationUser();
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setTextFront(UTF_16_SAMPLE_TEXT);
         dto.setTextBack(UTF_16_SAMPLE_TEXT);
 
@@ -115,7 +115,7 @@ public class CardEndpointTest extends TestDataGenerator {
         User user = givenApplicationUser();
         Image image = givenImage();
 
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setImageFrontFilename(image.getFilename());
         dto.setImageBackFilename(image.getFilename());
 
@@ -136,7 +136,7 @@ public class CardEndpointTest extends TestDataGenerator {
         User user = givenApplicationUser();
         Image image = givenImage();
 
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setTextFront(FRONT_TEXT);
         dto.setTextBack(BACK_TEXT);
         dto.setImageFrontFilename(image.getFilename());
@@ -160,7 +160,7 @@ public class CardEndpointTest extends TestDataGenerator {
         Agent user = persistentAgent();
         Deck deck = user.createDeck();
 
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setImageFrontFilename("i don't exist");
         dto.setImageBackFilename("me neither");
 
@@ -174,7 +174,7 @@ public class CardEndpointTest extends TestDataGenerator {
     @Test
     public void createCardWithInvalidDeckIdThrowsNotFoundException() throws Exception {
         User user = givenApplicationUser();
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setTextFront(FRONT_TEXT);
         dto.setTextBack(BACK_TEXT);
 
@@ -190,7 +190,7 @@ public class CardEndpointTest extends TestDataGenerator {
         Agent user = persistentAgent();
         Deck deck = user.createDeck();
 
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setTextFront(null);
         dto.setTextBack(null);
         dto.setImageFrontFilename(null);
@@ -205,7 +205,7 @@ public class CardEndpointTest extends TestDataGenerator {
 
     @Test
     public void createCardWithBlankTextThrowsBadRequest() throws Exception {
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setTextFront("  ");
         dto.setTextBack("  ");
 
@@ -217,7 +217,7 @@ public class CardEndpointTest extends TestDataGenerator {
 
     @Test
     public void createCardForAnonymousThrowsForbidden() throws Exception {
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setTextFront(FRONT_TEXT);
         dto.setTextBack(BACK_TEXT);
 
@@ -256,7 +256,7 @@ public class CardEndpointTest extends TestDataGenerator {
         Card card = givenCard();
         Deck deck = card.getDeck();
         User user = givenApplicationUser();
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setTextFront(FRONT_TEXT);
         dto.setTextBack(BACK_TEXT);
 
@@ -277,7 +277,7 @@ public class CardEndpointTest extends TestDataGenerator {
         Deck deck = card.getDeck();
         User user = givenApplicationUser();
 
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         Image image = givenImage();
         dto.setImageFrontFilename(image.getFilename());
         dto.setImageBackFilename(image.getFilename());
@@ -299,7 +299,7 @@ public class CardEndpointTest extends TestDataGenerator {
         Deck deck = card.getDeck();
         User user = givenApplicationUser();
 
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setTextFront(FRONT_TEXT);
         dto.setTextBack(BACK_TEXT);
         Image image = givenImage();
@@ -323,7 +323,7 @@ public class CardEndpointTest extends TestDataGenerator {
     public void editCardWithInvalidCardIdThrowsNotFoundException() throws Exception {
         Card card = givenCard();
         User user = givenApplicationUser();
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setTextFront(FRONT_TEXT);
         dto.setTextBack(BACK_TEXT);
 
@@ -340,7 +340,7 @@ public class CardEndpointTest extends TestDataGenerator {
         Deck deck = user.createDeck();
         Card card = user.createCardIn(deck);
 
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setTextFront(null);
         dto.setTextBack(null);
         dto.setImageFrontFilename(null);
@@ -356,7 +356,7 @@ public class CardEndpointTest extends TestDataGenerator {
     @Test
     public void editCardWithBlankTextThrowsBadRequest() throws Exception {
         Card card = givenCard();
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setTextFront("  ");
         dto.setTextBack("  ");
 
@@ -369,7 +369,7 @@ public class CardEndpointTest extends TestDataGenerator {
     @Test
     public void editCardForAnonymousThrowsForbidden() throws Exception {
         Card card = givenCard();
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setTextFront(FRONT_TEXT);
         dto.setTextBack(BACK_TEXT);
 
@@ -383,7 +383,7 @@ public class CardEndpointTest extends TestDataGenerator {
     public void editCardWithMessageReturnsOk() throws Exception {
         Card card = givenCard();
         User user = givenApplicationUser();
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setTextFront(FRONT_TEXT);
         dto.setTextBack(BACK_TEXT);
         dto.setMessage("this is my message");
@@ -399,7 +399,7 @@ public class CardEndpointTest extends TestDataGenerator {
     public void editCardWithTooLongMessageThrowsBadRequest() throws Exception {
         Card card = givenCard();
         User user = givenApplicationUser();
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setTextFront(FRONT_TEXT);
         dto.setTextBack(BACK_TEXT);
         dto.setMessage("x".repeat(Revision.MAX_MESSAGE_SIZE + 1));

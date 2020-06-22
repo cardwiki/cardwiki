@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -55,7 +56,7 @@ public class SimpleUserService implements UserService {
     }
 
     @Override
-    public List<Revision> getRevisions(Long id, Pageable pageable) {
+    public Page<Revision> getRevisions(Long id, Pageable pageable) {
         LOGGER.debug("Load {} revisions with offset {} from user {}", pageable.getPageSize(), pageable.getOffset(), id);
         return revisionRepository.findByCreatedBy_Id(id, pageable);
     }

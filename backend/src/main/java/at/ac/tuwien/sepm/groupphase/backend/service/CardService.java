@@ -86,5 +86,5 @@ public interface CardService {
      * @param ids of the revisions to return
      * @return List of Revisions of the card
      */
-    Stream<Revision> getRevisionsByIds(Long[] ids);
+    List<Revision> getRevisionsByIds(Long[] ids);
 }

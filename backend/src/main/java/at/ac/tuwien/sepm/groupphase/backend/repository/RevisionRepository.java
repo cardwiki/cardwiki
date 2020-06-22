@@ -14,18 +14,19 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 @Repository
 public interface RevisionRepository extends JpaRepository<Revision, Long> {
     /**
      * Find all revisions created by user
      *
-     * @param id of the user to query
+     * @param userId of the user to query
      * @param pageable pagination parameters for the query
      * @return ordered list of all revisions created by user
      */
     @EntityGraph(attributePaths = {"card", "card.deck"})
-    List<Revision> findByCreatedBy_Id(long id, Pageable pageable);
+    Page<Revision> findByCreatedBy_Id(long userId, Pageable pageable);
 
     /**
      * Find all revisions of a card
@@ -34,7 +35,7 @@ public interface RevisionRepository extends JpaRepository<Revision, Long> {
      * @param pageable pagination parameters for the query
      * @return ordered list of all revisions of the card
      */
-    @EntityGraph(attributePaths = {"card", "card.deck"})
+    @EntityGraph(attributePaths = {"createdBy"})
     Page<Revision> findByCard_Id(long id, Pageable pageable);
 
     /**
@@ -44,6 +45,15 @@ public interface RevisionRepository extends JpaRepository<Revision, Long> {
      * @param pageable pagination parameters for the query
      * @return ordered list of all revisions of the deck
      */
-    @EntityGraph(attributePaths = {"card", "card.deck"})
+    @EntityGraph(attributePaths = {"createdBy"})
     Page<Revision> findByCard_Deck_Id(long id, Pageable pageable);
+
+    /**
+     * Find revisions by ids
+     *
+     * @param ids of revisions
+     * @return requested revisions
+     */
+    @EntityGraph(attributePaths = {"createdBy"})
+    List<Revision> findByIdIn(List<Long> ids);
 }

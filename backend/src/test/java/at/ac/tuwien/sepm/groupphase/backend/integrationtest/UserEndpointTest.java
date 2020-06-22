@@ -198,7 +198,7 @@ public class UserEndpointTest extends TestDataGenerator {
             .queryParam("offset", "0")
             .contentType("application/json"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$[0].id").value(revisionEdit.getId()));
+            .andExpect(jsonPath("$.content[0].id").value(revisionEdit.getId()));
     }
 
     @Test

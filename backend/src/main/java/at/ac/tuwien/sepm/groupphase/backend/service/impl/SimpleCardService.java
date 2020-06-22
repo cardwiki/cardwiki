@@ -10,7 +10,6 @@ import at.ac.tuwien.sepm.groupphase.backend.service.CardService;
 import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
 import at.ac.tuwien.sepm.groupphase.backend.service.ImageService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
-import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -21,9 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.lang.invoke.MethodHandles;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -38,15 +35,13 @@ public class SimpleCardService implements CardService {
     private final ImageService imageService;
     private final RevisionRepository revisionRepository;
 
-    private EntityManager entityManager;
-
     public SimpleCardService(
         CardRepository cardRepository,
         DeckService deckService,
         UserService userService,
         ProgressRepository progressRepository,
         ImageService imageService,
-        RevisionRepository revisionRepository, EntityManager entityManager)
+        RevisionRepository revisionRepository)
     {
         this.cardRepository = cardRepository;
         this.userService = userService;
@@ -54,7 +49,6 @@ public class SimpleCardService implements CardService {
         this.progressRepository = progressRepository;
         this.imageService = imageService;
         this.revisionRepository = revisionRepository;
-        this.entityManager = entityManager;
     }
 
     @Override
@@ -172,10 +166,9 @@ public class SimpleCardService implements CardService {
     private static final int MAX_REVISIONS_COUNT = 10;
 
     @Override
-    @Transactional
-    public Stream<Revision> getRevisionsByIds(Long[] ids) {
+    public List<Revision> getRevisionsByIds(Long[] ids) {
         if (ids.length > MAX_REVISIONS_COUNT)
             throw new BadRequestException(String.format("You may not query more than %d revisions at once.", MAX_REVISIONS_COUNT));
-        return entityManager.unwrap(Session.class).byMultipleIds(Revision.class).multiLoad(ids).stream().filter(Objects::nonNull);
+        return revisionRepository.findByIdIn(Arrays.stream(ids).collect(Collectors.toList()));
     }
 }

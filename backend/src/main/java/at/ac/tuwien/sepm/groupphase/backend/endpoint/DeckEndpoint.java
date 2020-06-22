@@ -3,7 +3,7 @@ package at.ac.tuwien.sepm.groupphase.backend.endpoint;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckInputDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckUpdateDto;
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.RevisionDetailedDto;
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.RevisionDtoWithContent;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.DeckMapper;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.RevisionMapper;
 import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
@@ -113,7 +113,7 @@ public class DeckEndpoint {
 
     @GetMapping(value = "/{id}/revisions")
     @ApiOperation(value = "Get revisions of the deck")
-    public Page<RevisionDetailedDto> getRevisions(@PathVariable Long id, Pageable pageable) {
+    public Page<RevisionDtoWithContent> getRevisions(@PathVariable Long id, Pageable pageable) {
         deckService.findOneOrThrow(id);
         return deckService.getRevisions(id, pageable).map(revision -> revisionMapper.revisionToRevisionDetailedDto(revision));
     }

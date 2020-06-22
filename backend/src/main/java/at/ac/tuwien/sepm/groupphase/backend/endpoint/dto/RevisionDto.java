@@ -6,11 +6,10 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class RevisionDetailedDto {
-
+public abstract class RevisionDto {
     private Long id;
-    private Revision.Type type;
+    private Long cardId;
     private String message;
     private LocalDateTime createdAt;
-    private CardSimpleDto card;
+    private Revision.Type type;
 }
