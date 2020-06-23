@@ -12,8 +12,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Scanner;
 
 @Profile("generateData")
@@ -23,7 +21,6 @@ public class CardDataGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final int SIZE_OF_LARGE_TEST_DECK = 1000;
     private static final int SIZE_OF_SUPER_LARGE_TEST_DECK = 5000;
-    private static final int NUMBER_OF_REVISIONS = 5;
 
     private final UserRepository userRepository;
     private final CardRepository cardRepository;

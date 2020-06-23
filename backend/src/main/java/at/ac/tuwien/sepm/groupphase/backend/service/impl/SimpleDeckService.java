@@ -14,9 +14,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.invoke.MethodHandles;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class SimpleDeckService implements DeckService {
@@ -128,5 +133,24 @@ public class SimpleDeckService implements DeckService {
         } catch (EmptyResultDataAccessException e) {
             throw new DeckNotFoundException(String.format("Could not find card deck with id %d", id));
         }
+    }
+
+    @Override
+    @Transactional
+    public void createCsvData(PrintWriter pw, Long deckId) {
+        LOGGER.debug("Write deck with id {} to file.", deckId);
+        List<String> data = cardRepository.findLatestEditRevisionsByDeck_Id(deckId)
+            .map((revision) -> escapeSpecialCharacters(revision.getTextFront()) + "," + escapeSpecialCharacters(revision.getTextBack()))
+            .collect(Collectors.toList());
+
+        data.stream().forEach(pw::println);
+    }
+
+    private String escapeSpecialCharacters(String data) {
+        data = data.replaceAll("\\R", "̿BREAK̿").replaceAll(",", "̿COMMA̿");
+        if (data.contains("\"")) {
+            data = data.replace("\"", "\"\"");
+        }
+       return "\"" + data + "\"";
     }
 }

@@ -26,6 +26,7 @@ export class CategoryService {
       .pipe(tap(null, this.errorHandler.handleError('Could not fetch Categories')))
   }
 
+
   /**
    * Loads a specific category from the backend
    * @param id of category to load

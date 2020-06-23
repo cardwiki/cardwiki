@@ -5,6 +5,9 @@ import at.ac.tuwien.sepm.groupphase.backend.exception.DeckNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.AuthenticationRequiredException;
 import org.springframework.data.domain.Pageable;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 public interface DeckService {
@@ -63,4 +66,12 @@ public interface DeckService {
      * @throws DeckNotFoundException if the specified deck does not exist
      */
     void delete(Long id);
+
+    /**
+     * Create data for csv-export.
+     *
+     * @param pw PrintWriter provided by response
+     * @param deckId of the deck to export
+     */
+    void createCsvData(PrintWriter pw, Long deckId);
 }

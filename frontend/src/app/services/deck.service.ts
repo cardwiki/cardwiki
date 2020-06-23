@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import {HttpClient, HttpParams} from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {Globals} from '../global/globals';
 import {Observable} from 'rxjs';
 import {DeckDetails} from '../dtos/deckDetails';
@@ -26,6 +26,20 @@ export class DeckService {
   getDeckById(id: number): Observable<DeckDetails> {
     console.log('Load Deck with id ' + id);
     return this.httpClient.get<DeckDetails>(this.deckBaseUri + '/' + id)
+      .pipe(tap(null, this.errorHandler.handleError('Could not fetch Deck')));
+  }
+
+  /**
+   * Gets csv-data for a specific deck from the backend.
+   * @param id of deck to get.
+   */
+  exportDeckAsCsv(id: number) {
+    console.log('Load Deck with id ' + id);
+    const headers = new HttpHeaders()
+      .append('Accept', 'text/csv')
+      .append('Content-Type', 'text/html');
+
+    return this.httpClient.get(this.deckBaseUri + '/' + id,  { headers, responseType: 'text' })
       .pipe(tap(null, this.errorHandler.handleError('Could not fetch Deck')));
   }
 
