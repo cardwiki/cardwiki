@@ -16,12 +16,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -94,9 +96,10 @@ public class UserEndpoint {
 
     @GetMapping(value = "/{id}/revisions")
     @ApiOperation(value = "Get revisions created by user")
-    public List<RevisionDetailedDto> getRevisions(@PathVariable long id, @RequestParam Integer limit, @RequestParam Integer offset) {
-        LOGGER.info("GET /api/v1/users/{}/revisions?limit={}&offset={}", id, limit, offset);
-        return userService.getRevisions(id, PageRequest.of(offset, limit)).stream().map(revision -> revisionMapper.revisionToRevisionDetailedDto(revision)).collect(Collectors.toList());
+    @Transactional
+    public Page<RevisionDtoWithDeck> getRevisions(@PathVariable long id, Pageable pageable) {
+        LOGGER.info("GET /api/v1/users/{}/revisions", id);
+        return userService.getRevisions(id, pageable).map(revision -> revisionMapper.revision_to_revisionDtoWithDeck(revision));
     }
 
     @Secured("ROLE_USER")

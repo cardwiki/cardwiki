@@ -5,6 +5,7 @@ import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.exception.AuthenticationRequiredException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.data.domain.Pageable;
 
@@ -83,9 +84,9 @@ public interface UserService {
      *
      * @param id of the user to search revisions for
      * @param pageable pagination data consisting of LIMIT and OFFSET
-     * @return List of Revisions created by the user
+     * @return Page of Revisions created by the user
      */
-    List<Revision> getRevisions(Long id, Pageable pageable);
+    Page<Revision> getRevisions(Long id, Pageable pageable);
 
     /**
      * Change settings of user with id {@code id}

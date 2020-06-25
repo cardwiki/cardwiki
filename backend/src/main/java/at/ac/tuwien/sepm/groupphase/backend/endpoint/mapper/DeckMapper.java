@@ -7,9 +7,11 @@ import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckUpdateDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
 @Mapper
 public interface DeckMapper {
+    @Named("deckToDeckDto")
     @Mapping(source = "createdBy.id", target = "createdBy")
     DeckDto deckToDeckDto(Deck deck);
 
