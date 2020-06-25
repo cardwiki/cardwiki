@@ -7,7 +7,7 @@ import lombok.Data;
 import javax.validation.constraints.Size;
 
 @Data
-public class RevisionEditDto {
+public class RevisionInputDto {
 
     @Size(max = RevisionEdit.MAX_TEXT_SIZE)
     @NullOrNotBlank

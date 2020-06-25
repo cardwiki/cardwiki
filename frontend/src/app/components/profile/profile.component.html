@@ -40,11 +40,11 @@
         <ul class="list-group list-group-flush">
           <li *ngFor="let revision of revisions" class="list-group-item">
             {{revision.createdAt | date : 'medium' }}:
-            <a routerLink="/decks/{{revision.card.deck.id}}/cards/{{revision.card.id}}/revision?id={{revision.id}}">{{revisionTypeToString[revision.type]}}</a>
+            <a routerLink="/decks/{{revision.deck.id}}/cards/{{revision.cardId}}/revision?id={{revision.id}}">{{revisionTypeToString[revision.type]}}</a>
             card
-            <a routerLink="/decks/{{revision.card.deck.id}}/cards/{{revision.card.id}}">{{revision.card.textFront && revision.card.textFront.length > REVISIONTEXT_TRUNCATE ? (revision.card.textFront | slice:0:REVISIONTEXT_TRUNCATE)+'...' : revision.card.textFront}}</a>
+            <a routerLink="/decks/{{revision.deck.id}}/cards/{{revision.cardId}}">{{revision.textFront && revision.textFront.length > REVISIONTEXT_TRUNCATE ? (revision.textFront | slice:0:REVISIONTEXT_TRUNCATE)+'...' : revision.textFront}}</a>
             in
-            <a routerLink="/decks/{{revision.card.deck.id}}">{{revision.card.deck.name}}</a>.
+            <a routerLink="/decks/{{revision.deck.id}}">{{revision.deck.name}}</a>.
           </li>
         </ul>
         <button *ngIf="!maxRevisionsLoaded" class="card-footer btn p-1" (click)="loadRevisions()">

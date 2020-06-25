@@ -11,6 +11,7 @@ import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -305,5 +306,36 @@ public class DeckEndpointTest extends TestDataGenerator {
 
         assertTrue(deckRepository.findById(deckId).isEmpty());
         assertTrue(cardRepository.findById(cardId).isEmpty());
+    }
+
+    @Test
+    public void getRevisions_deckDoesNotExist_returnsNotFound() throws Exception {
+        mvc.perform(get("/api/v1/decks/123/revisions"))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void getRevisions_deckIsEmpty_returnsEmptyArray() throws Exception {
+        Agent agent = persistentAgent();
+        Deck deck = agent.createDeck();
+        mvc.perform(get("/api/v1/decks/{id}/revisions", deck.getId()))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.content", Matchers.hasSize(0)));
+    }
+
+    @Test
+    public void getRevisions_hasRevisions_returnsRevisions() throws Exception {
+        Agent agent = persistentAgent();
+        Deck deck = agent.createDeck();
+        for (int i = 0; i < 9; i++) {
+            Card card = agent.createCardIn(deck);
+            for (int j = 0; j < 9; j++) {
+                agent.editCard(card);
+            }
+        }
+        // TODO: check content of content
+        mvc.perform(get("/api/v1/decks/{id}/revisions?limit=100", deck.getId()))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.content", Matchers.hasSize(90)));
     }
 }
