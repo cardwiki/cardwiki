@@ -13,7 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-public class TokenAuthenticationFilterTest {
+public class MiscellaneousEndpointTest {
     @Autowired
     private MockMvc mvc;
 
@@ -24,4 +24,10 @@ public class TokenAuthenticationFilterTest {
                 .header("Authorization", "Bearer totallyInvalid")
         ).andExpect(status().isUnauthorized());
     }
+
+    @Test
+    public void swaggerDoc() throws Exception {
+        mvc.perform(get("/swagger-ui.html")).andExpect(status().isOk());
+    }
+
 }

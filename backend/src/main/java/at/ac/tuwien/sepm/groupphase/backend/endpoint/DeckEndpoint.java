@@ -3,7 +3,9 @@ package at.ac.tuwien.sepm.groupphase.backend.endpoint;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckInputDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckUpdateDto;
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.RevisionDtoWithContent;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.DeckMapper;
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.RevisionMapper;
 import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
 import io.swagger.annotations.ApiOperation;
@@ -33,17 +35,19 @@ public class DeckEndpoint {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final DeckService deckService;
     private final DeckMapper deckMapper;
+    private final RevisionMapper revisionMapper;
 
     @Autowired
-    public DeckEndpoint(DeckService deckService, DeckMapper deckMapper) {
+    public DeckEndpoint(DeckService deckService, DeckMapper deckMapper, RevisionMapper revisionMapper) {
         this.deckService = deckService;
         this.deckMapper = deckMapper;
+        this.revisionMapper = revisionMapper;
     }
 
     @Secured("ROLE_USER")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    @ApiOperation(value = "Create a new card deck", authorizations = @Authorization("ROLE_USER"))
+    @ApiOperation(value = "Create a new card deck", authorizations = @Authorization("user"))
     public DeckDto create(@Valid @RequestBody DeckInputDto deckInputDto) {
         LOGGER.info("POST /api/v1/decks body: {}", deckInputDto);
         return deckMapper.deckToDeckDto(
@@ -77,7 +81,7 @@ public class DeckEndpoint {
     @Secured("ROLE_USER")
     @PatchMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "Update deck", authorizations = @Authorization("ROLE_USER"))
+    @ApiOperation(value = "Update deck", authorizations = @Authorization("user"))
     public DeckDto updateDeck(@PathVariable Long id, @Valid @RequestBody DeckUpdateDto deckUpdateDto) {
         LOGGER.info("PATCH /api/v1/decks/{} body: {}", id, deckUpdateDto);
         try {
@@ -90,7 +94,7 @@ public class DeckEndpoint {
     @Secured("ROLE_USER")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/{id}/copy")
-    @ApiOperation(value = "Copy a deck", authorizations = @Authorization("ROLE_USER"))
+    @ApiOperation(value = "Copy a deck", authorizations = @Authorization("user"))
     public DeckDto copy(@PathVariable Long id, @Valid @RequestBody DeckInputDto deckInputDto) {
         LOGGER.info("Post /api/v1/decks/{}/copy body={}", id, deckInputDto);
         return deckMapper.deckToDeckDto(deckService.copy(id, deckMapper.deckInputDtoToDeck(deckInputDto)));
@@ -99,9 +103,16 @@ public class DeckEndpoint {
     @Secured("ROLE_ADMIN")
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ApiOperation(value = "delete deck", authorizations = @Authorization("apiKey"))
+    @ApiOperation(value = "delete deck", authorizations = @Authorization("admin"))
     public void deleteDeck(@PathVariable Long id) {
         LOGGER.info("DELETE /api/v1/decks/{}", id);
         deckService.delete(id);
+	}
+
+    @GetMapping(value = "/{id}/revisions")
+    @ApiOperation(value = "Get revisions of the deck")
+    public Page<RevisionDtoWithContent> getRevisions(@PathVariable Long id, Pageable pageable) {
+        deckService.findOneOrThrow(id);
+        return deckService.getRevisions(id, pageable).map(revision -> revisionMapper.revisionToRevisionDetailedDto(revision));
     }
 }

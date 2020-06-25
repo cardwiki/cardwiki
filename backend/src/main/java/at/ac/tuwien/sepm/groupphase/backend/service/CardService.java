@@ -1,14 +1,18 @@
 package at.ac.tuwien.sepm.groupphase.backend.service;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
+import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
 import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionCreate;
 import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionEdit;
 import at.ac.tuwien.sepm.groupphase.backend.exception.CardNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.DeckNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.AuthenticationRequiredException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import java.util.List;
 
 public interface CardService {
 
@@ -68,4 +72,21 @@ public interface CardService {
      * @throws CardNotFoundException if no card with {@code cardId} exists
      */
     void delete(Long cardId);
+
+    /**
+     * Loads revisions of a card
+     *
+     * @param id of the card
+     * @param pageable pagination settings
+     * @return Page of Revisions of the card
+     */
+    Page<Revision> getRevisionsOfCard(Long id, Pageable pageable);
+
+    /**
+     * Loads revisions by id
+     *
+     * @param ids of the revisions to return
+     * @return List of Revisions of the card
+     */
+    List<Revision> getRevisionsByIds(Long[] ids);
 }

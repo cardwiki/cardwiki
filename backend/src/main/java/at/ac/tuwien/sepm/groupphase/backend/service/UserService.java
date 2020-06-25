@@ -77,8 +77,8 @@ public interface UserService {
      * Loads revisions created by user using their id
      *
      * @param id of the user to search revisions for
-     * @param pageable pagination data
-     * @return List of Revisions created by the user
+     * @param pageable pagination data consisting of LIMIT and OFFSET
+     * @return Page of Revisions created by the user
      */
     Page<Revision> getRevisions(Long id, Pageable pageable);
 

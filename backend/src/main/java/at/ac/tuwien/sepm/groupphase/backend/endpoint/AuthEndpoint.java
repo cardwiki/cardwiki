@@ -4,6 +4,7 @@ import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.OAuth2ProviderDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.WhoAmIDto;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Authorization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ResolvableType;
 import org.springframework.security.core.Authentication;
@@ -44,7 +45,7 @@ public class AuthEndpoint {
     }
 
     @GetMapping("/whoami")
-    @ApiOperation(value = "Returns information about the currently logged in user.")
+    @ApiOperation(value = "Returns information about the currently logged in user.", authorizations = {@Authorization("user")})
     public WhoAmIDto whoami(Authentication auth) {
         WhoAmIDto dto = new WhoAmIDto();
         if (auth != null) {
@@ -65,10 +66,5 @@ public class AuthEndpoint {
     @GetMapping("/providers/{id}")
     @ApiOperation(value = "Redirects to the specified provider to log in")
     public void redirect(){
-    }
-
-    @PostMapping("/logout")
-    @ApiOperation(value = "Logout the current user")
-    public void logout(){
     }
 }

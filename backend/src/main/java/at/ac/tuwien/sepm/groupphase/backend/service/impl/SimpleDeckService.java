@@ -4,14 +4,15 @@ import at.ac.tuwien.sepm.groupphase.backend.entity.*;
 import at.ac.tuwien.sepm.groupphase.backend.exception.DeckNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
+import at.ac.tuwien.sepm.groupphase.backend.repository.RevisionRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.CategoryService;
 import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,13 +27,15 @@ public class SimpleDeckService implements DeckService {
     private final UserService userService;
     private final CategoryService categoryService;
     private final CardRepository cardRepository;
+    private final RevisionRepository revisionRepository;
 
     public SimpleDeckService(DeckRepository deckRepository, UserService userService, CategoryService categoryService,
-                             CardRepository cardRepository) {
+                             CardRepository cardRepository, RevisionRepository revisionRepository) {
         this.deckRepository = deckRepository;
         this.userService = userService;
         this.categoryService = categoryService;
         this.cardRepository = cardRepository;
+        this.revisionRepository = revisionRepository;
     }
 
     @Transactional
@@ -129,5 +132,10 @@ public class SimpleDeckService implements DeckService {
         } catch (EmptyResultDataAccessException e) {
             throw new DeckNotFoundException(String.format("Could not find card deck with id %d", id));
         }
+	}
+
+    public Page<Revision> getRevisions(Long id, Pageable pageable) {
+        LOGGER.debug("Load {} revisions with offset {} from deck {}", pageable.getPageSize(), pageable.getOffset(), id);
+        return revisionRepository.findByCard_Deck_Id(id, pageable);
     }
 }

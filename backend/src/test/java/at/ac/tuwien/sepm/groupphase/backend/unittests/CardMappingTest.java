@@ -23,14 +23,13 @@ public class CardMappingTest extends TestDataGenerator {
     private RevisionMapper revisionMapper;
 
     @Test
-    public void givenRevision_whenMapToRevisionSimpleDto_thenDtoHasAllProperties() {
+    public void givenRevision_whenMapToRevisionDtoWithDeck_thenDtoHasAllProperties() {
         Revision revision = getSampleRevision();
-        RevisionSimpleDto dto = revisionMapper.revisionToRevisionSimpleDto(revision);
+        RevisionDto dto = revisionMapper.revision_to_revisionDtoWithDeck(revision);
 
         assertAll(
             () -> assertEquals(revision.getId(), dto.getId()),
             () -> assertEquals(revision.getMessage(), dto.getMessage()),
-            () -> assertEquals(revision.getCreatedBy().getId(), dto.getCreatedBy()),
             () -> assertEquals(revision.getCreatedAt(), dto.getCreatedAt()),
             () -> assertEquals(revision.getType(), dto.getType())
         );
@@ -38,7 +37,7 @@ public class CardMappingTest extends TestDataGenerator {
 
     @Test
     public void givenRevisionInputDto_whenMapToRevision_thenRevisionHasAllProperties() {
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setTextFront("front text");
         dto.setTextBack("back text");
         dto.setMessage("my message");
