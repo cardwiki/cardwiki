@@ -93,13 +93,12 @@ export class ProfileComponent implements OnInit {
   exportUserData(): void {
     console.log('exporting user data...')
     this.userService.export(this.profile.id)
-      .subscribe(data => {
-        console.log('finished download', data)
+      .subscribe(blob => {
+        console.log('finished download', blob)
         const file = document.createElement('a')
-        const blob = new Blob([JSON.stringify(data, undefined, 2)], {type: 'application/json'});
         const objectUrl = URL.createObjectURL(blob);
         file.href = objectUrl;
-        file.download = `${this.profile.username}.json`;
+        file.download = `cardwiki_export_${this.profile.username}.json`;
         file.click();
         URL.revokeObjectURL(objectUrl);
         file.remove();
