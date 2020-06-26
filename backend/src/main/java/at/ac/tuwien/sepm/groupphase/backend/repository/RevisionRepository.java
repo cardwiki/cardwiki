@@ -29,6 +29,15 @@ public interface RevisionRepository extends JpaRepository<Revision, Long> {
     Page<Revision> findByCreatedBy_Id(long userId, Pageable pageable);
 
     /**
+     * Find all revisions created by user and preload for exporting data
+     *
+     * @param userId of the user to query
+     * @return all revisions created by user
+     */
+    @EntityGraph(attributePaths = {"card", "card.deck"})
+    Set<Revision> findExportByCreatedBy_Id(long userId);
+
+    /**
      * Find all revisions of a card
      *
      * @param id of the card

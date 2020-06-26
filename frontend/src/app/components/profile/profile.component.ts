@@ -43,6 +43,7 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
+      this.deckPage = this.revisionPage = null;
       this.revisions = [];
       this.decks = [];
       this.me = this.authService.getUserName() === params.get('username')
@@ -87,5 +88,21 @@ export class ProfileComponent implements OnInit {
         }, 1000)
       }
     );
+  }
+
+  exportUserData(): void {
+    console.log('exporting user data...')
+    this.userService.export(this.profile.id)
+      .subscribe(data => {
+        console.log('finished download', data)
+        const file = document.createElement('a')
+        const blob = new Blob([JSON.stringify(data, undefined, 2)], {type: 'application/json'});
+        const objectUrl = URL.createObjectURL(blob);
+        file.href = objectUrl;
+        file.download = `${this.profile.username}.json`;
+        file.click();
+        URL.revokeObjectURL(objectUrl);
+        file.remove();
+      })
   }
 }

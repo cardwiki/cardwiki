@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
@@ -29,4 +30,13 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
      */
     @EntityGraph(attributePaths = {"createdBy"})
     Page<Comment> findByDeckId(Long deckId, Pageable pageable);
+
+    /**
+     * Find all comments created by user for exporting data
+     *
+     * @param userId id of the user
+     * @return all comments by user
+     */
+    @EntityGraph(attributePaths = {"deck"})
+    Set<Comment> findExportByCreatedBy_Id(Long userId);
 }

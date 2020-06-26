@@ -4,10 +4,7 @@ import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.exception.*;
-import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
-import at.ac.tuwien.sepm.groupphase.backend.repository.ProgressRepository;
-import at.ac.tuwien.sepm.groupphase.backend.repository.RevisionRepository;
-import at.ac.tuwien.sepm.groupphase.backend.repository.UserRepository;
+import at.ac.tuwien.sepm.groupphase.backend.repository.*;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
@@ -23,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.invoke.MethodHandles;
-import java.util.List;
 import java.util.Optional;
 import java.util.Objects;
 
@@ -33,20 +29,29 @@ public class SimpleUserService implements UserService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final UserRepository userRepository;
     private final DeckRepository deckRepository;
+    private final CategoryRepository categoryRepository;
+    private final CommentRepository commentRepository;
     private final RevisionRepository revisionRepository;
     private final ProgressRepository progressRepository;
+    private final ImageRepository imageRepository;
 
     @Autowired
     public SimpleUserService(
         UserRepository userRepository,
         DeckRepository deckRepository,
+        CategoryRepository categoryRepository,
+        CommentRepository commentRepository,
         RevisionRepository revisionRepository,
-        ProgressRepository progressRepository)
+        ProgressRepository progressRepository,
+        ImageRepository imageRepository)
     {
         this.userRepository = userRepository;
         this.deckRepository = deckRepository;
+        this.categoryRepository = categoryRepository;
+        this.commentRepository = commentRepository;
         this.revisionRepository = revisionRepository;
         this.progressRepository = progressRepository;
+        this.imageRepository = imageRepository;
     }
 
     @Override
@@ -185,5 +190,26 @@ public class SimpleUserService implements UserService {
         user.setReason(reason);
         userRepository.save(user);
         progressRepository.deleteUserProgress(id);
+    }
+
+    @Transactional
+    @Override
+    public User exportUserData(Long userId) {
+        User currentUser = loadCurrentUserOrThrow();
+        if (!currentUser.getId().equals(userId) && !currentUser.isAdmin())
+            throw new AccessDeniedException("Cannot export user data for other users");
+
+        User user = findUserByIdOrThrow(userId);
+
+        // Fetching one by one to prevent huge cartesian product on join when using EntityGraph directly on user
+        user.setRevisions(revisionRepository.findExportByCreatedBy_Id(userId));
+        user.setDecks(deckRepository.findExportByCreatedBy_Id(userId));
+        user.setFavorites(deckRepository.findExportByFavoredBy_Id(userId));
+        user.setCategories(categoryRepository.findExportByCreatedBy_Id(userId));
+        user.setComments(commentRepository.findExportByCreatedBy_Id(userId));
+        user.setImages(imageRepository.findExportByCreatedBy_Id(userId));
+        user.setProgress(progressRepository.findExportById_UserId(userId));
+
+        return user;
     }
 }

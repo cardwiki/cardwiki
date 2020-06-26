@@ -111,4 +111,15 @@ public interface UserService {
      * @throws UserNotFoundException if the user to be deleted does not exist.
      */
     void delete(Long id, String reason);
+
+    /**
+     * Get user with all data preloaded for export
+     *
+     * @param userId id of the user for which the data is exported
+     * @return user
+     * @throws AccessDeniedException if a different user is logged in and it is not an admin
+     * @throws AuthenticationRequiredException if the user is not logged in
+     * @throws UserNotFoundException if the user for exporting does not exist
+     */
+    User exportUserData(Long userId);
 }

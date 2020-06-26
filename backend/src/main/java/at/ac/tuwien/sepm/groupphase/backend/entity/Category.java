@@ -26,7 +26,7 @@ public class Category {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name="created_by", referencedColumnName="id", updatable = false)
+    @JoinColumn(name="created_by", referencedColumnName="id", updatable = false, nullable = false)
     private User createdBy;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -156,4 +156,12 @@ public class UserEndpoint {
         LOGGER.info("DELETE /api/v1/users/{} Reason: {}", id, reason);
         userService.delete(id, reason);
     }
+
+    @Secured("ROLE_USER")
+    @GetMapping(value = "/{userId}/export")
+    @ApiOperation(value = "Export all data of a user", authorizations = {@Authorization(("user"))})
+    public UserExportDto exportUser(@PathVariable Long userId) {
+        LOGGER.info("GET /api/v1/users/{}/export", userId);
+        return userMapper.userToUserExportDto(userService.exportUserData(userId));
+    }
 }

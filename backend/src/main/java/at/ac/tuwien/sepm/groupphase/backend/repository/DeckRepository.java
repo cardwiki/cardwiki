@@ -7,8 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface DeckRepository extends JpaRepository<Deck, Long> {
@@ -31,14 +31,22 @@ public interface DeckRepository extends JpaRepository<Deck, Long> {
     Optional<Deck> findById(Long deckId);
 
     /**
-     * Find all decks created by user
+     * Find page of decks created by user
      *
      * @param id of the user to query
      * @param pageable pagination parameters for the query
-     * @return ordered list of all decks created by user
+     * @return page of decks created by user
      */
     @EntityGraph(attributePaths = {"createdBy"})
     Page<Deck> findByCreatedBy_Id(long id, Pageable pageable);
+
+    /**
+     * Find all decks created by user for exporting data
+     *
+     * @param userId of the user to query
+     * @return all decks created by user
+     */
+    Set<Deck> findExportByCreatedBy_Id(long userId);
 
     /**
      * Find favorites of user
@@ -48,6 +56,14 @@ public interface DeckRepository extends JpaRepository<Deck, Long> {
      * @return page of favorites by user
      */
     Page<Deck> findByFavoredById(Long userId, Pageable pageable);
+
+    /**
+     * Find all favorites of user for exporting data
+     *
+     * @param userId id of the user
+     * @return all favorites by user
+     */
+    Set<Deck> findExportByFavoredBy_Id(Long userId);
 
     /**
      * Check if a deck is a favorite of a user

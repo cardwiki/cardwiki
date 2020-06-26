@@ -37,8 +37,9 @@ public class CategoryEndpointTest extends TestDataGenerator {
     @Test
     @Transactional
     public void getCategoriesReturnsFullListOfCategories() throws Exception {
-        getCategoryRepository().saveAndFlush(new Category("test2", null));
-        getCategoryRepository().saveAndFlush(new Category("test1", null));
+        Agent agent = persistentAgent();
+        agent.createCategory("test2");
+        agent.createCategory("test1");
 
         mvc.perform(get("/api/v1/categories"))
             .andExpect(status().is(200))
@@ -158,9 +159,11 @@ public class CategoryEndpointTest extends TestDataGenerator {
     @Test
     @Transactional
     public void updateCategoryWithValidDataReturnsUpdatedCategoryDetails() throws Exception {
-        Category category = givenCategory();
-        User user = givenApplicationUser();
-        Category parent = getCategoryRepository().save(new Category("valid name", null));
+        Agent agent = persistentAgent();
+        User user = agent.getUser();
+        Category category = agent.createCategory("valid name");
+        Category parent = agent.createCategory("parent");
+
         CategoryInputDto categoryInputDto = new CategoryInputDto();
         categoryInputDto.setName("blubb");
         CategorySimpleDto parentDto = new CategorySimpleDto();

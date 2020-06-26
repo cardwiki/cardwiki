@@ -126,4 +126,10 @@ export class UserService {
     return this.httpClient.delete<void>(`${this.userBaseUri}/${userid}`, {params: params})
       .pipe(tap(null, this.errorHandler.handleError('Could not delete user ' + userid)));
   }
+
+  export(userId: number): Observable<{ [key: string]: any }> {
+    console.log('export user data', userId);
+    return this.httpClient.get<{ [key: string]: any }>(`${this.userBaseUri}/${userId}/export`)
+      .pipe(tap(null, this.errorHandler.handleError('Could not fetch user data')));
+  }
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long>, CategoryRepositoryCustom {
@@ -30,4 +31,12 @@ public interface CategoryRepository extends JpaRepository<Category, Long>, Categ
      */
     @Query("SELECT c FROM Category c WHERE c.parent.id=:parentId ORDER BY LOWER(c.name) ASC")
     List<Category> findChildren(@Param("parentId") Long parentId);
+
+    /**
+     * Find all categories created by user for exporting data
+     *
+     * @param userId id of the user
+     * @return all categories by user
+     */
+    Set<Category> findExportByCreatedBy_Id(Long userId);
 }

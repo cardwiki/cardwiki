@@ -97,6 +97,14 @@ public abstract class TestDataGenerator {
             deck.setCreatedBy(user);
             deck.setCreatedAt(LocalDateTime.of(2020, 1, 1, 1, 1));
             deck.setUpdatedAt(LocalDateTime.of(2020, 2, 1, 1, 1));
+            user.getDecks().add(deck);
+            beforeReturn(deck);
+            return deck;
+        }
+
+        public Deck addCategory(Deck deck, Category category) {
+            deck.getCategories().add(category);
+            category.getDecks().add(deck);
             beforeReturn(deck);
             return deck;
         }
@@ -105,11 +113,13 @@ public abstract class TestDataGenerator {
             Card card = new Card();
             card.setDeck(deck);
             card.setLatestRevision(revisionCreate);
+            revisionCreate.setType(Revision.Type.Values.CREATE); // Not set automatically within transaction
             revisionCreate.setCreatedBy(user);
             revisionCreate.setCard(card);
             card.getRevisions().add(revisionCreate);
             deck.getCards().add(card);
             card.setCreatedAt(LocalDateTime.of(2020, 1, 1, 1, 1));
+            user.getRevisions().add(revisionCreate);
             beforeReturn(card);
             return card;
         }
@@ -120,7 +130,6 @@ public abstract class TestDataGenerator {
             revisionCreate.setTextBack("back text");
             revisionCreate.setMessage("test message");
             revisionCreate.setCreatedBy(user);
-            user.getRevisions().add(revisionCreate);
             return createCardIn(deck, revisionCreate);
         }
 
@@ -135,15 +144,18 @@ public abstract class TestDataGenerator {
             comment.setCreatedBy(user);
             deck.setCreatedAt(LocalDateTime.of(2020, 1, 1, 1, 1));
             deck.setUpdatedAt(LocalDateTime.of(2020, 2, 1, 1, 1));
+            user.getComments().add(comment);
             beforeReturn(comment);
             return comment;
         }
 
         public RevisionEdit editCard(Card card, RevisionEdit revisionEdit){
+            revisionEdit.setType(Revision.Type.Values.EDIT); // Not set automatically within transaction
             card.setLatestRevision(revisionEdit);
             card.getRevisions().add(revisionEdit);
             revisionEdit.setCard(card);
             revisionEdit.setCreatedBy(user);
+            user.getRevisions().add(revisionEdit);
             beforeReturn(revisionEdit);
             return revisionEdit;
         }
@@ -153,7 +165,6 @@ public abstract class TestDataGenerator {
             revisionEdit.setTextFront("front text");
             revisionEdit.setTextBack("back text");
             revisionEdit.setMessage("test message");
-            user.getRevisions().add(revisionEdit);
             return editCard(card, revisionEdit);
         }
 
@@ -162,6 +173,8 @@ public abstract class TestDataGenerator {
             category.setName(name);
             category.setCreatedAt(LocalDateTime.of(2020, 1, 1, 1, 1));
             category.setUpdatedAt(LocalDateTime.of(2020, 2, 1, 1, 1));
+            category.setCreatedBy(user);
+            user.getCategories().add(category);
             beforeReturn(category);
             return category;
         }
@@ -171,6 +184,7 @@ public abstract class TestDataGenerator {
             user.getRevisions().add(revisionDelete);
             card.setLatestRevision(revisionDelete);
             revisionDelete.setCard(card);
+            user.getRevisions().add(revisionDelete);
             beforeReturn(revisionDelete);
         }
 
@@ -185,6 +199,27 @@ public abstract class TestDataGenerator {
             deck.getFavoredBy().add(user);
             beforeReturn(deck);
             return deck;
+        }
+
+        public Progress createProgress(Card card) {
+            Progress progress = new Progress();
+            progress.setId(new Progress.Id(user, card));
+            progress.setDue(LocalDateTime.now().plusDays(3L));
+            progress.setEasinessFactor(5);
+            progress.setInterval(2);
+            progress.setStatus(Progress.Status.REVIEWING);
+            user.getProgress().add(progress);
+            beforeReturn(progress);
+            return progress;
+        }
+
+        public Image createImage(String filename) {
+            Image image = new Image();
+            image.setFilename(filename);
+            image.setCreatedBy(user);
+            user.getImages().add(image);
+            beforeReturn(image);
+            return image;
         }
     }
 
@@ -306,6 +341,7 @@ public abstract class TestDataGenerator {
         User user = givenApplicationUser();
         category.setCreatedBy(user);
         category.setName("category");
+        parent.setCreatedBy(user);
         parent.setName("parent category");
 
         parent = categoryRepository.saveAndFlush(parent);

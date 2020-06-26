@@ -1,10 +1,7 @@
 package at.ac.tuwien.sepm.groupphase.backend.integrationtest;
 
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
-import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
-import at.ac.tuwien.sepm.groupphase.backend.entity.Progress;
-import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionEdit;
-import at.ac.tuwien.sepm.groupphase.backend.entity.User;
+import at.ac.tuwien.sepm.groupphase.backend.entity.*;
 import at.ac.tuwien.sepm.groupphase.backend.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -12,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -441,27 +439,110 @@ public class UserEndpointTest extends TestDataGenerator {
             .andExpect(status().isBadRequest());
     }
 
-    private static String longestCommonSubstring(String S1, String S2)
-    {
-        int Start = 0;
-        int Max = 0;
-        for (int i = 0; i < S1.length(); i++)
-        {
-            for (int j = 0; j < S2.length(); j++)
-            {
-                int x = 0;
-                while (S1.charAt(i + x) == S2.charAt(j + x))
-                {
-                    x++;
-                    if (((i + x) >= S1.length()) || ((j + x) >= S2.length())) break;
-                }
-                if (x > Max)
-                {
-                    Max = x;
-                    Start = i;
-                }
-            }
-        }
-        return S1.substring(Start, (Start + Max));
+    @Test
+    public void userExportContainsAllData() throws Exception {
+        Agent agent = persistentAgent("some-name");
+        User user = agent.getUser();
+
+        Category category = agent.createCategory("foo category");
+
+        Deck deck = agent.createDeck();
+        agent.addFavorite(deck);
+        agent.addCategory(deck, category);
+
+        Comment comment = agent.createCommentIn(deck, "beautiful deck");
+
+        Image image = agent.createImage("foo.jpg");
+
+        RevisionCreate revisionCreate = new RevisionCreate();
+        revisionCreate.setTextBack("back side");
+        revisionCreate.setTextFront("front side");
+        revisionCreate.setImageFront(image);
+        image.getFrontSides().add(revisionCreate);
+        revisionCreate.setMessage("created this card");
+        Card card = agent.createCardIn(deck, revisionCreate);
+
+        Progress progress = agent.createProgress(card);
+
+        mvc.perform(get("/api/v1/users/{userId}/export", user.getId())
+            .with(login(user.getAuthId())))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.user.username").value(user.getUsername()))
+            .andExpect(jsonPath("$.user.description").value(user.getDescription()))
+            .andExpect(jsonPath("$.user.createdAt", validIsoDateTime()))
+            .andExpect(jsonPath("$.user.updatedAt", validIsoDateTime()))
+            .andExpect(jsonPath("$.favorites", hasSize(1)))
+            .andExpect(jsonPath("$.favorites[0].id").value(deck.getId()))
+            .andExpect(jsonPath("$.favorites[0].name").value(deck.getName()))
+            .andExpect(jsonPath("$.decks", hasSize(1)))
+            .andExpect(jsonPath("$.decks[0].id").value(deck.getId()))
+            .andExpect(jsonPath("$.decks[0].name").value(deck.getName()))
+            .andExpect(jsonPath("$.categories", hasSize(1)))
+            .andExpect(jsonPath("$.categories[0].id").value(category.getId()))
+            .andExpect(jsonPath("$.categories[0].name").value(category.getName()))
+            .andExpect(jsonPath("$.revisions", hasSize(1)))
+            .andExpect(jsonPath("$.revisions[0].id").value(revisionCreate.getId()))
+            .andExpect(jsonPath("$.revisions[0].type").value("CREATE"))
+            .andExpect(jsonPath("$.revisions[0].cardId").value(card.getId()))
+            .andExpect(jsonPath("$.revisions[0].deck.id").value(deck.getId()))
+            .andExpect(jsonPath("$.revisions[0].textFront").value(revisionCreate.getTextFront()))
+            .andExpect(jsonPath("$.revisions[0].imageFront.filename").value(image.getFilename()))
+            .andExpect(jsonPath("$.revisions[0].imageFront.url").isString())
+            .andExpect(jsonPath("$.revisions[0].textBack").value(revisionCreate.getTextBack()))
+            .andExpect(jsonPath("$.revisions[0].createdAt", validIsoDateTime()))
+            .andExpect(jsonPath("$.comments", hasSize(1)))
+            .andExpect(jsonPath("$.comments[0].deck.id").value(deck.getId()))
+            .andExpect(jsonPath("$.comments[0].deck.name").value(deck.getName()))
+            .andExpect(jsonPath("$.comments[0].message").value(comment.getMessage()))
+            .andExpect(jsonPath("$.comments[0].createdAt", validIsoDateTime()))
+            .andExpect(jsonPath("$.comments[0].updatedAt", validIsoDateTime()))
+            .andExpect(jsonPath("$.images", hasSize(1)))
+            .andExpect(jsonPath("$.images[0].filename").value(image.getFilename()))
+            .andExpect(jsonPath("$.images[0].url").isString())
+            .andExpect(jsonPath("$.progress", hasSize(1)))
+            .andExpect(jsonPath("$.progress[0].cardId").value(card.getId()))
+            .andExpect(jsonPath("$.progress[0].latestRevision.deck.id").value(deck.getId()))
+            .andExpect(jsonPath("$.progress[0].latestRevision.deck.name").value(deck.getName()))
+            .andExpect(jsonPath("$.progress[0].latestRevision.textFront").value(revisionCreate.getTextFront()))
+            .andExpect(jsonPath("$.progress[0].latestRevision.textBack").value(revisionCreate.getTextBack()))
+            .andExpect(jsonPath("$.progress[0].due", validIsoDateTime()))
+            .andExpect(jsonPath("$.progress[0].interval").value(progress.getInterval()))
+            .andExpect(jsonPath("$.progress[0].easinessFactor").value(progress.getEasinessFactor()));
+    }
+
+    @Test
+    public void userExportForAnonymousThrowsForbidden() throws Exception {
+        mvc.perform(get("/api/v1/users/{userId}/export", 123L))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void userExportForOtherUserThrowsForbidden() throws Exception {
+        User user = persistentAgent("me").getUser();
+        User otherUser = persistentAgent("other").getUser();
+
+        mvc.perform(get("/api/v1/users/{userId}/export", otherUser.getId())
+            .with(login(user.getAuthId())))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void userExportAsAdminReturnsOk() throws Exception {
+        User admin = persistentAgent("me").makeAdmin().getUser();
+        User otherUser = persistentAgent("other").getUser();
+
+        mvc.perform(get("/api/v1/users/{userId}/export", otherUser.getId())
+            .with(login(admin.getAuthId())))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    public void userExportAsAdminThrowsNotFound() throws Exception {
+        User admin = persistentAgent("me").makeAdmin().getUser();
+
+        mvc.perform(get("/api/v1/users/{userId}/export", 123L)
+            .with(login(admin.getAuthId())))
+            .andExpect(status().isNotFound());
     }
 }
