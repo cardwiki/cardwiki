@@ -87,7 +87,6 @@ public class CardEndpoint {
         cardService.addDeleteRevisionToCard(cardId, message);
     }
 
-    @Secured("ROLE_ADMIN")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping(value = "/cards/{cardId}")
     @ApiOperation(value = "Deletes a card", authorizations = {@Authorization("admin")})

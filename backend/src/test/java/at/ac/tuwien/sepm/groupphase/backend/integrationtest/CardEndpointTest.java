@@ -470,13 +470,13 @@ public class CardEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    public void userDeletesCardReturnsForbidden() throws Exception {
+    public void userDeletesCardReturnsNoContent() throws Exception {
         User user = givenApplicationUser();
         Card card = givenCard();
 
         mvc.perform(delete("/api/v1/cards/{cardId}", card.getId())
             .with(login(user.getAuthId())))
-            .andExpect(status().isForbidden());
+            .andExpect(status().isNoContent());
     }
 
     @Test
