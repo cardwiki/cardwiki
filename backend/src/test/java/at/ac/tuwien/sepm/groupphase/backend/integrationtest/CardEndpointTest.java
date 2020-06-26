@@ -559,4 +559,13 @@ public class CardEndpointTest extends TestDataGenerator {
         mvc.perform(builder)
             .andExpect(status().isBadRequest());
     }
+
+    @Test
+    public void getCardsByDeckId_emptyDeck_returnsEmptyArray() throws Exception {
+        Agent agent = persistentAgent();
+        Deck deck = agent.createDeck();
+        mvc.perform(get("/api/v1/decks/{id}/cards", deck.getId()))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.content", Matchers.hasSize(0)));
+    }
 }
