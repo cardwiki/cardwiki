@@ -468,6 +468,7 @@ public class UserEndpointTest extends TestDataGenerator {
             .with(login(user.getAuthId())))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.exportCreatedAt", validIsoDateTime()))
             .andExpect(jsonPath("$.user.username").value(user.getUsername()))
             .andExpect(jsonPath("$.user.description").value(user.getDescription()))
             .andExpect(jsonPath("$.user.createdAt", validIsoDateTime()))
