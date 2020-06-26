@@ -12,17 +12,13 @@ import java.util.Set;
 
 @Repository
 public interface ProgressRepository extends JpaRepository<Progress,Progress.Id> {
-    @Modifying
-    @Query("delete from Progress p where p.id.user.id=:userId")
-    void deleteUserProgress(@Param("userId") Long userId);
 
-    @Modifying
-    @Query("delete from Progress p where p.id.card.id=:cardId")
-    void deleteCardProgress(@Param("cardId") Long cardId);
+    void deleteById_UserId(Long userId);
 
-    @Query("select case when count(p) > 0 then true else false end from Progress p where p.id.card.id=:cardId")
-    boolean existsCardWithProgress(@Param("cardId") Long cardId);
+    void deleteById_CardId(Long cardId);
 
+    boolean existsById_CardId(Long cardId);
+ 
     /**
      * Find all progress entries of user for exporting data
      *

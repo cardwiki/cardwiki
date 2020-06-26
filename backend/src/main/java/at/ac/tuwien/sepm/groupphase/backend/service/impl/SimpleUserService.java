@@ -189,7 +189,7 @@ public class SimpleUserService implements UserService {
         user.setDeleted(true);
         user.setReason(reason);
         userRepository.save(user);
-        progressRepository.deleteUserProgress(id);
+        progressRepository.deleteById_UserId(id);
     }
 
     @Transactional

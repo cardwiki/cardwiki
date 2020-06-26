@@ -116,8 +116,8 @@ public class SimpleCardService implements CardService {
     @Transactional
     public void delete(Long cardId) {
         LOGGER.debug("Delete card with id {}", cardId);
-        if (progressRepository.existsCardWithProgress(cardId)) {
-            progressRepository.deleteCardProgress(cardId);
+        if (progressRepository.existsById_CardId(cardId)) {
+            progressRepository.deleteById_CardId(cardId);
         }
         try {
             cardRepository.deleteById(cardId);

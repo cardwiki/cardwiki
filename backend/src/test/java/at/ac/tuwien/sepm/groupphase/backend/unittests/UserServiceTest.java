@@ -118,7 +118,7 @@ public class UserServiceTest extends TestDataGenerator {
 
         userService.delete(user.getId(), "pls delete");
 
-        Mockito.verify(progressRepository).deleteUserProgress(user.getId());
+        Mockito.verify(progressRepository).deleteById_UserId(user.getId());
         Mockito.verify(userRepository).save(argumentCaptor.capture());
         assertFalse(argumentCaptor.getValue().isEnabled());
         assertEquals("This user was deleted.", argumentCaptor.getValue().getDescription());
