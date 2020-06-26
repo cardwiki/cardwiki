@@ -76,7 +76,7 @@ public class SimpleImageService implements ImageService {
         try {
            Files.write(imageSavedPath.resolve(filename), bytes);
         } catch (IOException ex) {
-            throw new RuntimeException("Could not store image. Error: " + ex.getMessage());
+            throw new RuntimeException("Could not store image.", ex);
         }
 
         // Create image entity
@@ -101,7 +101,7 @@ public class SimpleImageService implements ImageService {
         try {
             contentType = URLConnection.guessContentTypeFromStream(new ByteArrayInputStream(bytes));
         } catch (IOException ex) {
-            throw new RuntimeException("Could not store image. Error: " + ex.getMessage());
+            throw new RuntimeException("Could not store image.", ex);
         }
         if (contentType == null) {
             throw new BadRequestException("Content type could not be determined");
