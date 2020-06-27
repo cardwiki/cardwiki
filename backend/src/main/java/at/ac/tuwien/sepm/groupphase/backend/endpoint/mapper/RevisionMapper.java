@@ -23,8 +23,8 @@ abstract public class RevisionMapper {
 
     @Mapping(source = "revision.createdBy", target = "createdBy")
     @Mapping(source = "revision.card.id", target = "cardId")
-    @Mapping(source = "revision.imageFront", target = "imageFront")
-    @Mapping(source = "revision.imageBack", target = "imageBack")
+    @Mapping(source = "revision.imageFront.filename", target = "imageFront.url", qualifiedByName = "prefixImagesServedPath")
+    @Mapping(source = "revision.imageBack.filename", target = "imageBack.url", qualifiedByName = "prefixImagesServedPath")
     abstract RevisionDtoWithContent _revisionEdit_to_revisionDtoWithContent(RevisionEdit revision);
 
     public RevisionDtoWithContent revisionToRevisionDetailedDto(Revision revision){

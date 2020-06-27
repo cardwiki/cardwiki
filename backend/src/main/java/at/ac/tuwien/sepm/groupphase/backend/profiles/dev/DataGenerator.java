@@ -1,6 +1,7 @@
-package at.ac.tuwien.sepm.groupphase.backend.profiles.datagenerator;
+package at.ac.tuwien.sepm.groupphase.backend.profiles.dev;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
+import at.ac.tuwien.sepm.groupphase.backend.profiles.datagenerator.Agent;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CategoryRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
@@ -14,11 +15,9 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
-import org.springframework.data.jpa.repository.JpaContext;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.io.InputStream;
@@ -28,7 +27,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
-@Profile("generateData")
+@Profile("dev")
 @Component
 public class DataGenerator {
 
@@ -38,7 +37,7 @@ public class DataGenerator {
     private static final int NUMBER_OF_REVISIONS = 5;
     private static final int NUMBER_OF_CATEGORIES_TO_GENERATE = 3;
 
-    private static final String[] USERNAMES = {"Charlie", "Romeo", "Julia", "Victor", "Mike", "Juliett"};
+    private static final String[] USERNAMES = {DeveloperLogin.USER_NAME, "romeo", "julia", "victor", "mike", "juliett"};
 
     private final UserRepository userRepository;
     private final CardRepository cardRepository;
@@ -62,7 +61,16 @@ public class DataGenerator {
     @EventListener(ApplicationReadyEvent.class)
     @Transactional
     public void setup(){
+        if (userRepository.count() > 0){
+            LOGGER.info("skipping data generation since database isn't empty, to regenerate the data delete the database");
+            return;
+        }
+
         List<Agent> agents = Arrays.stream(USERNAMES).map(username -> new Agent(em, true, Agent.defaultUser(username))).collect(Collectors.toList());
+
+        User admin = Agent.defaultUser(DeveloperLogin.ADMIN_NAME);
+        admin.setAdmin(true);
+        new Agent(em, true, admin);
 
         Category science = agents.get(4).createCategory("Wissenschaften");
         Category geography = agents.get(2).addSubcategory(science, "Geographie");
