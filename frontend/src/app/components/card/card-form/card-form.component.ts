@@ -22,7 +22,7 @@ export class CardFormComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  autoSizeTextarea({ target: textArea }: { target: HTMLTextAreaElement }) {
+  autoSizeTextarea({ target: textArea }: any) {
     textArea.style.height = Math.max(textArea.offsetHeight, textArea.scrollHeight) + "px";
   }
 
