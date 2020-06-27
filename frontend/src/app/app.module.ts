@@ -44,6 +44,10 @@ import { UserRoleDirective } from './directives/user-role.directive';
 import { CommentFormComponent } from './components/comment/comment-form/comment-form.component';
 import { CommentListComponent } from './components/comment/comment-list/comment-list.component';
 import { ConfirmModalComponent } from './components/utils/confirm-modal/confirm-modal.component';
+import { CardRevisionComponent } from './components/card/card-revision/card-revision.component';
+import { CardDiffComponent } from './components/card/card-diff/card-diff.component';
+import { CardHistoryComponent } from './components/card/card-history/card-history.component';
+import { DeckHistoryComponent } from './components/deck/deck-history/deck-history.component';
 
 @NgModule({
   declarations: [
@@ -85,6 +89,10 @@ import { ConfirmModalComponent } from './components/utils/confirm-modal/confirm-
     CommentFormComponent,
     CommentListComponent,
     ConfirmModalComponent,
+    CardRevisionComponent,
+    CardDiffComponent,
+    CardHistoryComponent,
+    DeckHistoryComponent,
   ],
   imports: [
     BrowserModule,
