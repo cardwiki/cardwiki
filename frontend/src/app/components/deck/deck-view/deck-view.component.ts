@@ -17,6 +17,7 @@ import { Page } from 'src/app/dtos/page';
 import { CommentService } from 'src/app/services/comment.service';
 import { CommentSimple } from 'src/app/dtos/commentSimple';
 import { CommentFormComponent } from '../../comment/comment-form/comment-form.component';
+import {CardUpdate} from '../../../dtos/cardUpdate';
 
 @Component({
   selector: 'app-deck-view',
@@ -145,4 +146,24 @@ export class DeckViewComponent implements OnInit {
     this.favoriteService.removeFavorite(this.deck.id)
       .subscribe(() => this.isFavorite$.next(false))
   }
+
+  copyToClipboard(card: CardSimple) {
+    this.cardService.fetchCard(card.id).subscribe(cardUpdate => {
+      cardUpdate.message = `Copied from ${this.deck.name}`;
+      const clipboard = JSON.parse(localStorage.getItem('clipboard') ?? '[]');
+      clipboard.push(cardUpdate);
+      localStorage.setItem('clipboard', JSON.stringify(clipboard));
+      this.notificationService.success('Card copied to Clipboard');
+    });
+  }
+
+  pasteFromClipboard() {
+    const clipboard: CardUpdate[] = JSON.parse(localStorage.getItem('clipboard') ?? '[]');
+    for (const newCard of clipboard) {
+      this.cardService.createCard(this.deck.id, newCard).subscribe(createdCard => this.cards.push(createdCard));
+    }
+    localStorage.removeItem('clipboard');
+    this.notificationService.success('Card(s) pasted from Clipboard');
+  }
+
 }

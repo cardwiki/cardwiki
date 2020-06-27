@@ -28,7 +28,15 @@
         </div>
       </div>
     </form>
-    <ul class="navbar-nav flex-grow-1 justify-content-end">
+    <ul class="navbar-nav flex-grow-1 justify-content-center">
+      <li class="nav-item" *appUserRole="'USER'">
+        <div class="container">
+          <a class="nav-link" routerLink="/clipboard">Clipboard</a>
+          <span class="badge badge-secondary">{{clipboardSize}}</span>
+        </div>
+      </li>
+    </ul>
+    <ul class="navbar-nav justify-content-end">
       <li class="nav-item">
         <a class="nav-link" routerLink="/about" routerLinkActive="active">About</a>
       </li>

@@ -22,6 +22,10 @@ export class HeaderComponent implements OnInit {
     this.username$ = authService.userName$
   }
 
+  get clipboardSize(): number {
+    return JSON.parse(localStorage.getItem('clipboard') ?? '[]').length;
+  }
+
   ngOnInit() {
   }
 
