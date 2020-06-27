@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {CategoryService} from '../../../services/category.service';
 import { CategorySimple } from 'src/app/dtos/categorySimple';
+import { TitleService } from 'src/app/services/title.service';
 
 @Component({
   selector: 'app-category-list',
@@ -12,9 +13,10 @@ export class CategoryListComponent implements OnInit {
   specs: { listSize: number, pageSize: number, page: number }
   path: string = 'categories';
 
-  constructor(private categoryService: CategoryService) { }
+  constructor(private categoryService: CategoryService, private titleService: TitleService) { }
 
   ngOnInit(): void {
+    this.titleService.setTitle('Categories')
     this.fetchCategories();
   }
 

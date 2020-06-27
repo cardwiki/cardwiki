@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TitleService } from 'src/app/services/title.service';
 
 @Component({
   selector: 'app-markdown-syntax',
@@ -36,9 +37,10 @@ $$f(x) = \\int_{-\\infty}^\\infty
     \\,d\\xi$$`
   }
 
-  constructor() { }
+  constructor(private titleService: TitleService) { }
 
   ngOnInit(): void {
+    this.titleService.setTitle('Formatting Cards');
   }
 
 }

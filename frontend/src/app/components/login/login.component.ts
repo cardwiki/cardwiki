@@ -6,6 +6,7 @@ import {parse as parseCookie} from 'cookie';
 import { OAuth2ProviderDto } from 'src/app/dtos/oAuth2Provider';
 import { WhoAmI } from 'src/app/dtos/whoAmI';
 import { NotificationService } from 'src/app/services/notification.service';
+import { TitleService } from 'src/app/services/title.service';
 
 @Component({
   selector: 'app-login',
@@ -18,7 +19,7 @@ export class LoginComponent implements OnInit {
   registerForm: FormGroup;
   username: string;
 
-  constructor(public authService: AuthService, private router: Router, private route: ActivatedRoute, private notificationService: NotificationService) {
+  constructor(public authService: AuthService, private router: Router, private route: ActivatedRoute, private titleService: TitleService) {
     this.registerForm = new FormGroup({
       'username': new FormControl(this.username, [
         Validators.required,
@@ -31,6 +32,7 @@ export class LoginComponent implements OnInit {
   get formUsername() { return this.registerForm.get('username'); }
 
   ngOnInit(): void {
+    this.titleService.setTitle('Login', null)
     this.authService.getAuthProviders().subscribe(providers => this.authProviders = providers);
     this.route.queryParams.subscribe(params => {
       if ('success' in params)

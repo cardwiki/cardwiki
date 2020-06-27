@@ -6,6 +6,7 @@ import {DeckUpdate} from '../../../dtos/deckUpdate';
 import {CategoryService} from '../../../services/category.service';
 import { CategorySimple } from 'src/app/dtos/categorySimple';
 import { NotificationService } from 'src/app/services/notification.service';
+import { TitleService } from 'src/app/services/title.service';
 
 @Component({
   selector: 'app-deck-edit',
@@ -24,12 +25,14 @@ export class DeckEditComponent implements OnInit {
     private categoryService: CategoryService,
     private route: ActivatedRoute,
     private location: Location,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private titleService: TitleService,
   ) {}
 
   ngOnInit(): void {
     this.deckId = +this.route.snapshot.paramMap.get('id');
     this.deckService.getDeckById(this.deckId).subscribe(deck => {
+      this.titleService.setTitle(`Edit ${deck.name}`, null);
       this.deck = new DeckUpdate(deck.name, deck.categories);
       this.categoryService.getCategories().subscribe(categories => this.categories = categories);
     });

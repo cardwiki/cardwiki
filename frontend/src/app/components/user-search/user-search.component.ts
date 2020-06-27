@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {UserProfile} from "../../dtos/userProfile";
 import {UserService} from "../../services/user.service";
 import { Page } from 'src/app/dtos/page';
 import { Pageable } from 'src/app/dtos/pageable';
+import { TitleService } from 'src/app/services/title.service';
 
 @Component({
   selector: 'app-user-search',
@@ -19,13 +19,15 @@ export class UserSearchComponent implements OnInit {
   page: Page<UserProfile>
   users: UserProfile[] = [];
 
-  constructor(private route: ActivatedRoute, private router: Router, private userService: UserService) {
+  constructor(private route: ActivatedRoute, private router: Router, private userService: UserService,
+              private titleService: TitleService) {
     this.route.queryParams.subscribe(params => {
       this.searchTerm = params['username'] || '';
     });
   }
 
   ngOnInit() {
+    this.titleService.setTitle('Users', 'User search')
     this.loadUsers()
   }
   

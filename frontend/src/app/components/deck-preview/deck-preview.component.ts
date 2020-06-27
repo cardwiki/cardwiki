@@ -7,6 +7,7 @@ import {CardService} from "../../services/card.service";
 import {Pageable} from 'src/app/dtos/pageable';
 import {Page} from 'src/app/dtos/page';
 import {Globals} from '../../global/globals';
+import { TitleService } from 'src/app/services/title.service';
 
 @Component({
   selector: 'app-deck-preview',
@@ -35,7 +36,8 @@ export class DeckPreviewComponent implements OnInit {
   currentcard: CardSimple;
   flipped: boolean = false;
 
-  constructor(private deckService: DeckService, private cardService: CardService, private route: ActivatedRoute, public globals: Globals) { }
+  constructor(private deckService: DeckService, private cardService: CardService, private route: ActivatedRoute, public globals: Globals,
+              private titleService: TitleService) { }
 
   ngOnInit(): void {
     this.deck = this.page = this.currentcard = null;
@@ -47,6 +49,7 @@ export class DeckPreviewComponent implements OnInit {
 
   loadDeck(id: number) {
     this.deckService.getDeckById(id).subscribe(deck => {
+      this.titleService.setTitle(`View ${deck.name}`, null);
       this.deck = deck;
       this.loadNextCards();
     });
