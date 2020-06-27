@@ -26,8 +26,7 @@ export class UserSearchComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.searchTerm)
-      this.loadUsers()
+    this.loadUsers()
   }
   
   resetResults() {

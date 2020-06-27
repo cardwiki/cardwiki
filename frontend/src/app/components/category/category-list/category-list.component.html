@@ -1,22 +1,7 @@
-<div class="container-md-9 mt-4 pt-4 pb-4 pl-4 pr-4">
-  <div class="col-md-9 mx-auto">
-    <div class="card rounded pl-5 pt-2">
-      <div class="row d-inline">
-        <h2 class="mr-5 mb-2 float-left">Categories:</h2>
-        <div>
-          <a routerLink="/categories/new">
-            <button class="btn btn-outline-secondary">add category</button>
-          </a>
-        </div>
-      </div>
-      <app-list-search
-        class="row"
-        [list]="categories"
-        [specs]="specs"
-        [path]="path"
-      >
-      </app-list-search>
-    </div>
-  </div>
+<h1>Categories</h1>
+<div class="mb-3">
+<a routerLink="/categories/new" class="btn btn-outline-secondary">Add category</a>
 </div>
 
+<app-list-search class="row" [list]="categories" [specs]="specs" [path]="path">
+</app-list-search>
