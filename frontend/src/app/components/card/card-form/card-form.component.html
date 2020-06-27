@@ -5,7 +5,9 @@
             <div class="input-group-prepend">
                 <span class="input-group-text">Front Text</span>
             </div>
-            <textarea class="form-control" aria-label="Front Text" [(ngModel)]="card.textFront" name="textFront" required minlength="1" maxlength="{{globals.maxTextSize}}"></textarea>
+            <textarea class="form-control" aria-label="Front Text"
+                [(ngModel)]="card.textFront" (input)="autoSizeTextarea($event)" name="textFront"
+                minlength="1" maxlength="{{globals.maxTextSize}}" required></textarea>
         </div>
     </div>
     <div class="input-group mb-4">
@@ -25,7 +27,9 @@
             <div class="input-group-prepend">
                 <span class="input-group-text">Back Text</span>
             </div>
-            <textarea class="form-control" aria-label="Back Text" [(ngModel)]="card.textBack" name="textBack" required minlength="1" maxlength="{{globals.maxTextSize}}"></textarea>
+            <textarea class="form-control" aria-label="Back Text"
+                [(ngModel)]="card.textBack" (input)="autoSizeTextarea($event)" name="textBack"
+                minlength="1" maxlength="{{globals.maxTextSize}}" required></textarea>
         </div>
     </div>
     <div class="input-group mb-3">

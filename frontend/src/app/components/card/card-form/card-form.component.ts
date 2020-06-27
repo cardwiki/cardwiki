@@ -1,5 +1,4 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { CardContent } from 'src/app/dtos/cardContent';
 import { CardUpdate } from 'src/app/dtos/cardUpdate';
 import { Globals } from '../../../global/globals';
 import {ImageService} from '../../../services/image.service';
@@ -19,6 +18,10 @@ export class CardFormComponent implements OnInit {
   constructor(public globals: Globals, public imageService: ImageService) { }
 
   ngOnInit(): void {
+  }
+
+  autoSizeTextarea({ target: textArea }: { target: HTMLTextAreaElement }) {
+    textArea.style.height = Math.max(textArea.offsetHeight, textArea.scrollHeight) + "px";
   }
 
   onSubmit() {
