@@ -33,7 +33,7 @@ public abstract class MockedLogins {
         return mockHttpServletRequest -> {
             String token = Jwts.builder()
                 .setSubject(authId)
-                .signWith(Keys.hmacShaKeyFor(SecurityTestConfig.securityProps.getSecret()), SignatureAlgorithm.HS512)
+                .signWith(Keys.hmacShaKeyFor(TestSecurityConfig.SECURITY_PROPS.getSecret()), SignatureAlgorithm.HS512)
                 .compact();
 
             mockHttpServletRequest.addHeader("Authorization", "Bearer " + token);
