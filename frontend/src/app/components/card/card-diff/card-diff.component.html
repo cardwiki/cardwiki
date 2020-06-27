@@ -1,0 +1,20 @@
+<div class="container mt-4">
+  <div *ngIf="cardDiff">
+    <h3>Difference: </h3>
+    <h4>Front Side</h4>
+    <div class="row justify-content-center">
+      <div [innerHtml]="cardDiff.textFront"></div>
+    </div>
+    <hr class="mx-2">
+    <h4>Back Side</h4>
+    <div class="row justify-content-center">
+      <div [innerHtml]="cardDiff.textBack"></div>
+    </div>
+    <hr class="mx-2">
+  </div>
+  <div *ngIf="cardRevisionOld" class="row justify-content-center">
+    <app-card-revision class="m-4" [cardRevision]="cardRevisionOld"></app-card-revision>
+    <app-card-revision class="m-4" *ngIf="cardRevisionNew" [cardRevision]="cardRevisionNew"></app-card-revision>
+  </div>
+</div>
+
