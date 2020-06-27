@@ -2,6 +2,8 @@ package at.ac.tuwien.sepm.groupphase.backend.service;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
 import at.ac.tuwien.sepm.groupphase.backend.exception.CategoryNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -13,6 +15,15 @@ public interface CategoryService  {
      * @return list of all category entries sorted by name
      */
     List<Category> findAll();
+
+    /**
+     * Find categories containing {@code name} (case insensitive)
+     *
+     * @param name the search string
+     * @param pageable the paging parameters
+     * @return page of categories with names containing {@code name}
+     */
+    Page<Category> searchByName(String name, Pageable pageable);
 
     /**
      * Find a category entry.

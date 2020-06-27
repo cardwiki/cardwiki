@@ -6,8 +6,8 @@
         </div>
     </div>
 </form>
-<hr>
-<ul class="list-group">
+
+<ul class="list-group mt-4">
     <a *ngFor="let deck of decks" routerLink="/decks/{{deck.id}}" class="list-group-item list-group-item-action">
         {{deck.name}}
         <span class="ml-2">

@@ -26,7 +26,6 @@ import { AboutComponent } from './components/about/about.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
 import { DeckPreviewComponent } from './components/deck-preview/deck-preview.component';
-import { CategoryListComponent } from './components/category/category-list/category-list.component';
 import { ListComponent } from './components/category/list/list.component';
 import { CategoryDetailsComponent } from './components/category/category-details/category-details.component';
 import { ListSearchComponent } from './components/category/list-search/list-search.component';
@@ -44,6 +43,7 @@ import { CommentListComponent } from './components/comment/comment-list/comment-
 import { ConfirmModalComponent } from './components/utils/confirm-modal/confirm-modal.component';
 import { WelcomeComponent } from './components/welcome/welcome.component';
 import { TitleComponent } from './components/title/title.component';
+import { CategorySearchComponent } from './components/category/category-search/category-search.component';
 
 @NgModule({
   declarations: [
@@ -66,7 +66,6 @@ import { TitleComponent } from './components/title/title.component';
     DashboardComponent,
     PageNotFoundComponent,
     DeckPreviewComponent,
-    CategoryListComponent,
     ListComponent,
     CategoryDetailsComponent,
     CardEditComponent,
@@ -85,6 +84,7 @@ import { TitleComponent } from './components/title/title.component';
     ConfirmModalComponent,
     WelcomeComponent,
     TitleComponent,
+    CategorySearchComponent,
   ],
   imports: [
     BrowserModule,

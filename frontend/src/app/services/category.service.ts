@@ -7,6 +7,8 @@ import { CategoryUpdate } from '../dtos/categoryUpdate';
 import { CategorySimple } from '../dtos/categorySimple';
 import { ErrorHandlerService } from './error-handler.service';
 import { tap } from 'rxjs/operators';
+import { Pageable } from '../dtos/pageable';
+import { Page } from '../dtos/page';
 
 @Injectable({
   providedIn: 'root'
@@ -22,8 +24,24 @@ export class CategoryService {
    * Loads all categories from the backend
    */
   getCategories(): Observable<CategorySimple[]> {
-    return this.httpClient.get<CategorySimple[]>(this.categoryBaseUri)
+    return this.httpClient.get<CategorySimple[]>(this.categoryBaseUri + '/all')
       .pipe(tap(null, this.errorHandler.handleError('Could not fetch Categories')))
+  }
+
+  /**
+   * Search for categories by name
+   * 
+   * @param name name to search for
+   * @param pageable config for pagination
+   */
+  searchByName(name: string, pageable: Pageable) {
+    console.log('search categories: ' + name);
+    const params = {
+      name,
+      ...pageable.toObject(),
+    }
+    return this.httpClient.get<Page<CategorySimple>>(this.categoryBaseUri, { params })
+      .pipe(tap(null, this.errorHandler.handleError('Could not search for Categories')));
   }
 
   /**
