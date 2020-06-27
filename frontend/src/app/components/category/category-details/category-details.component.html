@@ -1,6 +1,6 @@
-<div *ngIf="category" class="container my-5">
+<div *ngIf="category" class="container">
   <div *ngIf="category.name">
-	<div class="pt-3 pb-3 pr-3">
+	<div class="pt-3 pb-3 pr-3"> <!-- TODO -->
 	  <a *ngIf="category.parent" routerLink="/categories/{{category.parent.id}}">
 		<i class="fas fa-arrow-up"></i> {{category.parent.name}}
 	  </a>
