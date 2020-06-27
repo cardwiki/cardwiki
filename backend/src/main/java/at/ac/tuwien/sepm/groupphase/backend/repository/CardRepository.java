@@ -54,4 +54,14 @@ public interface CardRepository extends JpaRepository<Card, Long> {
 
     @Query("select c from Card c left join Progress p on c.id = p.id.card.id and p.id.user.id = :userId where c.deck.id=:deckId and (current_timestamp >= p.due or p.due is null) order by p.status asc nulls first, p.due asc nulls first")
     List<Card> findNextCards(@Param("deckId") Long deckId, @Param("userId") Long userId, Pageable pageable);
+
+    /**
+     * Check if a card exists with certain content
+     *
+     * @param textFront card content parameter
+     * @return true if such a card exists, false else
+     */
+    @Query("select case when count(r) > 0 then true else false end from Card c inner join RevisionEdit r on r.card.id=c.id" +
+         " where r.textFront = :textFront and c.deck.id=:deckId")
+    boolean existsByDeckAndRevisionEditContent(@Param("deckId") Long deckId,@Param("textFront") String textFront);
 }

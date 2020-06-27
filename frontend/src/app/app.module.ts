@@ -44,6 +44,7 @@ import { UserRoleDirective } from './directives/user-role.directive';
 import { CommentFormComponent } from './components/comment/comment-form/comment-form.component';
 import { CommentListComponent } from './components/comment/comment-list/comment-list.component';
 import { ConfirmModalComponent } from './components/utils/confirm-modal/confirm-modal.component';
+import { CardsImportModalComponent } from './components/deck/cards-import-modal/cards-import-modal.component';
 
 @NgModule({
   declarations: [
@@ -85,6 +86,7 @@ import { ConfirmModalComponent } from './components/utils/confirm-modal/confirm-
     CommentFormComponent,
     CommentListComponent,
     ConfirmModalComponent,
+    CardsImportModalComponent,
   ],
   imports: [
     BrowserModule,

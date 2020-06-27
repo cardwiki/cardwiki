@@ -17,6 +17,7 @@ import { Pageable } from 'src/app/dtos/pageable';
 import { Page } from 'src/app/dtos/page';
 import { CommentSimple } from 'src/app/dtos/commentSimple';
 import { CommentFormComponent } from '../../comment/comment-form/comment-form.component';
+import { CardsImportModalComponent} from '../cards-import-modal/cards-import-modal.component';
 
 @Component({
   selector: 'app-deck-view',
@@ -140,5 +141,16 @@ export class DeckViewComponent implements OnInit {
       file.click();
       URL.revokeObjectURL(objectUrl);
     });
+  }
+
+  openImportModal(deck: DeckDetails) {
+    const modalRef = this.modalService.open(CardsImportModalComponent);
+    modalRef.componentInstance.deck = this.deck;
+
+    modalRef.result.then(
+      (res: Observable<DeckDetails>) => res.subscribe(
+        (deckResult: DeckDetails) => this.router.navigate(['decks', deckResult])
+      )
+    ).catch(() => {});
   }
 }

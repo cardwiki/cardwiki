@@ -4,6 +4,7 @@ import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.exception.DeckNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.AuthenticationRequiredException;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -72,6 +73,16 @@ public interface DeckService {
      *
      * @param pw PrintWriter provided by response
      * @param deckId of the deck to export
+     * @throws IOException if the CSVPrinter encounters an error.
      */
-    void createCsvData(PrintWriter pw, Long deckId);
+    void createCsvData(PrintWriter pw, Long deckId) throws IOException;
+
+    /**
+     * Create data for csv-export.
+     *
+     * @param deckId of the deck to export
+     * @param file containing the data to add to the deck
+     * @throws IOException if the CSVPrinter encounters an error.
+     */
+    Deck addCards(Long deckId, MultipartFile file);
 }

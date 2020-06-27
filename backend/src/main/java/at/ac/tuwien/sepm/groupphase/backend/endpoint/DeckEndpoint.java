@@ -18,10 +18,12 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
@@ -109,12 +111,22 @@ public class DeckEndpoint {
     }
 
     @Secured("ROLE_USER")
-    @GetMapping(value = "/{id}", produces="text/csv")
+    @GetMapping(value = "/{id}", produces = "text/csv")
+    @ApiOperation(value = "export deck", authorizations = @Authorization("apiKey"))
     public void export(@PathVariable Long id, HttpServletResponse response) throws IOException {
         LOGGER.info("GET /api/v1/decks/{} as .csv", id);
         Deck deck = deckService.findOneOrThrow(id);
         response.addHeader("Content-Disposition", "attachment");
         response.addHeader("Content-Type", "text/csv;charset=UTF-8");
         deckService.createCsvData(response.getWriter(), id);
+    }
+
+    @Secured("ROLE_USER")
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping(value = "/{id}/cards", consumes = "multipart/form-data")
+    @ApiOperation(value = "import cards to deck", authorizations = @Authorization("apiKey"))
+    public DeckDto importCards (@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+        LOGGER.info("POST {} to /api/v1/decks/{}", file.getOriginalFilename(), id);
+        return deckMapper.deckToDeckDto(deckService.addCards(id, file));
     }
 }

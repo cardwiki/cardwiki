@@ -7,18 +7,25 @@ import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.CategoryService;
 import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVRecord;
+import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MutableCallSite;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -137,20 +144,56 @@ public class SimpleDeckService implements DeckService {
 
     @Override
     @Transactional
-    public void createCsvData(PrintWriter pw, Long deckId) {
+    public void createCsvData(PrintWriter pw, Long deckId) throws IOException {
         LOGGER.debug("Write deck with id {} to file.", deckId);
-        List<String> data = cardRepository.findLatestEditRevisionsByDeck_Id(deckId)
-            .map((revision) -> escapeSpecialCharacters(revision.getTextFront()) + "," + escapeSpecialCharacters(revision.getTextBack()))
-            .collect(Collectors.toList());
-
-        data.stream().forEach(pw::println);
+        CSVPrinter printer = new CSVPrinter(pw, CSVFormat.DEFAULT);
+        cardRepository.findLatestEditRevisionsByDeck_Id(deckId)
+            .forEach(revisionEdit -> {
+                try {
+                    printer.printRecord(revisionEdit.getTextFront(), revisionEdit.getTextBack());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        printer.close();
     }
 
-    private String escapeSpecialCharacters(String data) {
-        data = data.replaceAll("\\R", "̿BREAK̿").replaceAll(",", "̿COMMA̿");
-        if (data.contains("\"")) {
-            data = data.replace("\"", "\"\"");
+    @Override
+    @Transactional
+    public Deck addCards(Long deckId, MultipartFile file) {
+        Deck deck = deckRepository.getOne(deckId);
+        User user = userService.loadCurrentUserOrThrow();
+        Iterable<CSVRecord> csvRecords = null;
+        try {
+            Reader in = new BufferedReader(new InputStreamReader(file.getInputStream(), "UTF-8"));
+            CSVParser csvParser = new CSVParser(in, CSVFormat.DEFAULT.withTrim());
+            csvRecords = csvParser.getRecords();
+        } catch(IOException e) {
+            throw new RuntimeException(e);
         }
-       return "\"" + data + "\"";
+
+        for (CSVRecord csvRecord : csvRecords) {
+            String textFront = csvRecord.get(0);
+            if(!cardRepository.existsByDeckAndRevisionEditContent(deckId, textFront)) {
+                String textBack = csvRecord.get(1);
+                Card card = new Card();
+                card.setDeck(deck);
+                deck.getCards().add(card);
+                RevisionCreate revisionCreate = new RevisionCreate();
+                revisionCreate.setMessage("Created");
+                revisionCreate.setTextFront(textFront);
+                revisionCreate.setTextBack(textBack);
+                revisionCreate.setCard(card);
+                revisionCreate.setCreatedBy(user);
+                user.getRevisions().add(revisionCreate);
+                card.setLatestRevision(revisionCreate);
+                deckRepository.saveAndFlush(deck);
+            } else {
+                LOGGER.info("Card with front {} and back {} already exists.", csvRecord.get(0), csvRecord.get(1));
+            }
+
+        }
+        Hibernate.initialize(deck.getCategories());
+        return deck;
     }
 }

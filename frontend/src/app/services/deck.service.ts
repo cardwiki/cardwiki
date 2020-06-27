@@ -102,4 +102,11 @@ export class DeckService {
     return this.httpClient.delete<void>(this.deckBaseUri + '/' + deckId)
       .pipe(tap(null, this.errorHandler.handleError('Could not delete deck ' + deckId)));
   }
+
+  import(deckId: number, data: FormData): Observable<DeckDetails> {
+    console.log('import cards to deck ' + deckId);
+  //  const headers = new HttpHeaders().append('Content-Type', 'text/csv');
+    return this.httpClient.post<DeckDetails>(this.deckBaseUri + '/' + deckId + '/cards', data)
+      .pipe(tap(null, this.errorHandler.handleError('Could not import cards to deck ' + deckId)));
+  }
 }
