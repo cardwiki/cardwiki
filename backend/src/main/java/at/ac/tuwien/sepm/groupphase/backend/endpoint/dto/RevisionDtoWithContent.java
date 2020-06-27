@@ -6,7 +6,7 @@ import lombok.Data;
 public class RevisionDtoWithContent extends RevisionDto {
     private String textFront;
     private String textBack;
-    private String imageFront;
-    private String imageBack;
+    private ImageDto imageFront;
+    private ImageDto imageBack;
     private UserSimpleDto createdBy;
 }
