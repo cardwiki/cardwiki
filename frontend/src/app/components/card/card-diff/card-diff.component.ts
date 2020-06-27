@@ -37,8 +37,8 @@ export class CardDiffComponent implements OnInit {
     this.cardService.fetchRevisionsById(this.revisionIdNew ? [this.revisionIdOld, this.revisionIdNew] : [this.revisionIdOld])
       .subscribe(cardRevisions => {
         console.log('fetched revisions', cardRevisions);
-        this.cardRevisionOld = cardRevisions[this.revisionIdOld]
-        this.cardRevisionNew = cardRevisions[this.revisionIdNew]
+        this.cardRevisionOld = cardRevisions.get(this.revisionIdOld)
+        this.cardRevisionNew = cardRevisions.get(this.revisionIdNew)
         if (this.cardRevisionOld.cardId !== this.cardId) this.location.back()
         if (this.revisionIdNew) {
           if (this.cardRevisionNew.cardId !== this.cardId) this.location.back()
