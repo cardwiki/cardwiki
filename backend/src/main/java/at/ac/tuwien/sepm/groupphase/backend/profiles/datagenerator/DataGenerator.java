@@ -8,6 +8,7 @@ import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationContext;
@@ -49,6 +50,9 @@ public class DataGenerator {
     @Autowired
     private ApplicationContext appContext;
 
+    @Value("${ci:#{null}}")
+    private String ci;
+
     public DataGenerator(CardRepository cardRepository, DeckRepository deckRepository, UserRepository userRepository, CategoryRepository categoryRepository) {
         this.cardRepository = cardRepository;
         this.deckRepository = deckRepository;
@@ -81,8 +85,10 @@ public class DataGenerator {
         generateLargeTestDeck();
         generateSuperLargeTestDeck();
 
-        LOGGER.info("Data generation finished ... shutting down");
-        SpringApplication.exit(appContext, () -> 0);
+        if (ci != null){
+            LOGGER.info("Detected CI mode ... shutting down");
+            SpringApplication.exit(appContext, () -> 0);
+        }
     }
 
     private void importDeck(Deck deck, Agent agent, String filename) {
