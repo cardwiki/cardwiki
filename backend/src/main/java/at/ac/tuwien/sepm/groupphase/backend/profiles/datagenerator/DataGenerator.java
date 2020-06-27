@@ -1,86 +1,108 @@
 package at.ac.tuwien.sepm.groupphase.backend.profiles.datagenerator;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
+import at.ac.tuwien.sepm.groupphase.backend.repository.CategoryRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.UserRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.event.EventListener;
+import org.springframework.data.jpa.repository.JpaContext;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 @Profile("generateData")
 @Component
-public class CardDataGenerator {
+public class DataGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final int SIZE_OF_LARGE_TEST_DECK = 1000;
     private static final int SIZE_OF_SUPER_LARGE_TEST_DECK = 5000;
     private static final int NUMBER_OF_REVISIONS = 5;
+    private static final int NUMBER_OF_CATEGORIES_TO_GENERATE = 3;
+
+    private static final String[] USERNAMES = {"Charlie", "Romeo", "Julia", "Victor", "Mike", "Juliett"};
 
     private final UserRepository userRepository;
     private final CardRepository cardRepository;
     private final DeckRepository deckRepository;
 
-    public CardDataGenerator(CardRepository cardRepository, DeckRepository deckRepository, UserRepository userRepository) {
+    @PersistenceContext
+    private EntityManager em;
+
+    @Autowired
+    private ApplicationContext appContext;
+
+    public DataGenerator(CardRepository cardRepository, DeckRepository deckRepository, UserRepository userRepository, CategoryRepository categoryRepository) {
         this.cardRepository = cardRepository;
         this.deckRepository = deckRepository;
         this.userRepository = userRepository;
     }
 
-    @PostConstruct
-    private void generateCards() {
-        generateDeck(0, "Hauptstädte Europas", "capitals.csv");
-        generateDeck(1, "Mathematik Demo", "math.csv");
+    @EventListener(ApplicationReadyEvent.class)
+    @Transactional
+    public void setup(){
+        List<Agent> agents = Arrays.stream(USERNAMES).map(username -> new Agent(em, true, Agent.defaultUser(username))).collect(Collectors.toList());
+
+        Category science = agents.get(4).createCategory("Wissenschaften");
+        Category geography = agents.get(2).addSubcategory(science, "Geographie");
+        Category math = agents.get(3).addSubcategory(science, "Mathematik");
+
+        Deck capitals = agents.get(0).createDeck();
+        capitals.setName("Hauptstädte Europas");
+        agents.get(0).addCategory(capitals, geography);
+        importDeck(capitals, agents.get(0),"capitals.csv");
+
+        Deck latex = agents.get(1).createDeck();
+        latex.setName("Mathematik Demo");
+        agents.get(1).addCategory(latex, math);
+        importDeck(latex, agents.get(1),"math.csv");
+
+        agents.get(1).createCommentIn(capitals, "Is there already a deck for capitals of the whole world?");
+        agents.get(0).createCommentIn(capitals, "No, but feel free to start it by forking this deck!");
+        agents.get(0).createCommentIn(latex, "We should add some examples for partial integration.");
+
+        generateLargeTestDeck();
+        generateSuperLargeTestDeck();
+
+        LOGGER.info("Data generation finished ... shutting down");
+        SpringApplication.exit(appContext, () -> 0);
     }
 
-    private void generateDeck(int id, String name, String filename) {
-        User user = new User();
-        user.setAuthId("fake id" + id);
-        user.setDescription("test user");
-        user.setAdmin(false);
-        user.setEnabled(false);
-        user.setDeleted(false);
-        user.setUsername("crashtestdummy" + id);
-        userRepository.saveAndFlush(user);
-        Deck deck = new Deck();
-        deck.setName(name);
-        deck.setCreatedBy(user);
-        deckRepository.saveAndFlush(deck);
+    private void importDeck(Deck deck, Agent agent, String filename) {
 
         long countCards = cardRepository.count();
 
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         InputStream is = classloader.getResourceAsStream(filename);
         Scanner scanner = new Scanner(is);
+
         while (scanner.hasNextLine()){
             String[] parts = scanner.nextLine().split(",", 2);
-            Card card = new Card();
-            RevisionCreate revision = new RevisionCreate();
-
-            card.setDeck(deck);
-            deck.getCards().add(card);
-
-            card.setLatestRevision(revision);
-            user.getRevisions().add(revision);
-            revision.setCard(card);
-            revision.setCreatedBy(user);
-            revision.setMessage("Test Revision ");
-            revision.setTextFront(parts[0]);
-            revision.setTextBack(parts[1]);
-
-            card = cardRepository.save(card);
+            RevisionCreate create = new RevisionCreate();
+            create.setMessage("import from CSV");
+            create.setTextFront(parts[0]);
+            create.setTextBack(parts[1]);
+            agent.createCardIn(deck, create);
         }
     }
 
-    @PostConstruct
     private void generateLargeTestDeck() {
         User user = new User();
         user.setAuthId("real id");
@@ -102,7 +124,6 @@ public class CardDataGenerator {
         }
     }
 
-    @PostConstruct
     private void generateSuperLargeTestDeck() {
         User user = new User();
         user.setAuthId("unreal id");
@@ -141,5 +162,4 @@ public class CardDataGenerator {
 
         card = cardRepository.save(card);
     }
-
 }
