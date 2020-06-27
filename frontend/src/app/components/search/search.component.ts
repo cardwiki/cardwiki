@@ -32,9 +32,7 @@ export class SearchComponent implements OnInit {
       this.page = null
       this.decks = []
 
-      // Don't fetch when visited without search term
-      if (paramMap.has('name'))
-        this.fetchSearchResults()
+      this.fetchSearchResults()
     })
   }
 

@@ -10,6 +10,7 @@ backend test:
        { print covered, "/", instructions, " instructions covered";
        printf "%.2f%% covered", 100*covered/instructions }'
       target/site/jacoco/jacoco.csv
+    - mvn spring-boot:run -Dspring-boot.run.profiles=generateData -Dspring-boot.run.arguments=--ci=yes
 # workaround because GitLab doesn't always wait for logs (should be fixed with GitLab runner 13.1)
 # https://gitlab.com/gitlab-org/gitlab-runner/-/merge_requests/2101
     - sleep 10
