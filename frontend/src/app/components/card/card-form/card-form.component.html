@@ -53,6 +53,6 @@
                 [(ngModel)]="card.message" minlength="0" maxlength="{{globals.maxMessageSize}}">
     </div>
 
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="btn btn-primary">{{action}}</button>
     <button type="button" class="btn btn-outline-danger ml-2" (click)="onCancel()">Cancel</button>
 </form>

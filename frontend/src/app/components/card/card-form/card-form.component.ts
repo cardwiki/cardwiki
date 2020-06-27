@@ -12,6 +12,8 @@ export class CardFormComponent implements OnInit {
 
   originalFilenameFront: string = 'Choose file';
   originalFilenameBack: string = 'Choose file';
+
+  @Input() action: string
   @Input() card: CardUpdate
   @Output() cardSubmit: EventEmitter<CardUpdate> = new EventEmitter();
   @Output() cancel: EventEmitter<void> = new EventEmitter();
