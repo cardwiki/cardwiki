@@ -37,20 +37,6 @@ public class CategoryEndpointTest extends TestDataGenerator {
 
     @Test
     @Transactional
-    public void getCategoriesReturnsFullListOfCategories() throws Exception {
-        Agent agent = persistentAgent();
-        agent.createCategory("test2");
-        agent.createCategory("test1");
-
-        mvc.perform(get("/api/v1/categories/all"))
-            .andExpect(status().is(200))
-            .andExpect(jsonPath("$", hasSize(2)))
-            .andExpect(jsonPath("$[0].name").value("test1"))
-            .andExpect(jsonPath("$[1].name").value("test2"));
-    }
-
-    @Test
-    @Transactional
     public void searchCategoriesReturnsSortedPageOfCategories() throws Exception {
         Agent agent = persistentAgent();
         Category apple = agent.createCategory("apple");

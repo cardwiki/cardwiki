@@ -44,6 +44,7 @@ import { ConfirmModalComponent } from './components/utils/confirm-modal/confirm-
 import { WelcomeComponent } from './components/welcome/welcome.component';
 import { TitleComponent } from './components/title/title.component';
 import { CategorySearchComponent } from './components/category/category-search/category-search.component';
+import { CategoryPickerModalComponent } from './components/category/category-picker-modal/category-picker-modal.component';
 
 @NgModule({
   declarations: [
@@ -85,6 +86,7 @@ import { CategorySearchComponent } from './components/category/category-search/c
     WelcomeComponent,
     TitleComponent,
     CategorySearchComponent,
+    CategoryPickerModalComponent,
   ],
   imports: [
     BrowserModule,

@@ -38,14 +38,6 @@ public class CategoryEndpoint {
         this.categoryMapper = categoryMapper;
     }
 
-    @Deprecated
-    @GetMapping("/all")
-    @ApiOperation(value = "Get list of categories without details")
-    public List<CategorySimpleDto> getCategories() {
-        LOGGER.info("GET /api/v1/categories");
-        return categoryMapper.categoryToCategorySimpleDto(categoryService.findAll());
-    }
-
     @GetMapping
     @ApiOperation(value = "Find categories by name")
     public Page<CategorySimpleDto> search(@RequestParam String name, @SortDefault("name") Pageable pageable) {

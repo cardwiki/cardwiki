@@ -10,9 +10,9 @@ import { TitleService } from 'src/app/services/title.service';
   styleUrls: ['./category-update.component.css']
 })
 export class CategoryUpdateComponent {
-  editCategoryMode: 'Update' = 'Update';
+  editCategoryMode = 'Update' as const;
   category: CategoryDetails;
-  messages = { header: 'Update category', success: 'Category successfully updated', error: 'Error updating category'};
+  title = 'Update category';
 
   constructor(private route: ActivatedRoute, private categoryService: CategoryService, private titleService: TitleService) {
     this.route.params.subscribe(params => {

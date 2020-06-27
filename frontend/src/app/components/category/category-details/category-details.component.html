@@ -19,7 +19,7 @@
 		[id]="category.id"
 	  >
 	  </app-list-search>
-	  <a class="btn btn-outline-success" routerLink="/categories/new" [queryParams]="{ parent: category.name }">Add subcategory</a>
+	  <a class="btn btn-outline-success" routerLink="/categories/new" [queryParams]="{ parentId: category.id }">Add subcategory</a>
 	</div>
 	<div *ngIf="category.decks">
 	  <h2>Decks</h2>
