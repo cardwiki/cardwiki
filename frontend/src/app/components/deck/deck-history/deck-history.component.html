@@ -1,0 +1,20 @@
+<div class="container mt-5" *ngIf="deckId">
+  <div class="row">
+    <a routerLink="/decks/{{deckId}}" class="btn btn-light float-left mr-1"><i class="fas fa-arrow-left"></i> Back to Deck</a>
+  </div>
+  <div class="row my-3">
+    <h2>Deck History</h2>
+  </div>
+  <div class="card my-1" *ngFor="let revision of revisions, let index = index">
+    <div class="card-body p-1" >
+      {{revision.createdAt | date : 'medium'}}:
+      <a routerLink="/users/{{revision.createdBy.username}}/profile">{{revision.createdBy.username}}</a>
+      <a routerLink="/decks/{{deckId}}/cards/{{revision.cardId}}" [queryParams]="{revision: revision.id}">
+        {{revisionTypeToString[revision.type]}}</a>
+      card
+      <a routerLink="/decks/{{deckId}}/cards/{{revision.cardId}}/history">
+        {{revision.textFront && revision.textFront.length > REVISIONTEXT_TRUNCATE ? (revision.textFront | slice:0:REVISIONTEXT_TRUNCATE)+'...' : revision.textFront}}</a>:
+      {{revision.message}}
+    </div>
+  </div>
+</div>
