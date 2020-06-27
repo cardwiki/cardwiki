@@ -85,9 +85,9 @@ export class CardService {
    *
    * @param revisionIds of the revisions that should be fetched
    */
-  fetchRevisionsById(revisionIds: number[]): Observable<Map<number, RevisionDetailed>> {
+  fetchRevisionsById(revisionIds: number[]): Observable<{[key: number]: RevisionDetailed}> {
     console.log(`fetch revisions ${revisionIds}`);
-    return this.httpClient.get<Map<number, RevisionDetailed>>(`${this.globals.backendUri}/revisions?${revisionIds.map(id => `id=${id}`).join("&")}`)
+    return this.httpClient.get<{[key: number]: RevisionDetailed}>(`${this.globals.backendUri}/revisions?${revisionIds.map(id => `id=${id}`).join("&")}`)
       .pipe(tap(null, this.errorHandler.handleError('Could not fetch Revisions')))
   }
 
