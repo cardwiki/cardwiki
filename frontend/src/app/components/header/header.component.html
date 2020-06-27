@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-md navbar-light bg-light">
+<nav class="navbar navbar-expand-md navbar-light bg-light mb-3">
   <a class="navbar-brand ml-lg-5" routerLink="/">CardWiki</a>
   <button class="navbar-toggler ml-5" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
           aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -16,14 +16,8 @@
       <li class="nav-item">
         <a class="nav-link" routerLink="/users">Users</a>
       </li>
-      <li class="nav-item dropdown" *appUserRole="'USER'">
-        <a class="nav-link dropdown-toggle" href="#" id="createDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <i class="fas fa-plus"></i> New
-        </a>
-        <div class="dropdown-menu" aria-labelledby="createDropdown">
-          <a class="dropdown-item" routerLink="/categories/new">Category</a>
-          <a class="dropdown-item" (click)="openDeckModal(); false" href="#">Deck</a>
-        </div>
+      <li class="nav-item" *appUserRole="'USER'">
+        <a class="nav-link" (click)="openDeckModal(); false" href="#">Create new deck</a>
       </li>
     </ul>
     <form (ngSubmit)="onSubmit()" #searchForm="ngForm" class="form-inline my-2 my-lg-0 mr-auto mw-25 flex-grow-1">
