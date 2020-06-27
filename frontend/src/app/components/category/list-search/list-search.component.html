@@ -1,39 +1,30 @@
-<div *ngIf="specs" class="row ml-0">
-  <div class="column">
-      <div class="col">
-        <div class="row mb-3">
-          <div class="list">
-            <form *ngIf="list.length > 0" class="form pl-2 mb-2" [formGroup]="searchForm" (keydown)="keyDownFunction($event)">
-              <div class="form-inline">
-                <div class="input-group flex-grow-1">
-              <input
-                type="text"
-                id="search"
-                formControlName="search"
-                name="search"
-                autocomplete="off"
-                #searchFormField
-              >
-                <div class="input-group-append">
-                <a
-                  *ngIf="id"
-                  routerLink="/categories/{{id}}/{{path === 'categories' ? 'subcategories' : path}}"
-                  [queryParams]="{ filter: searchForm.value['search'] || ''}"
-                >
-                  <button class="btn btn-outline-success mr-2">Search</button>
-                </a>
-                </div>
-                </div>
-                </div>
-            </form>
-            <app-list
-              class="row ml-0"
-              [list]="filteredList ? filteredList : list"
-              [specs]="specs"
-              [path]="path"
-            ></app-list>
-          </div>
+<div *ngIf="specs" class="mb-3">
+  <form *ngIf="list.length > 0" class="form pl-2 mb-2" [formGroup]="searchForm" (keydown)="keyDownFunction($event)">
+    <div class="form-inline">
+      <div class="input-group flex-grow-1">
+        <input
+          type="text"
+          id="search"
+          formControlName="search"
+          name="search"
+          autocomplete="off"
+          #searchFormField
+        >
+        <div class="input-group-append">
+          <a
+            *ngIf="id"
+            routerLink="/categories/{{id}}/{{path === 'categories' ? 'subcategories' : path}}"
+            [queryParams]="{ filter: searchForm.value['search'] || ''}"
+          >
+            <button class="btn btn-outline-success mr-2">Search</button>
+          </a>
+        </div>
         </div>
       </div>
-  </div>
+  </form>
+  <app-list
+    [list]="filteredList ? filteredList : list"
+    [specs]="specs"
+    [path]="path"
+  ></app-list>
 </div>
