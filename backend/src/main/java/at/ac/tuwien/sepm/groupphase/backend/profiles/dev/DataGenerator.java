@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
-@Profile("generateData")
+@Profile("dev")
 @Component
 public class DataGenerator {
 
