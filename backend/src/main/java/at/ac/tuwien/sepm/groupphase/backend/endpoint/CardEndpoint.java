@@ -82,7 +82,7 @@ public class CardEndpoint {
     @PostMapping(value = "/cards/{cardId}")
     @ApiOperation(value = "Removes card from deck", authorizations = {@Authorization(value = "user")})
     public void addDeleteRevisionToCard(@Valid @RequestBody(required = false) ReasonDto message, @PathVariable Long cardId) {
-        LOGGER.info("POST /api/v1/cards/{} Body:", message);
+        LOGGER.info("POST /api/v1/cards/{} Body: {}", cardId, message);
         cardService.addDeleteRevisionToCard(cardId, message == null ? null : message.getMessage());
     }
 
