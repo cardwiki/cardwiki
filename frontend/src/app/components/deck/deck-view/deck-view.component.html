@@ -57,7 +57,7 @@
     </div>
     <div class="col">
       <div class="btn-toolbar float-right">
-        <button type="button" class="btn btn-light mr-1" (click)="pasteFromClipboard()" [disabled]="clipboardSize <= 0" title="Import Cards from Clipboard"><i class="fas fa-paste"></i> Paste</button>
+        <button type="button" class="btn btn-light mr-1" (click)="openClipboardPasteModal()" [disabled]="clipboardSize <= 0" *appUserRole="'USER'" title="Import Cards from Clipboard"><i class="far fa-clipboard"></i> Paste</button>
         <a routerLink="/decks/{{deck.id}}/cards/new" class="btn btn-primary float-right"><i class="fas fa-plus"></i> Add new card</a>
       </div>
     </div>
@@ -96,7 +96,7 @@
         <td class="align-middle">
           <div class="btn-group card-actions">
             <a routerLink="/decks/{{deck.id}}/cards/{{card.id}}/edit" class="btn btn-light"><i class="fas fa-pencil-alt"></i></a>
-            <button type="button" class="btn btn-light" (click)="copyToClipboard(card)"><i class="far fa-copy"></i></button>
+            <button type="button" class="btn btn-light" (click)="copyToClipboard(card)" [disabled]="!authService.isLoggedIn()"><i class="far fa-copy"></i></button>
             <button type="button" class="btn btn-light"><i class="fas fa-history"></i></button>
             <button type="button" class="btn btn-light" (click)="openCardRemoveModal(card)"><i class="fas fa-trash-alt"></i></button>
             <button *appUserRole="'ADMIN'" class="btn btn-danger" (click)="deleteCard(card)">Delete</button>

@@ -18,23 +18,27 @@ export class ClipboardService {
   /**
    * Copies card to the clipboard
    * @param card to copy
+   * @param deckName of the deck where the card is copied from
    */
-  copy(card: CardUpdate) {
-    const clipboard = JSON.parse(localStorage.getItem('clipboard') ?? '[]');
-    clipboard.push(card);
-    this.clipboard$.next(clipboard);
-    localStorage.setItem('clipboard', JSON.stringify(clipboard));
+  copy(card: CardSimple, deckName: string) {
+    console.log('Copy to clipboard');
+    this.cardService.fetchCard(card.id).subscribe(cardUpdate => {
+      cardUpdate.message = `Copied from ${deckName}`;
+      const clipboard = this.clipboard$.value;
+      clipboard.push(cardUpdate);
+      this.set(clipboard);
+    });
   }
 
   /**
    * Pastes cards from the clipboard to a specific deck
-   * @param deckId to which cards cards are pasted
+   * @param deckId of the deck to which cards are pasted
+   * @param cards to paste
    */
-  paste(deckId: number): Observable<CardSimple[]> {
-    const clipboard: CardUpdate[] = JSON.parse(localStorage.getItem('clipboard') ?? '[]');
-    this.clipboard$.next([]);
-    localStorage.removeItem('clipboard');
-    return forkJoin(clipboard.map(card => this.cardService.createCard(deckId, card)));
+  paste(deckId: number, cards: CardUpdate[]): Observable<CardSimple[]> {
+    console.log('Paste from clipboard');
+    this.set(this.clipboard$.value.filter(c => !cards.includes(c)));
+    return forkJoin(cards.map(card => this.cardService.createCard(deckId, card)));
   }
 
   /**
@@ -42,8 +46,17 @@ export class ClipboardService {
    * @param card to remove
    */
   remove(card: CardUpdate) {
-    const clipboard = this.clipboard$.value.filter(c => c !== card);
+    console.log('Remove from clipboard');
+    this.set(this.clipboard$.value.filter(c => c !== card));
+  }
+
+  /**
+   * Updates clipboard and localstorage
+   * @param clipboard new clipboard state
+   */
+  set(clipboard: CardUpdate[]) {
     this.clipboard$.next(clipboard);
     localStorage.setItem('clipboard', JSON.stringify(clipboard));
   }
+
 }

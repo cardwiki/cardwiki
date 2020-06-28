@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ClipboardComponent } from './clipboard.component';
+import { ClipboardViewComponent } from './clipboard-view.component';
 
 describe('ClipboardComponent', () => {
-  let component: ClipboardComponent;
-  let fixture: ComponentFixture<ClipboardComponent>;
+  let component: ClipboardViewComponent;
+  let fixture: ComponentFixture<ClipboardViewComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ClipboardComponent ]
+      declarations: [ ClipboardViewComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ClipboardComponent);
+    fixture = TestBed.createComponent(ClipboardViewComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

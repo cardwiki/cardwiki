@@ -18,6 +18,8 @@ import { CommentService } from 'src/app/services/comment.service';
 import { CommentSimple } from 'src/app/dtos/commentSimple';
 import { CommentFormComponent } from '../../comment/comment-form/comment-form.component';
 import {ClipboardService} from '../../../services/clipboard.service';
+import {ClipboardPasteModalComponent} from '../../clipboard/clipboard-paste-modal/clipboard-paste-modal.component';
+import {CardUpdate} from '../../../dtos/cardUpdate';
 
 @Component({
   selector: 'app-deck-view',
@@ -152,18 +154,22 @@ export class DeckViewComponent implements OnInit {
   }
 
   copyToClipboard(card: CardSimple) {
-    this.cardService.fetchCard(card.id).subscribe(cardUpdate => {
-      cardUpdate.message = `Copied from ${this.deck.name}`;
-      this.clipboardService.copy(cardUpdate);
-      this.notificationService.success('Card copied to Clipboard');
-    });
+    this.clipboardService.copy(card, this.deck.name);
+    this.notificationService.success('Copied to Clipboard');
   }
 
-  pasteFromClipboard() {
-    this.clipboardService.paste(this.deck.id).subscribe(pastedCards => {
+  pasteFromClipboard(cards: CardUpdate[]) {
+    this.clipboardService.paste(this.deck.id, cards).subscribe(pastedCards => {
       this.cards.push(...pastedCards);
       this.notificationService.success('Cards pasted from Clipboard');
     });
+  }
+
+  openClipboardPasteModal() {
+    const modalRef = this.modalService.open(ClipboardPasteModalComponent, { size: 'lg' });
+    modalRef.result.then(
+      (res: CardUpdate[]) => this.pasteFromClipboard(res)
+    ).catch(() => {});
   }
 
 }

@@ -22,7 +22,7 @@ import { MarkdownSyntaxComponent } from './components/help/markdown-syntax/markd
 import {ProfileComponent} from "./components/profile/profile.component";
 import {UserSearchComponent} from "./components/user-search/user-search.component";
 import {LearnDeckComponent} from './components/learn-deck/learn-deck.component';
-import { ClipboardComponent } from './components/clipboard/clipboard.component';
+import { ClipboardViewComponent } from './components/clipboard/clipboard-view/clipboard-view.component';
 
 
 const routes: Routes = [
@@ -43,7 +43,7 @@ const routes: Routes = [
   {path: 'search', component: SearchComponent},
   {path: 'users/:username/profile', component: ProfileComponent},
   {path: 'users', component: UserSearchComponent},
-  {path: 'clipboard', component: ClipboardComponent},
+  {path: 'clipboard', component: ClipboardViewComponent},
 
   // static pages
   {path: 'about', component: AboutComponent},
