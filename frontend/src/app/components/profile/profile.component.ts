@@ -9,6 +9,7 @@ import {AuthService} from "../../services/auth.service";
 import {RevisionType} from 'src/app/dtos/revisionSimple';
 import { Page } from 'src/app/dtos/page';
 import { Pageable } from 'src/app/dtos/pageable';
+import { TitleService } from 'src/app/services/title.service';
 
 @Component({
   selector: 'app-profile',
@@ -38,7 +39,8 @@ export class ProfileComponent implements OnInit {
     [RevisionType.DELETE] : 'Deleted',
   }
 
-  constructor(public globals: Globals, private authService: AuthService, private userService: UserService, private route: ActivatedRoute) {
+  constructor(public globals: Globals, private authService: AuthService, private userService: UserService, private route: ActivatedRoute,
+              private titleService: TitleService) {
   }
 
   ngOnInit(): void {
@@ -46,9 +48,11 @@ export class ProfileComponent implements OnInit {
       this.deckPage = this.revisionPage = null;
       this.revisions = [];
       this.decks = [];
-      this.me = this.authService.getUserName() === params.get('username')
-      this.admin = this.authService.getUserRoles().includes('ADMIN')
-      this.loadProfile(params.get('username'));
+      const username = params.get('username');
+      this.me = this.authService.getUserName() === username;
+      this.admin = this.authService.getUserRoles().includes('ADMIN');
+      this.titleService.setTitle(username, null);
+      this.loadProfile(username);
     });
   }
 

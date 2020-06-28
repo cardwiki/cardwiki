@@ -1,6 +1,8 @@
 package at.ac.tuwien.sepm.groupphase.backend.repository;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -22,6 +24,15 @@ public interface CategoryRepository extends JpaRepository<Category, Long>, Categ
      */
     @EntityGraph(attributePaths ={"decks", "createdBy"})
     Optional<Category> findCategoryById(Long id);
+
+    /**
+     * Find categories containing {@code name} (case insensitive)
+     *
+     * @param name the search string
+     * @param pageable the paging parameters
+     * @return page of categories with names containing {@code name}
+     */
+    Page<Category> findByNameContainingIgnoreCase(String name, Pageable pageable);
 
     /**
      * finds all children of a given parent

@@ -3,9 +3,11 @@ import {DeckService} from '../../../services/deck.service';
 import {ActivatedRoute} from '@angular/router';
 import {Location} from '@angular/common';
 import {DeckUpdate} from '../../../dtos/deckUpdate';
-import {CategoryService} from '../../../services/category.service';
 import { CategorySimple } from 'src/app/dtos/categorySimple';
 import { NotificationService } from 'src/app/services/notification.service';
+import { TitleService } from 'src/app/services/title.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { CategoryPickerModalComponent } from '../../category/category-picker-modal/category-picker-modal.component';
 
 @Component({
   selector: 'app-deck-edit',
@@ -16,22 +18,21 @@ export class DeckEditComponent implements OnInit {
 
   deckId: number;
   deck: DeckUpdate;
-  categories: CategorySimple[];
-  selectedCategory: CategorySimple;
 
   constructor(
     private deckService: DeckService,
-    private categoryService: CategoryService,
+    private modalService: NgbModal,
     private route: ActivatedRoute,
     private location: Location,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private titleService: TitleService,
   ) {}
 
   ngOnInit(): void {
     this.deckId = +this.route.snapshot.paramMap.get('id');
     this.deckService.getDeckById(this.deckId).subscribe(deck => {
+      this.titleService.setTitle(`Edit ${deck.name}`, null);
       this.deck = new DeckUpdate(deck.name, deck.categories);
-      this.categoryService.getCategories().subscribe(categories => this.categories = categories);
     });
   }
 
@@ -48,10 +49,19 @@ export class DeckEditComponent implements OnInit {
     this.location.back()
   }
 
-  addCategory(): void {
-    if (this.selectedCategory && !this.deck.categories.includes(this.selectedCategory)) {
-      this.deck.categories.push(this.selectedCategory);
-    }
+  openCategoryPicker(): void {
+    const categoryPickerModal = this.modalService.open(CategoryPickerModalComponent);
+    categoryPickerModal.componentInstance.title = 'Select category';
+    categoryPickerModal.result
+      .then((category: CategorySimple) => this.addCategory(category))
+      .catch(err => console.log('Category picker cancelled', err));
+  }
+
+  addCategory(category: CategorySimple) {
+    if (this.deck.categories.some(c => c.id === category.id))
+      this.notificationService.warning(`Category ${category.name} has already been added`);
+    else
+      this.deck.categories.push(category);
   }
 
   removeCategory(category: CategorySimple): void {

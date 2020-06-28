@@ -1,4 +1,3 @@
-<h1>Deck search</h1>
 <form (ngSubmit)="onSubmit()" #searchForm="ngForm">
     <div class="input-group" role="group">
         <input type="text" class="form-control" id="deckName" name="deckName" [(ngModel)]="newQueryParams.name" placeholder="Find decks">
@@ -7,8 +6,8 @@
         </div>
     </div>
 </form>
-<hr>
-<ul class="list-group">
+
+<ul class="list-group mt-4">
     <a *ngFor="let deck of decks" routerLink="/decks/{{deck.id}}" class="list-group-item list-group-item-action">
         {{deck.name}}
         <span class="ml-2">

@@ -5,6 +5,7 @@ import { DeckDetails } from 'src/app/dtos/deckDetails';
 import { SearchQueryParams } from 'src/app/interfaces/search-query-params';
 import { Page } from 'src/app/dtos/page';
 import { Pageable } from 'src/app/dtos/pageable';
+import { TitleService } from 'src/app/services/title.service';
 
 @Component({
   selector: 'app-search',
@@ -21,9 +22,11 @@ export class SearchComponent implements OnInit {
   public decks: DeckDetails[]
   public loading: boolean
   
-  constructor(private deckService: DeckService, private route: ActivatedRoute, private router: Router) { }
+  constructor(private deckService: DeckService, private route: ActivatedRoute, private router: Router,
+              private titleService: TitleService) { }
 
   ngOnInit(): void {
+    this.titleService.setTitle('Decks', 'Deck search')
     this.route.queryParamMap.subscribe(paramMap => {
       this.queryParams = {
         name: paramMap.get('name') || '',
