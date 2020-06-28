@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
@@ -111,7 +112,7 @@ public class DeckEndpoint {
 
     @GetMapping(value = "/{id}/revisions")
     @ApiOperation(value = "Get revisions of the deck")
-    public Page<RevisionDtoWithContent> getRevisions(@PathVariable Long id, Pageable pageable) {
+    public Page<RevisionDtoWithContent> getRevisions(@PathVariable Long id, @SortDefault(value = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         deckService.findOneOrThrow(id);
         return deckService.getRevisions(id, pageable).map(revision -> revisionMapper.revisionToRevisionDetailedDto(revision));
     }
