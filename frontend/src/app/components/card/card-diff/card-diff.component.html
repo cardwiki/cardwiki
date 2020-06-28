@@ -1,6 +1,7 @@
 <div class="container mt-4">
   <div *ngIf="cardDiff">
     <h3>Difference: </h3>
+    <ng-container *appUserRole="'USER'"><button *ngIf="cardRevisionNew" class="btn btn-light mb-2" (click)="undo()">Revert</button></ng-container>
     <h4>Front Side</h4>
     <div class="row justify-content-center">
       <div [innerHtml]="cardDiff.textFront"></div>
@@ -13,8 +14,8 @@
     <hr class="mx-2">
   </div>
   <div *ngIf="cardRevisionOld" class="row justify-content-center">
-    <app-card-revision class="m-4" [cardRevision]="cardRevisionOld"></app-card-revision>
-    <app-card-revision class="m-4" *ngIf="cardRevisionNew" [cardRevision]="cardRevisionNew"></app-card-revision>
+    <app-card-revision class="w-50 p-4" [cardRevision]="cardRevisionOld"></app-card-revision>
+    <app-card-revision class="w-50 p-4" *ngIf="cardRevisionNew" [cardRevision]="cardRevisionNew"></app-card-revision>
   </div>
 </div>
 

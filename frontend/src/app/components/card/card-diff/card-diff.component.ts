@@ -6,6 +6,7 @@ import {Location} from "@angular/common";
 import {diff_match_patch} from "diff-match-patch";
 import {RevisionDetailed} from "../../../dtos/revisionDetailed";
 import {CardContent} from "../../../dtos/cardContent";
+import {CardUpdate} from "../../../dtos/cardUpdate";
 
 @Component({
   selector: 'app-card-diff',
@@ -54,6 +55,16 @@ export class CardDiffComponent implements OnInit {
               null, null
             )
           }
+        }
+      })
+  }
+
+  undo(): void {
+    const card: CardUpdate = new CardUpdate(this.cardRevisionOld.textFront, this.cardRevisionOld.textBack, this.cardRevisionOld.imageFront, this.cardRevisionOld.imageBack, "Revert to " + this.cardRevisionOld.message)
+    this.cardService.editCard(this.cardId, card)
+      .subscribe(simpleCard => {
+        if (simpleCard.id === this.cardId) {
+          this.ngOnInit();
         }
       })
   }
