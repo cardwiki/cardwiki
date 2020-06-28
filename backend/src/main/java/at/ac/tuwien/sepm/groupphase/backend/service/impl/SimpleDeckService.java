@@ -172,11 +172,14 @@ public class SimpleDeckService implements DeckService {
         User user = userService.loadCurrentUserOrThrow();
         // parse csv file
         Reader in = new BufferedReader(new InputStreamReader(file.getInputStream(), "UTF-8"));
-        CSVParser csvParser = new CSVParser(in, CSVFormat.DEFAULT.withTrim());
+        CSVParser csvParser = new CSVParser(in, CSVFormat.DEFAULT.withTrim().withIgnoreSurroundingSpaces());
         Iterable<CSVRecord> csvRecords = csvParser.getRecords();
 
         // create new cards
         for (CSVRecord csvRecord : csvRecords) {
+            for (int i = 0; i < csvRecord.size(); i++) {
+                LOGGER.info("csvRecord: " + csvRecord.get(i));
+            }
             if (csvRecord.size() != 2) {
                 throw new BadRequestException("Incorrectly formatted csv.");
             }

@@ -72,7 +72,7 @@ public interface CardRepository extends JpaRepository<Card, Long> {
      * @param textFront card content parameter
      * @return true if such a card exists, false else
      */
-    @Query("select case when count(r) > 0 then true else false end from Card c inner join RevisionEdit r on r.card.id=c.id" +
-         " where r.textFront = :textFront and c.deck.id=:deckId")
+    @Query("select case when count(r) > 0 then true else false end from Card c inner join RevisionEdit r on r=c.latestRevision" +
+         " where r.textFront=:textFront and c.deck.id=:deckId")
     boolean existsByDeckAndRevisionEditContent(@Param("deckId") Long deckId, @Param("textFront") String textFront);
 }
