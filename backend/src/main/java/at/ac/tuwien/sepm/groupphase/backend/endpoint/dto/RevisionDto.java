@@ -12,4 +12,5 @@ public abstract class RevisionDto {
     private String message;
     private LocalDateTime createdAt;
     private Revision.Type type;
+    private UserSimpleDto createdBy;
 }

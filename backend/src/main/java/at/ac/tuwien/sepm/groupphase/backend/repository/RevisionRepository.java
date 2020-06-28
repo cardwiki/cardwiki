@@ -19,13 +19,22 @@ import java.util.stream.Stream;
 @Repository
 public interface RevisionRepository extends JpaRepository<Revision, Long> {
     /**
+     * Find all revisions
+     * @param pageable
+     * @return page of revisions
+     */
+    @Override
+    @EntityGraph(attributePaths = {"card", "card.deck", "createdBy"})
+    Page<Revision> findAll(Pageable pageable);
+
+    /**
      * Find all revisions created by user
      *
      * @param userId of the user to query
      * @param pageable pagination parameters for the query
      * @return ordered page of all revisions created by user
      */
-    @EntityGraph(attributePaths = {"card", "card.deck"})
+    @EntityGraph(attributePaths = {"card", "card.deck", "createdBy"})
     Page<Revision> findByCreatedBy_Id(long userId, Pageable pageable);
 
     /**
@@ -34,7 +43,7 @@ public interface RevisionRepository extends JpaRepository<Revision, Long> {
      * @param userId of the user to query
      * @return all revisions created by user
      */
-    @EntityGraph(attributePaths = {"card", "card.deck"})
+    @EntityGraph(attributePaths = {"card", "card.deck", "createdBy"})
     Set<Revision> findExportByCreatedBy_Id(long userId);
 
     /**

@@ -174,4 +174,9 @@ public class SimpleCardService implements CardService {
             throw new BadRequestException(String.format("You may not query more than %d revisions at once.", MAX_REVISIONS_COUNT));
         return revisionRepository.findByIdIn(Arrays.stream(ids).collect(Collectors.toList()));
     }
+
+    @Override
+    public Page<Revision> getRecentRevisions(Pageable pageable) {
+        return revisionRepository.findAll(pageable);
+    }
 }
