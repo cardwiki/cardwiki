@@ -17,13 +17,11 @@ import { Page } from 'src/app/dtos/page';
 import { CommentService } from 'src/app/services/comment.service';
 import { CommentSimple } from 'src/app/dtos/commentSimple';
 import { CommentFormComponent } from '../../comment/comment-form/comment-form.component';
-
 import { CardsImportModalComponent} from '../cards-import-modal/cards-import-modal.component';
 import {ClipboardService} from '../../../services/clipboard.service';
 import {ClipboardPasteModalComponent} from '../../clipboard/clipboard-paste-modal/clipboard-paste-modal.component';
 import {CardUpdate} from '../../../dtos/cardUpdate';
 import { TitleService } from 'src/app/services/title.service';
-
 
 @Component({
   selector: 'app-deck-view',

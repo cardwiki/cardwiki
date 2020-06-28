@@ -5,7 +5,6 @@ import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckInputDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckUpdateDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.RevisionDtoWithContent;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.DeckMapper;
-
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.RevisionMapper;
 import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;

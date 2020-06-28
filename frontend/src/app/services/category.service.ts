@@ -22,7 +22,7 @@ export class CategoryService {
 
   /**
    * Search for categories by name
-   * 
+   *
    * @param name name to search for
    * @param pageable config for pagination
    */
@@ -35,7 +35,6 @@ export class CategoryService {
     return this.httpClient.get<Page<CategorySimple>>(this.categoryBaseUri, { params })
       .pipe(tap(null, this.errorHandler.handleError('Could not search for Categories')));
   }
-
 
   /**
    * Loads a specific category from the backend

@@ -38,6 +38,7 @@ public class DataGenerator {
     private static final int NUMBER_OF_CATEGORIES_TO_GENERATE = 3;
 
     private static final String[] USERNAMES = {DeveloperLogin.USER_NAME, "romeo", "julia", "victor", "mike", "juliett"};
+
     private final UserRepository userRepository;
     private final CardRepository cardRepository;
     private final DeckRepository deckRepository;

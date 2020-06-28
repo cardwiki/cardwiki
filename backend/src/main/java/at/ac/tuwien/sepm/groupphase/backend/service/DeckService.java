@@ -94,5 +94,4 @@ public interface DeckService {
      * @return List of Revisions of cards in the deck
      */
     Page<Revision> getRevisions(Long id, Pageable pageable);
-
 }

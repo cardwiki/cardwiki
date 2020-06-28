@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Globals} from '../global/globals';
 import {Observable} from 'rxjs';
 import {DeckDetails} from '../dtos/deckDetails';
@@ -104,7 +104,6 @@ export class DeckService {
 
   import(deckId: number, data: FormData): Observable<DeckDetails> {
     console.log('import cards to deck ' + deckId);
-    //  const headers = new HttpHeaders().append('Content-Type', 'text/csv');
     return this.httpClient.post<DeckDetails>(this.deckBaseUri + '/' + deckId + '/cards', data)
       .pipe(tap(null, this.errorHandler.handleError('Could not import cards to deck ' + deckId)));
   }
