@@ -49,12 +49,19 @@ export class DeckEditComponent implements OnInit {
     this.location.back()
   }
 
-  addCategory(): void {
+  openCategoryPicker(): void {
     const categoryPickerModal = this.modalService.open(CategoryPickerModalComponent);
     categoryPickerModal.componentInstance.title = 'Select category';
     categoryPickerModal.result
-      .then((category: CategorySimple) => this.deck.categories.push(category))
+      .then((category: CategorySimple) => this.addCategory(category))
       .catch(err => console.log('Category picker cancelled', err));
+  }
+
+  addCategory(category: CategorySimple) {
+    if (this.deck.categories.some(c => c.id === category.id))
+      this.notificationService.warning(`Category ${category.name} has already been added`);
+    else
+      this.deck.categories.push(category);
   }
 
   removeCategory(category: CategorySimple): void {
