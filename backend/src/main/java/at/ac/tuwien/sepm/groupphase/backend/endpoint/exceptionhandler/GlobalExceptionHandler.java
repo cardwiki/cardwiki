@@ -77,13 +77,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.CONFLICT, request);
     }
 
-    // TODO: use BadRequestException instead
-    @ExceptionHandler(value = {IllegalArgumentException.class})
-    protected ResponseEntity<Object> handleIllegalArgument(RuntimeException ex, WebRequest request) {
-        ex.printStackTrace();
-        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
-    }
-
     @ExceptionHandler(value = {BadRequestException.class})
     protected ResponseEntity<Object> handleBadRequest(RuntimeException ex, WebRequest request) {
         LOGGER.error(ex.getMessage());

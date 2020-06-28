@@ -25,7 +25,7 @@ import { SearchComponent } from './components/search/search.component';
 import { AboutComponent } from './components/about/about.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
-import { DeckPreviewComponent } from './components/deck-preview/deck-preview.component';
+import { DeckPreviewComponent } from './components/deck/deck-preview/deck-preview.component';
 import { ListComponent } from './components/category/list/list.component';
 import { CategoryDetailsComponent } from './components/category/category-details/category-details.component';
 import { ListSearchComponent } from './components/category/list-search/list-search.component';
