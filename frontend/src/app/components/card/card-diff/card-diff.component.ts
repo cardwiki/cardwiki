@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Globals} from "../../../global/globals";
 import {CardService} from "../../../services/card.service";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Location} from "@angular/common";
 import {diff_match_patch} from "diff-match-patch";
 import {RevisionDetailed} from "../../../dtos/revisionDetailed";
@@ -18,14 +18,16 @@ export class CardDiffComponent implements OnInit {
   public cardRevisionOld: RevisionDetailed;
   public cardRevisionNew: RevisionDetailed;
   private cardId: number;
+  private deckId: number;
   private revisionIdOld: number;
   private revisionIdNew: number;
   public cardDiff: CardContent;
 
-  constructor(private globals: Globals,private cardService: CardService, private route: ActivatedRoute, private location: Location) { }
+  constructor(private globals: Globals,private cardService: CardService, private route: ActivatedRoute, private router: Router, private location: Location) { }
 
   ngOnInit(): void {
     this.cardId = Number(this.route.snapshot.paramMap.get('cardId'));
+    this.deckId = Number(this.route.snapshot.paramMap.get('deckId'));
     this.route.queryParams.subscribe(params => {
       this.revisionIdOld = params['revision'];
       this.revisionIdNew = params['diff'];
@@ -64,7 +66,7 @@ export class CardDiffComponent implements OnInit {
     this.cardService.editCard(this.cardId, card)
       .subscribe(simpleCard => {
         if (simpleCard.id === this.cardId) {
-          this.ngOnInit();
+          this.router.navigate(["decks", this.deckId, "cards", this.cardId, "history"])
         }
       })
   }
