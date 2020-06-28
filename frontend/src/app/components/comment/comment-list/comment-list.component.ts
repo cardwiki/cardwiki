@@ -46,6 +46,10 @@ export class CommentListComponent {
       })
   }
 
+  cancelEdit() {
+    this.editingCommentId = -1
+  }
+
   deleteComment(id: number) {
     const confirmationModal = this.modalService.open(ConfirmModalComponent)
     confirmationModal.componentInstance.title = 'Delete Comment'
