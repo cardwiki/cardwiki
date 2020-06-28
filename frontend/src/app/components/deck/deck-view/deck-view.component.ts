@@ -32,11 +32,14 @@ export class DeckViewComponent implements OnInit {
   readonly limit = 50;
 
   deck: DeckDetails;
+  isFavorite$: Subject<boolean>;
+  clipboardSize: number;
+  loadingError: string;
+
+
   page: Page<CardSimple>;
   cards: CardSimple[];
-  isFavorite$: Subject<boolean>;
-  loading: boolean;
-  clipboardSize: number;
+  loadingCards: boolean;
 
   displayComments = false
   comments: CommentSimple[]
@@ -54,6 +57,7 @@ export class DeckViewComponent implements OnInit {
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       this.deck = this.page = null
+      this.loadingError = null
       this.cards = []
       this.isFavorite$ = new Subject()
       this.displayComments = false
@@ -71,21 +75,24 @@ export class DeckViewComponent implements OnInit {
       this.deck = deck;
       this.cards = [];
       this.loadMoreCards();
-      this.loadMoreComments()
+      this.loadMoreComments();
+      if (this.authService.isLoggedIn())
+        this.favoriteService.hasFavorite(id).subscribe(isFavorite => this.isFavorite$.next(isFavorite))
+    }, err => {
+      this.loadingError = err && err.status === 404 ?
+        'This deck does not exist. Maybe it has been deleted or the link is broken'
+        : 'Could not load this deck.';
     });
-    if (this.authService.isLoggedIn()) {
-      this.favoriteService.hasFavorite(id).subscribe(isFavorite => this.isFavorite$.next(isFavorite))
-    }
   }
 
   loadMoreCards() {
     const nextPageNumber = this.page ? this.page.pageable.pageNumber + 1 : 0
-    this.loading = true
+    this.loadingCards = true
     this.cardService.getCardsByDeckId(this.deck.id, new Pageable(nextPageNumber, this.limit))
       .subscribe(page => {
         this.page = page;
         this.cards.push(...page.content)
-      }).add(() => this.loading = false);
+      }).add(() => this.loadingCards = false);
   }
 
   loadMoreComments() {
