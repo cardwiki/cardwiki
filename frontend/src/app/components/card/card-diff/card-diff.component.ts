@@ -17,8 +17,8 @@ export class CardDiffComponent implements OnInit {
 
   public cardRevisionOld: RevisionDetailed;
   public cardRevisionNew: RevisionDetailed;
-  private cardId: number;
-  private deckId: number;
+  public cardId: number;
+  public deckId: number;
   private revisionIdOld: number;
   private revisionIdNew: number;
   public cardDiff: CardContent;

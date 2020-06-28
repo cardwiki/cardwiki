@@ -1,11 +1,17 @@
-<h2>Card Revision</h2>
-<div>{{cardRevision.createdAt | date : 'medium' }}: {{cardRevision.message}} by {{cardRevision.createdBy.username}} </div>
-<div class="container">
-  <div class="col">
-    <h4>Front Side</h4>
-    <app-card-view [card]="card" side="front"></app-card-view>
-    <hr>
-    <h4>Back Side</h4>
-    <app-card-view [card]="card" side="back"></app-card-view>
+<div class="card">
+  <div class="card-header">
+    <p class="lead m-0">Card Revision</p>
+    <p class="m-0">{{cardRevision.createdAt | date : 'medium' }}: &quot;{{cardRevision.message}}&quot; by {{cardRevision.createdBy.username}}</p>
+  </div>
+  <div class="card-body">
+    <div class="container">
+      <div class="col">
+        <h4>Front Side</h4>
+        <app-card-view [card]="card" side="front"></app-card-view>
+        <hr>
+        <h4>Back Side</h4>
+        <app-card-view [card]="card" side="back"></app-card-view>
+      </div>
+    </div>
   </div>
 </div>

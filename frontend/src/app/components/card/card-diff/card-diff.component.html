@@ -1,5 +1,8 @@
-<div class="container mt-4">
-  <div *ngIf="cardDiff">
+<div class="container">
+  <div class="row">
+    <a routerLink="/decks/{{deckId}}/cards/{{cardId}}/history" class="btn btn-light float-left mr-1"><i class="fas fa-arrow-left"></i> Back to Card History</a>
+  </div>
+  <div *ngIf="cardDiff" class="mt-3">
     <h3>Difference: </h3>
     <ng-container *appUserRole="'USER'"><button *ngIf="cardRevisionNew" class="btn btn-light mb-2" (click)="undo()">Revert</button></ng-container>
     <h4>Front Side</h4>
