@@ -75,6 +75,7 @@ export class AuthService {
   logoutUser(): void {
     this.updateWhoAmI(undefined)
     this.updateToken(undefined)
+    this.updateRedirectUrl(undefined)
   }
 
   /**
@@ -95,6 +96,21 @@ export class AuthService {
 
   getUserId(): number | undefined {
     return this.getStoredAuth().whoAmI?.id
+  }
+
+  updateRedirectUrl(url: string) {
+    this.storeAuth({
+      ...this.getStoredAuth(),
+      redirectUrl: url,
+    });
+  }
+
+  clearRedirectUrl() {
+    this.updateRedirectUrl(undefined);
+  }
+
+  getRedirectUrl(): string {
+    return this.getStoredAuth().redirectUrl;
   }
 
   /**
@@ -126,7 +142,7 @@ export class AuthService {
     // Token expired
     if (auth.token && this.getTokenExpirationDate(auth.token).valueOf() < new Date().valueOf()) {
       // Remove invalid token so anonymous requests succeed
-      this.updateToken(undefined)
+      this.logoutUser();
       return ['ANONYMOUS']
     }
 
@@ -180,4 +196,5 @@ export type UserRole = 'ANONYMOUS' | 'USER' | 'ADMIN'
 interface AuthStore {
   whoAmI?: WhoAmI,
   token?: string,
+  redirectUrl?: string,
 }
