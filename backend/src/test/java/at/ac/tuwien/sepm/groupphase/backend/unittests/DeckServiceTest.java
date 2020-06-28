@@ -19,6 +19,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;

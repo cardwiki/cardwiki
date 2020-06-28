@@ -57,6 +57,7 @@ export class CardsImportModalComponent implements OnInit {
     if (this.fileForm.controls.fileSelect.errors) {
       const errors = this.fileForm.controls.fileSelect.errors;
       if (errors.extensionInvalid) {
+        this.fileForm.controls['fileSelect'].setValue('');
         return 'File import is only supported for .csv files.';
       }
     }
@@ -68,6 +69,7 @@ export class CardsImportModalComponent implements OnInit {
     this.activeModal.close(
       this.sendData(this.deck.id, formData)
     );
+    window.location.reload();
   }
 
   sendData(deckId: number, data: FormData) {

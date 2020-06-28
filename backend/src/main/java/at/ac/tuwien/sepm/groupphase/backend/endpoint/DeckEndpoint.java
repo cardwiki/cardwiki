@@ -110,23 +110,30 @@ public class DeckEndpoint {
         deckService.delete(id);
     }
 
-    @Secured("ROLE_USER")
     @GetMapping(value = "/{id}", produces = "text/csv")
     @ApiOperation(value = "export deck", authorizations = @Authorization("apiKey"))
-    public void export(@PathVariable Long id, HttpServletResponse response) throws IOException {
+    public void export(@PathVariable Long id, HttpServletResponse response) {
         LOGGER.info("GET /api/v1/decks/{} as .csv", id);
         Deck deck = deckService.findOneOrThrow(id);
         response.addHeader("Content-Disposition", "attachment");
         response.addHeader("Content-Type", "text/csv;charset=UTF-8");
-        deckService.createCsvData(response.getWriter(), id);
+        try {
+            deckService.createCsvData(response.getWriter(), id);
+        } catch(IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error encoding cards.");
+        }
     }
 
     @Secured("ROLE_USER")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping(value = "/{id}/cards", consumes = "multipart/form-data")
     @ApiOperation(value = "import cards to deck", authorizations = @Authorization("apiKey"))
     public DeckDto importCards (@PathVariable Long id, @RequestParam("file") MultipartFile file) {
         LOGGER.info("POST {} to /api/v1/decks/{}", file.getOriginalFilename(), id);
-        return deckMapper.deckToDeckDto(deckService.addCards(id, file));
+        try {
+            return deckMapper.deckToDeckDto(deckService.addCards(id, file));
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error reading cards.");
+        }
     }
 }

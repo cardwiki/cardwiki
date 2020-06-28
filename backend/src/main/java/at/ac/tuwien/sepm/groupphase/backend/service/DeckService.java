@@ -84,5 +84,5 @@ public interface DeckService {
      * @param file containing the data to add to the deck
      * @throws IOException if the CSVPrinter encounters an error.
      */
-    Deck addCards(Long deckId, MultipartFile file);
+    Deck addCards(Long deckId, MultipartFile file) throws IOException;
 }

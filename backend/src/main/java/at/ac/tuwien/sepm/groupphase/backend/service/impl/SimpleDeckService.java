@@ -152,7 +152,7 @@ public class SimpleDeckService implements DeckService {
                 try {
                     printer.printRecord(revisionEdit.getTextFront(), revisionEdit.getTextBack());
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    LOGGER.info("An error occurred converting records to csv: {}", e);
                 }
             });
         printer.close();
@@ -160,22 +160,22 @@ public class SimpleDeckService implements DeckService {
 
     @Override
     @Transactional
-    public Deck addCards(Long deckId, MultipartFile file) {
+    public Deck addCards(Long deckId, MultipartFile file) throws IOException {
+        // fetch information
         Deck deck = deckRepository.getOne(deckId);
         User user = userService.loadCurrentUserOrThrow();
-        Iterable<CSVRecord> csvRecords = null;
-        try {
-            Reader in = new BufferedReader(new InputStreamReader(file.getInputStream(), "UTF-8"));
-            CSVParser csvParser = new CSVParser(in, CSVFormat.DEFAULT.withTrim());
-            csvRecords = csvParser.getRecords();
-        } catch(IOException e) {
-            throw new RuntimeException(e);
-        }
+        // parse csv file
+        Reader in = new BufferedReader(new InputStreamReader(file.getInputStream(), "UTF-8"));
+        CSVParser csvParser = new CSVParser(in, CSVFormat.DEFAULT.withTrim());
+        Iterable<CSVRecord> csvRecords = csvParser.getRecords();
 
+        // create new cards
         for (CSVRecord csvRecord : csvRecords) {
             String textFront = csvRecord.get(0);
+
             if(!cardRepository.existsByDeckAndRevisionEditContent(deckId, textFront)) {
                 String textBack = csvRecord.get(1);
+
                 Card card = new Card();
                 card.setDeck(deck);
                 deck.getCards().add(card);
@@ -187,9 +187,10 @@ public class SimpleDeckService implements DeckService {
                 revisionCreate.setCreatedBy(user);
                 user.getRevisions().add(revisionCreate);
                 card.setLatestRevision(revisionCreate);
+
                 deckRepository.saveAndFlush(deck);
             } else {
-                LOGGER.info("Card with front {} and back {} already exists.", csvRecord.get(0), csvRecord.get(1));
+                LOGGER.info("Card with front {} already exists.", csvRecord.get(0));
             }
 
         }

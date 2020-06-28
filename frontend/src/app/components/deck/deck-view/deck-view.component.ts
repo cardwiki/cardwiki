@@ -144,7 +144,7 @@ export class DeckViewComponent implements OnInit {
   }
 
   openImportModal(deck: DeckDetails) {
-    const modalRef = this.modalService.open(CardsImportModalComponent);
+    const modalRef = this.modalService.open(CardsImportModalComponent, { size: 'lg' });
     modalRef.componentInstance.deck = this.deck;
 
     modalRef.result.then(
