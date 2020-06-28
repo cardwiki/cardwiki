@@ -5,7 +5,6 @@ import {AuthService} from '../../services/auth.service';
 import {parse as parseCookie} from 'cookie';
 import { OAuth2ProviderDto } from 'src/app/dtos/oAuth2Provider';
 import { WhoAmI } from 'src/app/dtos/whoAmI';
-import { NotificationService } from 'src/app/services/notification.service';
 import { TitleService } from 'src/app/services/title.service';
 
 @Component({
@@ -32,6 +31,8 @@ export class LoginComponent implements OnInit {
   get formUsername() { return this.registerForm.get('username'); }
 
   ngOnInit(): void {
+    this.registerForm.reset();
+    this.oAuthInfo = null;
     this.titleService.setTitle('Login', null)
     this.authService.getAuthProviders().subscribe(providers => this.authProviders = providers);
     this.route.queryParams.subscribe(params => {
@@ -57,14 +58,7 @@ export class LoginComponent implements OnInit {
     this.authService.register(username).subscribe(response => {
       console.log("Register response: ", response);
       if (response.username) {
-        this.username = response.username;
-        setTimeout(() =>
-          {
-            this.registerForm.reset();
-            this.oAuthInfo = null;
-            this.router.navigate(['/']);
-          },
-          2500);
+        this.router.navigate(['/']);
       }
     });
   }
