@@ -11,7 +11,7 @@ import {DeckEditComponent} from './components/deck/deck-edit/deck-edit.component
 import { SearchComponent } from './components/search/search.component';
 import { AboutComponent } from './components/about/about.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
-import { DeckPreviewComponent } from './components/deck-preview/deck-preview.component';
+import { DeckPreviewComponent } from './components/deck/deck-preview/deck-preview.component';
 import {CategoryUpdateComponent} from './components/category/category-update/category-update.component';
 import {CategoryDetailsComponent} from './components/category/category-details/category-details.component';
 
