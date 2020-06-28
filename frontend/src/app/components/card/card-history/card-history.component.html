@@ -13,10 +13,10 @@
     <div class="card-body p-1" >
       <input class="mx-1" type="radio" [(ngModel)]="selectedRevisionIdOld"
              [value]="revision.id" name="oldid"
-             [attr.disabled]="selectedRevisionIdNew>revision.id ? 1 : null"/>
+             [attr.disabled]="selectedRevisionIdNew-1<revision.id ? 1 : null"/>
       <input class="mx-1" type="radio" [(ngModel)]="selectedRevisionIdNew"
              [value]="revision.id" name="newid"
-             [attr.disabled]="selectedRevisionIdOld<revision.id ? 1 : null"/>
+             [attr.disabled]="selectedRevisionIdOld+1>revision.id ? 1 : null"/>
       {{revision.createdAt | date : 'medium'}}:
       <a routerLink="/users/{{revision.createdBy.username}}/profile">{{revision.createdBy.username}}</a>
       <a routerLink="/decks/{{deckId}}/cards/{{revision.cardId}}" [queryParams]="{revision: revision.id}">
@@ -25,7 +25,7 @@
       <a routerLink="/decks/{{deckId}}/cards/{{revision.cardId}}">
         {{revision.textFront && revision.textFront.length > REVISIONTEXT_TRUNCATE ? (revision.textFront | slice:0:REVISIONTEXT_TRUNCATE)+'...' : revision.textFront}}</a>:
       {{revision.message}}
-      <button class="btn btn-sm btn-light ml-2" (click)="undo(revision.id)">Undo</button>
+      <button *ngIf="true" class="btn btn-sm btn-light ml-2" (click)="undo(revision.id)">Undo</button>
     </div>
   </div>
 </form>
