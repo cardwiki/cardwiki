@@ -17,4 +17,7 @@
       {{revision.message}}
     </div>
   </div>
+  <button *ngIf="revisionPage && !revisionPage.last" class="btn btn-light p-1" (click)="loadRevisions()">
+    Load more...
+  </button>
 </div>
