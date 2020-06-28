@@ -54,9 +54,8 @@ export class CardHistoryComponent implements OnInit {
   }
 
   undo(revisionId: number): void {
-    const undoRevisionIndex = this.revisions.findIndex(x => x.id === revisionId)
-    const newRevision: RevisionDetailed = this.revisions[undoRevisionIndex+1]
-    const card: CardUpdate = new CardUpdate(newRevision.textFront, newRevision.textBack, newRevision.imageFront, newRevision.imageBack, "Undo " + this.revisions[undoRevisionIndex].message)
+    const newRevision: RevisionDetailed = this.revisions.find(x => x.id === revisionId)
+    const card: CardUpdate = new CardUpdate(newRevision.textFront, newRevision.textBack, newRevision.imageFront, newRevision.imageBack, "Revert to " + newRevision.message)
     this.cardService.editCard(this.cardId, card)
       .subscribe(simpleCard => {
         if (simpleCard.id === this.cardId) {

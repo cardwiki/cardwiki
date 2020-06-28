@@ -25,7 +25,7 @@
       <a routerLink="/decks/{{deckId}}/cards/{{revision.cardId}}">
         {{revision.textFront && revision.textFront.length > REVISIONTEXT_TRUNCATE ? (revision.textFront | slice:0:REVISIONTEXT_TRUNCATE)+'...' : revision.textFront}}</a>:
       {{revision.message}}
-      <button *ngIf="true" class="btn btn-sm btn-light ml-2" (click)="undo(revision.id)">Undo</button>
+      <button *ngIf="true" class="btn btn-sm btn-light ml-2" (click)="undo(revision.id)">Revert</button>
     </div>
   </div>
 </form>
