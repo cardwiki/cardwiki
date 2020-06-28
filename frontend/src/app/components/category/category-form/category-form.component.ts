@@ -1,4 +1,4 @@
-import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, AbstractControl} from '@angular/forms';
 import {CategoryDetails} from '../../../dtos/categoryDetails';
 import {CategoryService} from '../../../services/category.service';
@@ -20,9 +20,9 @@ export class CategoryFormComponent implements OnInit {
   @Input() mode: 'Create' | 'Update';
   @Input() category: CategoryDetails;
   @Input() title: string;
-  @ViewChild('dismissModal') dismissModalButton: ElementRef;
   categoryForm: FormGroup;
   parent: CategorySimple;
+  nameErrors: string;
 
   constructor(private formBuilder: FormBuilder, private categoryService: CategoryService, private modalService: NgbModal,
               private location: Location, private router: Router, private notificationService: NotificationService) {
@@ -34,13 +34,14 @@ export class CategoryFormComponent implements OnInit {
   ngOnInit(): void {
     this.categoryForm.reset();
     this.setDefaults();
+    this.nameErrors = null;
+    this.categoryForm.statusChanges.subscribe(() => this.nameErrors = this.checkNameErrors())
   }
 
   /**
    * Submits form data to createCategory() or editCategory() function
    */
   submitCategoryForm() {
-    this.dismissModalButton.nativeElement.click();
     console.log('submitted form values:', this.categoryForm.value);
     const payload = new CategoryUpdate(this.categoryForm.value.name, this.parent);
 
@@ -63,12 +64,12 @@ export class CategoryFormComponent implements OnInit {
     const categoryPickerModal = this.modalService.open(CategoryPickerModalComponent);
     categoryPickerModal.componentInstance.title = 'Select parent category';
     categoryPickerModal.result
-      .then((category: CategorySimple) => {
-        this.parent = category;
-        this.categoryForm.markAsTouched();
-        this.categoryForm.markAsDirty();
-      })
+      .then((category: CategorySimple) => this.parent = category)
       .catch(err => console.log('Parent picker cancelled', err));
+  }
+
+  removeParent(): void {
+    this.parent = null;
   }
 
   /**
