@@ -17,7 +17,7 @@
             <div class="mt-4">
                 <div *ngIf="page && !categories.length" class="alert-danger">No categories found.</div>
                 <ul *ngIf="categories.length" class="list-group">
-                    <a *ngFor="let category of categories" class="list-group-item list-group-item-action" (click)="onSelect(category)">
+                    <a *ngFor="let category of categories" class="list-group-item list-group-item-action" (click)="onSelect(category); false" href="#">
                         {{category.name}}
                     </a>
                 </ul>
