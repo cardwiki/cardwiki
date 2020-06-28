@@ -19,7 +19,7 @@
              [attr.disabled]="selectedRevisionIdOld+1>revision.id ? 1 : null"/>
       {{revision.createdAt | date : 'medium'}}:
       <a routerLink="/users/{{revision.createdBy.username}}/profile">{{revision.createdBy.username}}</a>
-      <a routerLink="/decks/{{deckId}}/cards/{{revision.cardId}}" [queryParams]="{revision: revision.id}">
+      <a routerLink="/decks/{{deckId}}/cards/{{revision.cardId}}" [queryParams]="{revision: revision.id, diff: revisions[index+1] ? revisions[index+1].id : undefined}">
         {{revisionTypeToString[revision.type]}}</a>
       card
       <a routerLink="/decks/{{deckId}}/cards/{{revision.cardId}}">
