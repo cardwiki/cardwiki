@@ -1,4 +1,4 @@
-<h1 class="mt-5 mb-5">Edit deck</h1>
+<h1 class="mb-5">Edit deck</h1>
 
 <form *ngIf="deck" (ngSubmit)="save()">
   <div class="form-group w-75">
@@ -8,13 +8,8 @@
 
   <div class="form-group w-75">
     <label class="mt-5" for="deck-add-category">Categories</label>
-    <div class="input-group" *ngIf="categories">
-      <select class="custom-select" id="deck-add-category" name="deck-add-category" [(ngModel)]="selectedCategory">
-        <option *ngFor="let category of categories" [ngValue]="category">{{category.name}}</option>
-      </select>
-      <div class="input-group-append">
-        <button class="btn btn-outline-secondary" type="button" (click)="addCategory()">Add Category</button>
-      </div>
+    <div class="input-group">
+      <button class="btn btn-outline-secondary" type="button" (click)="openCategoryPicker()">Add Category</button>
     </div>
 
     <ul class="list-group mt-2">

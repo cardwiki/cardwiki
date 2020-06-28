@@ -20,6 +20,7 @@ import { CommentFormComponent } from '../../comment/comment-form/comment-form.co
 import {ClipboardService} from '../../../services/clipboard.service';
 import {ClipboardPasteModalComponent} from '../../clipboard/clipboard-paste-modal/clipboard-paste-modal.component';
 import {CardUpdate} from '../../../dtos/cardUpdate';
+import { TitleService } from 'src/app/services/title.service';
 
 @Component({
   selector: 'app-deck-view',
@@ -48,7 +49,7 @@ export class DeckViewComponent implements OnInit {
               private favoriteService: FavoriteService, private commentService: CommentService,
               private route: ActivatedRoute, private router: Router, private modalService: NgbModal,
               private authService: AuthService, private notificationService: NotificationService,
-              private clipboardService: ClipboardService) { }
+              private clipboardService: ClipboardService, private titleService: TitleService) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
@@ -66,6 +67,7 @@ export class DeckViewComponent implements OnInit {
   loadDeck(id: number) {
     // TODO: Use forkJoin to only update page when everything loaded (to prevent flickering)
     this.deckService.getDeckById(id).subscribe(deck => {
+      this.titleService.setTitle(deck.name, null);
       this.deck = deck;
       this.cards = [];
       this.loadMoreCards();

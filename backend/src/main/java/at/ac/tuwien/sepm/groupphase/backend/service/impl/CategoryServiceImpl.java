@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
+import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.exception.CategoryNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CategoryRepository;
@@ -14,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +42,12 @@ public class CategoryServiceImpl implements CategoryService {
     public List<Category> findAll() {
         LOGGER.debug("Find categories.");
         return categoryRepository.findAll(Sort.by(Sort.Order.asc("name").ignoreCase()));
+    }
+
+    @Override
+    public Page<Category> searchByName(String name, Pageable pageable) {
+        LOGGER.debug("Find categories by name: {} {}", name, pageable);
+        return categoryRepository.findByNameContainingIgnoreCase(name, pageable);
     }
 
     @Override

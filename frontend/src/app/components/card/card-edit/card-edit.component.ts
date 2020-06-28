@@ -4,6 +4,7 @@ import {ActivatedRoute} from '@angular/router';
 import { Location } from '@angular/common';
 import { NotificationService } from 'src/app/services/notification.service';
 import { CardUpdate } from 'src/app/dtos/cardUpdate';
+import { TitleService } from 'src/app/services/title.service';
 
 @Component({
   selector: 'app-card-edit',
@@ -16,9 +17,10 @@ export class CardEditComponent implements OnInit {
   private cardId: number;
 
   constructor(private cardService: CardService, private route: ActivatedRoute, private location: Location,
-              private notificationService: NotificationService) { }
+              private notificationService: NotificationService, private titleService: TitleService) { }
 
   ngOnInit(): void {
+    this.titleService.setTitle('Edit Card');
     this.card = new CardUpdate(null, null, null, null);
     this.cardId = Number(this.route.snapshot.paramMap.get('cardId'));
     this.fetchCardContent();

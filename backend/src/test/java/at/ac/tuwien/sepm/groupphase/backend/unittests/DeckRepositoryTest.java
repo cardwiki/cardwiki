@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.unittests;
 
+import at.ac.tuwien.sepm.groupphase.backend.profiles.datagenerator.Agent;
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;

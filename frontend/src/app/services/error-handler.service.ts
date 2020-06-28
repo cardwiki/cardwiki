@@ -13,9 +13,9 @@ export class ErrorHandlerService {
   private readonly httpErrorMessages: { [status: string]: (err: HttpErrorResponse) => string } = {
     0: () => 'Could not connect to server',
     400: err => this.getValidationMessage(err),
-    401: () => 'Not authenticated. Please login and try again',
-    403: () => 'Invalid authorization. Please try to logout and login if you should have access to this ressource',
-    404: () => 'Could not find this ressource',
+    401: () => 'Not authenticated. Please log in and try again',
+    403: () => 'Invalid authorization. Please try to log out and log in if you should have access to this resource',
+    404: () => 'Could not find this resource',
     409: err => this.getValidationMessage(err),
     422: err => this.getValidationMessage(err),
     500: () => 'An internal server error occured',

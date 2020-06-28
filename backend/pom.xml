@@ -190,7 +190,7 @@
                 <version>0.8.5</version>
                 <configuration>
                     <excludes>
-                        **/datagenerator/*
+                        **/dev/*
                     </excludes>
                 </configuration>
                 <executions>

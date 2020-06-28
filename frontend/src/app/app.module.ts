@@ -26,12 +26,9 @@ import { AboutComponent } from './components/about/about.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
 import { DeckPreviewComponent } from './components/deck-preview/deck-preview.component';
-import { CategoryListComponent } from './components/category/category-list/category-list.component';
 import { ListComponent } from './components/category/list/list.component';
 import { CategoryDetailsComponent } from './components/category/category-details/category-details.component';
 import { ListSearchComponent } from './components/category/list-search/list-search.component';
-import { CategorySubcategoriesComponent } from './components/category/category-subcategories/category-subcategories.component';
-import { CategoryDecksComponent } from './components/category/category-decks/category-decks.component';
 import { Md2htmlPipe } from './pipes/md2html.pipe';
 import { MarkdownSyntaxComponent } from './components/help/markdown-syntax/markdown-syntax.component';
 import { ProfileComponent } from './components/profile/profile.component';
@@ -46,6 +43,10 @@ import { CommentListComponent } from './components/comment/comment-list/comment-
 import { ConfirmModalComponent } from './components/utils/confirm-modal/confirm-modal.component';
 import { ClipboardViewComponent } from './components/clipboard/clipboard-view/clipboard-view.component';
 import { ClipboardPasteModalComponent } from './components/clipboard/clipboard-paste-modal/clipboard-paste-modal.component';
+import { WelcomeComponent } from './components/welcome/welcome.component';
+import { TitleComponent } from './components/title/title.component';
+import { CategorySearchComponent } from './components/category/category-search/category-search.component';
+import { CategoryPickerModalComponent } from './components/category/category-picker-modal/category-picker-modal.component';
 
 @NgModule({
   declarations: [
@@ -68,13 +69,10 @@ import { ClipboardPasteModalComponent } from './components/clipboard/clipboard-p
     DashboardComponent,
     PageNotFoundComponent,
     DeckPreviewComponent,
-    CategoryListComponent,
     ListComponent,
     CategoryDetailsComponent,
     CardEditComponent,
     ListSearchComponent,
-    CategorySubcategoriesComponent,
-    CategoryDecksComponent,
     Md2htmlPipe,
     MarkdownSyntaxComponent,
     ProfileComponent,
@@ -89,6 +87,10 @@ import { ClipboardPasteModalComponent } from './components/clipboard/clipboard-p
     ConfirmModalComponent,
     ClipboardViewComponent,
     ClipboardPasteModalComponent,
+    WelcomeComponent,
+    TitleComponent,
+    CategorySearchComponent,
+    CategoryPickerModalComponent,
   ],
   imports: [
     BrowserModule,

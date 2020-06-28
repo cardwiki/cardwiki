@@ -33,15 +33,9 @@ export class ListSearchComponent implements OnInit {
   onChanges() {
     if (this.searchForm) {
       this.searchForm.controls.search.valueChanges.subscribe((value) => {
-        this.filteredList = [];
-        this.list.forEach((item) => {
-          if (!value) {
-            this.filteredList = this.list;
-          }
-          if (value && item.name.toLowerCase().includes(value.toLowerCase())) {
-            this.filteredList.push(item);
-          }
-        });
+        this.filteredList = this.list.filter(item =>
+          !value || item.name.toLowerCase().includes(value.toLowerCase())
+        );
         this.specs = {listSize: this.filteredList.length, pageSize: this.specs.pageSize, page: 1};
       });
     }
