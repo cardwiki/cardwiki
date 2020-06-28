@@ -12,11 +12,11 @@
             <button type="button" class="btn btn-light float-right mr-1" (click)="saveToFavorites()"><i class="far fa-star"></i> Save</button>
           </ng-template>
           <button *ngIf="cards.length" type="button" class="btn btn-light mr-1" (click)="openForkModal()">
-            <i class="fas fa-code-branch"></i> Fork 
+            <i class="fas fa-code-branch"></i> Fork
           </button>
         </ng-template>
-        <button type="button" class="btn btn-light float-right mr-1">
-          <i class="fas fa-list"></i> View History</button>
+        <a type="link" routerLink="/decks/{{deck.id}}/history" class="btn btn-light float-right mr-1">
+          <i class="fas fa-list"></i> View History</a>
       </div>
     </div>
   </div>
@@ -96,7 +96,7 @@
           <div class="btn-group card-actions">
             <a routerLink="/decks/{{deck.id}}/cards/{{card.id}}/edit" class="btn btn-light"><i class="fas fa-pencil-alt"></i></a>
             <button type="button" class="btn btn-light"><i class="far fa-clone"></i></button>
-            <button type="button" class="btn btn-light"><i class="fas fa-history"></i></button>
+            <a routerLink="/decks/{{deck.id}}/cards/{{card.id}}/history" class="btn btn-light"><i class="fas fa-history"></i></a>
             <button type="button" class="btn btn-light" (click)="openCardRemoveModal(card)"><i class="fas fa-trash-alt"></i></button>
             <button *appUserRole="'ADMIN'" class="btn btn-danger" (click)="deleteCard(card)">Delete</button>
           </div>

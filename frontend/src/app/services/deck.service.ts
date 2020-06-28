@@ -10,6 +10,7 @@ import { ErrorHandlerService } from './error-handler.service';
 import { tap } from 'rxjs/operators';
 import { Page } from '../dtos/page';
 import { Pageable } from '../dtos/pageable';
+import {RevisionDetailed} from "../dtos/revisionDetailed";
 
 @Injectable({
   providedIn: 'root'
@@ -84,5 +85,17 @@ export class DeckService {
     console.log('Delete deck ' + deckId);
     return this.httpClient.delete<void>(this.deckBaseUri + '/' + deckId)
       .pipe(tap(null, this.errorHandler.handleError('Could not delete deck ' + deckId)));
+  }
+
+  /**
+   * Fetches card revisions for cards in a deck
+   *
+   * @param deckId of the deck to fetch revisions of
+   * @param pageable config for pagination
+   */
+  fetchRevisions(deckId: number, pageable: Pageable): Observable<Page<RevisionDetailed>> {
+    console.log(`fetch revisions for cards in deck with id ${deckId}`);
+    return this.httpClient.get<Page<RevisionDetailed>>(this.deckBaseUri + '/' + deckId + '/revisions', { params: pageable.toHttpParams() })
+      .pipe(tap(null, this.errorHandler.handleError('Could not fetch Revisions')))
   }
 }

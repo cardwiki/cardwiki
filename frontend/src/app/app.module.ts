@@ -41,6 +41,10 @@ import { UserRoleDirective } from './directives/user-role.directive';
 import { CommentFormComponent } from './components/comment/comment-form/comment-form.component';
 import { CommentListComponent } from './components/comment/comment-list/comment-list.component';
 import { ConfirmModalComponent } from './components/utils/confirm-modal/confirm-modal.component';
+import { CardRevisionComponent } from './components/card/card-revision/card-revision.component';
+import { CardDiffComponent } from './components/card/card-diff/card-diff.component';
+import { CardHistoryComponent } from './components/card/card-history/card-history.component';
+import { DeckHistoryComponent } from './components/deck/deck-history/deck-history.component';
 import { WelcomeComponent } from './components/welcome/welcome.component';
 import { TitleComponent } from './components/title/title.component';
 import { CategorySearchComponent } from './components/category/category-search/category-search.component';
@@ -83,6 +87,10 @@ import { CategoryPickerModalComponent } from './components/category/category-pic
     CommentFormComponent,
     CommentListComponent,
     ConfirmModalComponent,
+    CardRevisionComponent,
+    CardDiffComponent,
+    CardHistoryComponent,
+    DeckHistoryComponent,
     WelcomeComponent,
     TitleComponent,
     CategorySearchComponent,
