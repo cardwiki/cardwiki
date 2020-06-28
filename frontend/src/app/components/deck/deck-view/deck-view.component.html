@@ -57,7 +57,7 @@
     </div>
     <div class="col">
       <div class="btn-toolbar float-right">
-        <button type="button" class="btn btn-light mr-1" (click)="pasteFromClipboard()" title="Import Cards from Clipboard"><i class="far fa-clipboard"></i> Paste</button>
+        <button type="button" class="btn btn-light mr-1" (click)="pasteFromClipboard()" [disabled]="clipboardSize <= 0" title="Import Cards from Clipboard"><i class="fas fa-paste"></i> Paste</button>
         <a routerLink="/decks/{{deck.id}}/cards/new" class="btn btn-primary float-right"><i class="fas fa-plus"></i> Add new card</a>
       </div>
     </div>

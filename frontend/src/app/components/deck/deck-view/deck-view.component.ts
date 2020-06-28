@@ -17,7 +17,7 @@ import { Page } from 'src/app/dtos/page';
 import { CommentService } from 'src/app/services/comment.service';
 import { CommentSimple } from 'src/app/dtos/commentSimple';
 import { CommentFormComponent } from '../../comment/comment-form/comment-form.component';
-import {CardUpdate} from '../../../dtos/cardUpdate';
+import {ClipboardService} from '../../../services/clipboard.service';
 
 @Component({
   selector: 'app-deck-view',
@@ -33,6 +33,7 @@ export class DeckViewComponent implements OnInit {
   cards: CardSimple[];
   isFavorite$: Subject<boolean>;
   loading: boolean;
+  clipboardSize: number;
 
   displayComments = false
   comments: CommentSimple[]
@@ -44,7 +45,8 @@ export class DeckViewComponent implements OnInit {
   constructor(private deckService: DeckService, private cardService: CardService, public globals: Globals,
               private favoriteService: FavoriteService, private commentService: CommentService,
               private route: ActivatedRoute, private router: Router, private modalService: NgbModal,
-              private authService: AuthService, private notificationService: NotificationService) { }
+              private authService: AuthService, private notificationService: NotificationService,
+              private clipboardService: ClipboardService) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
@@ -56,6 +58,7 @@ export class DeckViewComponent implements OnInit {
       this.comments = []
       this.loadDeck(Number(params.get('id')));
     });
+    this.clipboardService.clipboard$.asObservable().subscribe(clipboard => this.clipboardSize = clipboard.length);
   }
 
   loadDeck(id: number) {
@@ -66,8 +69,9 @@ export class DeckViewComponent implements OnInit {
       this.loadMoreCards();
       this.loadMoreComments()
     });
-    if (this.authService.isLoggedIn())
+    if (this.authService.isLoggedIn()) {
       this.favoriteService.hasFavorite(id).subscribe(isFavorite => this.isFavorite$.next(isFavorite))
+    }
   }
 
   loadMoreCards() {
@@ -150,20 +154,16 @@ export class DeckViewComponent implements OnInit {
   copyToClipboard(card: CardSimple) {
     this.cardService.fetchCard(card.id).subscribe(cardUpdate => {
       cardUpdate.message = `Copied from ${this.deck.name}`;
-      const clipboard = JSON.parse(localStorage.getItem('clipboard') ?? '[]');
-      clipboard.push(cardUpdate);
-      localStorage.setItem('clipboard', JSON.stringify(clipboard));
+      this.clipboardService.copy(cardUpdate);
       this.notificationService.success('Card copied to Clipboard');
     });
   }
 
   pasteFromClipboard() {
-    const clipboard: CardUpdate[] = JSON.parse(localStorage.getItem('clipboard') ?? '[]');
-    for (const newCard of clipboard) {
-      this.cardService.createCard(this.deck.id, newCard).subscribe(createdCard => this.cards.push(createdCard));
-    }
-    localStorage.removeItem('clipboard');
-    this.notificationService.success('Card(s) pasted from Clipboard');
+    this.clipboardService.paste(this.deck.id).subscribe(pastedCards => {
+      this.cards.push(...pastedCards);
+      this.notificationService.success('Cards pasted from Clipboard');
+    });
   }
 
 }

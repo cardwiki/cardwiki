@@ -5,7 +5,7 @@
     </div>
   </div>
   <div class="row mb-3">
-    <div class="col" *ngIf="clipboard">
+    <div class="col" *ngIf="clipboard.length !== 0">
       <button type="button" class="float-right btn btn-primary" (click)="openDeckModal()"><i class="fas fa-plus"></i> Create new deck with Clipboard</button>
     </div>
   </div>
@@ -31,7 +31,7 @@
     </li>
   </ul>
 </div>
-<div class="container" *ngIf="!clipboard">
+<div class="container" *ngIf="clipboard.length === 0">
   <p>There are no cards on your clipboard yet.</p>
   <p>To add cards, simply press the copy button on any card when viewing a deck.</p>
 </div>
