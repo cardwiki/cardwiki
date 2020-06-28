@@ -9,6 +9,7 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {NotificationService} from '../../../services/notification.service';
 import {CardService} from '../../../services/card.service';
 import {ClipboardService} from '../../../services/clipboard.service';
+import {TitleService} from '../../../services/title.service';
 
 @Component({
   selector: 'app-clipboard',
@@ -21,10 +22,11 @@ export class ClipboardViewComponent implements OnInit {
 
   constructor(public globals: Globals, private router: Router, private modalService: NgbModal,
               private notificationService: NotificationService, private cardService: CardService,
-              private clipboardService: ClipboardService) { }
+              private clipboardService: ClipboardService, private titleService: TitleService) { }
 
   ngOnInit(): void {
-    this.clipboardService.clipboard$.asObservable().subscribe(clipboard => this.clipboard = clipboard);
+    this.titleService.setTitle('Clipboard');
+    this.clipboardService.clipboard$.subscribe(clipboard => this.clipboard = clipboard);
   }
 
   remove(card: CardUpdate) {

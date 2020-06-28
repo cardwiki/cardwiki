@@ -61,7 +61,7 @@ export class DeckViewComponent implements OnInit {
       this.comments = []
       this.loadDeck(Number(params.get('id')));
     });
-    this.clipboardService.clipboard$.asObservable().subscribe(clipboard => this.clipboardSize = clipboard.length);
+    this.clipboardService.clipboard$.subscribe(clipboard => this.clipboardSize = clipboard.length);
   }
 
   loadDeck(id: number) {

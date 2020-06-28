@@ -1,16 +1,8 @@
-<div class="container">
-  <div class="row">
-    <div class="col">
-      <h1>Clipboard</h1>
-    </div>
-  </div>
   <div class="row mb-3">
     <div class="col" *ngIf="clipboard.length !== 0">
       <button type="button" class="float-right btn btn-primary" (click)="openDeckModal()"><i class="fas fa-plus"></i> Create new deck with Clipboard</button>
     </div>
   </div>
-</div>
-<div class="container">
   <ul class="list-group">
     <li class="list-group-item d-flex" *ngFor="let card of clipboard">
       <div class="w-50 d-flex align-items-center">
@@ -30,7 +22,6 @@
       </div>
     </li>
   </ul>
-</div>
 <div class="container" *ngIf="clipboard.length === 0">
   <p>There are no cards on your clipboard yet.</p>
   <p>To add cards, simply press the copy button on any card when viewing a deck.</p>

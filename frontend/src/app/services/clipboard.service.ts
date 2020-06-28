@@ -9,10 +9,12 @@ import {CardSimple} from '../dtos/cardSimple';
 })
 export class ClipboardService {
 
-  public clipboard$: BehaviorSubject<CardUpdate[]>;
+  private clipboardSubject$: BehaviorSubject<CardUpdate[]>;
+  public clipboard$: Observable<CardUpdate[]>;
 
   constructor(private cardService: CardService) {
-    this.clipboard$ = new BehaviorSubject(JSON.parse(localStorage.getItem('clipboard') ?? '[]'));
+    this.clipboardSubject$ = new BehaviorSubject(JSON.parse(localStorage.getItem('clipboard') ?? '[]'));
+    this.clipboard$ = this.clipboardSubject$.asObservable();
   }
 
   /**
@@ -24,7 +26,7 @@ export class ClipboardService {
     console.log('Copy to clipboard');
     this.cardService.fetchCard(card.id).subscribe(cardUpdate => {
       cardUpdate.message = `Copied from ${deckName}`;
-      const clipboard = this.clipboard$.value;
+      const clipboard = this.clipboardSubject$.value;
       clipboard.push(cardUpdate);
       this.set(clipboard);
     });
@@ -37,7 +39,7 @@ export class ClipboardService {
    */
   paste(deckId: number, cards: CardUpdate[]): Observable<CardSimple[]> {
     console.log('Paste from clipboard');
-    this.set(this.clipboard$.value.filter(c => !cards.includes(c)));
+    this.set(this.clipboardSubject$.value.filter(c => !cards.includes(c)));
     return forkJoin(cards.map(card => this.cardService.createCard(deckId, card)));
   }
 
@@ -47,7 +49,7 @@ export class ClipboardService {
    */
   remove(card: CardUpdate) {
     console.log('Remove from clipboard');
-    this.set(this.clipboard$.value.filter(c => c !== card));
+    this.set(this.clipboardSubject$.value.filter(c => c !== card));
   }
 
   /**
@@ -55,7 +57,7 @@ export class ClipboardService {
    * @param clipboard new clipboard state
    */
   set(clipboard: CardUpdate[]) {
-    this.clipboard$.next(clipboard);
+    this.clipboardSubject$.next(clipboard);
     localStorage.setItem('clipboard', JSON.stringify(clipboard));
   }
 

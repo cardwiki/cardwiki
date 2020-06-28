@@ -27,7 +27,7 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.clipboardService.clipboard$.asObservable().subscribe(clipboard => this.clipboardSize = clipboard.length);
+    this.clipboardService.clipboard$.subscribe(clipboard => this.clipboardSize = clipboard.length);
   }
 
   onSubmit() {

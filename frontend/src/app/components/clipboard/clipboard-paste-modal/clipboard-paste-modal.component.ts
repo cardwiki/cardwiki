@@ -17,7 +17,7 @@ export class ClipboardPasteModalComponent implements OnInit {
   constructor(public activeModal: NgbActiveModal, private clipboardService: ClipboardService, public globals: Globals) { }
 
   ngOnInit(): void {
-    this.clipboardService.clipboard$.asObservable().subscribe(clipboard => this.clipboard = clipboard);
+    this.clipboardService.clipboard$.subscribe(clipboard => this.clipboard = clipboard);
   }
 
   select(card: CardUpdate) {
