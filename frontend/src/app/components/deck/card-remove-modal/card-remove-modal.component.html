@@ -9,7 +9,7 @@
         <div class="modal-body">
             <div class="form-group">
                 <label for="message">Optionally describe why you delete this card</label>
-                <input type="text" class="form-control" id="message" name="message"
+                <input ngbAutofocus type="text" class="form-control" id="message" name="message"
                     [(ngModel)]="message" maxlength="{{globals.maxMessageSize}}">
             </div>
         </div>
