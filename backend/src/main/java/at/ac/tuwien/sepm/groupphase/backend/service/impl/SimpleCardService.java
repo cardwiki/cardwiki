@@ -5,19 +5,25 @@ import at.ac.tuwien.sepm.groupphase.backend.exception.CardNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.*;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.ProgressRepository;
+import at.ac.tuwien.sepm.groupphase.backend.repository.RevisionRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.CardService;
 import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
 import at.ac.tuwien.sepm.groupphase.backend.service.ImageService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.lang.invoke.MethodHandles;
 import java.util.Optional;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,19 +35,22 @@ public class SimpleCardService implements CardService {
     private final CardRepository cardRepository;
     private final ProgressRepository progressRepository;
     private final ImageService imageService;
+    private final RevisionRepository revisionRepository;
 
     public SimpleCardService(
         CardRepository cardRepository,
         DeckService deckService,
         UserService userService,
         ProgressRepository progressRepository,
-        ImageService imageService)
+        ImageService imageService,
+        RevisionRepository revisionRepository)
     {
         this.cardRepository = cardRepository;
         this.userService = userService;
         this.deckService = deckService;
         this.progressRepository = progressRepository;
         this.imageService = imageService;
+        this.revisionRepository = revisionRepository;
     }
 
     @Override
@@ -74,9 +83,10 @@ public class SimpleCardService implements CardService {
 
     @Override
     @Transactional
-    public List<RevisionEdit> findLatestEditRevisionsByDeckId(Long deckId) {
-        LOGGER.debug("Find latest edit revisions id {}", deckId);
-        return cardRepository.findLatestEditRevisionsByDeck_Id(deckId).collect(Collectors.toList());
+    public Page<RevisionEdit> findLatestEditRevisionsByDeckId(Long deckId, Pageable pageable) {
+        LOGGER.debug("Find latest edit revisions id {} {}", deckId, pageable); // TODO
+        deckService.findOneOrThrow(deckId);
+        return cardRepository.findLatestEditRevisionsByDeck_Id(deckId, pageable);
     }
 
     @Override
@@ -106,8 +116,8 @@ public class SimpleCardService implements CardService {
     @Transactional
     public void delete(Long cardId) {
         LOGGER.debug("Delete card with id {}", cardId);
-        if (progressRepository.existsCardWithProgress(cardId)) {
-            progressRepository.deleteCardProgress(cardId);
+        if (progressRepository.existsById_CardId(cardId)) {
+            progressRepository.deleteById_CardId(cardId);
         }
         try {
             cardRepository.deleteById(cardId);
@@ -149,4 +159,19 @@ public class SimpleCardService implements CardService {
         }
     }
 
+    @Override
+    @Transactional
+    public Page<Revision> getRevisionsOfCard(Long id, Pageable pageable) {
+        LOGGER.debug("Load {} revisions with offset {} from card {}", pageable.getPageSize(), pageable.getOffset(), id);
+        return revisionRepository.findByCard_Id(id, pageable);
+    }
+
+    private static final int MAX_REVISIONS_COUNT = 10;
+
+    @Override
+    public List<Revision> getRevisionsByIds(Long[] ids) {
+        if (ids.length > MAX_REVISIONS_COUNT)
+            throw new BadRequestException(String.format("You may not query more than %d revisions at once.", MAX_REVISIONS_COUNT));
+        return revisionRepository.findByIdIn(Arrays.stream(ids).collect(Collectors.toList()));
+    }
 }

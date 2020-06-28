@@ -1,5 +1,5 @@
-import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
-import {FormBuilder, FormGroup, Validators, ValidationErrors} from '@angular/forms';
+import {Component, Input, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup, AbstractControl} from '@angular/forms';
 import {CategoryDetails} from '../../../dtos/categoryDetails';
 import {CategoryService} from '../../../services/category.service';
 import { Location } from '@angular/common';
@@ -7,6 +7,8 @@ import { NotificationService } from 'src/app/services/notification.service';
 import { Router } from '@angular/router';
 import { CategoryUpdate } from 'src/app/dtos/categoryUpdate';
 import { CategorySimple } from 'src/app/dtos/categorySimple';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { CategoryPickerModalComponent } from '../category-picker-modal/category-picker-modal.component';
 
 @Component({
   selector: 'app-category-form',
@@ -17,48 +19,40 @@ export class CategoryFormComponent implements OnInit {
 
   @Input() mode: 'Create' | 'Update';
   @Input() category: CategoryDetails;
-  @Input() messages: { header: string, success: string, error: string };
-  @ViewChild('dismissModal') dismissModalButton: ElementRef;
+  @Input() title: string;
   categoryForm: FormGroup;
+  parent: CategorySimple;
+  nameErrors: string;
 
-  categories: CategorySimple[];
-  result: CategoryDetails = new CategoryDetails;
-
-  constructor(private formBuilder: FormBuilder, private categoryService: CategoryService,
+  constructor(private formBuilder: FormBuilder, private categoryService: CategoryService, private modalService: NgbModal,
               private location: Location, private router: Router, private notificationService: NotificationService) {
     this.categoryForm = this.formBuilder.group({
-
-      name: ['', [Validators.required, Validators.maxLength(200), this.nameIsBlank.bind(this)]],
-        parentCategory: ['',
-          {
-            validators: [Validators.maxLength(200), this.validateCategoryName.bind(this)], updateOn: 'change'
-          }]
+      name: ['', [this.notBlankValidator]],
     });
   }
 
   ngOnInit(): void {
     this.categoryForm.reset();
-    this.fetchCategories();
     this.setDefaults();
+    this.nameErrors = null;
+    this.categoryForm.statusChanges.subscribe(() => this.nameErrors = this.checkNameErrors())
   }
 
   /**
    * Submits form data to createCategory() or editCategory() function
    */
   submitCategoryForm() {
-    this.dismissModalButton.nativeElement.click();
     console.log('submitted form values:', this.categoryForm.value);
-    const parent = this.categories.find(category => category.name === this.categoryForm.value.parentCategory) || null
+    const payload = new CategoryUpdate(this.categoryForm.value.name, this.parent);
 
     if (this.mode === 'Update') {
-      const payload = new CategoryUpdate(this.categoryForm.value.name, parent);
       this.categoryService.editCategory(this.category.id, payload).subscribe(
         (category) => {
           this.notificationService.success('Updated Category')
           this.router.navigate(['categories', category.id])
       });
     } else {
-      this.categoryService.createCategory(new CategoryUpdate(this.categoryForm.value.name, parent))
+      this.categoryService.createCategory(payload)
         .subscribe((category) => {
           this.notificationService.success('Created Category')
           this.router.navigate(['categories', category.id])
@@ -66,10 +60,22 @@ export class CategoryFormComponent implements OnInit {
     }
   }
 
+  openParentModal(): void {
+    const categoryPickerModal = this.modalService.open(CategoryPickerModalComponent);
+    categoryPickerModal.componentInstance.title = 'Select parent category';
+    categoryPickerModal.result
+      .then((category: CategorySimple) => this.parent = category)
+      .catch(err => console.log('Parent picker cancelled', err));
+  }
+
+  removeParent(): void {
+    this.parent = null;
+  }
+
   /**
    * Validates the value of the form field 'name'
    */
-  checkNameErrors() {
+  checkNameErrors(): string {
     if (this.categoryForm.controls.name.errors) {
       const errors = this.categoryForm.controls.name.errors;
       if (errors.required) {
@@ -78,82 +84,27 @@ export class CategoryFormComponent implements OnInit {
       if (errors.nameIsBlank) {
         return 'Name must not be blank.';
       }
-      const result = this.checkCommonErrors(errors);
-      return result ? result : null;
-    }
-    return null;
-  }
-
-  /**
-   * Validates the value of the form field 'parentCategory'
-   */
-
-  checkCategoryErrors() {
-    if (this.categoryForm.controls.parentCategory.errors) {
-      const errors = this.categoryForm.controls.parentCategory.errors;
-      const result = this.checkCommonErrors(errors);
-      if (result && result !== null) {
-        return result;
-      }
-      if (errors.categoryNotFound) {
-        return 'Category not found.';
+      if (errors.maxlength) {
+        return 'Maximum length exceeded.';
       }
     }
     return null;
   }
 
-  checkCommonErrors(errors: ValidationErrors) {
-    if (errors.maxlength) {
-      return 'Maximum length exceeded.';
-    }
-    return null;
-  }
-
-  /**
-   * Checks if the selected category exists in the category list
-   */
-  validateCategoryName() {
-    if (this.categories && this.categoryForm && this.categoryForm.controls) {
-      const value = this.categoryForm.controls.parentCategory.value;
-      const valid = (value && value !== '') ? this.categories.map(category => category.name).includes(value) : true;
-      if (!valid) {
-        return {'categoryNotFound': true};
-      }
-      return null;
-    }
-    return null;
-  }
-
-  nameIsBlank() {
-    if (this.categories && this.categoryForm && this.categoryForm.controls && this.categoryForm.controls.name.dirty) {
-      return this.categoryForm.controls.name.value && this.categoryForm.controls.name.value.trim() === '' ? {'nameIsBlank': true} : null;
-    }
-    return null;
-  }
-
-  onRefresh(): void {
-    this.fetchCategories();
-    this.categoryForm.controls['parentCategory'].setValue('');
+  notBlankValidator(control: AbstractControl) {
+    const isValid = (control.value || '').trim().length > 0;
+    return isValid ? null : { nameIsBlank: true };
   }
 
   onCancel(): void {
     this.location.back()
   }
 
-  fetchCategories() {
-    this.categoryService.getCategories().subscribe(
-      (categories) => {
-        console.log('Fetched categories', categories);
-        this.categories = categories;
-      });
-  }
-
   setDefaults(): void {
     if (this.categoryForm) {
       this.categoryForm.controls['name'].setValue(this.category.name);
       if (this.category.parent) {
-        console.log('parent name:', this.category.parent.name);
-        this.categoryForm.controls['parentCategory'].setValue(this.category.parent.name);
+        this.parent = this.category.parent;
       }
     }
   }

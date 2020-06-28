@@ -7,6 +7,9 @@ import {RevisionDetailed} from "../../dtos/revisionDetailed";
 import {Globals} from "../../global/globals";
 import {AuthService} from "../../services/auth.service";
 import {RevisionType} from 'src/app/dtos/revisionSimple';
+import { Page } from 'src/app/dtos/page';
+import { Pageable } from 'src/app/dtos/pageable';
+import { TitleService } from 'src/app/services/title.service';
 
 @Component({
   selector: 'app-profile',
@@ -20,10 +23,10 @@ export class ProfileComponent implements OnInit {
   readonly REVISIONTEXT_TRUNCATE: number = 30;
 
   profile: UserProfile;
+  deckPage: Page<DeckSimple>;
   decks: DeckSimple[] = [];
+  revisionPage: Page<RevisionDetailed>;
   revisions: RevisionDetailed[] = [];
-  maxDecksLoaded: boolean = false;
-  maxRevisionsLoaded: boolean = false;
 
   me: boolean = false;
   admin: boolean = false;
@@ -36,39 +39,47 @@ export class ProfileComponent implements OnInit {
     [RevisionType.DELETE] : 'Deleted',
   }
 
-  constructor(public globals: Globals, private authService: AuthService, private userService: UserService, private route: ActivatedRoute) {
+  constructor(public globals: Globals, private authService: AuthService, private userService: UserService, private route: ActivatedRoute,
+              private titleService: TitleService) {
   }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
+      this.deckPage = this.revisionPage = null;
       this.revisions = [];
       this.decks = [];
-      this.me = this.authService.getUserName() === params.get('username')
-      this.loadProfile(params.get('username'));
+      const username = params.get('username');
+      this.me = this.authService.getUserName() === username;
+      this.admin = this.authService.getUserRoles().includes('ADMIN');
+      this.titleService.setTitle(username, null);
+      this.loadProfile(username);
     });
-    if (localStorage.getItem("whoami")) this.admin = JSON.parse(localStorage.getItem("whoami")).admin;
   }
 
   loadProfile(username: string): void {
     this.userService.getProfile(username).subscribe(profile => {
       this.profile = profile;
-      this.loadDecks(0);
-      this.loadRevisions(0);
+      this.loadDecks();
+      this.loadRevisions();
     })
   }
 
-  loadDecks(offset: number = this.decks.length/this.DECK_PAGINATION_LIMIT): void {
-    this.userService.getDecks(this.profile.id, this.DECK_PAGINATION_LIMIT, offset).subscribe(decks => {
-      this.decks.push(...decks);
-      if (decks.length < this.DECK_PAGINATION_LIMIT) this.maxDecksLoaded = true;
-    })
+  loadDecks(): void {
+    const nextPageNumber = this.deckPage ? this.deckPage.pageable.pageNumber + 1 : 0;
+    this.userService.getDecks(this.profile.id, new Pageable(nextPageNumber, this.DECK_PAGINATION_LIMIT))
+      .subscribe(deckPage => {
+        this.deckPage = deckPage;
+        this.decks.push(...deckPage.content);
+      })
   }
 
-  loadRevisions(offset: number = this.revisions.length/this.REVISION_PAGINATION_LIMIT): void {
-    this.userService.getRevisions(this.profile.id, this.REVISION_PAGINATION_LIMIT, offset).subscribe(revisions => {
-      this.revisions.push(...revisions);
-      if (revisions.length < this.REVISION_PAGINATION_LIMIT) this.maxRevisionsLoaded = true;
-    })
+  loadRevisions(): void {
+    const nextPageNumber = this.revisionPage ? this.revisionPage.pageable.pageNumber + 1 : 0;
+    this.userService.getRevisions(this.profile.id, new Pageable(nextPageNumber, this.REVISION_PAGINATION_LIMIT))
+      .subscribe(revisionPage => {
+        this.revisionPage = revisionPage
+        this.revisions.push(...revisionPage.content)
+      })
   }
 
   saveDescription(): void {
@@ -81,5 +92,20 @@ export class ProfileComponent implements OnInit {
         }, 1000)
       }
     );
+  }
+
+  exportUserData(): void {
+    console.log('exporting user data...')
+    this.userService.export(this.profile.id)
+      .subscribe(blob => {
+        console.log('finished download', blob)
+        const file = document.createElement('a')
+        const objectUrl = URL.createObjectURL(blob);
+        file.href = objectUrl;
+        file.download = `cardwiki_export_${this.profile.username}.json`;
+        file.click();
+        URL.revokeObjectURL(objectUrl);
+        file.remove();
+      })
   }
 }

@@ -1,0 +1,9 @@
+:host ::ng-deep ins {
+  color: black;
+  background: #bbffbb;
+}
+
+:host ::ng-deep del {
+  color: black;
+  background: #ffbbbb;
+}

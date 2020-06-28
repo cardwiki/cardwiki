@@ -37,7 +37,7 @@ public class CommentEndpoint {
     @Secured("ROLE_USER")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/decks/{deckId}/comments")
-    @ApiOperation(value = "Add a new comment to a deck", authorizations = {@Authorization(value = "ROLE_USER")})
+    @ApiOperation(value = "Add a new comment to a deck", authorizations = {@Authorization("user")})
     public CommentSimpleDto create(@PathVariable Long deckId, @Valid @RequestBody CommentInquiryDto commentInquiryDto) {
         LOGGER.info("POST /api/v1/decks/{}/comments body: {}", deckId, commentInquiryDto);
         Comment commentInput = commentMapper.commentInquiryDtoToComment(commentInquiryDto);
@@ -63,7 +63,7 @@ public class CommentEndpoint {
 
     @Secured("ROLE_USER")
     @PutMapping(value = "/comments/{commentId}")
-    @ApiOperation(value = "Edit a comment", authorizations = {@Authorization(value = "ROLE_USER")})
+    @ApiOperation(value = "Edit a comment", authorizations = {@Authorization("user")})
     public CommentSimpleDto edit(@PathVariable Long commentId, @Valid @RequestBody CommentInquiryDto commentInquiryDto) {
         LOGGER.info("PUT /api/v1/comments/{} body: {}", commentId, commentInquiryDto);
         Comment commentInput = commentMapper.commentInquiryDtoToComment(commentInquiryDto);
@@ -75,7 +75,7 @@ public class CommentEndpoint {
     @Secured("ROLE_USER")
     @DeleteMapping(value = "/comments/{commentId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ApiOperation(value = "Delete a comment", authorizations = {@Authorization(value = "ROLE_USER")})
+    @ApiOperation(value = "Delete a comment", authorizations = {@Authorization("user")})
     public void deleteComment(@PathVariable Long commentId) {
         LOGGER.info("DELETE /api/v1/comments/{}", commentId);
         commentService.deleteComment(commentId);

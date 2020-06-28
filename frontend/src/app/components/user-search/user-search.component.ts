@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {UserProfile} from "../../dtos/userProfile";
 import {UserService} from "../../services/user.service";
+import { Page } from 'src/app/dtos/page';
+import { Pageable } from 'src/app/dtos/pageable';
+import { TitleService } from 'src/app/services/title.service';
 
 @Component({
   selector: 'app-user-search',
@@ -14,24 +16,28 @@ export class UserSearchComponent implements OnInit {
   readonly USER_PAGINATION_LIMIT = 10;
 
   searchTerm = '';
+  page: Page<UserProfile>
   users: UserProfile[] = [];
-  maxUsersLoaded: boolean = false;
-  noUsersFound: boolean = false;
 
-  constructor(private route: ActivatedRoute, private router: Router, private modalService: NgbModal, private userService: UserService) {
+  constructor(private route: ActivatedRoute, private router: Router, private userService: UserService,
+              private titleService: TitleService) {
     this.route.queryParams.subscribe(params => {
       this.searchTerm = params['username'] || '';
     });
   }
 
   ngOnInit() {
-    if (this.searchTerm) this.loadUsers(0)
+    this.titleService.setTitle('Users', 'User search')
+    this.loadUsers()
+  }
+
+  resetResults() {
+    this.page = null
+    this.users = []
   }
 
   onSubmit() {
     console.log('search', this.searchTerm);
-    this.maxUsersLoaded = false;
-    this.noUsersFound = false;
     this.users = [];
     this.router.navigate(
       [],
@@ -40,19 +46,22 @@ export class UserSearchComponent implements OnInit {
         queryParams: { username: this.searchTerm },
         queryParamsHandling: 'merge'
       });
-    this.loadUsers(0)
+    this.resetResults()
+    this.loadUsers()
   }
 
-  loadUsers(offset: number = this.users.length/this.USER_PAGINATION_LIMIT): void {
-    this.userService.searchUsers(this.searchTerm, this.USER_PAGINATION_LIMIT, offset).subscribe(users => {
-      this.users.push(...users);
-      if (users.length + this.users.length === 0) this.noUsersFound = true;
-      if (users.length < this.USER_PAGINATION_LIMIT) this.maxUsersLoaded = true;
-      console.log(users);
-    })
+  loadUsers(): void {
+    const nextPage = this.page ? this.page.pageable.pageNumber + 1 : 0
+    this.userService.searchUsers(this.searchTerm, new Pageable(nextPage, this.USER_PAGINATION_LIMIT))
+      .subscribe(userPage => {
+        this.page = userPage
+        this.users.push(...userPage.content);
+      })
   }
 
-  grantAdminRights(user: UserProfile): void {
+  grantAdminRights(event: any, user: UserProfile): void {
+    event.stopPropagation();
+    event.preventDefault();
     if (confirm(`Are you sure you want to grant admin rights to user '${user.username}'`)) {
       this.userService.editAdminStatus(user.id, true).subscribe(updatedUser => {
         user.admin = updatedUser.admin;
@@ -60,7 +69,9 @@ export class UserSearchComponent implements OnInit {
     }
   }
 
-  editEnabledStatus(user: UserProfile, enabled: boolean): void {
+  editEnabledStatus(event: any, user: UserProfile, enabled: boolean): void {
+    event.stopPropagation();
+    event.preventDefault();
     let reason = null;
     if (enabled) {
       if (!confirm(`Are you sure you want to enable user '${user.username}'?`)) {
@@ -77,7 +88,9 @@ export class UserSearchComponent implements OnInit {
     });
   }
 
-  delete(user: UserProfile): void {
+  delete(event: any, user: UserProfile): void {
+    event.stopPropagation();
+    event.preventDefault();
     const reason = prompt(`Why do you want to permanently delete user '${user.username}'?`);
     if (reason !== null) {
       this.userService.delete(user.id, reason).subscribe(_ => {

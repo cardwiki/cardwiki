@@ -20,6 +20,7 @@ import java.nio.file.Paths;
 
 import static at.ac.tuwien.sepm.groupphase.backend.integrationtest.security.MockedLogins.USER_ROLES;
 import static at.ac.tuwien.sepm.groupphase.backend.integrationtest.security.MockedLogins.mockLogin;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -52,12 +53,16 @@ public class ImageEndpointTest extends TestDataGenerator {
         FileInputStream fileInputStream = new FileInputStream(testImagePath);
         MockMultipartFile multipartFile = new MockMultipartFile("file", fileInputStream);
 
+        String imagePath = Paths.get(imageServedPath, testImageHash).toString();
+
         mvc.perform(multipart("/api/v1/images")
             .file(multipartFile)
             .with(mockLogin(USER_ROLES, user.getAuthId())))
             .andExpect(status().is(201))
             .andExpect(jsonPath("$.filename").value(testImageHash))
-            .andExpect(jsonPath("$.url").value(Paths.get(imageServedPath, testImageHash).toString()));
+            .andExpect(jsonPath("$.url").value(imagePath));
+
+        mvc.perform(get(imagePath)).andExpect(status().isOk());
 
         Paths.get(imageSavedPath, testImageHash).toFile().delete();
     }

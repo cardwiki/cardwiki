@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.unittests;
 
+import at.ac.tuwien.sepm.groupphase.backend.profiles.datagenerator.Agent;
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
@@ -33,10 +34,10 @@ public class DeckRepositoryTest extends TestDataGenerator {
 
         assertAll(
             () -> assertEquals(1,
-                deckRepository.findByNameContainingIgnoreCase(deck.getName(), Pageable.unpaged()).size()
+                deckRepository.findByNameContainingIgnoreCase(deck.getName(), Pageable.unpaged()).getTotalElements()
             ),
             () -> assertEquals(1,
-                deckRepository.findByNameContainingIgnoreCase(deck.getName().substring(1,3), Pageable.unpaged()).size()
+                deckRepository.findByNameContainingIgnoreCase(deck.getName().substring(1,3), Pageable.unpaged()).getTotalElements()
             )
         );
     }

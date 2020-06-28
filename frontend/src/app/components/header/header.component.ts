@@ -3,7 +3,7 @@ import {AuthService} from '../../services/auth.service';
 import { Router } from '@angular/router';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {DeckCreateModalComponent} from '../deck/deck-create-modal/deck-create-modal.component';
-import {Observable} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {DeckDetails} from '../../dtos/deckDetails';
 import { SearchQueryParams } from 'src/app/interfaces/search-query-params';
 import { NotificationService } from 'src/app/services/notification.service';
@@ -18,7 +18,7 @@ export class HeaderComponent implements OnInit {
   public searchTerm = '';
   public username$: Observable<string>
 
-  constructor(public authService: AuthService, private router: Router, private modalService: NgbModal, private notificationService: NotificationService) {
+  constructor(private authService: AuthService, private router: Router, private modalService: NgbModal, private notificationService: NotificationService) {
     this.username$ = authService.userName$
   }
 
@@ -46,5 +46,9 @@ export class HeaderComponent implements OnInit {
         }
       )
     ).catch(() => {});
+  }
+
+  logout() {
+    this.authService.logoutUser()
   }
 }

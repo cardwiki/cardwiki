@@ -7,6 +7,8 @@ import {RevisionDetailed} from "../dtos/revisionDetailed";
 import {UserProfile} from "../dtos/userProfile";
 import {tap} from "rxjs/operators";
 import {ErrorHandlerService} from "./error-handler.service";
+import { Pageable } from '../dtos/pageable';
+import { Page } from '../dtos/page';
 
 @Injectable({
   providedIn: 'root'
@@ -18,22 +20,18 @@ export class UserService {
   constructor(private httpClient: HttpClient, private globals: Globals, private errorHandler: ErrorHandlerService) { }
 
   /**
-   * Load users containing {@code userid} in their username
+   * Fetch users containing {@code username} in their username
    *
    * @param username to search for
-   * @param offset of the page.
-   * @param limit of results returned.
+   * @param pageable config for pagination
    */
-  searchUsers(username: string, limit: number = 10, offset: number = 0): Observable<UserProfile[]> {
+  searchUsers(username: string, pageable: Pageable): Observable<Page<UserProfile>> {
     console.log('search for users with username: ' + username);
-    const params = new HttpParams({
-      fromObject: {
-        username: username,
-        offset: offset.toString(10),
-        limit: limit.toString(10)
-      }
-    });
-    return this.httpClient.get<UserProfile[]>(this.userBaseUri, {params})
+    const params = {
+      username,
+      ...pageable.toObject(),
+    }
+    return this.httpClient.get<Page<UserProfile>>(this.userBaseUri, {params})
       .pipe(tap(null, this.errorHandler.handleError('Could not find Users')));
   }
 
@@ -50,42 +48,26 @@ export class UserService {
   }
 
   /**
-   * Load all card decks created by user with userid {@code userid} from
-   * the backend.
+   * Fetch page of decks created by user with {@code userId}
    *
-   * @param userid to query decks for
-   * @param offset of the page.
-   * @param limit of results returned.
+   * @param userId to query decks for
+   * @param pageable config for pagination
    */
-  getDecks(userid: number, limit: number, offset: number): Observable<DeckSimple[]> {
-    console.log('load card decks for user: ' + userid);
-    const params = new HttpParams({
-      fromObject: {
-        offset: offset.toString(10),
-        limit: limit.toString(10)
-      }
-    });
-    return this.httpClient.get<DeckSimple[]>(`${this.userBaseUri}/${userid}/decks`, { params })
+  getDecks(userId: number, pageable: Pageable): Observable<Page<DeckSimple>> {
+    console.log('load card decks for user: ' + userId);
+    return this.httpClient.get<Page<DeckSimple>>(`${this.userBaseUri}/${userId}/decks`, { params: pageable.toHttpParams() })
       .pipe(tap(null, this.errorHandler.handleError('Could not load User Decks')));
   }
 
   /**
-   * Load all card revisions created by user with userid {@code userid} from
-   * the backend.
+   * Fetch page of revisions created by user with {@code userId}
    *
-   * @param userid to query revisions for
-   * @param offset of the page.
-   * @param limit of results returned.
+   * @param userId to query revisions for
+   * @param pageable config for pagination
    */
-  getRevisions(userid: number, limit: number, offset: number): Observable<RevisionDetailed[]> {
-    console.log('load card revisions for user: ' + userid);
-    const params = new HttpParams({
-      fromObject: {
-        offset: offset.toString(10),
-        limit: limit.toString(10)
-      }
-    });
-    return this.httpClient.get<RevisionDetailed[]>(`${this.userBaseUri}/${userid}/revisions`, { params })
+  getRevisions(userId: number, pageable: Pageable): Observable<Page<RevisionDetailed>> {
+    console.log('load card revisions for user: ' + userId);
+    return this.httpClient.get<Page<RevisionDetailed>>(`${this.userBaseUri}/${userId}/revisions`, { params: pageable.toHttpParams() })
       .pipe(tap(null, this.errorHandler.handleError('Could not load User Revisions')));
   }
 
@@ -143,5 +125,11 @@ export class UserService {
     });
     return this.httpClient.delete<void>(`${this.userBaseUri}/${userid}`, {params: params})
       .pipe(tap(null, this.errorHandler.handleError('Could not delete user ' + userid)));
+  }
+
+  export(userId: number): Observable<Blob> {
+    console.log('export user data', userId);
+    return this.httpClient.get(`${this.userBaseUri}/${userId}/export`, { responseType: 'blob' })
+      .pipe(tap(null, this.errorHandler.handleError('Could not fetch user data')));
   }
 }

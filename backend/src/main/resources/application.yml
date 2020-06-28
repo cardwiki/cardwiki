@@ -34,8 +34,6 @@ spring:
     console:
       enabled: true
       path: /h2-console
-  resources:
-    static-locations: file:./${cawi.image-saved-path}/${cawi.image-served-path}
   servlet:
     multipart:
       max-file-size: 2MB
@@ -73,5 +71,5 @@ cawi:
   jwt-secret: 72d76704e150c907dc05bb7f3dd96f5f2a10479ac54e6961bb7423a89243367d
   # 12 hours in milliseconds
   jwt-expiration-time: 43200000
-  image-saved-path: ./static
+  image-saved-path: ./images
   image-served-path: /images

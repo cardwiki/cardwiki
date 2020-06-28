@@ -6,6 +6,9 @@ import {CardSimple} from '../dtos/cardSimple';
 import { ErrorHandlerService } from './error-handler.service';
 import { tap } from 'rxjs/operators';
 import { CardUpdate } from '../dtos/cardUpdate';
+import { Page } from '../dtos/page';
+import { Pageable } from '../dtos/pageable';
+import {RevisionDetailed} from "../dtos/revisionDetailed";
 
 @Injectable({
   providedIn: 'root'
@@ -30,12 +33,14 @@ export class CardService {
   }
 
   /**
-   * Gets all cards for a specific deck
-   * @param deckId of the deck for which cards to get
+   * Fetch page of cards from a deck
+   *
+   * @param deckId for which the cards should be fetched
+   * @param pageable config for pagination
    */
-  getCardsByDeckId(deckId: number): Observable<CardSimple[]> {
+  getCardsByDeckId(deckId: number, pageable: Pageable): Observable<Page<CardSimple>> {
     console.log('get cards for deck with id ' + deckId);
-    return this.httpClient.get<CardSimple[]>(`${this.deckBaseUri}/${deckId}/cards`)
+    return this.httpClient.get<Page<CardSimple>>(`${this.deckBaseUri}/${deckId}/cards`, { params: pageable.toHttpParams() })
       .pipe(tap(null, this.errorHandler.handleError('Could not fetch Cards')))
   }
 
@@ -72,6 +77,29 @@ export class CardService {
     console.log(`Delete card ${cardId}`);
     return this.httpClient.delete<void>(`${this.cardBaseUri}/${cardId}`)
       .pipe(tap(null, this.errorHandler.handleError('Could not delete Card')));
+  }
+
+  /**
+   * Fetches specific card revisions
+   *
+   * @param revisionIds of the revisions that should be fetched
+   */
+  fetchRevisionsById(revisionIds: number[]): Observable<{[key: number]: RevisionDetailed}> {
+    console.log(`fetch revisions ${revisionIds}`);
+    return this.httpClient.get<{[key: number]: RevisionDetailed}>(`${this.globals.backendUri}/revisions?${revisionIds.map(id => `id=${id}`).join("&")}`)
+      .pipe(tap(null, this.errorHandler.handleError('Could not fetch Revisions')))
+  }
+
+  /**
+   * Fetches card revisions
+   *
+   * @param cardId of the card to fetch revisions of
+   * @param pageable config for pagination
+   */
+  fetchRevisions(cardId: number, pageable: Pageable): Observable<Page<RevisionDetailed>> {
+    console.log(`fetch revisions for card with id ${cardId}`);
+    return this.httpClient.get<Page<RevisionDetailed>>(`${this.cardBaseUri}/${cardId}/revisions`, { params: pageable.toHttpParams() })
+      .pipe(tap(null, this.errorHandler.handleError('Could not fetch Revisions')))
   }
 
   private toCardUpdateDto(card: CardUpdate): CardUpdateDto {

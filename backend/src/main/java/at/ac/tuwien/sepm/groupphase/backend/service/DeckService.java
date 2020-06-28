@@ -1,11 +1,11 @@
 package at.ac.tuwien.sepm.groupphase.backend.service;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
+import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
 import at.ac.tuwien.sepm.groupphase.backend.exception.DeckNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.AuthenticationRequiredException;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
 
 public interface DeckService {
 
@@ -25,7 +25,7 @@ public interface DeckService {
      * @param pageable the paging parameters
      * @return ordered list of all decks with names containing {@code name}
      */
-    List<Deck> searchByName(String name, Pageable pageable);
+    Page<Deck> searchByName(String name, Pageable pageable);
 
     /**
      * Create a new card deck.
@@ -63,4 +63,13 @@ public interface DeckService {
      * @throws DeckNotFoundException if the specified deck does not exist
      */
     void delete(Long id);
+
+    /**
+     * Loads revisions of cards in the deck
+     *
+     * @param id of the deck
+     * @param pageable pagination data consisting of LIMIT and OFFSET
+     * @return List of Revisions of cards in the deck
+     */
+    Page<Revision> getRevisions(Long id, Pageable pageable);
 }

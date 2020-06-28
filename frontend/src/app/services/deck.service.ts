@@ -8,6 +8,9 @@ import {DeckSimple} from '../dtos/deckSimple';
 import {DeckUpdate} from '../dtos/deckUpdate';
 import { ErrorHandlerService } from './error-handler.service';
 import { tap } from 'rxjs/operators';
+import { Page } from '../dtos/page';
+import { Pageable } from '../dtos/pageable';
+import {RevisionDetailed} from "../dtos/revisionDetailed";
 
 @Injectable({
   providedIn: 'root'
@@ -52,23 +55,18 @@ export class DeckService {
   }
 
   /**
-   * Load all card decks containing {@code name} from
-   * the backend.
+   * Fetch page of decks containing {@code name}
    *
    * @param name to search for
-   * @param offset of the page.
-   * @param limit of results returned.
+   * @param pageable config for pagination
    */
-  searchByName(name: string, offset: number, limit: number): Observable<DeckDetails[]> {
+  searchByName(name: string, pageable: Pageable): Observable<Page<DeckDetails>> {
     console.log('search card decks: ' + name);
-    const params = new HttpParams({
-      fromObject: {
-        name,
-        offset: offset.toString(10),
-        limit: limit.toString(10)
-      }
-    });
-    return this.httpClient.get<DeckDetails[]>(this.deckBaseUri, { params })
+    const params = {
+      name,
+      ...pageable.toObject(),
+    }
+    return this.httpClient.get<Page<DeckDetails>>(this.deckBaseUri, { params })
       .pipe(tap(null, this.errorHandler.handleError('Could not search for Decks')));
   }
 
@@ -87,5 +85,17 @@ export class DeckService {
     console.log('Delete deck ' + deckId);
     return this.httpClient.delete<void>(this.deckBaseUri + '/' + deckId)
       .pipe(tap(null, this.errorHandler.handleError('Could not delete deck ' + deckId)));
+  }
+
+  /**
+   * Fetches card revisions for cards in a deck
+   *
+   * @param deckId of the deck to fetch revisions of
+   * @param pageable config for pagination
+   */
+  fetchRevisions(deckId: number, pageable: Pageable): Observable<Page<RevisionDetailed>> {
+    console.log(`fetch revisions for cards in deck with id ${deckId}`);
+    return this.httpClient.get<Page<RevisionDetailed>>(this.deckBaseUri + '/' + deckId + '/revisions', { params: pageable.toHttpParams() })
+      .pipe(tap(null, this.errorHandler.handleError('Could not fetch Revisions')))
   }
 }

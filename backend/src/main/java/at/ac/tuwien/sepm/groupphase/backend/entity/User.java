@@ -50,6 +50,21 @@ public class User {
     @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY)
     private Set<Revision> revisions = new HashSet<>();
 
+    @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY)
+    private Set<Comment> comments = new HashSet<>();
+
+    @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY)
+    private Set<Deck> decks = new HashSet<>();
+
+    @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY)
+    private Set<Category> categories = new HashSet<>();
+
+    @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY)
+    private Set<Image> images = new HashSet<>();
+
+    @OneToMany(mappedBy = "id.user", fetch = FetchType.LAZY)
+    private Set<Progress> progress = new HashSet<>();
+
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "favoredBy")
     private Set<Deck> favorites = new HashSet<>();
 
@@ -162,6 +177,50 @@ public class User {
 
     public void setReason(String reason) {
         this.reason = reason;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public Set<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(Set<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public Set<Deck> getDecks() {
+        return decks;
+    }
+
+    public void setDecks(Set<Deck> decks) {
+        this.decks = decks;
+    }
+
+    public Set<Image> getImages() {
+        return images;
+    }
+
+    public void setImages(Set<Image> images) {
+        this.images = images;
+    }
+
+    public Set<Progress> getProgress() {
+        return progress;
+    }
+
+    public void setProgress(Set<Progress> progress) {
+        this.progress = progress;
+    }
+
+    public Set<Category> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(Set<Category> categories) {
+        this.categories = categories;
     }
 
     @Override

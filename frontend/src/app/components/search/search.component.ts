@@ -3,6 +3,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DeckService } from 'src/app/services/deck.service';
 import { DeckDetails } from 'src/app/dtos/deckDetails';
 import { SearchQueryParams } from 'src/app/interfaces/search-query-params';
+import { Page } from 'src/app/dtos/page';
+import { Pageable } from 'src/app/dtos/pageable';
+import { TitleService } from 'src/app/services/title.service';
 
 @Component({
   selector: 'app-search',
@@ -13,26 +16,26 @@ export class SearchComponent implements OnInit {
 
   private queryParams: SearchQueryParams = {}
   public newQueryParams: SearchQueryParams = {}
-  private page: number = 0
   private readonly limit = 10
 
-  public decks: DeckDetails[] = []
-  public canLoadMore: boolean = false
-  public loading: boolean = false
-
-  constructor(private deckService: DeckService, private route: ActivatedRoute, private router: Router) { }
+  public page: Page<DeckDetails>
+  public decks: DeckDetails[]
+  public loading: boolean
+  
+  constructor(private deckService: DeckService, private route: ActivatedRoute, private router: Router,
+              private titleService: TitleService) { }
 
   ngOnInit(): void {
+    this.titleService.setTitle('Decks', 'Deck search')
     this.route.queryParamMap.subscribe(paramMap => {
       this.queryParams = {
         name: paramMap.get('name') || '',
       }
       this.newQueryParams = Object.assign({}, this.queryParams)
-      this.page = 0
+      this.page = null
+      this.decks = []
 
-      // Don't fetch when visited without search term
-      if (paramMap.has('name'))
-        this.fetchSearchResults()
+      this.fetchSearchResults()
     })
   }
 
@@ -42,13 +45,12 @@ export class SearchComponent implements OnInit {
   fetchSearchResults(): void {
     const { name } = this.newQueryParams
     this.loading = true
+    const pageNumber = this.page ? this.page.pageable.pageNumber + 1 : 0 
 
-    this.deckService.searchByName(name, this.page, this.limit)
-      .subscribe(decks => {
-        if (this.page === 0)
-          this.decks = []
-        this.decks.push(...decks)
-        this.canLoadMore = decks.length === this.limit
+    this.deckService.searchByName(name, new Pageable(pageNumber, this.limit))
+      .subscribe(deckPage => {
+        this.page = deckPage
+        this.decks.push(...deckPage.content)
       }).add(() => this.loading = false)
   }
 
@@ -63,9 +65,8 @@ export class SearchComponent implements OnInit {
   }
 
   loadMore(): void {
-    // Search for the same term, but next page
+    // Search for the same term
     this.newQueryParams = Object.assign({}, this.queryParams)
-    this.page++
     this.fetchSearchResults()
   }
 

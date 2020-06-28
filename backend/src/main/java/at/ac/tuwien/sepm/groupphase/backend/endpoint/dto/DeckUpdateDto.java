@@ -2,7 +2,7 @@ package at.ac.tuwien.sepm.groupphase.backend.endpoint.dto;
 
 import lombok.Data;
 import javax.validation.constraints.NotBlank;
-import java.util.List;
+import java.util.Set;
 
 @Data
 public class DeckUpdateDto {
@@ -10,5 +10,5 @@ public class DeckUpdateDto {
     @NotBlank
     private String name;
 
-    private List<CategorySimpleDto> categories;
+    private Set<CategorySimpleDto> categories;
 }

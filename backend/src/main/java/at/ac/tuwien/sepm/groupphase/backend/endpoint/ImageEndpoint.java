@@ -31,7 +31,7 @@ public class ImageEndpoint {
     @Secured("ROLE_USER")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    @ApiOperation(value = "Save a new image", authorizations = {@Authorization(value = "ROLE_USER")})
+    @ApiOperation(value = "Save a new image", authorizations = {@Authorization("user")})
     public ImageDto upload(@RequestParam MultipartFile file) {
         LOGGER.info("POST api/v1/images filename: {}", file.getOriginalFilename());
         return imageMapper.imageToImageDto(imageService.create(file));

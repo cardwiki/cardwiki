@@ -1,0 +1,32 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title">{{title}}</h5>
+        <button type="button" class="close" (click)="activeModal.dismiss()">
+            &times;
+        </button>
+    </div>
+    <form (ngSubmit)="onSubmit()">
+        <div class="modal-body">
+            <div class="input-group" role="group">
+                <input ngbAutofocus type="text" class="form-control" id="categoryName" name="categoryName" (input)="onInput($event)" placeholder="Find categories" aria-label="Find categories">
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-outline-dark">Search</button>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <div *ngIf="page && !categories.length" class="alert-danger">No categories found.</div>
+                <ul *ngIf="categories.length" class="list-group">
+                    <a *ngFor="let category of categories" class="list-group-item list-group-item-action" (click)="onSelect(category)">
+                        {{category.name}}
+                    </a>
+                </ul>
+                <p *ngIf="countNotShown" class="mt-1 text-center">And {{countNotShown}} more...</p>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-primary" (click)="onSubmit()" [disabled]="!canSubmit">Select Category</button>
+            <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss()">Cancel</button>
+        </div>
+    </form>
+</div>

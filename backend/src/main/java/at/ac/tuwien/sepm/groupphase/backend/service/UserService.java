@@ -5,10 +5,10 @@ import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.exception.AuthenticationRequiredException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.UserNotFoundException;
-import org.springframework.security.access.AccessDeniedException;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
@@ -56,36 +56,31 @@ public interface UserService {
     User createUser(User user);
 
     /**
-     * @return all users
-     */
-    List<User> getAll();
-
-    /**
      * Find all users containing {@code username} (case insensitive)
      *
      * @param username the search string
      * @param pageable the paging parameters
      * @return ordered list of all users with usernames containing {@code username}
      */
-    List<User> searchByUsername(String username, Pageable pageable);
+    Page<User> searchByUsername(String username, Pageable pageable);
 
     /**
      * Loads decks created by user using their id
      *
      * @param id of the user to search decks for
-     * @param pageable pagination data consisting of LIMIT and OFFSET
+     * @param pageable pagination data
      * @return List of Decks created by the user
      */
-    List<Deck> getDecks(Long id, Pageable pageable);
+    Page<Deck> getDecks(Long id, Pageable pageable);
 
     /**
      * Loads revisions created by user using their id
      *
      * @param id of the user to search revisions for
      * @param pageable pagination data consisting of LIMIT and OFFSET
-     * @return List of Revisions created by the user
+     * @return Page of Revisions created by the user
      */
-    List<Revision> getRevisions(Long id, Pageable pageable);
+    Page<Revision> getRevisions(Long id, Pageable pageable);
 
     /**
      * Change settings of user with id {@code id}
@@ -116,4 +111,15 @@ public interface UserService {
      * @throws UserNotFoundException if the user to be deleted does not exist.
      */
     void delete(Long id, String reason);
+
+    /**
+     * Get user with all data preloaded for export
+     *
+     * @param userId id of the user for which the data is exported
+     * @return user
+     * @throws AccessDeniedException if a different user is logged in and it is not an admin
+     * @throws AuthenticationRequiredException if the user is not logged in
+     * @throws UserNotFoundException if the user for exporting does not exist
+     */
+    User exportUserData(Long userId);
 }
