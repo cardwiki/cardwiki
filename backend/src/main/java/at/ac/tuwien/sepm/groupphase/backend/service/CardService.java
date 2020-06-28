@@ -89,4 +89,12 @@ public interface CardService {
      * @return List of Revisions of the card
      */
     List<Revision> getRevisionsByIds(Long[] ids);
+
+    /**
+     * Loads revisions of a card
+     *
+     * @param pageable pagination settings
+     * @return Page of Revisions of the card
+     */
+    Page<Revision> getRecentRevisions(Pageable pageable);
 }

@@ -101,11 +101,17 @@ public class CardEndpoint {
         return cardService.getRevisionsOfCard(id, pageable).map(revision -> revisionMapper.revisionToRevisionDetailedDto(revision));
     }
 
-    @GetMapping(value = "/revisions")
+    @GetMapping(value = "/revisions/byid")
     @ApiOperation(value = "Get multiple revisions by id")
     public Map<Long, RevisionDtoWithContent> getRevisionsByIds(@RequestParam(name = "id") Long[] ids) {
         return cardService.getRevisionsByIds(ids).stream()
             .filter(Objects::nonNull)
             .collect(Collectors.toMap(Revision::getId, revisionMapper::revisionToRevisionDetailedDto));
+    }
+
+    @GetMapping("/revisions")
+    @ApiOperation(value = "Get recent revisions")
+    public Page<RevisionDtoWithDeck> getLatestRevisions(@SortDefault(value = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
+        return cardService.getRecentRevisions(pageable).map(revisionMapper::revision_to_revisionDtoWithDeck);
     }
 }

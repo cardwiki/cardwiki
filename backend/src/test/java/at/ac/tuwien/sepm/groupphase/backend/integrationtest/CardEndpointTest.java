@@ -526,14 +526,20 @@ public class CardEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    public void getRevisionsByIds_noIds_returnsBadRequest() throws Exception {
+    public void getLatestRevisions_returnsOk() throws Exception {
         mvc.perform(get("/api/v1/revisions"))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    public void getRevisionsByIds_noIds_returnsBadRequest() throws Exception {
+        mvc.perform(get("/api/v1/revisions/byid"))
             .andExpect(status().isBadRequest());
     }
 
     @Test
     public void getRevisionsByIds_nonExistantId_returnsOk() throws Exception {
-        mvc.perform(get("/api/v1/revisions").queryParam("id", "99"))
+        mvc.perform(get("/api/v1/revisions/byid").queryParam("id", "99"))
             .andExpect(status().isOk());
     }
 
@@ -541,7 +547,7 @@ public class CardEndpointTest extends TestDataGenerator {
     public void getRevisionsByIds_existingIds_returnsRevisions() throws Exception {
         Agent agent = persistentAgent();
         Card card = agent.createCardIn(agent.createDeck());
-        MockHttpServletRequestBuilder builder = get("/api/v1/revisions");
+        MockHttpServletRequestBuilder builder = get("/api/v1/revisions/byid");
         for (int i = 0; i < 10; i++) {
             agent.editCard(card);
             builder.queryParam("id", String.valueOf(card.getLatestRevision().getId()));
@@ -556,7 +562,7 @@ public class CardEndpointTest extends TestDataGenerator {
     public void getRevisionsByIds_tooManyIds_returnsBadRequest() throws Exception {
         Agent agent = persistentAgent();
         Card card = agent.createCardIn(agent.createDeck());
-        MockHttpServletRequestBuilder builder = get("/api/v1/revisions");
+        MockHttpServletRequestBuilder builder = get("/api/v1/revisions/byid");
         for (int i = 0; i < 11; i++) {
             agent.editCard(card);
             builder.queryParam("id", String.valueOf(card.getLatestRevision().getId()));

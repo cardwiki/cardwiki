@@ -8,5 +8,4 @@ public class RevisionDtoWithContent extends RevisionDto {
     private String textBack;
     private ImageDto imageFront;
     private ImageDto imageBack;
-    private UserSimpleDto createdBy;
 }
