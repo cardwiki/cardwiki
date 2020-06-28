@@ -2,7 +2,6 @@ package at.ac.tuwien.sepm.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.*;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.RevisionMapper;
-import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
 import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionCreate;
 import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionEdit;
 import at.ac.tuwien.sepm.groupphase.backend.service.CardService;
@@ -79,9 +78,9 @@ public class CardEndpoint {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping(value = "/cards/{cardId}")
     @ApiOperation(value = "Removes card from deck", authorizations = {@Authorization(value = "ROLE_USER")})
-    public void addDeleteRevisionToCard(@PathVariable Long cardId, @RequestParam(required = false) @Size(max = Revision.MAX_MESSAGE_SIZE) String message) {
-        LOGGER.info("DELETE /api/v1/cards/{}?message=", message);
-        cardService.addDeleteRevisionToCard(cardId, message);
+    public void addDeleteRevisionToCard(@Valid @RequestBody(required = false) ReasonDto message, @PathVariable Long cardId) {
+        LOGGER.info("POST /api/v1/cards/{}?message=", message);
+        cardService.addDeleteRevisionToCard(cardId, message == null ? null : message.getMessage());
     }
 
     @Secured("ROLE_ADMIN")

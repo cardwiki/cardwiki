@@ -29,6 +29,9 @@ public class Card {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @OneToMany(mappedBy = "id.card", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Progress> progresses;
+
     @PrePersist
     @PreUpdate
     private void syncRevisions() {

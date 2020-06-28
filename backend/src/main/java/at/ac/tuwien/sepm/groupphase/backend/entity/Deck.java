@@ -42,7 +42,11 @@ public class Deck {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "decks")
     private Set<Category> categories = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "favorites")
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "favorites",
+        joinColumns = @JoinColumn(name = "deck_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
     private Set<User> favoredBy = new HashSet<>();
 
     public Long getId() {
