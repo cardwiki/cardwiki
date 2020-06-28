@@ -82,13 +82,15 @@ public class SimpleUserService implements UserService {
     @Override
     public User findUserByIdOrThrow(Long id) {
         LOGGER.debug("Load user by id {}", id);
-        return userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+        return userRepository.findById(id)
+            .orElseThrow(() -> new UserNotFoundException("Could not find user with id " + id));
     }
 
     @Override
     public User findUserByUsernameOrThrow(String username) {
         LOGGER.debug("Load user by username {}", username);
-        return userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
+        return userRepository.findByUsername(username)
+            .orElseThrow(() -> new UserNotFoundException("Could not find user with username " + username));
     }
 
     @Override
