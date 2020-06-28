@@ -332,7 +332,7 @@ public class DeckEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    public void givenNothing_whenImportCardsWithUnsupportedContentType_thenThrowInternalServerError() throws Exception {
+    public void givenNothing_whenImportCardsWithUnsupportedContentType_thenThrowBadRequest() throws Exception {
         User user = givenApplicationUser();
         Deck deck = persistentAgent().createDeck();
         FileInputStream fileInputStream = new FileInputStream("src/test/resources/test.png");
@@ -341,7 +341,7 @@ public class DeckEndpointTest extends TestDataGenerator {
         mvc.perform(multipart("/api/v1/decks/" + deck.getId() + "/cards")
             .file(multipartFile)
             .with(login(user.getAuthId())))
-            .andExpect(status().isInternalServerError());
+            .andExpect(status().isBadRequest());
     }
 
     @Test
