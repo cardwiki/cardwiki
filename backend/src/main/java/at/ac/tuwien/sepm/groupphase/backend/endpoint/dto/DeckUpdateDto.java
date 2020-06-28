@@ -1,13 +1,13 @@
 package at.ac.tuwien.sepm.groupphase.backend.endpoint.dto;
 
+import at.ac.tuwien.sepm.groupphase.backend.validation.NullOrNotBlank;
 import lombok.Data;
-import javax.validation.constraints.NotBlank;
 import java.util.Set;
 
 @Data
 public class DeckUpdateDto {
 
-    @NotBlank
+    @NullOrNotBlank
     private String name;
 
     private Set<CategorySimpleDto> categories;

@@ -1,5 +1,7 @@
 package at.ac.tuwien.sepm.groupphase.backend.integrationtest;
 
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckUpdateDto;
+import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
 import at.ac.tuwien.sepm.groupphase.backend.profiles.datagenerator.Agent;
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategorySimpleDto;
@@ -20,9 +22,12 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.*;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static at.ac.tuwien.sepm.groupphase.backend.integrationtest.security.MockedLogins.*;
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -384,5 +389,161 @@ public class DeckEndpointTest extends TestDataGenerator {
             .andExpect(jsonPath("$.newCount").value(3))
             .andExpect(jsonPath("$.learningCount").value(0))
             .andExpect(jsonPath("$.toReviewCount").value(0));
+    }
+
+    @Test
+    public void getDeckReturnsDeck() throws Exception {
+        Agent agent = persistentAgent();
+        Deck deck = agent.createDeck();
+
+        mvc.perform(get("/api/v1/decks/{id}", deck.getId()))
+            .andExpect(status().is(200))
+            .andExpect(jsonPath("$.id").value(deck.getId()))
+            .andExpect(jsonPath("$.name").value(deck.getName()))
+            .andExpect(jsonPath("$.createdBy").value(deck.getCreatedBy().getId()))
+            .andExpect(jsonPath("$.createdAt", validIsoDateTime()))
+            .andExpect(jsonPath("$.updatedAt", validIsoDateTime()))
+            .andExpect(jsonPath("$.categories").isEmpty());
+    }
+
+    @Test
+    public void getDeckWithCategoriesReturnsDeckWithCategories() throws Exception {
+        Agent agent = persistentAgent();
+        Deck deck = agent.createDeck();
+        Category category = agent.createCategory("test category");
+        deck = agent.addCategory(deck, category);
+
+        mvc.perform(get("/api/v1/decks/{id}", deck.getId()))
+            .andExpect(status().is(200))
+            .andExpect(jsonPath("$.id").value(deck.getId()))
+            .andExpect(jsonPath("$.name").value(deck.getName()))
+            .andExpect(jsonPath("$.createdBy").value(deck.getCreatedBy().getId()))
+            .andExpect(jsonPath("$.createdAt", validIsoDateTime()))
+            .andExpect(jsonPath("$.updatedAt", validIsoDateTime()))
+            .andExpect(jsonPath("$.categories", hasSize(1)))
+            .andExpect(jsonPath("$.categories[0].id").value(category.getId()))
+            .andExpect(jsonPath("$.categories[0].name").value(category.getName()));
+    }
+
+    @Test
+    public void getDeckWithInvalidDeckIdThrowsNotFoundException() throws Exception {
+        mvc.perform(get("/api/v1/decks/{deckId}", 123)
+            .contentType("application/json"))
+            .andExpect(status().is(404));
+    }
+
+    @Test
+    public void editDeckWithUpdatedNameReturnsDeckWithUpdatedName() throws Exception {
+        Agent agent = persistentAgent();
+        Deck deck = agent.createDeck();
+        DeckUpdateDto dto = new DeckUpdateDto();
+        dto.setName("test deck");
+
+        mvc.perform(patch("/api/v1/decks/{deckId}", deck.getId())
+            .with(login(agent.getUser().getAuthId()))
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(dto)))
+            .andExpect(status().is(200))
+            .andExpect(jsonPath("$.id").value(deck.getId()))
+            .andExpect(jsonPath("$.name").value(dto.getName()))
+            .andExpect(jsonPath("$.createdBy").value(deck.getCreatedBy().getId()))
+            .andExpect(jsonPath("$.createdAt", validIsoDateTime()))
+            .andExpect(jsonPath("$.updatedAt", validIsoDateTime()))
+            .andExpect(jsonPath("$.categories").isEmpty());
+    }
+
+    @Test
+    public void editDeckWithUpdatedCategoriesReturnsDeckWithUpdatedCategories() throws Exception {
+        Agent agent = persistentAgent();
+        Deck deck = agent.createDeck();
+        Category category = agent.createCategory("test category");
+
+        CategorySimpleDto categorySimpleDto = new CategorySimpleDto();
+        categorySimpleDto.setId(category.getId());
+        categorySimpleDto.setName(category.getName());
+
+        Set<CategorySimpleDto> categories = new HashSet<>();
+        categories.add(categorySimpleDto);
+        DeckUpdateDto deckUpdateDto = new DeckUpdateDto();
+        deckUpdateDto.setCategories(categories);
+
+        mvc.perform(patch("/api/v1/decks/{deckId}", deck.getId())
+            .with(login(agent.getUser().getAuthId()))
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(deckUpdateDto)))
+            .andExpect(status().is(200))
+            .andExpect(jsonPath("$.id").value(deck.getId()))
+            .andExpect(jsonPath("$.name").value(deck.getName()))
+            .andExpect(jsonPath("$.createdBy").value(deck.getCreatedBy().getId()))
+            .andExpect(jsonPath("$.createdAt", validIsoDateTime()))
+            .andExpect(jsonPath("$.updatedAt", validIsoDateTime()))
+            .andExpect(jsonPath("$.categories", hasSize(1)))
+            .andExpect(jsonPath("$.categories[0].id").value(category.getId()))
+            .andExpect(jsonPath("$.categories[0].name").value(category.getName()));
+    }
+
+    @Test
+    public void editDeckWithUpdatedNameAndCategoriesReturnsDeckWithUpdatedNameAndCategories() throws Exception {
+        Agent agent = persistentAgent();
+        Deck deck = agent.createDeck();
+        Category category = agent.createCategory("test category");
+
+        CategorySimpleDto categorySimpleDto = new CategorySimpleDto();
+        categorySimpleDto.setId(category.getId());
+        categorySimpleDto.setName(category.getName());
+
+        Set<CategorySimpleDto> categories = new HashSet<>();
+        categories.add(categorySimpleDto);
+        DeckUpdateDto deckUpdateDto = new DeckUpdateDto();
+        deckUpdateDto.setCategories(categories);
+        deckUpdateDto.setName("test deck");
+
+        mvc.perform(patch("/api/v1/decks/{deckId}", deck.getId())
+            .with(login(agent.getUser().getAuthId()))
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(deckUpdateDto)))
+            .andExpect(status().is(200))
+            .andExpect(jsonPath("$.id").value(deck.getId()))
+            .andExpect(jsonPath("$.name").value(deckUpdateDto.getName()))
+            .andExpect(jsonPath("$.createdBy").value(deck.getCreatedBy().getId()))
+            .andExpect(jsonPath("$.createdAt", validIsoDateTime()))
+            .andExpect(jsonPath("$.updatedAt", validIsoDateTime()))
+            .andExpect(jsonPath("$.categories", hasSize(1)))
+            .andExpect(jsonPath("$.categories[0].id").value(category.getId()))
+            .andExpect(jsonPath("$.categories[0].name").value(category.getName()));
+    }
+
+    @Test
+    public void editDeckWithInvalidDeckIdThrowsNotFoundException() throws Exception {
+        Agent agent = persistentAgent();
+
+        mvc.perform(patch("/api/v1/decks/{deckId}", 123)
+            .with(login(agent.getUser().getAuthId()))
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(new DeckUpdateDto())))
+            .andExpect(status().is(404));
+    }
+
+    @Test
+    public void editDeckWithBlankNameThrowsBadRequest() throws Exception {
+        Agent agent = persistentAgent();
+        Deck deck = agent.createDeck();
+
+        DeckUpdateDto dto = new DeckUpdateDto();
+        dto.setName("");
+
+        mvc.perform(patch("/api/v1/decks/{deckId}", deck.getId())
+            .with(login(agent.getUser().getAuthId()))
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(dto)))
+            .andExpect(status().is(400));
+    }
+
+    @Test
+    public void editDeckForAnonymousThrowsForbidden() throws Exception {
+        mvc.perform(patch("/api/v1/decks/{deckId}", 1)
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(new DeckUpdateDto())))
+            .andExpect(status().is(403));
     }
 }

@@ -70,11 +70,7 @@ public class DeckEndpoint {
     @ApiOperation(value = "Get a deck by id")
     public DeckDto findOne(@PathVariable Long id) {
         LOGGER.info("GET /api/v1/decks/{}", id);
-        try {
-            return deckMapper.deckToDeckDto(deckService.findOneOrThrow(id));
-        } catch (NotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+        return deckMapper.deckToDeckDto(deckService.findOneOrThrow(id));
     }
 
     @Secured("ROLE_USER")
@@ -83,11 +79,7 @@ public class DeckEndpoint {
     @ApiOperation(value = "Update deck", authorizations = @Authorization("user"))
     public DeckDto updateDeck(@PathVariable Long id, @Valid @RequestBody DeckUpdateDto deckUpdateDto) {
         LOGGER.info("PATCH /api/v1/decks/{} body: {}", id, deckUpdateDto);
-        try {
-            return deckMapper.deckToDeckDto(deckService.update(id, deckMapper.deckUpdateDtoToDeck(deckUpdateDto)));
-        } catch (NotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+        return deckMapper.deckToDeckDto(deckService.update(id, deckMapper.deckUpdateDtoToDeck(deckUpdateDto)));
     }
 
     @Secured("ROLE_USER")

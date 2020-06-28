@@ -80,7 +80,11 @@ public class SimpleDeckService implements DeckService {
     public Deck update(Long id, Deck deckUpdate) {
         LOGGER.debug("Update deck with id: {}", id);
         Deck deck = findOneOrThrow(id);
-        deck.setName(deckUpdate.getName());
+
+        if (deckUpdate.getName() != null) {
+            deck.setName(deckUpdate.getName());
+        }
+
         Set<Category> categories = deck.getCategories();
 
         if (deckUpdate.getCategories() != null) {
@@ -95,6 +99,7 @@ public class SimpleDeckService implements DeckService {
                 category = categoryService.findOneOrThrow(category.getId());
                 category.getDecks().remove(deck);
             }
+            deck.setCategories(deckUpdate.getCategories());
         }
 
         return deckRepository.save(deck);
