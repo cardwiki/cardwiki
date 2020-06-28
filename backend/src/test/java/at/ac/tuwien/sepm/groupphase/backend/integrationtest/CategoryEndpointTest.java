@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.integrationtest;
 
+import at.ac.tuwien.sepm.groupphase.backend.profiles.datagenerator.Agent;
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategoryInputDto;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategorySimpleDto;
@@ -36,15 +37,21 @@ public class CategoryEndpointTest extends TestDataGenerator {
 
     @Test
     @Transactional
-    public void getCategoriesReturnsFullListOfCategories() throws Exception {
-        getCategoryRepository().saveAndFlush(new Category("test2", null));
-        getCategoryRepository().saveAndFlush(new Category("test1", null));
+    public void searchCategoriesReturnsSortedPageOfCategories() throws Exception {
+        Agent agent = persistentAgent();
+        Category apple = agent.createCategory("apple");
+        agent.createCategory("banana");
+        agent.createCategory("avocado");
+        agent.createCategory("kiwi");
 
-        mvc.perform(get("/api/v1/categories"))
-            .andExpect(status().is(200))
-            .andExpect(jsonPath("$", hasSize(2)))
-            .andExpect(jsonPath("$[0].name").value("test1"))
-            .andExpect(jsonPath("$[1].name").value("test2"));
+        mvc.perform(get("/api/v1/categories")
+            .queryParam("name", "a"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.content", hasSize(3)))
+            .andExpect(jsonPath("$.content[0].id").value(apple.getId()))
+            .andExpect(jsonPath("$.content[0].name").value("apple"))
+            .andExpect(jsonPath("$.content[1].name").value("avocado"))
+            .andExpect(jsonPath("$.content[2].name").value("banana"));
     }
 
     @Test
@@ -158,9 +165,11 @@ public class CategoryEndpointTest extends TestDataGenerator {
     @Test
     @Transactional
     public void updateCategoryWithValidDataReturnsUpdatedCategoryDetails() throws Exception {
-        Category category = givenCategory();
-        User user = givenApplicationUser();
-        Category parent = getCategoryRepository().save(new Category("valid name", null));
+        Agent agent = persistentAgent();
+        User user = agent.getUser();
+        Category category = agent.createCategory("valid name");
+        Category parent = agent.createCategory("parent");
+
         CategoryInputDto categoryInputDto = new CategoryInputDto();
         categoryInputDto.setName("blubb");
         CategorySimpleDto parentDto = new CategorySimpleDto();

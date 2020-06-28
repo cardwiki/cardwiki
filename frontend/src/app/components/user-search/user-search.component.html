@@ -1,4 +1,3 @@
-<div class="container w-75 mt-4">
   <form (ngSubmit)="onSubmit()" #searchForm="ngForm" class="form-inline my-2 my-lg-0 mr-auto mw-25 flex-grow-1">
     <div class="input-group flex-grow-1" role="group">
       <input [(ngModel)]="searchTerm" name="searchTerm" class="form-control" type="search" placeholder="Find users" aria-label="Search">
@@ -8,28 +7,25 @@
     </div>
   </form>
 
-  <div *ngIf="noUsersFound" class="alert-danger mt-4">No users found.</div>
+  <div *ngIf="page && !users.length" class="alert-danger mt-4">No users found.</div>
 
-  <div *ngIf="users.length>0" class="card mt-4">
+  <div *ngIf="users.length" class="card mt-4">
     <div class="card-header">
       Results
     </div>
     <ul class="list-group list-group-flush">
-      <li *ngFor="let user of users" class="list-group-item">
-        <a routerLink="/users/{{user.username}}/profile">{{user.username}}</a>
-        <div *appUserRole="'ADMIN'">
+      <a *ngFor="let user of users" routerLink="/users/{{user.username}}/profile" class="list-group-item list-group-item-action">{{user.username}}
+        <span *appUserRole="'ADMIN'">
           <div *ngIf="!user.admin && !user.deleted" class="btn-group float-right">
-            <button *ngIf="user.enabled" class="btn btn-outline-danger" (click)="grantAdminRights(user)">Grant admin rights</button>
-            <button *ngIf="user.enabled" class="btn btn-outline-danger" (click)="editEnabledStatus(user, false)">Disable</button>
-            <button *ngIf="!user.enabled" class="btn btn-outline-danger" (click)="editEnabledStatus(user, true)">Enable</button>
-            <button class="btn btn-outline-danger" (click)="delete(user)">Delete</button>
+            <button *ngIf="user.enabled" class="btn btn-outline-danger" (click)="grantAdminRights($event, user)">Grant admin rights</button>
+            <button *ngIf="user.enabled" class="btn btn-outline-danger" (click)="editEnabledStatus($event, user, false)">Disable</button>
+            <button *ngIf="!user.enabled" class="btn btn-outline-danger" (click)="editEnabledStatus($event, user, true)">Enable</button>
+            <button class="btn btn-outline-danger" (click)="delete($event, user)">Delete</button>
           </div>
-        </div>
-      </li>
+        </span>
+      </a>
     </ul>
-    <button *ngIf="!maxUsersLoaded" class="card-footer btn p-1" (click)="loadUsers()">
+    <button *ngIf="!page.last" class="card-footer btn p-1" (click)="loadUsers()">
       Load more...
     </button>
   </div>
-
-</div>

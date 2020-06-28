@@ -1,7 +1,9 @@
 package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
+import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
+import at.ac.tuwien.sepm.groupphase.backend.exception.BadRequestException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.CategoryNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CategoryRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.CategoryService;
@@ -14,6 +16,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +43,12 @@ public class CategoryServiceImpl implements CategoryService {
     public List<Category> findAll() {
         LOGGER.debug("Find categories.");
         return categoryRepository.findAll(Sort.by(Sort.Order.asc("name").ignoreCase()));
+    }
+
+    @Override
+    public Page<Category> searchByName(String name, Pageable pageable) {
+        LOGGER.debug("Find categories by name: {} {}", name, pageable);
+        return categoryRepository.findByNameContainingIgnoreCase(name, pageable);
     }
 
     @Override
@@ -70,7 +80,7 @@ public class CategoryServiceImpl implements CategoryService {
         try {
             return categoryRepository.saveAndFlush(category);
         } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException(handleDataIntegrityViolationException(e));
+            throw new BadRequestException(handleDataIntegrityViolationException(e));
         }
     }
 
@@ -84,10 +94,10 @@ public class CategoryServiceImpl implements CategoryService {
         Category newParent = categoryUpdate.getParent();
         if (newParent != null) {
             if (newParent.getId().equals(id)) {
-                throw new IllegalArgumentException("Category cannot be its own parent.");
+                throw new BadRequestException("Category cannot be its own parent.");
             }
             if (categoryRepository.ancestorExistsWithId(id, newParent.getId())) {
-                throw new IllegalArgumentException("Circular child-parent relation.");
+                throw new BadRequestException("Circular child-parent relation.");
             }
             parent = findOneOrThrow(newParent.getId());
         }
@@ -97,7 +107,7 @@ public class CategoryServiceImpl implements CategoryService {
         try {
             category = categoryRepository.saveAndFlush(category);
         } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException(handleDataIntegrityViolationException(e));
+            throw new BadRequestException(handleDataIntegrityViolationException(e));
         }
         Hibernate.initialize(category.getParent());
         return category;
@@ -122,6 +132,7 @@ public class CategoryServiceImpl implements CategoryService {
                 return cause;
             }
         }
-        return e.getMessage();
+        // Unexpected error
+        throw new IllegalArgumentException(e.getMessage(), e);
     }
 }

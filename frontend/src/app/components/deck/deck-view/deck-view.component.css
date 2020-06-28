@@ -15,3 +15,7 @@ tr:hover .card-actions {
   max-height: 70px;
   max-width: 100px;
 }
+
+:host ::ng-deep p {
+  margin: 0em;
+}

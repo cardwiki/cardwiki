@@ -1,13 +1,13 @@
-<h1>Search</h1>
 <form (ngSubmit)="onSubmit()" #searchForm="ngForm">
-    <div class="form-group">
-        <label for="deckName">Deck Name</label>
-        <input type="text" class="form-control" id="deckName" name="deckName" [(ngModel)]="newQueryParams.name">
+    <div class="input-group" role="group">
+        <input type="text" class="form-control" id="deckName" name="deckName" [(ngModel)]="newQueryParams.name" placeholder="Find decks">
+        <div class="input-group-append">
+            <button type="submit" class="btn btn-outline-dark" [disabled]="loading">Search</button>
+        </div>
     </div>
-    <button type="submit" class="btn btn-primary" [disabled]="loading">Submit</button>
 </form>
-<hr>
-<ul class="list-group">
+
+<ul class="list-group mt-4">
     <a *ngFor="let deck of decks" routerLink="/decks/{{deck.id}}" class="list-group-item list-group-item-action">
         {{deck.name}}
         <span class="ml-2">
@@ -21,5 +21,5 @@
     <span class="sr-only">Loading...</span>
 </div>
 <div class="my-4">
-    <button *ngIf="canLoadMore" class="btn btn-secondary" (click)="loadMore()" [disabled]="loading">Load more</button>
+    <button *ngIf="page && !page.last" class="btn btn-secondary" (click)="loadMore()" [disabled]="loading">Load more</button>
 </div>

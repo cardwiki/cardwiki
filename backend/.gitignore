@@ -54,5 +54,5 @@ build/
 .vscode/
 
 ### Test Image Folders ###
-static
+images
 test-images*

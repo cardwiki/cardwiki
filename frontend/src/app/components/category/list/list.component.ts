@@ -9,7 +9,7 @@ import {CategoryService} from '../../../services/category.service';
 })
 export class ListComponent implements OnInit {
 
-  @Input() list: CategorySimple[];
+  @Input() list: CategorySimple[]; // Note: Currently also used with DeckSimple
   @Input() specs: { listSize: number, pageSize: number, page: number };
   @Input() path: string;
 

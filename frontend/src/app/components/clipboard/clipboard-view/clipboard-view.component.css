@@ -1,0 +1,16 @@
+img {
+  max-height: 70px;
+  max-width: 100px;
+}
+
+li:hover {
+  filter: brightness(97%);
+}
+
+.remove-button {
+  visibility: hidden;
+}
+
+li:hover .remove-button {
+  visibility: visible;
+}

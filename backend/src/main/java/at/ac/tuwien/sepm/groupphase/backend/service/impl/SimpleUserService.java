@@ -4,16 +4,14 @@ import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.exception.*;
-import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
-import at.ac.tuwien.sepm.groupphase.backend.repository.ProgressRepository;
-import at.ac.tuwien.sepm.groupphase.backend.repository.RevisionRepository;
-import at.ac.tuwien.sepm.groupphase.backend.repository.UserRepository;
+import at.ac.tuwien.sepm.groupphase.backend.repository.*;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
 import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -22,7 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.invoke.MethodHandles;
-import java.util.List;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Objects;
 
@@ -32,30 +30,39 @@ public class SimpleUserService implements UserService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final UserRepository userRepository;
     private final DeckRepository deckRepository;
+    private final CategoryRepository categoryRepository;
+    private final CommentRepository commentRepository;
     private final RevisionRepository revisionRepository;
     private final ProgressRepository progressRepository;
+    private final ImageRepository imageRepository;
 
     @Autowired
     public SimpleUserService(
         UserRepository userRepository,
         DeckRepository deckRepository,
+        CategoryRepository categoryRepository,
+        CommentRepository commentRepository,
         RevisionRepository revisionRepository,
-        ProgressRepository progressRepository)
+        ProgressRepository progressRepository,
+        ImageRepository imageRepository)
     {
         this.userRepository = userRepository;
         this.deckRepository = deckRepository;
+        this.categoryRepository = categoryRepository;
+        this.commentRepository = commentRepository;
         this.revisionRepository = revisionRepository;
         this.progressRepository = progressRepository;
+        this.imageRepository = imageRepository;
     }
 
     @Override
-    public List<Deck> getDecks(Long id, Pageable pageable) {
+    public Page<Deck> getDecks(Long id, Pageable pageable) {
         LOGGER.debug("Load {} decks with offset {} from user {}", pageable.getPageSize(), pageable.getOffset(), id);
         return deckRepository.findByCreatedBy_Id(id, pageable);
     }
 
     @Override
-    public List<Revision> getRevisions(Long id, Pageable pageable) {
+    public Page<Revision> getRevisions(Long id, Pageable pageable) {
         LOGGER.debug("Load {} revisions with offset {} from user {}", pageable.getPageSize(), pageable.getOffset(), id);
         return revisionRepository.findByCreatedBy_Id(id, pageable);
     }
@@ -75,13 +82,15 @@ public class SimpleUserService implements UserService {
     @Override
     public User findUserByIdOrThrow(Long id) {
         LOGGER.debug("Load user by id {}", id);
-        return userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+        return userRepository.findById(id)
+            .orElseThrow(() -> new UserNotFoundException("Could not find user with id " + id));
     }
 
     @Override
     public User findUserByUsernameOrThrow(String username) {
         LOGGER.debug("Load user by username {}", username);
-        return userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
+        return userRepository.findByUsername(username)
+            .orElseThrow(() -> new UserNotFoundException("Could not find user with username " + username));
     }
 
     @Override
@@ -118,12 +127,7 @@ public class SimpleUserService implements UserService {
     }
 
     @Override
-    public List<User> getAll() {
-        return userRepository.findAll();
-    }
-
-    @Override
-    public List<User> searchByUsername(String username, Pageable pageable) {
+    public Page<User> searchByUsername(String username, Pageable pageable) {
         LOGGER.debug("Search users for username {} {}", username, pageable);
         Objects.requireNonNull(username, "name argument must not be null");
         return userRepository.findByUsernameContainingIgnoreCaseAndDeletedFalse(username, pageable);
@@ -187,7 +191,29 @@ public class SimpleUserService implements UserService {
         user.setAuthId(null);
         user.setDeleted(true);
         user.setReason(reason);
+        user.setFavorites(Collections.emptySet());
         userRepository.save(user);
-        progressRepository.deleteUserProgress(id);
+        progressRepository.deleteById_UserId(id);
+    }
+
+    @Transactional
+    @Override
+    public User exportUserData(Long userId) {
+        User currentUser = loadCurrentUserOrThrow();
+        if (!currentUser.getId().equals(userId) && !currentUser.isAdmin())
+            throw new AccessDeniedException("Cannot export user data for other users");
+
+        User user = findUserByIdOrThrow(userId);
+
+        // Fetching one by one to prevent huge cartesian product on join when using EntityGraph directly on user
+        user.setRevisions(revisionRepository.findExportByCreatedBy_Id(userId));
+        user.setDecks(deckRepository.findExportByCreatedBy_Id(userId));
+        user.setFavorites(deckRepository.findExportByFavoredBy_Id(userId));
+        user.setCategories(categoryRepository.findExportByCreatedBy_Id(userId));
+        user.setComments(commentRepository.findExportByCreatedBy_Id(userId));
+        user.setImages(imageRepository.findExportByCreatedBy_Id(userId));
+        user.setProgress(progressRepository.findExportById_UserId(userId));
+
+        return user;
     }
 }

@@ -6,6 +6,7 @@ import {DeckSimple} from '../../dtos/deckSimple';
 import {LearnService} from '../../services/learn.service';
 import {LearnAttempt, AttemptStatus } from '../../dtos/learnAttempt';
 import {Globals} from '../../global/globals';
+import { TitleService } from 'src/app/services/title.service';
 
 @Component({
   selector: 'app-learn-deck',
@@ -18,7 +19,8 @@ export class LearnDeckComponent implements OnInit {
   card: CardSimple;
   flipped: boolean;
 
-  constructor(private deckService: DeckService, private learnService: LearnService, private route: ActivatedRoute, public globals: Globals) { }
+  constructor(private deckService: DeckService, private learnService: LearnService, private route: ActivatedRoute, public globals: Globals,
+              private titleService: TitleService) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
@@ -46,6 +48,7 @@ export class LearnDeckComponent implements OnInit {
 
   loadDeck(id: number) {
     this.deckService.getDeckById(id).subscribe(deck => {
+      this.titleService.setTitle(`Learn ${deck.name}`, null);
       console.log(deck);
       this.deck = deck;
     },
@@ -91,13 +94,7 @@ export class LearnDeckComponent implements OnInit {
   async triggerNext(status: AttemptStatus) {
     console.log('Submitted status: ' + status);
     if (this.card.id > 0) {
-      await this.learnService.sendAttemptStatus(new LearnAttempt(this.card.id, status))
-        .subscribe(() => {
-            console.log('Status ' + status + ' successfully submitted.');
-          },
-          error => {
-            console.log(error);
-          });
+      await this.learnService.sendAttemptStatus(new LearnAttempt(this.card.id, status)).toPromise();
     }
   }
 }

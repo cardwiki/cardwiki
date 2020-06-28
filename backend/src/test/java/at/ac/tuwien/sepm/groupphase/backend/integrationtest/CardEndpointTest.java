@@ -1,9 +1,12 @@
 package at.ac.tuwien.sepm.groupphase.backend.integrationtest;
 
+import at.ac.tuwien.sepm.groupphase.backend.profiles.datagenerator.Agent;
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.RevisionEditDto;
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.RevisionInputDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.file.Paths;
@@ -35,11 +39,13 @@ public class CardEndpointTest extends TestDataGenerator {
     private static final String FRONT_TEXT = "Test Front";
     private static final String BACK_TEXT = "Back Front";
 
+    // TODO: Test getCardsByDeckId
+
     @Test
     public void createCardReturnsCardDetails() throws Exception {
         Deck deck = givenDeck();
         User user = givenApplicationUser();
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setTextFront(FRONT_TEXT);
         dto.setTextBack(BACK_TEXT);
 
@@ -58,7 +64,7 @@ public class CardEndpointTest extends TestDataGenerator {
     public void createCardWithMessageReturnsCardDetails() throws Exception {
         Deck deck = givenDeck();
         User user = givenApplicationUser();
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         String message = "this is my message";
         dto.setTextFront(FRONT_TEXT);
         dto.setTextBack(BACK_TEXT);
@@ -78,7 +84,7 @@ public class CardEndpointTest extends TestDataGenerator {
     @Test
     public void createCardWithTooLongMessageThrowsBadRequest() throws Exception {
         Deck deck = givenDeck();
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         String message = "x".repeat(Revision.MAX_MESSAGE_SIZE + 1);
         dto.setTextFront(FRONT_TEXT);
         dto.setTextBack(BACK_TEXT);
@@ -94,7 +100,7 @@ public class CardEndpointTest extends TestDataGenerator {
     public void createCardWithSpecialUtf16CharsReturnsSameText() throws Exception {
         Deck deck = givenDeck();
         User user = givenApplicationUser();
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setTextFront(UTF_16_SAMPLE_TEXT);
         dto.setTextBack(UTF_16_SAMPLE_TEXT);
 
@@ -113,7 +119,7 @@ public class CardEndpointTest extends TestDataGenerator {
         User user = givenApplicationUser();
         Image image = givenImage();
 
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setImageFrontFilename(image.getFilename());
         dto.setImageBackFilename(image.getFilename());
 
@@ -134,7 +140,7 @@ public class CardEndpointTest extends TestDataGenerator {
         User user = givenApplicationUser();
         Image image = givenImage();
 
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setTextFront(FRONT_TEXT);
         dto.setTextBack(BACK_TEXT);
         dto.setImageFrontFilename(image.getFilename());
@@ -158,7 +164,7 @@ public class CardEndpointTest extends TestDataGenerator {
         Agent user = persistentAgent();
         Deck deck = user.createDeck();
 
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setImageFrontFilename("i don't exist");
         dto.setImageBackFilename("me neither");
 
@@ -172,7 +178,7 @@ public class CardEndpointTest extends TestDataGenerator {
     @Test
     public void createCardWithInvalidDeckIdThrowsNotFoundException() throws Exception {
         User user = givenApplicationUser();
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setTextFront(FRONT_TEXT);
         dto.setTextBack(BACK_TEXT);
 
@@ -188,7 +194,7 @@ public class CardEndpointTest extends TestDataGenerator {
         Agent user = persistentAgent();
         Deck deck = user.createDeck();
 
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setTextFront(null);
         dto.setTextBack(null);
         dto.setImageFrontFilename(null);
@@ -203,7 +209,7 @@ public class CardEndpointTest extends TestDataGenerator {
 
     @Test
     public void createCardWithBlankTextThrowsBadRequest() throws Exception {
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setTextFront("  ");
         dto.setTextBack("  ");
 
@@ -215,7 +221,7 @@ public class CardEndpointTest extends TestDataGenerator {
 
     @Test
     public void createCardForAnonymousThrowsForbidden() throws Exception {
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setTextFront(FRONT_TEXT);
         dto.setTextBack(BACK_TEXT);
 
@@ -254,7 +260,7 @@ public class CardEndpointTest extends TestDataGenerator {
         Card card = givenCard();
         Deck deck = card.getDeck();
         User user = givenApplicationUser();
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setTextFront(FRONT_TEXT);
         dto.setTextBack(BACK_TEXT);
 
@@ -275,7 +281,7 @@ public class CardEndpointTest extends TestDataGenerator {
         Deck deck = card.getDeck();
         User user = givenApplicationUser();
 
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         Image image = givenImage();
         dto.setImageFrontFilename(image.getFilename());
         dto.setImageBackFilename(image.getFilename());
@@ -297,7 +303,7 @@ public class CardEndpointTest extends TestDataGenerator {
         Deck deck = card.getDeck();
         User user = givenApplicationUser();
 
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setTextFront(FRONT_TEXT);
         dto.setTextBack(BACK_TEXT);
         Image image = givenImage();
@@ -321,7 +327,7 @@ public class CardEndpointTest extends TestDataGenerator {
     public void editCardWithInvalidCardIdThrowsNotFoundException() throws Exception {
         Card card = givenCard();
         User user = givenApplicationUser();
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setTextFront(FRONT_TEXT);
         dto.setTextBack(BACK_TEXT);
 
@@ -338,7 +344,7 @@ public class CardEndpointTest extends TestDataGenerator {
         Deck deck = user.createDeck();
         Card card = user.createCardIn(deck);
 
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setTextFront(null);
         dto.setTextBack(null);
         dto.setImageFrontFilename(null);
@@ -354,7 +360,7 @@ public class CardEndpointTest extends TestDataGenerator {
     @Test
     public void editCardWithBlankTextThrowsBadRequest() throws Exception {
         Card card = givenCard();
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setTextFront("  ");
         dto.setTextBack("  ");
 
@@ -367,7 +373,7 @@ public class CardEndpointTest extends TestDataGenerator {
     @Test
     public void editCardForAnonymousThrowsForbidden() throws Exception {
         Card card = givenCard();
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setTextFront(FRONT_TEXT);
         dto.setTextBack(BACK_TEXT);
 
@@ -381,7 +387,7 @@ public class CardEndpointTest extends TestDataGenerator {
     public void editCardWithMessageReturnsOk() throws Exception {
         Card card = givenCard();
         User user = givenApplicationUser();
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setTextFront(FRONT_TEXT);
         dto.setTextBack(BACK_TEXT);
         dto.setMessage("this is my message");
@@ -397,7 +403,7 @@ public class CardEndpointTest extends TestDataGenerator {
     public void editCardWithTooLongMessageThrowsBadRequest() throws Exception {
         Card card = givenCard();
         User user = givenApplicationUser();
-        RevisionEditDto dto = new RevisionEditDto();
+        RevisionInputDto dto = new RevisionInputDto();
         dto.setTextFront(FRONT_TEXT);
         dto.setTextBack(BACK_TEXT);
         dto.setMessage("x".repeat(Revision.MAX_MESSAGE_SIZE + 1));
@@ -459,20 +465,24 @@ public class CardEndpointTest extends TestDataGenerator {
         User user = givenApplicationUser();
         String message = "x".repeat(Revision.MAX_MESSAGE_SIZE + 1);
 
+        ObjectNode input = objectMapper.createObjectNode();
+        input.put("message", message);
+
         mvc.perform(post("/api/v1/cards/{cardId}", card.getId())
-            .queryParam("message", message)
+            .contentType("application/json")
+            .content(input.toString())
             .with(login(user.getAuthId())))
             .andExpect(status().isBadRequest());
     }
 
     @Test
-    public void userDeletesCardReturnsForbidden() throws Exception {
+    public void userDeletesCardReturnsNoContent() throws Exception {
         User user = givenApplicationUser();
         Card card = givenCard();
 
         mvc.perform(delete("/api/v1/cards/{cardId}", card.getId())
             .with(login(user.getAuthId())))
-            .andExpect(status().isForbidden());
+            .andExpect(status().isNoContent());
     }
 
     @Test
@@ -494,5 +504,80 @@ public class CardEndpointTest extends TestDataGenerator {
         mvc.perform(delete("/api/v1/cards/{cardId}", card.getId())
             .with(login(admin.getAuthId())))
             .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void getRevisionsOfCard_cardDoesNotExist_returnsNotFound() throws Exception {
+        mvc.perform(get("/api/v1/cards/123/revisions"))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void getRevisionsOfCard_cardExists_revisionsAreReturned() throws Exception {
+        Agent agent = persistentAgent();
+        Card card = agent.createCardIn(agent.createDeck());
+        for (int i = 0; i < 9; i++) {
+            agent.editCard(card);
+        }
+        // TODO: check content of content
+        mvc.perform(get("/api/v1/cards/{id}/revisions", card.getId()))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.content", Matchers.hasSize(10)));
+    }
+
+    @Test
+    public void getLatestRevisions_returnsOk() throws Exception {
+        mvc.perform(get("/api/v1/revisions"))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    public void getRevisionsByIds_noIds_returnsBadRequest() throws Exception {
+        mvc.perform(get("/api/v1/revisions/byid"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void getRevisionsByIds_nonExistantId_returnsOk() throws Exception {
+        mvc.perform(get("/api/v1/revisions/byid").queryParam("id", "99"))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    public void getRevisionsByIds_existingIds_returnsRevisions() throws Exception {
+        Agent agent = persistentAgent();
+        Card card = agent.createCardIn(agent.createDeck());
+        MockHttpServletRequestBuilder builder = get("/api/v1/revisions/byid");
+        for (int i = 0; i < 10; i++) {
+            agent.editCard(card);
+            builder.queryParam("id", String.valueOf(card.getLatestRevision().getId()));
+        }
+        // TODO: check content
+        mvc.perform(builder)
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.*", Matchers.hasSize(10)));
+    }
+
+    @Test
+    public void getRevisionsByIds_tooManyIds_returnsBadRequest() throws Exception {
+        Agent agent = persistentAgent();
+        Card card = agent.createCardIn(agent.createDeck());
+        MockHttpServletRequestBuilder builder = get("/api/v1/revisions/byid");
+        for (int i = 0; i < 11; i++) {
+            agent.editCard(card);
+            builder.queryParam("id", String.valueOf(card.getLatestRevision().getId()));
+        }
+        // TODO: check content
+        mvc.perform(builder)
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void getCardsByDeckId_emptyDeck_returnsEmptyArray() throws Exception {
+        Agent agent = persistentAgent();
+        Deck deck = agent.createDeck();
+        mvc.perform(get("/api/v1/decks/{id}/cards", deck.getId()))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.content", Matchers.hasSize(0)));
     }
 }

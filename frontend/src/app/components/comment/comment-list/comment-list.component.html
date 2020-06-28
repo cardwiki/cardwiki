@@ -23,7 +23,9 @@
             <app-comment-form #commentForm *ngIf="comment.id === editingCommentId"
                 action="Update"
                 [message]="comment.message"
-                (commentSubmit)="editCommentSubmit($event)">
+                (commentSubmit)="editCommentSubmit($event)"
+                (cancel)="cancelEdit()"
+            >
             </app-comment-form>
         </div>
     </li>

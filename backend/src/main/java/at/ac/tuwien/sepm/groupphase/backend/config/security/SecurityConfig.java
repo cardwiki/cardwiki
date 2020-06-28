@@ -24,6 +24,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.invoke.MethodHandles;
 import java.util.*;
@@ -44,6 +45,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(HttpSecurity httpSecurity) throws Exception {
         staticConfigure(httpSecurity, userService, securityProps);
+    }
+
+    public static final String FRONTEND = "http://localhost:4200/login?success";
+
+    public static void addTokenCookie(String authId, SecurityProps securityProps, HttpServletRequest request, HttpServletResponse response){
+        String token = Jwts.builder()
+            .setSubject(authId)
+            .setExpiration(new Date(System.currentTimeMillis() + securityProps.getExpirationTime()))
+            .signWith(Keys.hmacShaKeyFor(securityProps.getSecret()), SignatureAlgorithm.HS512)
+            .compact();
+        Cookie tokenCookie = new Cookie("token", token);
+        tokenCookie.setPath("/");
+        tokenCookie.setSecure(request.getServletContext().getSessionCookieConfig().isSecure());
+        response.addCookie(tokenCookie);
     }
 
     /**
@@ -85,21 +100,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 }
 
                 OAuth2AuthenticationToken auth = (OAuth2AuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-                String token = Jwts.builder()
-                    // we prefix the clientRegistrationId to prevent dangerous name collisions
-                    .setSubject(auth.getAuthorizedClientRegistrationId() + ":" + auth.getName())
-                    .setExpiration(new Date(System.currentTimeMillis() + securityProps.getExpirationTime()))
-                    .signWith(Keys.hmacShaKeyFor(securityProps.getSecret()), SignatureAlgorithm.HS512)
-                    .compact();
 
                 // We pass the token with a cookie so that it is not stored in the browser history.
-                Cookie tokenCookie = new Cookie("token", token);
-                tokenCookie.setPath("/");
-                tokenCookie.setSecure(request.getServletContext().getSessionCookieConfig().isSecure());
-                response.addCookie(tokenCookie);
+                // we prefix the clientRegistrationId to prevent dangerous name collisions
+                addTokenCookie(auth.getAuthorizedClientRegistrationId() + ":" + auth.getName(), securityProps, request, response);
 
                 // TODO: support multiple frontends
-                response.sendRedirect("http://localhost:4200/login?success");
+                response.sendRedirect(FRONTEND);
             });
 
         // for every request we query the database for user roles

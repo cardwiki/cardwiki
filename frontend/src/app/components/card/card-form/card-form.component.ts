@@ -1,5 +1,4 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { CardContent } from 'src/app/dtos/cardContent';
 import { CardUpdate } from 'src/app/dtos/cardUpdate';
 import { Globals } from '../../../global/globals';
 import {ImageService} from '../../../services/image.service';
@@ -13,12 +12,18 @@ export class CardFormComponent implements OnInit {
 
   originalFilenameFront: string = 'Choose file';
   originalFilenameBack: string = 'Choose file';
+
+  @Input() action: string
   @Input() card: CardUpdate
   @Output() cardSubmit: EventEmitter<CardUpdate> = new EventEmitter();
   @Output() cancel: EventEmitter<void> = new EventEmitter();
   constructor(public globals: Globals, public imageService: ImageService) { }
 
   ngOnInit(): void {
+  }
+
+  autoSizeTextarea({ target: textArea }: any) {
+    textArea.style.height = Math.max(textArea.offsetHeight, textArea.scrollHeight) + "px";
   }
 
   onSubmit() {

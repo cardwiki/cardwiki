@@ -5,7 +5,8 @@ import {AuthService} from '../../services/auth.service';
 import {parse as parseCookie} from 'cookie';
 import { OAuth2ProviderDto } from 'src/app/dtos/oAuth2Provider';
 import { WhoAmI } from 'src/app/dtos/whoAmI';
-import { NotificationService } from 'src/app/services/notification.service';
+import { TitleService } from 'src/app/services/title.service';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-login',
@@ -18,7 +19,7 @@ export class LoginComponent implements OnInit {
   registerForm: FormGroup;
   username: string;
 
-  constructor(public authService: AuthService, private router: Router, private route: ActivatedRoute, private notificationService: NotificationService) {
+  constructor(public authService: AuthService, private router: Router, private route: ActivatedRoute, private titleService: TitleService, private location: Location) {
     this.registerForm = new FormGroup({
       'username': new FormControl(this.username, [
         Validators.required,
@@ -31,6 +32,9 @@ export class LoginComponent implements OnInit {
   get formUsername() { return this.registerForm.get('username'); }
 
   ngOnInit(): void {
+    this.registerForm.reset();
+    this.oAuthInfo = null;
+    this.titleService.setTitle('Login', null)
     this.authService.getAuthProviders().subscribe(providers => this.authProviders = providers);
     this.route.queryParams.subscribe(params => {
       if ('success' in params)
@@ -46,7 +50,9 @@ export class LoginComponent implements OnInit {
       if (info.authId === null)
         return; //TODO proper error handling?
       if (info.hasAccount) {
-        this.router.navigate(['/']);
+        const redirectUrl = this.authService.getRedirectUrl() ?? '/';
+        this.authService.clearRedirectUrl();
+        this.router.navigate([redirectUrl]);
       }
     });
   }
@@ -55,14 +61,7 @@ export class LoginComponent implements OnInit {
     this.authService.register(username).subscribe(response => {
       console.log("Register response: ", response);
       if (response.username) {
-        this.username = response.username;
-        setTimeout(() =>
-          {
-            this.registerForm.reset();
-            this.oAuthInfo = null;
-            this.router.navigate(['/']);
-          },
-          2500);
+        this.router.navigate(['/']);
       }
     });
   }

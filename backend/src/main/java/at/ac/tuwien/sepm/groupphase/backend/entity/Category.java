@@ -26,7 +26,7 @@ public class Category {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name="created_by", referencedColumnName="id", updatable = false)
+    @JoinColumn(name="created_by", referencedColumnName="id", updatable = false, nullable = false)
     private User createdBy;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -156,14 +156,13 @@ public class Category {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Category)) return false;
-        Category category = (Category) o;
-        return getName().equals(category.getName()) &&
-            getCreatedAt().equals(category.getCreatedAt());
+        Category other = (Category) o;
+        return Objects.equals(name, other.getName());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getName(), getCreatedAt());
+        return Objects.hash(name);
     }
 
     @Override
@@ -171,7 +170,6 @@ public class Category {
         return "Category{" +
             "id=" + id +
             ", name='" + name + '\'' +
-            ", createdBy=" + createdBy +
             ", createdAt=" + createdAt +
             ", updatedAt=" + updatedAt +
             '}';

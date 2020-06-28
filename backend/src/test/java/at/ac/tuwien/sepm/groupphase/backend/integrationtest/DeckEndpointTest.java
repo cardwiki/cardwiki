@@ -1,17 +1,20 @@
 package at.ac.tuwien.sepm.groupphase.backend.integrationtest;
 
+import at.ac.tuwien.sepm.groupphase.backend.profiles.datagenerator.Agent;
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategorySimpleDto;
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckDto;
-import at.ac.tuwien.sepm.groupphase.backend.entity.*;
+
+
+import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
+import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
+import at.ac.tuwien.sepm.groupphase.backend.entity.User;
+
 import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.csv.CSVRecord;
+
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -19,11 +22,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.io.*;
-import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.stream.Collectors;
 
 import static at.ac.tuwien.sepm.groupphase.backend.integrationtest.security.MockedLogins.*;
@@ -133,21 +132,6 @@ public class DeckEndpointTest extends TestDataGenerator {
     @Test
     public void givenNoAuthentication_whenSearchDecks_thenReturnDeck() throws Exception {
         Deck deck = givenDeck();
-        DeckDto response = new DeckDto();
-        response.setCreatedBy(deck.getCreatedBy().getId());
-        response.setCreatedAt(deck.getCreatedAt());
-        response.setUpdatedAt(deck.getUpdatedAt());
-        response.setName(deck.getName());
-        response.setId(deck.getId());
-        response.setCategories(
-            deck.getCategories().stream()
-                .map((x) -> {
-                    CategorySimpleDto category = new CategorySimpleDto();
-                    category.setName(x.getName());
-                    category.setId(x.getId());
-                    return category;
-                }).collect(Collectors.toList())
-            );
 
         mvc.perform(
             get("/api/v1/decks")
@@ -157,7 +141,13 @@ public class DeckEndpointTest extends TestDataGenerator {
                 .queryParam("offset", "0")
         )
             .andExpect(status().isOk())
-            .andExpect(content().json(objectMapper.writeValueAsString(Collections.singletonList(response))));
+            .andExpect(jsonPath("$.totalElements").value(1))
+            .andExpect(jsonPath("$.content[0].id").value(deck.getId()))
+            .andExpect(jsonPath("$.content[0].name").value(deck.getName()))
+            .andExpect(jsonPath("$.content[0].createdAt", validIsoDateTime()))
+            .andExpect(jsonPath("$.content[0].updatedAt", validIsoDateTime()))
+            .andExpect(jsonPath("$.content[0].createdBy").value(deck.getCreatedBy().getId()))
+            .andExpect(jsonPath("$.content[0].categories").isEmpty()); // TODO: Test with categories
     }
 
     @Test
@@ -170,7 +160,7 @@ public class DeckEndpointTest extends TestDataGenerator {
                 .queryParam("offset", "0")
         )
             .andExpect(status().isOk())
-            .andExpect(content().json(objectMapper.writeValueAsString(Collections.emptyList())));
+            .andExpect(jsonPath("$.content").isEmpty());
     }
 
     @Test
@@ -178,22 +168,6 @@ public class DeckEndpointTest extends TestDataGenerator {
         Deck deck = givenDeck();
         deck.setName("\u82B1");
         deck = deckRepository.saveAndFlush(deck);
-
-        DeckDto response = new DeckDto();
-        response.setCreatedBy(deck.getCreatedBy().getId());
-        response.setCreatedAt(deck.getCreatedAt());
-        response.setUpdatedAt(deck.getUpdatedAt());
-        response.setName(deck.getName());
-        response.setId(deck.getId());
-        response.setCategories(
-            deck.getCategories().stream()
-                .map((x) -> {
-                    CategorySimpleDto category = new CategorySimpleDto();
-                    category.setName(x.getName());
-                    category.setId(x.getId());
-                    return category;
-                }).collect(Collectors.toList())
-        );
 
         mvc.perform(
             get("/api/v1/decks")
@@ -203,7 +177,9 @@ public class DeckEndpointTest extends TestDataGenerator {
                 .queryParam("offset", "0")
         )
             .andExpect(status().isOk())
-            .andExpect(content().json(objectMapper.writeValueAsString(Collections.singletonList(response))));
+            .andExpect(jsonPath("$.content").isNotEmpty())
+            .andExpect(jsonPath("$.content[0].id").value(deck.getId()))
+            .andExpect(jsonPath("$.content[0].name").value(deck.getName()));
     }
 
     @Test
@@ -366,5 +342,36 @@ public class DeckEndpointTest extends TestDataGenerator {
             .file(multipartFile)
             .with(login(user.getAuthId())))
             .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    public void getRevisions_deckDoesNotExist_returnsNotFound() throws Exception {
+        mvc.perform(get("/api/v1/decks/123/revisions"))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void getRevisions_deckIsEmpty_returnsEmptyArray() throws Exception {
+        Agent agent = persistentAgent();
+        Deck deck = agent.createDeck();
+        mvc.perform(get("/api/v1/decks/{id}/revisions", deck.getId()))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.content", Matchers.hasSize(0)));
+    }
+
+    @Test
+    public void getRevisions_hasRevisions_returnsRevisions() throws Exception {
+        Agent agent = persistentAgent();
+        Deck deck = agent.createDeck();
+        for (int i = 0; i < 9; i++) {
+            Card card = agent.createCardIn(deck);
+            for (int j = 0; j < 9; j++) {
+                agent.editCard(card);
+            }
+        }
+        // TODO: check content of content
+        mvc.perform(get("/api/v1/decks/{id}/revisions?limit=100", deck.getId()))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.content", Matchers.hasSize(90)));
     }
 }

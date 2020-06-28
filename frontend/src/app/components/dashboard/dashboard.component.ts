@@ -4,6 +4,7 @@ import { DeckSimple } from 'src/app/dtos/deckSimple';
 import { Pageable } from 'src/app/dtos/pageable';
 import { Page } from 'src/app/dtos/page';
 import { NotificationService } from 'src/app/services/notification.service';
+import { TitleService } from 'src/app/services/title.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -16,9 +17,10 @@ export class DashboardComponent implements OnInit {
 
   readonly favoritesPageSize = 10
 
-  constructor(private favoriteService: FavoriteService, private notificationService: NotificationService) { }
+  constructor(private favoriteService: FavoriteService, private notificationService: NotificationService, private titleService: TitleService) { }
 
   ngOnInit(): void {
+    this.titleService.setTitle('Dashboard', null)
     this.loadFavoritePage(1)
   }
 

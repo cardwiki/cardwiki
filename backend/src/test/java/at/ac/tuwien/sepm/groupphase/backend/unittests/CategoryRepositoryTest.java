@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.unittests;
 
+import at.ac.tuwien.sepm.groupphase.backend.profiles.datagenerator.Agent;
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CategoryRepository;
@@ -29,6 +30,14 @@ public class CategoryRepositoryTest extends TestDataGenerator {
 
     @Autowired
     private DeckRepository deckRepository;
+
+    @Test
+    public void givenNothing_whenSaveCategoryWithoutCreatedBy_thenThrowDataIntegrityViolationException() {
+        Category category = new Category();
+        category.setName("foo");
+
+        assertThrows(DataIntegrityViolationException.class, () -> categoryRepository.save(category));
+    }
 
     @Test
     public void givenNothing_whenSaveCategoryWithParent_thenExistsByIdAndHasParent() {
@@ -63,14 +72,13 @@ public class CategoryRepositoryTest extends TestDataGenerator {
     }
 
     @Test
-    public void givenFourCategories_whenFindAllSorted_thenReturnsListWithLengthFourWhichContainsAllElementsInAlphabeticOrder() {
-        Category category1 = givenCategory();
-        Category category2 = category1.getParent();
-        Category category3 = getCategoryRepository().save(new Category("Valid name", null));
-        List<Category> categories = new ArrayList<>();
-        categories.add(category1);
-        categories.add(category2);
-        categories.add(category3);
+    public void givenThreeCategories_whenFindAllSorted_thenReturnsListWithLengthThreeWhichContainsAllElementsInAlphabeticOrder() {
+        Agent agent = persistentAgent();
+        List<Category> categories = Arrays.asList(
+            agent.createCategory("foo"),
+            agent.createCategory("bar"),
+            agent.createCategory("foobar")
+        );
         categories.sort(Comparator.comparing(Category::getName, String.CASE_INSENSITIVE_ORDER));
 
         assertAll(
@@ -101,8 +109,9 @@ public class CategoryRepositoryTest extends TestDataGenerator {
 
     @Test
     public void givenCategoryWithParent_whenAncestorExistsWithIdWithIdAndIndependentCategoryId_thenReturnsFalse() {
-        Category category = givenCategory();
-        Category parent = categoryRepository.save(new Category("blubb", null));
+        Agent agent = persistentAgent();
+        Category category = agent.createCategory("foo");
+        Category parent = agent.createCategory("bar");
 
         assertFalse(categoryRepository.ancestorExistsWithId(category.getId(), parent.getId()));
     }

@@ -12,12 +12,18 @@ import {AuthService} from '../../../services/auth.service';
 import {Globals} from '../../../global/globals';
 import {FavoriteService} from 'src/app/services/favorite.service';
 import { CardRemoveModalComponent } from '../card-remove-modal/card-remove-modal.component';
-import { CommentService } from 'src/app/services/comment.service';
 import { Pageable } from 'src/app/dtos/pageable';
 import { Page } from 'src/app/dtos/page';
+import { CommentService } from 'src/app/services/comment.service';
 import { CommentSimple } from 'src/app/dtos/commentSimple';
 import { CommentFormComponent } from '../../comment/comment-form/comment-form.component';
+
 import { CardsImportModalComponent} from '../cards-import-modal/cards-import-modal.component';
+import {ClipboardService} from '../../../services/clipboard.service';
+import {ClipboardPasteModalComponent} from '../../clipboard/clipboard-paste-modal/clipboard-paste-modal.component';
+import {CardUpdate} from '../../../dtos/cardUpdate';
+import { TitleService } from 'src/app/services/title.service';
+
 
 @Component({
   selector: 'app-deck-view',
@@ -26,9 +32,17 @@ import { CardsImportModalComponent} from '../cards-import-modal/cards-import-mod
 })
 export class DeckViewComponent implements OnInit {
 
+  readonly limit = 50;
+
   deck: DeckDetails;
-  cards: CardSimple[];
   isFavorite$: Subject<boolean>;
+  clipboardSize: number;
+  loadingError: string;
+
+
+  page: Page<CardSimple>;
+  cards: CardSimple[];
+  loadingCards: boolean;
 
   displayComments = false;
   comments: CommentSimple[];
@@ -40,28 +54,48 @@ export class DeckViewComponent implements OnInit {
   constructor(private deckService: DeckService, private cardService: CardService, public globals: Globals,
               private favoriteService: FavoriteService, private commentService: CommentService,
               private route: ActivatedRoute, private router: Router, private modalService: NgbModal,
-              private authService: AuthService, private notificationService: NotificationService) { }
+              private authService: AuthService, private notificationService: NotificationService,
+              private clipboardService: ClipboardService, private titleService: TitleService) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
+      this.deck = this.page = null
+      this.loadingError = null
+      this.cards = []
+      this.isFavorite$ = new Subject()
+      this.displayComments = false
+      this.commentsPage = null
+      this.comments = []
       this.loadDeck(Number(params.get('id')));
     });
-    this.isFavorite$ = new Subject();
-    this.displayComments = false;
-    this.commentsPage = null;
-    this.comments = [];
+    this.clipboardService.clipboard$.subscribe(clipboard => this.clipboardSize = clipboard.length);
   }
 
   loadDeck(id: number) {
     // TODO: Use forkJoin to only update page when everything loaded (to prevent flickering)
     this.deckService.getDeckById(id).subscribe(deck => {
+      this.titleService.setTitle(deck.name, null);
       this.deck = deck;
-      this.cardService.getCardsByDeckId(id).subscribe(cards => this.cards = cards);
+      this.cards = [];
+      this.loadMoreCards();
       this.loadMoreComments();
+      if (this.authService.isLoggedIn())
+        this.favoriteService.hasFavorite(id).subscribe(isFavorite => this.isFavorite$.next(isFavorite))
+    }, err => {
+      this.loadingError = err && err.status === 404 ?
+        'This deck does not exist. Maybe it has been deleted or the link is broken'
+        : 'Could not load this deck.';
     });
-    if (this.authService.isLoggedIn()) {
-      this.favoriteService.hasFavorite(id).subscribe(isFavorite => this.isFavorite$.next(isFavorite));
-    }
+  }
+
+  loadMoreCards() {
+    const nextPageNumber = this.page ? this.page.pageable.pageNumber + 1 : 0
+    this.loadingCards = true
+    this.cardService.getCardsByDeckId(this.deck.id, new Pageable(nextPageNumber, this.limit))
+      .subscribe(page => {
+        this.page = page;
+        this.cards.push(...page.content)
+      }).add(() => this.loadingCards = false);
   }
 
   loadMoreComments() {
@@ -153,4 +187,24 @@ export class DeckViewComponent implements OnInit {
       )
     ).catch(() => {});
   }
+
+  copyToClipboard(card: CardSimple) {
+    this.clipboardService.copy(card, this.deck.name);
+    this.notificationService.success('Copied to Clipboard');
+  }
+
+  pasteFromClipboard(cards: CardUpdate[]) {
+    this.clipboardService.paste(this.deck.id, cards).subscribe(pastedCards => {
+      this.cards.push(...pastedCards);
+      this.notificationService.success('Cards pasted from Clipboard');
+    });
+  }
+
+  openClipboardPasteModal() {
+    const modalRef = this.modalService.open(ClipboardPasteModalComponent, { size: 'lg' });
+    modalRef.result.then(
+      (res: CardUpdate[]) => this.pasteFromClipboard(res)
+    ).catch(() => {});
+  }
+
 }

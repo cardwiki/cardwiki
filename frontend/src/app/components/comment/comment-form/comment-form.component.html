@@ -6,4 +6,5 @@
     </div>
 
     <button type="submit" class="btn btn-primary">{{action}}</button>
+    <button *ngIf="showCancelButton" type="button" class="btn btn-outline-danger ml-2" (click)="onCancel()">Cancel</button>
 </form>

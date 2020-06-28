@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {Router} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {CategoryDetails} from '../../../dtos/categoryDetails';
-import { CategorySimple } from 'src/app/dtos/categorySimple';
+import { TitleService } from 'src/app/services/title.service';
+import { CategoryService } from 'src/app/services/category.service';
 
 @Component({
   selector: 'app-category-create',
@@ -9,19 +10,30 @@ import { CategorySimple } from 'src/app/dtos/categorySimple';
   styleUrls: ['./category-create.component.css']
 })
 export class CategoryCreateComponent implements OnInit {
-  editCategoryMode: 'Create' = 'Create';
-  messages: { header: string, success: string, error: string };
-  default: CategoryDetails = new CategoryDetails;
+  editCategoryMode = 'Create' as const;
+  title = 'Create category';
+  default = new CategoryDetails;
+  ready = false;
 
-  constructor(router: Router) {
-    router.events.subscribe(e => {
-      const navigation = router.getCurrentNavigation();
-      this.default.parent = new CategorySimple(null, navigation.extractedUrl.queryParams.parent);
+  constructor(route: ActivatedRoute, private titleService: TitleService, categoryService: CategoryService) {
+    route.queryParams.subscribe(params => {
+      const parentId = Number(params.parentId);
+      if (isNaN(parentId)) {
+        this.ready = true;
+      } else {
+        // Create as subcategory of specified parent
+        categoryService.getCategoryById(parentId)
+          .subscribe(category => {
+            this.default.parent = category;
+            this.ready = true;
+            console.log(this.default);
+          });
+      }
     });
   }
 
   ngOnInit(): void {
-    this.messages = { header: 'Create category', success: 'Category successfully created', error: 'Error creating category' };
+    this.titleService.setTitle('Create Category', null);
   }
 
 }

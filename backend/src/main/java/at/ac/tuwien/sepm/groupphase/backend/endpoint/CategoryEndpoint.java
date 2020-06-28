@@ -10,10 +10,14 @@ import io.swagger.annotations.Authorization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.lang.invoke.MethodHandles;
@@ -35,16 +39,17 @@ public class CategoryEndpoint {
     }
 
     @GetMapping
-    @ApiOperation(value = "Get list of categories without details")
-    public List<CategorySimpleDto> getCategories() {
-        LOGGER.info("GET /api/v1/categories");
-        return categoryMapper.categoryToCategorySimpleDto(categoryService.findAll());
+    @ApiOperation(value = "Find categories by name")
+    public Page<CategorySimpleDto> search(@RequestParam String name, @SortDefault("name") Pageable pageable) {
+        LOGGER.info("GET /api/v1/categories?name={} {}", name, pageable);
+        return categoryService.searchByName(name, pageable)
+            .map(categoryMapper::categoryToCategorySimpleDto);
     }
 
     @PostMapping
     @Secured("ROLE_USER")
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation(value = "Create new Category", authorizations = {@Authorization(value = "ROLE_USER")})
+    @ApiOperation(value = "Create new Category", authorizations = {@Authorization("user")})
     public CategoryDetailedDto createCategory(@RequestBody @Valid CategoryInputDto categoryInputDto) {
         LOGGER.info("POST /api/v1/categories");
         return categoryMapper.categoryToCategoryDetailedDto(
@@ -61,7 +66,7 @@ public class CategoryEndpoint {
 
     @Secured("ROLE_USER")
     @PutMapping(value = "/{id}")
-    @ApiOperation(value = "Update category with specific id", authorizations = {@Authorization(value = "ROLE_USER")})
+    @ApiOperation(value = "Update category with specific id", authorizations = {@Authorization("user")})
     public CategoryDetailedDto updateCategory(@PathVariable Long id,
                                               @RequestBody @Valid CategoryInputDto categoryInputDto) {
         LOGGER.info("PUT /api/v1/categories/{}", id);
@@ -74,7 +79,7 @@ public class CategoryEndpoint {
     @Secured("ROLE_ADMIN")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping(value = "/{id}")
-    @ApiOperation(value = "Permanently delete a category", authorizations = {@Authorization(value = "apiKey")})
+    @ApiOperation(value = "Permanently delete a category", authorizations = {@Authorization("admin")})
     public void deleteCategory(@PathVariable Long id) {
         LOGGER.info("DELETE /api/v1/categories/{}", id);
         categoryService.deleteCategory(id);

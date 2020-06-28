@@ -10,11 +10,14 @@
       <li class="nav-item">
         <a class="nav-link" routerLink="/categories">Categories</a>
       </li>
-      <li class="nav-item" *appUserRole="'USER'">
-        <a class="nav-link" href="#" (click)="openDeckModal(); false">Create a deck</a>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/search">Decks</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" routerLink="/users">Users</a>
+      </li>
+      <li class="nav-item" *appUserRole="'USER'">
+        <a class="nav-link" (click)="openDeckModal(); false" href="#">Create new deck</a>
       </li>
     </ul>
     <form (ngSubmit)="onSubmit()" #searchForm="ngForm" class="form-inline my-2 my-lg-0 mr-auto mw-25 flex-grow-1">
@@ -25,16 +28,29 @@
         </div>
       </div>
     </form>
-    <ul class="navbar-nav flex-grow-1 justify-content-end">
+    <ul class="navbar-nav flex-grow-1 ml-3">
+      <li class="nav-item" *appUserRole="'USER'">
+        <div class="container">
+          <a class="nav-link" routerLink="/clipboard">Clipboard</a>
+          <span class="badge badge-secondary">{{clipboardSize}}</span>
+        </div>
+      </li>
+    </ul>
+    <ul class="navbar-nav justify-content-end">
       <li class="nav-item">
         <a class="nav-link" routerLink="/about" routerLinkActive="active">About</a>
       </li>
-      <li class="nav-item" *appUserRole="'USER'">
-        <a class="nav-link" routerLink="/users/{{username$ | async}}/profile" routerLinkActive="active">Profile</a>
+      <li class="nav-item" *appUserRole="'ANONYMOUS'">
+        <a class="nav-link" routerLink="/login" routerLinkActive="active">Login</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" *appUserRole="'ANONYMOUS'" routerLink="/login" routerLinkActive="active">Login</a>
-        <a class="nav-link" *appUserRole="'USER'" routerLink="/" (click)="authService.logoutUser()">Logout</a>
+      <li class="nav-item dropdown" *appUserRole="'USER'">
+        <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          {{username$ | async}}
+        </a>
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
+          <a class="dropdown-item" routerLink="/users/{{username$ | async}}/profile">Profile</a>
+          <a class="dropdown-item" routerLink="/" (click)="logout()">Logout</a>
+        </div>
       </li>
     </ul>
   </div>

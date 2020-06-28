@@ -1,6 +1,8 @@
 package at.ac.tuwien.sepm.groupphase.backend.repository;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long>, CategoryRepositoryCustom {
@@ -23,6 +26,15 @@ public interface CategoryRepository extends JpaRepository<Category, Long>, Categ
     Optional<Category> findCategoryById(Long id);
 
     /**
+     * Find categories containing {@code name} (case insensitive)
+     *
+     * @param name the search string
+     * @param pageable the paging parameters
+     * @return page of categories with names containing {@code name}
+     */
+    Page<Category> findByNameContainingIgnoreCase(String name, Pageable pageable);
+
+    /**
      * finds all children of a given parent
      *
      * @param parentId of the categories to find
@@ -30,4 +42,12 @@ public interface CategoryRepository extends JpaRepository<Category, Long>, Categ
      */
     @Query("SELECT c FROM Category c WHERE c.parent.id=:parentId ORDER BY LOWER(c.name) ASC")
     List<Category> findChildren(@Param("parentId") Long parentId);
+
+    /**
+     * Find all categories created by user for exporting data
+     *
+     * @param userId id of the user
+     * @return all categories by user
+     */
+    Set<Category> findExportByCreatedBy_Id(Long userId);
 }

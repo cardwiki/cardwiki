@@ -2,6 +2,7 @@ package at.ac.tuwien.sepm.groupphase.backend.basetest;
 
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.AttemptInputDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
+import at.ac.tuwien.sepm.groupphase.backend.profiles.datagenerator.Agent;
 import at.ac.tuwien.sepm.groupphase.backend.repository.*;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -26,166 +27,20 @@ public abstract class TestDataGenerator {
     @Autowired
     private EntityManager em;
 
-    private static User defaultUser(String username){
-        User user = new User();
-        user.setUsername(username);
-        user.setDescription("some description");
-        user.setAuthId(username);
-        user.setEnabled(true);
-        user.setAdmin(false);
-        user.setDeleted(false);
-        return user;
-    }
-
     public Agent transientAgent(){
-        return new Agent(false, defaultUser("gustav"));
+        return new Agent(em, false, Agent.defaultUser("gustav"));
     }
 
     public Agent transientAgent(String name){
-        return new Agent(false, defaultUser(name));
+        return new Agent(em, false, Agent.defaultUser(name));
     }
 
     public Agent persistentAgent(){
-        return new Agent(true, defaultUser("gustav"));
+        return new Agent(em, true, Agent.defaultUser("gustav"));
     }
 
-    public Agent persistentAgent(String name){
-        return new Agent(true, defaultUser(name));
-    }
-
-    public class Agent {
-        private User user;
-        private boolean persist;
-
-        public User getUser(){
-            return user;
-        }
-
-        public Agent persist(){
-            return new Agent(true, user);
-        }
-
-        public Agent unpersist(){
-            return new Agent(false, user);
-        }
-
-        public Agent(boolean persist, User user){
-            this.persist = persist;
-            this.user = user;
-            if (persist) {
-                em.persist(user);
-                em.flush();
-            }
-        }
-
-        private void beforeReturn(Object o){
-            if (persist) {
-                em.persist(o);
-                em.flush();
-            }
-        }
-
-        public Agent makeAdmin() {
-            user.setAdmin(true);
-            beforeReturn(user);
-            return this;
-        }
-
-        public Deck createDeck(){
-            Deck deck = new Deck();
-            deck.setName("some deck");
-            deck.setCreatedBy(user);
-            deck.setCreatedAt(LocalDateTime.of(2020, 1, 1, 1, 1));
-            deck.setUpdatedAt(LocalDateTime.of(2020, 2, 1, 1, 1));
-            beforeReturn(deck);
-            return deck;
-        }
-
-        public Card createCardIn(Deck deck, RevisionCreate revisionCreate){
-            Card card = new Card();
-            card.setDeck(deck);
-            card.setLatestRevision(revisionCreate);
-            revisionCreate.setCreatedBy(user);
-            revisionCreate.setCard(card);
-            card.getRevisions().add(revisionCreate);
-            deck.getCards().add(card);
-            card.setCreatedAt(LocalDateTime.of(2020, 1, 1, 1, 1));
-            beforeReturn(card);
-            return card;
-        }
-
-        public Card createCardIn(Deck deck){
-            RevisionCreate revisionCreate = new RevisionCreate();
-            revisionCreate.setTextFront("front text");
-            revisionCreate.setTextBack("back text");
-            revisionCreate.setMessage("test message");
-            revisionCreate.setCreatedBy(user);
-            user.getRevisions().add(revisionCreate);
-            return createCardIn(deck, revisionCreate);
-        }
-
-        public Comment createCommentIn(Deck deck){
-            return createCommentIn(deck, "What a beautiful deck");
-        }
-
-        public Comment createCommentIn(Deck deck, String message) {
-            Comment comment = new Comment();
-            comment.setMessage(message);
-            comment.setDeck(deck);
-            comment.setCreatedBy(user);
-            deck.setCreatedAt(LocalDateTime.of(2020, 1, 1, 1, 1));
-            deck.setUpdatedAt(LocalDateTime.of(2020, 2, 1, 1, 1));
-            beforeReturn(comment);
-            return comment;
-        }
-
-        public RevisionEdit editCard(Card card, RevisionEdit revisionEdit){
-            card.setLatestRevision(revisionEdit);
-            card.getRevisions().add(revisionEdit);
-            revisionEdit.setCard(card);
-            beforeReturn(revisionEdit);
-            return revisionEdit;
-        }
-
-        public RevisionEdit editCard(Card card){
-            RevisionEdit revisionEdit = new RevisionEdit();
-            revisionEdit.setTextFront("front text");
-            revisionEdit.setTextBack("back text");
-            revisionEdit.setMessage("test message");
-            revisionEdit.setCreatedBy(user);
-            user.getRevisions().add(revisionEdit);
-            return editCard(card, revisionEdit);
-        }
-
-        public Category createCategory(String name){
-            Category category = new Category();
-            category.setName(name);
-            category.setCreatedAt(LocalDateTime.of(2020, 1, 1, 1, 1));
-            category.setUpdatedAt(LocalDateTime.of(2020, 2, 1, 1, 1));
-            beforeReturn(category);
-            return category;
-        }
-
-        public void deleteCard(Card card, RevisionDelete revisionDelete){
-            revisionDelete.setCreatedBy(user);
-            user.getRevisions().add(revisionDelete);
-            card.setLatestRevision(revisionDelete);
-            revisionDelete.setCard(card);
-            beforeReturn(revisionDelete);
-        }
-
-        public void deleteCard(Card card){
-            RevisionDelete revisionDelete = new RevisionDelete();
-            revisionDelete.setMessage("test message");
-            deleteCard(card, revisionDelete);
-        }
-
-        public Deck addFavorite(Deck deck) {
-            user.getFavorites().add(deck);
-            deck.getFavoredBy().add(user);
-            beforeReturn(deck);
-            return deck;
-        }
+    public Agent persistentAgent(String name) {
+        return new Agent(em, true, Agent.defaultUser(name));
     }
 
     // Auth id to login as a persisted user
@@ -306,6 +161,7 @@ public abstract class TestDataGenerator {
         User user = givenApplicationUser();
         category.setCreatedBy(user);
         category.setName("category");
+        parent.setCreatedBy(user);
         parent.setName("parent category");
 
         parent = categoryRepository.saveAndFlush(parent);
