@@ -94,13 +94,7 @@ export class LearnDeckComponent implements OnInit {
   async triggerNext(status: AttemptStatus) {
     console.log('Submitted status: ' + status);
     if (this.card.id > 0) {
-      await this.learnService.sendAttemptStatus(new LearnAttempt(this.card.id, status))
-        .subscribe(() => {
-            console.log('Status ' + status + ' successfully submitted.');
-          },
-          error => {
-            console.log(error);
-          });
+      await this.learnService.sendAttemptStatus(new LearnAttempt(this.card.id, status)).toPromise();
     }
   }
 }
