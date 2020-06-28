@@ -1,9 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.endpoint;
 
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckDto;
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckInputDto;
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckUpdateDto;
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.RevisionDtoWithContent;
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.*;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.DeckMapper;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.RevisionMapper;
 import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
@@ -116,6 +113,13 @@ public class DeckEndpoint {
     public Page<RevisionDtoWithContent> getRevisions(@PathVariable Long id, @SortDefault(value = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         deckService.findOneOrThrow(id);
         return deckService.getRevisions(id, pageable).map(revision -> revisionMapper.revisionToRevisionDetailedDto(revision));
+    }
+
+    @Secured("ROLE_USER")
+    @GetMapping("/{id}/progress")
+    @ApiOperation(value = "Get deck progress of current user", authorizations = @Authorization("user"))
+    public DeckProgressDto getDeckProgress(@PathVariable Long id){
+        return deckService.getProgress(id);
     }
 
     @GetMapping(value = "/{id}", produces = "text/csv")

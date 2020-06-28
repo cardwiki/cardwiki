@@ -371,4 +371,18 @@ public class DeckEndpointTest extends TestDataGenerator {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.content", Matchers.hasSize(90)));
     }
+
+    @Test
+    public void getProgress_loggedInDeckExists_returnsOk() throws Exception {
+        Agent agent = persistentAgent();
+        Deck deck = agent.createDeck();
+        for (int i = 0; i < 3; i++) {
+            agent.createCardIn(deck);
+        }
+        mvc.perform(get("/api/v1/decks/{id}/progress", deck.getId()).with(login(givenUserAuthId())))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.newCount").value(3))
+            .andExpect(jsonPath("$.learningCount").value(0))
+            .andExpect(jsonPath("$.toReviewCount").value(0));
+    }
 }

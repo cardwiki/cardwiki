@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckProgressDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
 import at.ac.tuwien.sepm.groupphase.backend.exception.BadRequestException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.DeckNotFoundException;
@@ -146,6 +147,15 @@ public class SimpleDeckService implements DeckService {
     public Page<Revision> getRevisions(Long id, Pageable pageable) {
         LOGGER.debug("Load {} revisions with offset {} from deck {}", pageable.getPageSize(), pageable.getOffset(), id);
         return revisionRepository.findByCard_Deck_Id(id, pageable);
+    }
+
+    @Override
+    public DeckProgressDto getProgress(Long deckId) {
+        long userId = userService.loadCurrentUserOrThrow().getId();
+        int learning = deckRepository.countProgressStatuses(deckId, userId, Progress.Status.LEARNING);
+        int reviewing = deckRepository.countProgressStatuses(deckId, userId, Progress.Status.REVIEWING);
+
+        return new DeckProgressDto(deckRepository.countCards(deckId) - learning - reviewing, learning, reviewing);
     }
 
     @Override

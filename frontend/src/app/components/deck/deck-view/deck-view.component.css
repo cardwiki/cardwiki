@@ -19,3 +19,7 @@ tr:hover .card-actions {
 :host ::ng-deep p {
   margin: 0em;
 }
+
+.newCount {color: blue;}
+.learningCount {color: darkRed;}
+.toReviewCount {color: green;}

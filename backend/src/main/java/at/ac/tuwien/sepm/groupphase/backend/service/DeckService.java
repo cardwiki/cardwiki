@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.service;
 
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckProgressDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
 import at.ac.tuwien.sepm.groupphase.backend.exception.DeckNotFoundException;
@@ -94,4 +95,11 @@ public interface DeckService {
      * @return List of Revisions of cards in the deck
      */
     Page<Revision> getRevisions(Long id, Pageable pageable);
+
+    /**
+     * Return deck progress for currently logged in user
+     * @param deckId
+     * @return deck progress for a user
+     */
+    DeckProgressDto getProgress(Long deckId);
 }

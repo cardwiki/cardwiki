@@ -53,8 +53,10 @@
     <div class="row justify-content-between">
       <div class="col">
         <div class="row align-items-center">
-          <div class="progress mr-2" style="height: 30px; width: 200px">
-            <div class="progress-bar bg-secondary" role="progressbar" style="width: 30%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">30%</div>
+          <div class="mr-2" *ngIf="progress">
+            <span class=newCount>{{progress.newCount}} new</span>&nbsp;
+            <span class=learningCount>{{progress.learningCount}} learning</span>&nbsp;
+            <span class=toReviewCount>{{progress.toReviewCount}} to review</span>
           </div>
           <a routerLink="/learn/{{deck.id}}" class="btn btn-primary mr-1">Learn</a>
           <a routerLink="/decks/{{deck.id}}/preview" class="btn btn-light ml-1">Preview</a>

@@ -10,6 +10,7 @@ import { ErrorHandlerService } from './error-handler.service';
 import { tap } from 'rxjs/operators';
 import { Page } from '../dtos/page';
 import { Pageable } from '../dtos/pageable';
+import { DeckProgress } from '../dtos/deckProgress';
 import {RevisionDetailed} from '../dtos/revisionDetailed';
 
 @Injectable({
@@ -117,5 +118,15 @@ export class DeckService {
     console.log(`fetch revisions for cards in deck with id ${deckId}`);
     return this.httpClient.get<Page<RevisionDetailed>>(this.deckBaseUri + '/' + deckId + '/revisions', { params: pageable.toHttpParams() })
       .pipe(tap(null, this.errorHandler.handleError('Could not fetch Revisions')));
+  }
+
+  /**
+   * Fetches progress of the given deck
+   * @param deckId
+   */
+  fetchProgress(deckId: number): Observable<DeckProgress> {
+    console.log(`fetch progress deck with id ${deckId}`);
+    return this.httpClient.get<DeckProgress>(this.deckBaseUri + '/' + deckId + '/progress')
+      .pipe(tap(null, this.errorHandler.handleError('Could not fetch progress')))
   }
 }

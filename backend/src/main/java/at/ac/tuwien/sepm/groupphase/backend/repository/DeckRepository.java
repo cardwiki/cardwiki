@@ -2,11 +2,15 @@ package at.ac.tuwien.sepm.groupphase.backend.repository;
 
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
+import at.ac.tuwien.sepm.groupphase.backend.entity.Progress;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
 import java.util.Optional;
 import java.util.Set;
 
@@ -73,4 +77,22 @@ public interface DeckRepository extends JpaRepository<Deck, Long> {
      * @return false if deck is not a favorite of the user, or if deck/user does not exist
      */
     boolean existsByIdAndFavoredById(Long deckId, Long userId);
+
+    /**
+     * Count how many cards a given deck contains that have the given status for the given user
+     * @param deckId
+     * @param userId
+     * @param status
+     * @return Count how many cards a given deck contains that have the given status for the given user
+     */
+    @Query("SELECT count(*) FROM Card c LEFT JOIN Progress p ON c = p.id.card WHERE p.id.user.id = :userId AND c.deck.id = :deckId AND p.status = :status")
+    int countProgressStatuses(@Param("deckId") Long deckId, @Param("userId") Long userId, @Param("status") Progress.Status status);
+
+    /**
+     * Count cards in deck
+     * @param deckId
+     * @return how many cards are in the deck
+     */
+    @Query("SELECT count(*) FROM Card c WHERE c.deck.id = :deckId")
+    int countCards(@Param("deckId") long deckId);
 }
