@@ -4,6 +4,7 @@ import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.AttemptInputDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Progress;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
+import at.ac.tuwien.sepm.groupphase.backend.exception.BadRequestException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.ProgressRepository;
@@ -44,7 +45,7 @@ public class SimpleLearnService implements LearnService {
         LOGGER.debug("Get next card for deck with id {}", deckId);
 
         if (!deckRepository.existsById(deckId)){
-            throw new IllegalArgumentException("deckId does not exist");
+            throw new BadRequestException("deckId does not exist");
         }
 
         return cardRepository.findNextCards(deckId, userService.loadCurrentUserOrThrow().getId(), pageable).stream()
@@ -128,7 +129,7 @@ public class SimpleLearnService implements LearnService {
                 // TODO: change contains to equals after hibernate version contains
                 //  https://github.com/hibernate/hibernate-orm/pull/3417
                 if (cve.getConstraintName().contains(Progress.FKNAME_CARD))
-                    throw new IllegalArgumentException("cardId not found");
+                    throw new BadRequestException("cardId not found");
                 else
                     throw e;
             }

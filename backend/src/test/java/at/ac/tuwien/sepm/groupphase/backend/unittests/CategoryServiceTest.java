@@ -1,30 +1,31 @@
 package at.ac.tuwien.sepm.groupphase.backend.unittests;
 
-    import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
-    import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
-    import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
-    import at.ac.tuwien.sepm.groupphase.backend.entity.User;
-    import at.ac.tuwien.sepm.groupphase.backend.exception.CategoryNotFoundException;
-    import at.ac.tuwien.sepm.groupphase.backend.repository.CategoryRepository;
-    import at.ac.tuwien.sepm.groupphase.backend.service.CategoryService;
-    import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
-    import org.hibernate.exception.ConstraintViolationException;
-    import org.junit.jupiter.api.Test;
-    import org.junit.jupiter.api.extension.ExtendWith;
-    import org.springframework.beans.factory.annotation.Autowired;
-    import org.springframework.boot.test.context.SpringBootTest;
-    import org.springframework.boot.test.mock.mockito.MockBean;
-    import org.springframework.dao.DataIntegrityViolationException;
-    import org.springframework.data.domain.Sort;
-    import org.springframework.test.context.ActiveProfiles;
-    import org.springframework.test.context.junit.jupiter.SpringExtension;
-    import java.sql.SQLException;
-    import java.time.LocalDateTime;
-    import java.util.*;
-    import static org.junit.jupiter.api.Assertions.*;
-    import static org.mockito.AdditionalAnswers.returnsFirstArg;
-    import static org.mockito.ArgumentMatchers.any;
-    import static org.mockito.Mockito.*;
+import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
+import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
+import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
+import at.ac.tuwien.sepm.groupphase.backend.entity.User;
+import at.ac.tuwien.sepm.groupphase.backend.exception.CategoryNotFoundException;
+import at.ac.tuwien.sepm.groupphase.backend.exception.BadRequestException;
+import at.ac.tuwien.sepm.groupphase.backend.repository.CategoryRepository;
+import at.ac.tuwien.sepm.groupphase.backend.service.CategoryService;
+import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
+import org.hibernate.exception.ConstraintViolationException;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Sort;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -154,14 +155,14 @@ public class CategoryServiceTest extends TestDataGenerator {
     }
 
     @Test
-    public void givenCategory_whenCreateCategoryWithSameName_thenThrowsIllegalArgumentException() {
+    public void givenCategory_whenCreateCategoryWithSameName_thenThrowsBadRequestException() {
         Category category = getSampleCategoryWithoutParent();
 
         DataIntegrityViolationException e = new DataIntegrityViolationException("", new ConstraintViolationException("", new SQLException(), "NAME_UNIQUE"));
         when(categoryRepository.saveAndFlush(category)).thenThrow(e);
         when(categoryRepository.save(category)).thenThrow(e);
 
-        Exception ex = assertThrows(RuntimeException.class, () -> categoryService.createCategory(category));
+        Exception ex = assertThrows(BadRequestException.class, () -> categoryService.createCategory(category));
         assertEquals(ex.getMessage(), "A category with that name already exists.");
     }
 
@@ -210,7 +211,7 @@ public class CategoryServiceTest extends TestDataGenerator {
     }
 
     @Test
-    public void givenCategoryWithParent_whenUpdateWithSelfAsParent_thenThrowsIllegalArgumentException() {
+    public void givenCategoryWithParent_whenUpdateWithSelfAsParent_thenThrowsBadRequestException() {
         Category category = getSampleCategoryWithoutParent();
         Category update = new Category();
         update.setName("self parent test");
@@ -221,12 +222,12 @@ public class CategoryServiceTest extends TestDataGenerator {
         when(categoryRepository.saveAndFlush(any(Category.class))).then(returnsFirstArg());
         when(categoryRepository.save(any(Category.class))).then(returnsFirstArg());
 
-        Exception e = assertThrows(IllegalArgumentException.class, () -> categoryService.updateCategory(category.getId(), update));
+        Exception e = assertThrows(BadRequestException.class, () -> categoryService.updateCategory(category.getId(), update));
         assertEquals(e.getMessage(), "Category cannot be its own parent.");
     }
 
     @Test
-    public void givenCategoryWithParent_whenUpdateWithChildAsParent_thenThrowsIllegalArgumentException() {
+    public void givenCategoryWithParent_whenUpdateWithChildAsParent_thenThrowsBadRequestException() {
         Category category = getSampleCategoryWithParent();
         Category update = new Category();
         update.setName("circular relation test");
@@ -238,12 +239,12 @@ public class CategoryServiceTest extends TestDataGenerator {
         when(categoryRepository.saveAndFlush(any(Category.class))).then(returnsFirstArg());
         when(categoryRepository.save(any(Category.class))).then(returnsFirstArg());
 
-        Exception e = assertThrows(IllegalArgumentException.class, () -> categoryService.updateCategory(category.getParent().getId(), update));
+        Exception e = assertThrows(BadRequestException.class, () -> categoryService.updateCategory(category.getParent().getId(), update));
         assertEquals(e.getMessage(), "Circular child-parent relation.");
     }
 
     @Test
-    public void givenTwoCategories_whenUpdateCategoryWithExistingName_thenThrowsIllegalArgumentException() {
+    public void givenTwoCategories_whenUpdateCategoryWithExistingName_thenThrowsBadRequestException() {
         Category category = getSampleCategoryWithoutParent();
         DataIntegrityViolationException e = new DataIntegrityViolationException("", new ConstraintViolationException("", new SQLException(), "NAME_UNIQUE"));
 
@@ -251,7 +252,7 @@ public class CategoryServiceTest extends TestDataGenerator {
         when(categoryRepository.findCategoryById(category.getId())).thenReturn(Optional.of(category));
         when(categoryRepository.ancestorExistsWithId(any(Long.class), any(Long.class))).thenReturn(false);
 
-        Exception ex = assertThrows(RuntimeException.class, () -> categoryService.updateCategory(
+        Exception ex = assertThrows(BadRequestException.class, () -> categoryService.updateCategory(
             category.getId(), new Category(category.getName(), null))
         );
         assertEquals(ex.getMessage(), "A category with that name already exists.");

@@ -4,6 +4,7 @@ import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.AttemptInputDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Progress;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
+import at.ac.tuwien.sepm.groupphase.backend.exception.BadRequestException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.ProgressRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.LearnService;
@@ -45,11 +46,11 @@ public class LearnServiceTest extends TestDataGenerator {
     ArgumentCaptor<Progress> argumentCaptor;
 
     @Test
-    public void givenNothing_whenFindNextNonExistentDeck_thenThrowIllegalArgument() {
+    public void givenNothing_whenFindNextNonExistentDeck_thenThrowBadRequestException() {
         Mockito.when(deckRepository.existsById(any())).thenReturn(false);
 
         assertThrows(
-            IllegalArgumentException.class,
+            BadRequestException.class,
             () -> learnService.findNextCardsByDeckId(1L, Pageable.unpaged())
         );
     }
