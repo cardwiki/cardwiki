@@ -73,11 +73,11 @@ export class ErrorHandlerService {
   private getUserMessage(operation: string, error: any): string {
     let errMessage: string
 
-    if (typeof error !== 'object' || !(error instanceof HttpErrorResponse))
+    if (!error || typeof error !== 'object' || !(error instanceof HttpErrorResponse))
       errMessage = 'Unknwon Error' + (error ? ': ' + String(error) : '')
 
     // Client side or network error
-    if (error.error instanceof ErrorEvent)
+    else if (error.error instanceof ErrorEvent)
       errMessage = `Client error: ${error.error.message}`
 
     // Server returned error
@@ -118,7 +118,7 @@ export class ErrorHandlerService {
    * @param httpError
    */
   private isValidationError(error: any) {
-    return typeof error === 'object' &&
+    return error && typeof error === 'object' &&
       Array.isArray(error.validation) &&
       error.validation.every((err: any) => typeof err === 'object')
   }

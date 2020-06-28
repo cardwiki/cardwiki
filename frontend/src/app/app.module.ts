@@ -25,7 +25,7 @@ import { SearchComponent } from './components/search/search.component';
 import { AboutComponent } from './components/about/about.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
-import { DeckPreviewComponent } from './components/deck-preview/deck-preview.component';
+import { DeckPreviewComponent } from './components/deck/deck-preview/deck-preview.component';
 import { ListComponent } from './components/category/list/list.component';
 import { CategoryDetailsComponent } from './components/category/category-details/category-details.component';
 import { ListSearchComponent } from './components/category/list-search/list-search.component';
@@ -43,6 +43,10 @@ import { CommentListComponent } from './components/comment/comment-list/comment-
 import { ConfirmModalComponent } from './components/utils/confirm-modal/confirm-modal.component';
 import { ClipboardViewComponent } from './components/clipboard/clipboard-view/clipboard-view.component';
 import { ClipboardPasteModalComponent } from './components/clipboard/clipboard-paste-modal/clipboard-paste-modal.component';
+import { CardRevisionComponent } from './components/card/card-revision/card-revision.component';
+import { CardDiffComponent } from './components/card/card-diff/card-diff.component';
+import { CardHistoryComponent } from './components/card/card-history/card-history.component';
+import { DeckHistoryComponent } from './components/deck/deck-history/deck-history.component';
 import { WelcomeComponent } from './components/welcome/welcome.component';
 import { TitleComponent } from './components/title/title.component';
 import { CategorySearchComponent } from './components/category/category-search/category-search.component';
@@ -87,6 +91,10 @@ import { CategoryPickerModalComponent } from './components/category/category-pic
     ConfirmModalComponent,
     ClipboardViewComponent,
     ClipboardPasteModalComponent,
+    CardRevisionComponent,
+    CardDiffComponent,
+    CardHistoryComponent,
+    DeckHistoryComponent,
     WelcomeComponent,
     TitleComponent,
     CategorySearchComponent,

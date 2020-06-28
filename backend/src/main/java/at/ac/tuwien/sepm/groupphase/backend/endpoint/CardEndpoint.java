@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
@@ -97,7 +98,7 @@ public class CardEndpoint {
 
     @GetMapping(value = "/cards/{id}/revisions")
     @ApiOperation(value = "Get revisions of the card")
-    public Page<RevisionDtoWithContent> getRevisionsOfCard(@PathVariable long id, Pageable pageable) {
+    public Page<RevisionDtoWithContent> getRevisionsOfCard(@PathVariable long id, @SortDefault(value = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         cardService.findOneOrThrow(id);
         return cardService.getRevisionsOfCard(id, pageable).map(revision -> revisionMapper.revisionToRevisionDetailedDto(revision));
     }

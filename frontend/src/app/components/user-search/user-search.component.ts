@@ -30,7 +30,7 @@ export class UserSearchComponent implements OnInit {
     this.titleService.setTitle('Users', 'User search')
     this.loadUsers()
   }
-  
+
   resetResults() {
     this.page = null
     this.users = []
@@ -59,7 +59,9 @@ export class UserSearchComponent implements OnInit {
       })
   }
 
-  grantAdminRights(user: UserProfile): void {
+  grantAdminRights(event: any, user: UserProfile): void {
+    event.stopPropagation();
+    event.preventDefault();
     if (confirm(`Are you sure you want to grant admin rights to user '${user.username}'`)) {
       this.userService.editAdminStatus(user.id, true).subscribe(updatedUser => {
         user.admin = updatedUser.admin;
@@ -67,7 +69,9 @@ export class UserSearchComponent implements OnInit {
     }
   }
 
-  editEnabledStatus(user: UserProfile, enabled: boolean): void {
+  editEnabledStatus(event: any, user: UserProfile, enabled: boolean): void {
+    event.stopPropagation();
+    event.preventDefault();
     let reason = null;
     if (enabled) {
       if (!confirm(`Are you sure you want to enable user '${user.username}'?`)) {
@@ -84,7 +88,9 @@ export class UserSearchComponent implements OnInit {
     });
   }
 
-  delete(user: UserProfile): void {
+  delete(event: any, user: UserProfile): void {
+    event.stopPropagation();
+    event.preventDefault();
     const reason = prompt(`Why do you want to permanently delete user '${user.username}'?`);
     if (reason !== null) {
       this.userService.delete(user.id, reason).subscribe(_ => {

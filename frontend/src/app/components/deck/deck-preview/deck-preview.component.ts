@@ -1,12 +1,12 @@
 import {Component, HostListener, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {DeckDetails} from "../../dtos/deckDetails";
-import {CardSimple} from "../../dtos/cardSimple";
-import {DeckService} from "../../services/deck.service";
-import {CardService} from "../../services/card.service";
+import {DeckDetails} from "../../../dtos/deckDetails";
+import {CardSimple} from "../../../dtos/cardSimple";
+import {DeckService} from "../../../services/deck.service";
+import {CardService} from "../../../services/card.service";
 import {Pageable} from 'src/app/dtos/pageable';
 import {Page} from 'src/app/dtos/page';
-import {Globals} from '../../global/globals';
+import {Globals} from '../../../global/globals';
 import { TitleService } from 'src/app/services/title.service';
 
 @Component({
@@ -27,7 +27,7 @@ export class DeckPreviewComponent implements OnInit {
   }
 
   readonly fetchSize = 25;
-  readonly minPrefetched = 10; // fetch next cards when (remaining cards <= minPrefetched) 
+  readonly minPrefetched = 10; // fetch next cards when (remaining cards <= minPrefetched)
 
   deck: DeckDetails;
   page: Page<CardSimple>;
