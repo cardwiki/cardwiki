@@ -21,9 +21,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Size;
 import java.lang.invoke.MethodHandles;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -82,10 +80,10 @@ public class CardEndpoint {
     @Secured("ROLE_USER")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping(value = "/cards/{cardId}")
-    @ApiOperation(value = "Removes card from deck", authorizations = {@Authorization("user")})
-    public void addDeleteRevisionToCard(@PathVariable Long cardId, @RequestParam(required = false) @Size(max = Revision.MAX_MESSAGE_SIZE) String message) {
-        LOGGER.info("DELETE /api/v1/cards/{}?message=", message);
-        cardService.addDeleteRevisionToCard(cardId, message);
+    @ApiOperation(value = "Removes card from deck", authorizations = {@Authorization(value = "user")})
+    public void addDeleteRevisionToCard(@Valid @RequestBody(required = false) ReasonDto message, @PathVariable Long cardId) {
+        LOGGER.info("POST /api/v1/cards/{} Body:", message);
+        cardService.addDeleteRevisionToCard(cardId, message == null ? null : message.getMessage());
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

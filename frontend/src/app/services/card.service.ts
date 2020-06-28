@@ -51,9 +51,8 @@ export class CardService {
    */
   removeCard(cardId: number, message?: string): Observable<void> {
     console.log(`remove card with id ${cardId}`);
-    const params = message ? { message } : {}
-    return this.httpClient.delete<void>(`${this.cardBaseUri}/${cardId}`, { params })
-      .pipe(tap(null, this.errorHandler.handleError('Could not remove Card')))
+    return this.httpClient.post<void>(`${this.cardBaseUri}/${cardId}`, { message: message })
+      .pipe(tap(null, this.errorHandler.handleError('Could not remove Card')));
   }
 
   editCard(cardId: number, card: CardUpdate): Observable<CardSimple> {

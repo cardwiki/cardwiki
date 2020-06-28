@@ -47,7 +47,10 @@ public class SimpleFavoriteService implements FavoriteService {
         Deck deck = deckService.findOneOrThrow(deckId);
         if (!user.getFavorites().add(deck))
             throw new ConflictException("Deck already saved as favorite");
+        if (!deck.getFavoredBy().add(user))
+            throw new ConflictException("User already saved as favorite");
         userRepository.save(user);
+        deckRepository.save(deck);
 
         return deck;
     }

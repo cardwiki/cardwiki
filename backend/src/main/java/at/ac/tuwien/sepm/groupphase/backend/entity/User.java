@@ -65,11 +65,7 @@ public class User {
     @OneToMany(mappedBy = "id.user", fetch = FetchType.LAZY)
     private Set<Progress> progress = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "favorites",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "deck_id")
-    )
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "favoredBy")
     private Set<Deck> favorites = new HashSet<>();
 
     @CreationTimestamp

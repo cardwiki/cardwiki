@@ -5,6 +5,7 @@ import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.RevisionInputDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -464,8 +465,12 @@ public class CardEndpointTest extends TestDataGenerator {
         User user = givenApplicationUser();
         String message = "x".repeat(Revision.MAX_MESSAGE_SIZE + 1);
 
+        ObjectNode input = objectMapper.createObjectNode();
+        input.put("message", message);
+
         mvc.perform(post("/api/v1/cards/{cardId}", card.getId())
-            .queryParam("message", message)
+            .contentType("application/json")
+            .content(input.toString())
             .with(login(user.getAuthId())))
             .andExpect(status().isBadRequest());
     }

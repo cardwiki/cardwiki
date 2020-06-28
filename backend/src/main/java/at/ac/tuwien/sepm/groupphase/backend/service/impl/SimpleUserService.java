@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Objects;
 
@@ -188,6 +189,7 @@ public class SimpleUserService implements UserService {
         user.setAuthId(null);
         user.setDeleted(true);
         user.setReason(reason);
+        user.setFavorites(Collections.emptySet());
         userRepository.save(user);
         progressRepository.deleteById_UserId(id);
     }
