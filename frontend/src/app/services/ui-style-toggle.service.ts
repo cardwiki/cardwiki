@@ -23,25 +23,23 @@ export class UiStyleToggleService {
   private username: string;
 
   constructor(private authService: AuthService, private userService: UserService) {
-
-    if(localStorage.getItem("whoami")) this.username = JSON.parse(localStorage.getItem("whoami")).username
   }
 
-  private getState(): Promise<string> {
-      console.log("theme username", this.username)
-      return this.userService.getProfile(this.username).toPromise().then(profile => {
+  private async getState(): Promise<string> {
+    if (this.authService.isLoggedIn()) {
+      return await this.userService.getProfile(this.username).toPromise().then(profile => {
         console.log(profile)
         return profile.theme;
-      }).catch(error => {
-        console.log(error)
-        return localStorage.getItem(this.THEME_KEY)
       })
+    } else {
+      return localStorage.getItem(this.THEME_KEY)
+    }
   }
 
   private setState(theme: string) {
     localStorage.setItem(this.THEME_KEY, theme);
-    if (localStorage.getItem("whoami")) {
-      const userid = JSON.parse(localStorage.getItem("whoami")).id
+    if (this.authService.isLoggedIn()) {
+      const userid = this.authService.getUserId()
       this.userService.setTheme(userid, theme).subscribe(response => {
         console.log(response)
       })
@@ -49,6 +47,9 @@ export class UiStyleToggleService {
   }
 
   public setThemeOnStart() {
+    if(this.authService.isLoggedIn()) {
+      this.username = this.authService.getUserName()
+    }
     this.isDarkThemeSelected().then(result => {
       if (result) {
         this.setDarkTheme();
