@@ -61,4 +61,11 @@ export class ClipboardService {
     localStorage.setItem('clipboard', JSON.stringify(clipboard));
   }
 
+  /**
+   * Clears clipboard and localstorage
+   */
+  clear() {
+    this.clipboardSubject$.next([]);
+    localStorage.removeItem('clipboard');
+  }
 }

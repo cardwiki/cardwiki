@@ -46,4 +46,8 @@ export class ClipboardViewComponent implements OnInit {
       )
     ).catch(() => {});
   }
+
+  clear() {
+    this.clipboardService.clear();
+  }
 }
