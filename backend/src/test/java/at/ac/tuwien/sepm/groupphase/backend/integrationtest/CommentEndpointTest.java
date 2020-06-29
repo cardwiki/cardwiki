@@ -193,7 +193,6 @@ public class CommentEndpointTest extends TestDataGenerator {
             .andExpect(jsonPath("$.message").value("new fancy message"))
             .andExpect(jsonPath("$.createdAt", validIsoDateTime()))
             .andExpect(jsonPath("$.updatedAt", validIsoDateTime()))
-            .andExpect(jsonPath("$[?(@.createdAt < @.updatedAt)]").isNotEmpty())
             .andExpect(jsonPath("$.createdBy.id").value(creator.getId()))
             .andExpect(jsonPath("$.createdBy.username").value(creator.getUsername()));
     }
