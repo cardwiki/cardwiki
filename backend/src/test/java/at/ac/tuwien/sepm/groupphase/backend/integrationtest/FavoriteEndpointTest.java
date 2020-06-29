@@ -182,6 +182,21 @@ public class FavoriteEndpointTest extends TestDataGenerator {
     }
 
     @Test
+    public void removeFavorite_thenHasFavorite_throwsNotFound() throws Exception {
+        Agent agent = persistentAgent();
+        User user = agent.getUser();
+        Deck deck = agent.addFavorite(givenAnyDeck());
+
+        mvc.perform(delete("/api/v1/users/{userId}/favorites/{deckId}", user.getId(), deck.getId())
+            .with(login(user.getAuthId())))
+            .andExpect(status().isNoContent());
+
+        mvc.perform(get("/api/v1/users/{userId}/favorites/{deckId}", user.getId(), deck.getId())
+            .with(login(user.getAuthId())))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
     public void removeFavorite_withUnknownDeckId_throwsNotFound() throws Exception {
         User user = persistentAgent().getUser();
 

@@ -48,7 +48,7 @@ public class SimpleFavoriteService implements FavoriteService {
         if (!user.getFavorites().add(deck))
             throw new ConflictException("Deck already saved as favorite");
         if (!deck.getFavoredBy().add(user))
-            throw new ConflictException("User already saved as favorite");
+            throw new ConflictException("Deck already saved as favorite");
         userRepository.save(user);
         deckRepository.save(deck);
 
@@ -91,6 +91,7 @@ public class SimpleFavoriteService implements FavoriteService {
         Deck deck = deckService.findOneOrThrow(deckId);
         if (!user.getFavorites().remove(deck))
             throw new DeckNotFoundException(String.format("Deck with id %s is no favorite", deckId));
+        deck.getFavoredBy().remove(user);
 
         userRepository.save(user);
     }
