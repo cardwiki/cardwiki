@@ -30,7 +30,8 @@
     </div>
     <div class="col" *ngIf="commentsPage">
       <div class="btn-toolbar float-right">
-        <button class="btn btn-light float-right mr-2" (click)="exportCsv()"><i class="fas fa-file-export"></i> Export</button>
+        <button class="btn btn-light float-right mr-2" (click)="exportCsv()"><i class="fas fa-file-download"></i> Download</button>
+        <button class="btn btn-light float-right mr-2" (click)="openImportModal(deck)"><i class="fas fa-file-upload"></i> Import</button>
         <button type="button" class="btn float-right mr-1" [ngClass]="displayComments ? 'btn-secondary' : 'btn-light'" (click)="toggleComments()">
           <i class="far fa-comments"></i> Comments ({{commentsPage.totalElements}})</button>
         </div>
@@ -63,7 +64,6 @@
         <div class="btn-toolbar float-right">
           <button type="button" class="btn btn-light mr-1" (click)="openClipboardPasteModal()" [disabled]="clipboardSize <= 0" *appUserRole="'USER'" title="Import Cards from Clipboard"><i class="far fa-clipboard"></i> Paste</button>
           <a routerLink="/decks/{{deck.id}}/cards/new" class="btn btn-primary float-right"><i class="fas fa-plus"></i> Add new card</a>
-          <button class="btn btn-primary float-right ml-2" (click)="openImportModal(deck)"><i class="fas fa-file-upload"></i> Import cards</button>
         </div>
       </div>
     </div>
