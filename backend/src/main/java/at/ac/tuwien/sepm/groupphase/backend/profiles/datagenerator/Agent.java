@@ -176,12 +176,16 @@ public class Agent {
     }
 
     public Progress createProgress(Card card) {
+        return createProgress(card, Progress.Status.REVIEWING);
+    }
+
+    public Progress createProgress(Card card, Progress.Status status) {
         Progress progress = new Progress();
         progress.setId(new Progress.Id(user, card));
         progress.setDue(LocalDateTime.now().plusDays(3L));
         progress.setEasinessFactor(5);
         progress.setInterval(2);
-        progress.setStatus(Progress.Status.REVIEWING);
+        progress.setStatus(status);
         user.getProgress().add(progress);
         beforeReturn(progress);
         return progress;
