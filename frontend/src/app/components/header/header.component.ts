@@ -8,6 +8,7 @@ import {DeckDetails} from '../../dtos/deckDetails';
 import { SearchQueryParams } from 'src/app/interfaces/search-query-params';
 import { NotificationService } from 'src/app/services/notification.service';
 import {ClipboardService} from '../../services/clipboard.service';
+import {UiStyleToggleService} from "../../services/ui-style-toggle.service";
 
 @Component({
   selector: 'app-header',
@@ -21,7 +22,8 @@ export class HeaderComponent implements OnInit {
   public clipboardSize: number;
 
   constructor(private authService: AuthService, private router: Router, private modalService: NgbModal,
-              private notificationService: NotificationService, private clipboardService: ClipboardService) {
+              private notificationService: NotificationService, private clipboardService: ClipboardService,
+              private uiStyleToggleService: UiStyleToggleService) {
 
     this.username$ = authService.userName$;
   }
@@ -55,5 +57,9 @@ export class HeaderComponent implements OnInit {
 
   logout() {
     this.authService.logoutUser();
+  }
+
+  toggleDarkMode() {
+    this.uiStyleToggleService.toggle();
   }
 }

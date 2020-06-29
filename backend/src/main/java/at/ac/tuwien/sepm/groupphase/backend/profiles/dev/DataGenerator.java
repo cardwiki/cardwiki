@@ -125,6 +125,7 @@ public class DataGenerator {
         user.setEnabled(false);
         user.setDeleted(false);
         user.setUsername("nununu");
+        user.setTheme("LIGHT");
         userRepository.saveAndFlush(user);
 
         Deck deck = new Deck();
@@ -146,6 +147,7 @@ public class DataGenerator {
         user.setEnabled(false);
         user.setDeleted(false);
         user.setUsername("nocamelcase");
+        user.setTheme("LIGHT");
         userRepository.saveAndFlush(user);
 
         Deck deck = new Deck();
