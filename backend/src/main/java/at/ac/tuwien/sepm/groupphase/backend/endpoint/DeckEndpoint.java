@@ -3,7 +3,6 @@ package at.ac.tuwien.sepm.groupphase.backend.endpoint;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.*;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.DeckMapper;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.RevisionMapper;
-import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Authorization;
@@ -87,7 +86,7 @@ public class DeckEndpoint {
     @PostMapping(value = "/{id}/copy")
     @ApiOperation(value = "Copy a deck", authorizations = @Authorization("user"))
     public DeckDto copy(@PathVariable Long id, @Valid @RequestBody DeckInputDto deckInputDto) {
-        LOGGER.info("Post /api/v1/decks/{}/copy body={}", id, deckInputDto);
+        LOGGER.info("POST /api/v1/decks/{}/copy body={}", id, deckInputDto);
         return deckMapper.deckToDeckDto(deckService.copy(id, deckMapper.deckInputDtoToDeck(deckInputDto)));
     }
 
@@ -103,15 +102,34 @@ public class DeckEndpoint {
     @GetMapping(value = "/{id}/revisions")
     @ApiOperation(value = "Get revisions of the deck")
     public Page<RevisionDtoWithContent> getRevisions(@PathVariable Long id, @SortDefault(value = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        LOGGER.info("GET /api/v1/decks/{}/revisions {}", id, pageable);
         deckService.findOneOrThrow(id);
-        return deckService.getRevisions(id, pageable).map(revision -> revisionMapper.revisionToRevisionDetailedDto(revision));
+        return deckService.getRevisions(id, pageable).map(revisionMapper::revisionToRevisionDetailedDto);
     }
 
     @Secured("ROLE_USER")
     @GetMapping("/{id}/progress")
     @ApiOperation(value = "Get deck progress of current user", authorizations = @Authorization("user"))
     public DeckProgressDto getDeckProgress(@PathVariable Long id){
+        LOGGER.info("GET /api/v1/decks/{}/progress", id);
         return deckService.getProgress(id);
+    }
+
+    @Secured("ROLE_USER")
+    @GetMapping("/progress")
+    @ApiOperation(value = "Get all learned decks", authorizations = @Authorization("user"))
+    public Page<DeckProgressDetailsDto> getLearnedDecks(@SortDefault(direction = Sort.Direction.ASC) Pageable pageable) {
+        LOGGER.info("GET /api/v1/decks/progress {}", pageable);
+        return deckService.getLearnedDecksWithStatus(pageable);
+    }
+
+    @Secured("ROLE_USER")
+    @DeleteMapping("/{id}/progress")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiOperation(value = "Remove user progress for card deck", authorizations = @Authorization("user"))
+    public void deleteUserProgress(@PathVariable Long id) {
+        LOGGER.info("DELETE /api/v1/decks/{}/progress", id);
+        deckService.deleteUserProgress(id);
     }
 
     @GetMapping(value = "/{id}", produces = "text/csv")
@@ -131,7 +149,7 @@ public class DeckEndpoint {
     @Secured("ROLE_USER")
     @ResponseStatus(HttpStatus.OK)
     @PostMapping(value = "/{id}/cards", consumes = "multipart/form-data")
-    @ApiOperation(value = "import cards to deck", authorizations = @Authorization("apiKey"))
+    @ApiOperation(value = "import cards to deck", authorizations = @Authorization("user"))
     public DeckDto importCards (@PathVariable Long id, @RequestParam("file") MultipartFile file) {
         LOGGER.info("POST {} to /api/v1/decks/{}", file.getOriginalFilename(), id);
         try {

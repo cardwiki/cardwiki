@@ -12,6 +12,7 @@ import { Page } from '../dtos/page';
 import { Pageable } from '../dtos/pageable';
 import { DeckProgress } from '../dtos/deckProgress';
 import {RevisionDetailed} from '../dtos/revisionDetailed';
+import {DeckProgressDetails} from '../dtos/deckProgressDetails';
 
 @Injectable({
   providedIn: 'root'
@@ -128,5 +129,30 @@ export class DeckService {
     console.log(`fetch progress deck with id ${deckId}`);
     return this.httpClient.get<DeckProgress>(this.deckBaseUri + '/' + deckId + '/progress')
       .pipe(tap(null, this.errorHandler.handleError('Could not fetch progress')))
+  }
+
+  /**
+   * Fetches the learned decks
+   *
+   * @param pageable pagination parameters
+   */
+  getLearnedDecks(pageable: Pageable): Observable<Page<DeckProgressDetails>> {
+    console.log('fetch learned decks');
+    const params = pageable.toHttpParams();
+
+    return this.httpClient.get<Page<DeckProgressDetails>>(this.deckBaseUri + '/progress', { params })
+      .pipe(tap(null, this.errorHandler.handleError('Could not get learned decks')));
+  }
+
+  /**
+   * Delete the progress of the current user for deck id
+   *
+   * @param id of the deck
+   */
+  deleteProgress(id: number): Observable<void> {
+    console.log('delete progress for deck ' + id);
+
+    return this.httpClient.delete<void>(this.deckBaseUri + '/' + id + '/progress')
+      .pipe(tap(null, this.errorHandler.handleError('Could not delete progress')));
   }
 }
