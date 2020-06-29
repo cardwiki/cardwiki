@@ -242,9 +242,9 @@ public class CardEndpointTest extends TestDataGenerator {
             .andExpect(jsonPath("$.textFront").value(revisionEdit.getTextFront()))
             .andExpect(jsonPath("$.textBack").value(revisionEdit.getTextBack()))
             .andExpect(jsonPath("$.imageFront.filename").value(revisionEdit.getImageFront().getFilename()))
-            .andExpect(jsonPath("$.imageFront.url").value(Paths.get(imageServedPath, revisionEdit.getImageFront().getFilename()).toString()))
+            .andExpect(jsonPath("$.imageFront.url").value(Paths.get(imageServedPath, revisionEdit.getImageFront().getFilename()).toString().replace('\\', '/')))
             .andExpect(jsonPath("$.imageBack.filename").value(revisionEdit.getImageBack().getFilename()))
-            .andExpect(jsonPath("$.imageBack.url").value(Paths.get(imageServedPath, revisionEdit.getImageBack().getFilename()).toString()));
+            .andExpect(jsonPath("$.imageBack.url").value(Paths.get(imageServedPath, revisionEdit.getImageBack().getFilename()).toString().replace('\\', '/')));
     }
 
     @Test
