@@ -23,6 +23,7 @@
     "@fortawesome/fontawesome-free": "^5.13.0",
     "@ng-bootstrap/ng-bootstrap": "6.0.2",
     "bootstrap": "4.4.1",
+    "bootswatch": "^4.5.0",
     "core-js": "3.6.5",
     "diff-match-patch": "^1.0.5",
     "jquery": "3.5.1",
