@@ -12,15 +12,16 @@
     <form [formGroup]="fileForm">
       <div class="form-group">
         <label for="fileSelect">
-          <div class="alert alert-info">
           Instructions:
-            <div class="ml-3">- File type must be .csv</div>
-            <div class="ml-3">- Each row must contain the comma-separated fields <i>front side</i> and <i>back side</i></div>
-            <div class="ml-3">- No header</div>
-            <div class="ml-3">- Strings containing special characters, line breaks, double quotes(<span style="color: red"> " </span>) and commas(<span style="color: red"> , </span>)
-              need to be put between double quotes</div>
-            <div class="ml-3">- Double quotes within strings need to be doubled</div>
-          </div>
+          <ul>
+            <li>File type must be .csv</li>
+            <li>Each row must contain the comma-separated fields <i>front side</i> and <i>back side</i></li>
+            <li>No header</li>
+            <li>Strings containing special characters, line breaks, double quotes(<code>"</code>) and
+              commas(<code>,</code>)
+              need to be put between double quotesNo header</li>
+            <li>Double quotes within strings need to be doubled</li>
+          </ul>
         </label>
       </div>
       <input type="file" id="fileSelect" formControlName="fileSelect" (change)="onFileChange($event)">
