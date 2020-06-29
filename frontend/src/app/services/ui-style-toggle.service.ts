@@ -1,10 +1,6 @@
 import { Injectable } from '@angular/core';
 import {BehaviorSubject, Observable} from "rxjs";
 import {AuthService} from "./auth.service";
-import {Router} from "@angular/router";
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {NotificationService} from "./notification.service";
-import {ClipboardService} from "./clipboard.service";
 import {UserService} from "./user.service";
 
 export enum ThemeMode {
@@ -30,25 +26,34 @@ export class UiStyleToggleService {
     this.username$ = authService.userName$;
   }
 
-  private getState(): string {
-    return localStorage.getItem(this.THEME_KEY)
-
+  private getState(): Promise<string> {
+    return this.username$.toPromise().then(username => {
+      console.log("theme username", username)
+      return this.userService.getProfile(username).toPromise()
+    }).then(profile => {
+      return profile.theme;
+    })
   }
 
   private setState(theme: string) {
-    localStorage.setItem(this.THEME_KEY, this.DARK_THEME_VALUE);
-
+    localStorage.setItem(this.THEME_KEY, theme);
+    const userid = this.authService.getUserId()
+    if (userid) {
+      this.userService.setTheme(userid, theme)
+    }
   }
 
   public setThemeOnStart() {
-    if (this.isDarkThemeSelected()) {
-      this.setDarkTheme();
-    } else {
-      this.setLightTheme();
-    }
-    setTimeout(() => {
-      document.body.classList.add('animate-colors-transition');
-    }, 500)
+    this.isDarkThemeSelected().then(result => {
+      if (result) {
+        this.setDarkTheme();
+      } else {
+        this.setLightTheme();
+      }
+      setTimeout(() => {
+        document.body.classList.add('animate-colors-transition');
+      }, 500)
+    })
   }
 
   public toggle() {
@@ -59,13 +64,15 @@ export class UiStyleToggleService {
     }
   }
 
-  private isDarkThemeSelected(): boolean {
-    this.darkThemeSelected = this.getState() === this.DARK_THEME_VALUE;
-    return this.darkThemeSelected;
+  private isDarkThemeSelected(): Promise<boolean> {
+    return this.getState().then(theme => {
+      this.darkThemeSelected = theme === this.DARK_THEME_VALUE;
+      return this.darkThemeSelected;
+    })
   }
 
   private setLightTheme() {
-    localStorage.setItem(this.THEME_KEY, this.LIGHT_THEME_VALUE);
+    this.setState(this.LIGHT_THEME_VALUE);
     document.body.classList.remove(this.DARK_THEME_CLASS_NAME);
     this.darkThemeSelected = false;
     this.theme$.next(ThemeMode.LIGHT);
