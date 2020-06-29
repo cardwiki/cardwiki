@@ -196,8 +196,8 @@
                 <version>0.8.5</version>
                 <configuration>
                     <excludes>
-                        **/dev/*
-                        **/mapper/*
+                        <exclude>**/dev/*</exclude>
+                        <exclude>**/mapper/*</exclude>
                     </excludes>
                 </configuration>
                 <executions>
