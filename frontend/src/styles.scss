@@ -7,6 +7,23 @@ body {
   @import "~bootswatch/dist/darkly/variables";
   @import "~bootstrap/scss/bootstrap";
   @import "~bootswatch/dist/darkly/bootswatch";
+
+  div.card-body {
+    .btn-outline-dark {
+      @extend .btn-outline-light
+    }
+  }
+
+  .input-group-append {
+    .btn-outline-dark {
+      @extend .btn-dark
+    }
+  }
+
+  hr {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
 }
 
 .animate-colors-transition {
