@@ -85,7 +85,7 @@ public interface DeckRepository extends JpaRepository<Deck, Long> {
      * @param status
      * @return Count how many cards a given deck contains that have the given status for the given user
      */
-    @Query("SELECT count(*) FROM Card c LEFT JOIN Progress p ON c = p.id.card WHERE p.id.user.id = :userId AND c.deck.id = :deckId AND p.status = :status")
+    @Query("SELECT count(*) FROM Card c inner join RevisionEdit r on r=c.latestRevision LEFT JOIN Progress p ON c = p.id.card WHERE p.id.user.id = :userId AND c.deck.id = :deckId AND p.status = :status")
     int countProgressStatuses(@Param("deckId") Long deckId, @Param("userId") Long userId, @Param("status") Progress.Status status);
 
     /**
@@ -93,6 +93,6 @@ public interface DeckRepository extends JpaRepository<Deck, Long> {
      * @param deckId
      * @return how many cards are in the deck
      */
-    @Query("SELECT count(*) FROM Card c WHERE c.deck.id = :deckId")
+    @Query("SELECT count(*) FROM Card c inner join RevisionEdit r on r=c.latestRevision WHERE c.deck.id = :deckId")
     int countCards(@Param("deckId") long deckId);
 }
