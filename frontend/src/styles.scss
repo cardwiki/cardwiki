@@ -28,6 +28,15 @@ body {
     border-top: 1px solid rgba(255, 255, 255, 0.1);
   }
 
+  .navbar-light.bg-light {
+    @extend .navbar-dark;
+    @extend .bg-dark;
+
+    .btn-outline-secondary {
+      @extend .btn-outline-light;
+    }
+  }
+
 }
 
 .animate-colors-transition {
