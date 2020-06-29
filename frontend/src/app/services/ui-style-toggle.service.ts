@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import {BehaviorSubject, Observable} from "rxjs";
+import {BehaviorSubject} from "rxjs";
 import {AuthService} from "./auth.service";
 import {UserService} from "./user.service";
+import * as $ from 'jquery';
 
 export enum ThemeMode {
   LIGHT, DARK
@@ -19,27 +20,31 @@ export class UiStyleToggleService {
 
   private darkThemeSelected = true;
   public theme$ = new BehaviorSubject<ThemeMode>(ThemeMode.LIGHT)
-  private username$: Observable<string>
+  private username: string;
 
   constructor(private authService: AuthService, private userService: UserService) {
 
-    this.username$ = authService.userName$;
+    if(localStorage.getItem("whoami")) this.username = JSON.parse(localStorage.getItem("whoami")).username
   }
 
   private getState(): Promise<string> {
-    return this.username$.toPromise().then(username => {
-      console.log("theme username", username)
-      return this.userService.getProfile(username).toPromise()
-    }).then(profile => {
-      return profile.theme;
-    })
+      console.log("theme username", this.username)
+      return this.userService.getProfile(this.username).toPromise().then(profile => {
+        console.log(profile)
+        return profile.theme;
+      }).catch(error => {
+        console.log(error)
+        return localStorage.getItem(this.THEME_KEY)
+      })
   }
 
   private setState(theme: string) {
     localStorage.setItem(this.THEME_KEY, theme);
-    const userid = this.authService.getUserId()
-    if (userid) {
-      this.userService.setTheme(userid, theme)
+    if (localStorage.getItem("whoami")) {
+      const userid = JSON.parse(localStorage.getItem("whoami")).id
+      this.userService.setTheme(userid, theme).subscribe(response => {
+        console.log(response)
+      })
     }
   }
 
@@ -51,7 +56,7 @@ export class UiStyleToggleService {
         this.setLightTheme();
       }
       setTimeout(() => {
-        document.body.classList.add('animate-colors-transition');
+        $('html').addClass('animate-colors-transition');
       }, 500)
     })
   }
@@ -73,14 +78,14 @@ export class UiStyleToggleService {
 
   private setLightTheme() {
     this.setState(this.LIGHT_THEME_VALUE);
-    document.body.classList.remove(this.DARK_THEME_CLASS_NAME);
+    $('html').removeClass(this.DARK_THEME_CLASS_NAME)
     this.darkThemeSelected = false;
     this.theme$.next(ThemeMode.LIGHT);
   }
 
   private setDarkTheme() {
     this.setState(this.DARK_THEME_VALUE)
-    document.body.classList.add(this.DARK_THEME_CLASS_NAME);
+    $('html').addClass(this.DARK_THEME_CLASS_NAME)
     this.darkThemeSelected = true;
     this.theme$.next(ThemeMode.DARK);
   }
