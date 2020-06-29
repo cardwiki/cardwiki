@@ -197,6 +197,7 @@
                 <configuration>
                     <excludes>
                         **/dev/*
+                        **/mapper/*
                     </excludes>
                 </configuration>
                 <executions>
