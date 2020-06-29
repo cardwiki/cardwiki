@@ -18,4 +18,6 @@ public class UserUpdateDto {
     private Boolean enabled;
 
     private String reason;
+
+    private String theme;
 }

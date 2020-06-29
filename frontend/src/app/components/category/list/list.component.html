@@ -5,7 +5,7 @@
                   slice: (specs.page - 1) * specs.pageSize : (specs.page - 1) * specs.pageSize + specs.pageSize
                   trackBy: trackChange"
       >
-        <a routerLink="/{{path}}/{{item.id}}">{{item.name}}</a>
+        <a class="text-body" routerLink="/{{path}}/{{item.id}}">{{item.name}}</a>
         <button *appUserRole="'ADMIN'" class="btn btn-outline-danger ml-2 mb-1" (click)="deleteCategory(item)">Delete</button>
       </li>
     </ul>

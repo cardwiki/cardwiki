@@ -6,7 +6,7 @@ import {parse as parseCookie} from 'cookie';
 import { OAuth2ProviderDto } from 'src/app/dtos/oAuth2Provider';
 import { WhoAmI } from 'src/app/dtos/whoAmI';
 import { TitleService } from 'src/app/services/title.service';
-import { Location } from '@angular/common';
+import {UiStyleToggleService} from "../../services/ui-style-toggle.service";
 
 @Component({
   selector: 'app-login',
@@ -19,7 +19,7 @@ export class LoginComponent implements OnInit {
   registerForm: FormGroup;
   username: string;
 
-  constructor(public authService: AuthService, private router: Router, private route: ActivatedRoute, private titleService: TitleService, private location: Location) {
+  constructor(public authService: AuthService, private router: Router, private route: ActivatedRoute, private titleService: TitleService, private uiStyleToggleService: UiStyleToggleService) {
     this.registerForm = new FormGroup({
       'username': new FormControl(this.username, [
         Validators.required,
@@ -53,6 +53,7 @@ export class LoginComponent implements OnInit {
         const redirectUrl = this.authService.getRedirectUrl() ?? '/';
         this.authService.clearRedirectUrl();
         this.router.navigate([redirectUrl]);
+        this.uiStyleToggleService.setThemeOnStart();
       }
     });
   }

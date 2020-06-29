@@ -3,8 +3,33 @@ body {
   background-color: whitesmoke;
 }
 
-.darkmode {
+.theme-dark {
   @import "~bootswatch/dist/darkly/variables";
   @import "~bootstrap/scss/bootstrap";
   @import "~bootswatch/dist/darkly/bootswatch";
+
+  div.card-body {
+    .btn-outline-dark {
+      @extend .btn-outline-light
+    }
+  }
+
+  .input-group-append {
+    .btn-outline-dark {
+      @extend .btn-dark
+    }
+  }
+
+  .flip-card-face {
+     background: gray!important;
+   }
+
+  hr {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+}
+
+.animate-colors-transition {
+  transition: color 0.5s, background 0.5s;
 }

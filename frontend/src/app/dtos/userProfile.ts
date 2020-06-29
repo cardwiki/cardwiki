@@ -7,6 +7,7 @@ export class UserProfile {
     public updatedAt: Date,
     public admin: boolean,
     public enabled: boolean,
-    public deleted: boolean) {
+    public deleted: boolean,
+    public theme: string) {
   }
 }

@@ -157,6 +157,10 @@ public class SimpleUserService implements UserService {
             updatedUser.setDescription(user.getDescription());
         }
 
+        if (user.getTheme() != null) {
+            updatedUser.setTheme(user.getTheme());
+        }
+
         if (currentUser.isAdmin() && user.isAdmin() != null) {
             updatedUser.setAdmin(user.isAdmin());
         }
