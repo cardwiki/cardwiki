@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import {HttpClient, HttpParams} from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Globals} from '../global/globals';
 import {Observable} from 'rxjs';
 import {DeckDetails} from '../dtos/deckDetails';
@@ -10,7 +10,8 @@ import { ErrorHandlerService } from './error-handler.service';
 import { tap } from 'rxjs/operators';
 import { Page } from '../dtos/page';
 import { Pageable } from '../dtos/pageable';
-import {RevisionDetailed} from "../dtos/revisionDetailed";
+import { DeckProgress } from '../dtos/deckProgress';
+import {RevisionDetailed} from '../dtos/revisionDetailed';
 
 @Injectable({
   providedIn: 'root'
@@ -29,6 +30,20 @@ export class DeckService {
   getDeckById(id: number): Observable<DeckDetails> {
     console.log('Load Deck with id ' + id);
     return this.httpClient.get<DeckDetails>(this.deckBaseUri + '/' + id)
+      .pipe(tap(null, this.errorHandler.handleError('Could not fetch Deck')));
+  }
+
+  /**
+   * Gets csv-data for a specific deck from the backend.
+   * @param id of deck to get.
+   */
+  exportDeckAsCsv(id: number) {
+    console.log('Load Deck with id ' + id);
+    const headers = new HttpHeaders()
+      .append('Accept', 'text/csv')
+      .append('Content-Type', 'text/html');
+
+    return this.httpClient.get(this.deckBaseUri + '/' + id,  { headers, responseType: 'text' })
       .pipe(tap(null, this.errorHandler.handleError('Could not fetch Deck')));
   }
 
@@ -65,7 +80,7 @@ export class DeckService {
     const params = {
       name,
       ...pageable.toObject(),
-    }
+    };
     return this.httpClient.get<Page<DeckDetails>>(this.deckBaseUri, { params })
       .pipe(tap(null, this.errorHandler.handleError('Could not search for Decks')));
   }
@@ -87,6 +102,12 @@ export class DeckService {
       .pipe(tap(null, this.errorHandler.handleError('Could not delete deck ' + deckId)));
   }
 
+
+  import(deckId: number, data: FormData): Observable<DeckDetails> {
+    console.log('import cards to deck ' + deckId);
+    return this.httpClient.post<DeckDetails>(this.deckBaseUri + '/' + deckId + '/cards', data)
+      .pipe(tap(null, this.errorHandler.handleError('Could not import cards to deck ' + deckId)));
+  }
   /**
    * Fetches card revisions for cards in a deck
    *
@@ -96,6 +117,16 @@ export class DeckService {
   fetchRevisions(deckId: number, pageable: Pageable): Observable<Page<RevisionDetailed>> {
     console.log(`fetch revisions for cards in deck with id ${deckId}`);
     return this.httpClient.get<Page<RevisionDetailed>>(this.deckBaseUri + '/' + deckId + '/revisions', { params: pageable.toHttpParams() })
-      .pipe(tap(null, this.errorHandler.handleError('Could not fetch Revisions')))
+      .pipe(tap(null, this.errorHandler.handleError('Could not fetch Revisions')));
+  }
+
+  /**
+   * Fetches progress of the given deck
+   * @param deckId
+   */
+  fetchProgress(deckId: number): Observable<DeckProgress> {
+    console.log(`fetch progress deck with id ${deckId}`);
+    return this.httpClient.get<DeckProgress>(this.deckBaseUri + '/' + deckId + '/progress')
+      .pipe(tap(null, this.errorHandler.handleError('Could not fetch progress')))
   }
 }

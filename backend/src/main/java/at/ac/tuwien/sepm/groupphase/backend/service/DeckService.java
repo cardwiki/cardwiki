@@ -1,11 +1,16 @@
 package at.ac.tuwien.sepm.groupphase.backend.service;
 
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckProgressDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
 import at.ac.tuwien.sepm.groupphase.backend.exception.DeckNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.AuthenticationRequiredException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.io.PrintWriter;
 
 public interface DeckService {
 
@@ -65,6 +70,24 @@ public interface DeckService {
     void delete(Long id);
 
     /**
+     * Create data for csv-export.
+     *
+     * @param pw PrintWriter provided by response
+     * @param deckId of the deck to export
+     * @throws IOException if the CSVPrinter encounters an error.
+     */
+    void createCsvData(PrintWriter pw, Long deckId) throws IOException;
+
+    /**
+     * Create data for csv-export.
+     *
+     * @param deckId of the deck to export
+     * @param file containing the data to add to the deck
+     * @throws IOException if the CSVPrinter encounters an error.
+     */
+    Deck addCards(Long deckId, MultipartFile file) throws IOException;
+
+    /**
      * Loads revisions of cards in the deck
      *
      * @param id of the deck
@@ -72,4 +95,11 @@ public interface DeckService {
      * @return List of Revisions of cards in the deck
      */
     Page<Revision> getRevisions(Long id, Pageable pageable);
+
+    /**
+     * Return deck progress for currently logged in user
+     * @param deckId
+     * @return deck progress for a user
+     */
+    DeckProgressDto getProgress(Long deckId);
 }

@@ -23,7 +23,8 @@ export class CardDiffComponent implements OnInit {
   private revisionIdNew: number;
   public cardDiff: CardContent;
 
-  constructor(private globals: Globals,private cardService: CardService, private route: ActivatedRoute, private router: Router, private location: Location) { }
+  // tslint:disable-next-line:max-line-length
+  constructor(private globals: Globals, private cardService: CardService, private route: ActivatedRoute, private router: Router, private location: Location) { }
 
   ngOnInit(): void {
     this.cardId = Number(this.route.snapshot.paramMap.get('cardId'));
@@ -62,6 +63,7 @@ export class CardDiffComponent implements OnInit {
   }
 
   undo(): void {
+    // tslint:disable-next-line:max-line-length
     const card: CardUpdate = new CardUpdate(this.cardRevisionOld.textFront, this.cardRevisionOld.textBack, this.cardRevisionOld.imageFront, this.cardRevisionOld.imageBack, "Revert to " + this.cardRevisionOld.message)
     this.cardService.editCard(this.cardId, card)
       .subscribe(simpleCard => {

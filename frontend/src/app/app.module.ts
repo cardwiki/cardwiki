@@ -41,6 +41,7 @@ import { UserRoleDirective } from './directives/user-role.directive';
 import { CommentFormComponent } from './components/comment/comment-form/comment-form.component';
 import { CommentListComponent } from './components/comment/comment-list/comment-list.component';
 import { ConfirmModalComponent } from './components/utils/confirm-modal/confirm-modal.component';
+import { CardsImportModalComponent } from './components/deck/cards-import-modal/cards-import-modal.component';
 import { ClipboardViewComponent } from './components/clipboard/clipboard-view/clipboard-view.component';
 import { ClipboardPasteModalComponent } from './components/clipboard/clipboard-paste-modal/clipboard-paste-modal.component';
 import { CardRevisionComponent } from './components/card/card-revision/card-revision.component';
@@ -94,6 +95,7 @@ export function themeFactory(themeService: UiStyleToggleService) {
     CommentFormComponent,
     CommentListComponent,
     ConfirmModalComponent,
+    CardsImportModalComponent,
     ClipboardViewComponent,
     ClipboardPasteModalComponent,
     CardRevisionComponent,

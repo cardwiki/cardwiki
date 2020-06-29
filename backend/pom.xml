@@ -130,6 +130,12 @@
             <version>${spring-security.version}</version>
             <scope>test</scope>
         </dependency>
+        <!-- csv-library -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+            <version>1.4</version>
+        </dependency>
 
         <!-- needed for mapper tests -->
         <dependency>

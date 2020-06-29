@@ -1,0 +1,37 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title">
+    Import cards to deck
+    </h5>
+    <button type="button" class="close" (click)="activeModal.dismiss()">
+      &times;
+    </button>
+
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="fileForm">
+      <div class="form-group">
+        <label for="fileSelect">
+          Instructions:
+          <ul>
+            <li>File type must be .csv</li>
+            <li>Each row must contain the comma-separated fields <i>front side</i> and <i>back side</i></li>
+            <li>No header</li>
+            <li>Strings containing special characters, line breaks, double quotes(<code>"</code>) and
+              commas(<code>,</code>)
+              need to be put between double quotesNo header</li>
+            <li>Double quotes within strings need to be doubled</li>
+          </ul>
+        </label>
+      </div>
+      <input type="file" id="fileSelect" formControlName="fileSelect" (change)="onFileChange($event)">
+    </form>
+    <div *ngIf="fileForm.controls.fileSelect.errors" class="error">
+      <small class="form-text text-warning">{{checkErrors()}}</small>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" [disabled]="!fileForm.valid" (click)="importCards()">Import</button>
+    <button type="button" class="btn btn-light" (click)="activeModal.dismiss()">Cancel</button>
+  </div>
+</div>

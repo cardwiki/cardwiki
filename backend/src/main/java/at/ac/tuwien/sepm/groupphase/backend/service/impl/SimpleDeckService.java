@@ -1,6 +1,8 @@
 package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckProgressDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
+import at.ac.tuwien.sepm.groupphase.backend.exception.BadRequestException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.DeckNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
@@ -8,6 +10,12 @@ import at.ac.tuwien.sepm.groupphase.backend.repository.RevisionRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.CategoryService;
 import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
 import at.ac.tuwien.sepm.groupphase.backend.service.UserService;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVRecord;
+import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -15,7 +23,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.*;
 import java.lang.invoke.MethodHandles;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -70,7 +80,11 @@ public class SimpleDeckService implements DeckService {
     public Deck update(Long id, Deck deckUpdate) {
         LOGGER.debug("Update deck with id: {}", id);
         Deck deck = findOneOrThrow(id);
-        deck.setName(deckUpdate.getName());
+
+        if (deckUpdate.getName() != null) {
+            deck.setName(deckUpdate.getName());
+        }
+
         Set<Category> categories = deck.getCategories();
 
         if (deckUpdate.getCategories() != null) {
@@ -85,6 +99,7 @@ public class SimpleDeckService implements DeckService {
                 category = categoryService.findOneOrThrow(category.getId());
                 category.getDecks().remove(deck);
             }
+            deck.setCategories(deckUpdate.getCategories());
         }
 
         return deckRepository.save(deck);
@@ -137,5 +152,76 @@ public class SimpleDeckService implements DeckService {
     public Page<Revision> getRevisions(Long id, Pageable pageable) {
         LOGGER.debug("Load {} revisions with offset {} from deck {}", pageable.getPageSize(), pageable.getOffset(), id);
         return revisionRepository.findByCard_Deck_Id(id, pageable);
+    }
+
+    @Override
+    public DeckProgressDto getProgress(Long deckId) {
+        long userId = userService.loadCurrentUserOrThrow().getId();
+        int learning = deckRepository.countProgressStatuses(deckId, userId, Progress.Status.LEARNING);
+        int reviewing = deckRepository.countProgressStatuses(deckId, userId, Progress.Status.REVIEWING);
+
+        return new DeckProgressDto(deckRepository.countCards(deckId) - learning - reviewing, learning, reviewing);
+    }
+
+    @Override
+    @Transactional
+    public void createCsvData(PrintWriter pw, Long deckId) throws IOException {
+        LOGGER.debug("Write deck with id {} to file.", deckId);
+        CSVPrinter printer = new CSVPrinter(pw, CSVFormat.DEFAULT);
+        cardRepository.findLatestEditRevisionsByDeck_Id(deckId)
+            .forEach(revisionEdit -> {
+                try {
+                    printer.printRecord(revisionEdit.getTextFront(), revisionEdit.getTextBack());
+                } catch (IOException e) {
+                    LOGGER.info("An error occurred converting records to csv: {}", e);
+                }
+            });
+        printer.close();
+    }
+
+    @Override
+    @Transactional
+    public Deck addCards(Long deckId, MultipartFile file) throws IOException {
+        // fetch information
+        Deck deck = deckRepository.getOne(deckId);
+        User user = userService.loadCurrentUserOrThrow();
+        // parse csv file
+        Reader in = new BufferedReader(new InputStreamReader(file.getInputStream(), "UTF-8"));
+        CSVParser csvParser = new CSVParser(in, CSVFormat.DEFAULT.withTrim().withIgnoreSurroundingSpaces());
+        Iterable<CSVRecord> csvRecords = csvParser.getRecords();
+
+        // create new cards
+        for (CSVRecord csvRecord : csvRecords) {
+            for (int i = 0; i < csvRecord.size(); i++) {
+                LOGGER.info("csvRecord: " + csvRecord.get(i));
+            }
+            if (csvRecord.size() != 2) {
+                throw new BadRequestException("Incorrectly formatted csv.");
+            }
+            String textFront = csvRecord.get(0);
+
+            if(!cardRepository.existsByDeckAndRevisionEditContent(deckId, textFront)) {
+                String textBack = csvRecord.get(1);
+
+                Card card = new Card();
+                card.setDeck(deck);
+                deck.getCards().add(card);
+                RevisionCreate revisionCreate = new RevisionCreate();
+                revisionCreate.setMessage("Created");
+                revisionCreate.setTextFront(textFront);
+                revisionCreate.setTextBack(textBack);
+                revisionCreate.setCard(card);
+                revisionCreate.setCreatedBy(user);
+                user.getRevisions().add(revisionCreate);
+                card.setLatestRevision(revisionCreate);
+
+                deckRepository.saveAndFlush(deck);
+            } else {
+                LOGGER.info("Card with front {} already exists.", csvRecord.get(0));
+            }
+
+        }
+        Hibernate.initialize(deck.getCategories());
+        return deck;
     }
 }

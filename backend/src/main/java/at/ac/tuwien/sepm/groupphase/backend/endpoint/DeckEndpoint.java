@@ -1,9 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.endpoint;
 
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckDto;
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckInputDto;
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckUpdateDto;
-import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.RevisionDtoWithContent;
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.*;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.DeckMapper;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.mapper.RevisionMapper;
 import at.ac.tuwien.sepm.groupphase.backend.exception.NotFoundException;
@@ -22,12 +19,13 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "api/v1/decks")
@@ -72,11 +70,7 @@ public class DeckEndpoint {
     @ApiOperation(value = "Get a deck by id")
     public DeckDto findOne(@PathVariable Long id) {
         LOGGER.info("GET /api/v1/decks/{}", id);
-        try {
-            return deckMapper.deckToDeckDto(deckService.findOneOrThrow(id));
-        } catch (NotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+        return deckMapper.deckToDeckDto(deckService.findOneOrThrow(id));
     }
 
     @Secured("ROLE_USER")
@@ -85,11 +79,7 @@ public class DeckEndpoint {
     @ApiOperation(value = "Update deck", authorizations = @Authorization("user"))
     public DeckDto updateDeck(@PathVariable Long id, @Valid @RequestBody DeckUpdateDto deckUpdateDto) {
         LOGGER.info("PATCH /api/v1/decks/{} body: {}", id, deckUpdateDto);
-        try {
-            return deckMapper.deckToDeckDto(deckService.update(id, deckMapper.deckUpdateDtoToDeck(deckUpdateDto)));
-        } catch (NotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+        return deckMapper.deckToDeckDto(deckService.update(id, deckMapper.deckUpdateDtoToDeck(deckUpdateDto)));
     }
 
     @Secured("ROLE_USER")
@@ -115,5 +105,39 @@ public class DeckEndpoint {
     public Page<RevisionDtoWithContent> getRevisions(@PathVariable Long id, @SortDefault(value = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         deckService.findOneOrThrow(id);
         return deckService.getRevisions(id, pageable).map(revision -> revisionMapper.revisionToRevisionDetailedDto(revision));
+    }
+
+    @Secured("ROLE_USER")
+    @GetMapping("/{id}/progress")
+    @ApiOperation(value = "Get deck progress of current user", authorizations = @Authorization("user"))
+    public DeckProgressDto getDeckProgress(@PathVariable Long id){
+        return deckService.getProgress(id);
+    }
+
+    @GetMapping(value = "/{id}", produces = "text/csv")
+    @ApiOperation(value = "export deck", authorizations = @Authorization("apiKey"))
+    public void export(@PathVariable Long id, HttpServletResponse response) {
+        LOGGER.info("GET /api/v1/decks/{} as .csv", id);
+        deckService.findOneOrThrow(id);
+        response.addHeader("Content-Disposition", "attachment");
+        response.addHeader("Content-Type", "text/csv;charset=UTF-8");
+        try {
+            deckService.createCsvData(response.getWriter(), id);
+        } catch(IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error encoding cards.");
+        }
+    }
+
+    @Secured("ROLE_USER")
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping(value = "/{id}/cards", consumes = "multipart/form-data")
+    @ApiOperation(value = "import cards to deck", authorizations = @Authorization("apiKey"))
+    public DeckDto importCards (@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+        LOGGER.info("POST {} to /api/v1/decks/{}", file.getOriginalFilename(), id);
+        try {
+            return deckMapper.deckToDeckDto(deckService.addCards(id, file));
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error reading cards.");
+        }
     }
 }

@@ -17,10 +17,12 @@ import { Page } from 'src/app/dtos/page';
 import { CommentService } from 'src/app/services/comment.service';
 import { CommentSimple } from 'src/app/dtos/commentSimple';
 import { CommentFormComponent } from '../../comment/comment-form/comment-form.component';
+import { CardsImportModalComponent} from '../cards-import-modal/cards-import-modal.component';
 import {ClipboardService} from '../../../services/clipboard.service';
 import {ClipboardPasteModalComponent} from '../../clipboard/clipboard-paste-modal/clipboard-paste-modal.component';
 import {CardUpdate} from '../../../dtos/cardUpdate';
 import { TitleService } from 'src/app/services/title.service';
+import { DeckProgress } from 'src/app/dtos/deckProgress';
 
 @Component({
   selector: 'app-deck-view',
@@ -35,18 +37,19 @@ export class DeckViewComponent implements OnInit {
   isFavorite$: Subject<boolean>;
   clipboardSize: number;
   loadingError: string;
+  progress: DeckProgress;
 
 
   page: Page<CardSimple>;
   cards: CardSimple[];
   loadingCards: boolean;
 
-  displayComments = false
-  comments: CommentSimple[]
-  commentsPage: Page<CommentSimple>
-  readonly commentsPageSize = 10
+  displayComments = false;
+  comments: CommentSimple[];
+  commentsPage: Page<CommentSimple>;
+  readonly commentsPageSize = 10;
 
-  @ViewChild('commentForm') private commentForm: CommentFormComponent
+  @ViewChild('commentForm') private commentForm: CommentFormComponent;
 
   constructor(private deckService: DeckService, private cardService: CardService, public globals: Globals,
               private favoriteService: FavoriteService, private commentService: CommentService,
@@ -76,8 +79,10 @@ export class DeckViewComponent implements OnInit {
       this.cards = [];
       this.loadMoreCards();
       this.loadMoreComments();
-      if (this.authService.isLoggedIn())
+      if (this.authService.isLoggedIn()){
         this.favoriteService.hasFavorite(id).subscribe(isFavorite => this.isFavorite$.next(isFavorite))
+        this.deckService.fetchProgress(id).subscribe(progress => this.progress = progress);
+      }
     }, err => {
       this.loadingError = err && err.status === 404 ?
         'This deck does not exist. Maybe it has been deleted or the link is broken'
@@ -96,27 +101,27 @@ export class DeckViewComponent implements OnInit {
   }
 
   loadMoreComments() {
-    const nextPageNumber = this.commentsPage ? this.commentsPage.pageable.pageNumber + 1 : 0
+    const nextPageNumber = this.commentsPage ? this.commentsPage.pageable.pageNumber + 1 : 0;
     this.commentService.findByDeckId(this.deck.id, new Pageable(nextPageNumber, this.commentsPageSize))
       .subscribe(page => {
-        this.commentsPage = page
-        this.comments.push(...page.content)
-      })
+        this.commentsPage = page;
+        this.comments.push(...page.content);
+      });
   }
 
   toggleComments() {
-    this.displayComments = !this.displayComments
+    this.displayComments = !this.displayComments;
   }
 
   addComment(message: string) {
-    console.log('addComment', message)
+    console.log('addComment', message);
     this.commentService.addCommentToDeck(this.deck.id, message)
       .subscribe(comment => {
-        this.notificationService.success('Comment saved')
-        this.comments.unshift(comment)
-        this.commentsPage.totalElements += 1
-        this.commentForm.reset()
-      })
+        this.notificationService.success('Comment saved');
+        this.comments.unshift(comment);
+        this.commentsPage.totalElements += 1;
+        this.commentForm.reset();
+      });
   }
 
   openCardRemoveModal(card: CardSimple) {
@@ -126,8 +131,8 @@ export class DeckViewComponent implements OnInit {
     modalRef.result.then(
       (res: Observable<void>) => res.subscribe(
         () => {
-          this.notificationService.success('Deleted Card')
-          this.cards = this.cards.filter(c => c !== card)
+          this.notificationService.success('Deleted Card');
+          this.cards = this.cards.filter(c => c !== card);
         }
       )
     ).catch(err => console.error('Did not remove card', err));
@@ -154,12 +159,35 @@ export class DeckViewComponent implements OnInit {
 
   saveToFavorites() {
     this.favoriteService.addFavorite(this.deck.id)
-      .subscribe(() => this.isFavorite$.next(true))
+      .subscribe(() => this.isFavorite$.next(true));
   }
 
   removeFromFavorites() {
     this.favoriteService.removeFavorite(this.deck.id)
-      .subscribe(() => this.isFavorite$.next(false))
+      .subscribe(() => this.isFavorite$.next(false));
+  }
+
+  exportCsv() {
+    this.deckService.exportDeckAsCsv(this.deck.id).subscribe((answer: any) => {
+      const file = document.createElement('a');
+      const blob = new Blob([answer], {type: 'text/csv'});
+      const objectUrl = URL.createObjectURL(blob);
+      file.href = objectUrl;
+      file.download = this.deck.name + '.csv';
+      file.click();
+      URL.revokeObjectURL(objectUrl);
+    });
+  }
+
+  openImportModal(deck: DeckDetails) {
+    const modalRef = this.modalService.open(CardsImportModalComponent, { size: 'lg' });
+    modalRef.componentInstance.deck = this.deck;
+
+    modalRef.result.then(
+      (res: Observable<DeckDetails>) => res.subscribe(
+        (deckResult: DeckDetails) => this.router.navigate(['decks', deckResult])
+      )
+    ).catch(() => {});
   }
 
   copyToClipboard(card: CardSimple) {

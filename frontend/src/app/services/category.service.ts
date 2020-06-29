@@ -22,7 +22,7 @@ export class CategoryService {
 
   /**
    * Search for categories by name
-   * 
+   *
    * @param name name to search for
    * @param pageable config for pagination
    */

@@ -3,6 +3,7 @@ package at.ac.tuwien.sepm.groupphase.backend.unittests;
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
+import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,9 @@ public class CardRepositoryTest extends TestDataGenerator {
 
     @Autowired
     private CardRepository cardRepository;
+
+    @Autowired
+    private DeckRepository deckRepository;
 
     @Test
     public void givenNothing_whenSaveCardWithoutDeck_thenThrowDataIntegrityViolationException() {
@@ -134,5 +138,36 @@ public class CardRepositoryTest extends TestDataGenerator {
         cards = cardRepository.findCardsWithContentByDeck_Id(deck.getId()).collect(Collectors.toList());
 
         assertFalse(cards.contains(card));
+    }
+
+    @Test
+    public void givenDeckContainingCardWithContent_whenExistsByDeckAndRevisionEditContentWithGivenContent_thenReturnTrue() {
+        Deck deck = givenDeck();
+        Card card = givenCard();
+        User user = givenApplicationUser();
+
+        RevisionCreate revision = new RevisionCreate();
+        revision.setMessage("some message");
+        card.setLatestRevision(revision);
+        revision.setCard(card);
+        revision.setCreatedBy(user);
+        revision.setTextBack("test back");
+        revision.setTextFront("test front");
+        deck.getCards().add(card);
+        card.setDeck(deck);
+        deckRepository.saveAndFlush(deck);
+
+        assertTrue(cardRepository.existsByDeckAndRevisionEditContent(deck.getId(), revision.getTextFront()));
+    }
+
+    @Test
+    public void givenNothing_whenExistsByDeckAndRevisionEditContentWithIdOfNonExistentDeck_thenReturnFalse() {
+        assertFalse(cardRepository.existsByDeckAndRevisionEditContent(123L, "test"));
+    }
+
+    @Test
+    public void givenDeck_whenExistsByDeckAndRevisionEditContentWithNonExistentContent_thenReturnFalse() {
+        Deck deck = getSampleDeck();
+        assertFalse(cardRepository.existsByDeckAndRevisionEditContent(deck.getId(), "non existent front side text"));
     }
 }
