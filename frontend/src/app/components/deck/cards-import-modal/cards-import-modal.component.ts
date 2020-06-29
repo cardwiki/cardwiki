@@ -66,17 +66,11 @@ export class CardsImportModalComponent implements OnInit {
   importCards(): void {
     const formData = new FormData();
     formData.append('file', this.file, this.file.name);
-    this.activeModal.close(
-      this.sendData(this.deck.id, formData)
-    );
-    window.location.reload();
-  }
-
-  sendData(deckId: number, data: FormData) {
-    this.deckService.import(deckId, data).subscribe((deckResult) => {
+    this.deckService.import(this.deck.id, formData).subscribe((deckResult) => {
       this.deck = deckResult;
       this.notificationService.success('Imported cards.');
       this.router.navigate(['decks', this.deck.id]);
+      window.location.reload();
     });
   }
 }
