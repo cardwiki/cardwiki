@@ -68,7 +68,6 @@ public class User {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "favoredBy")
     private Set<Deck> favorites = new HashSet<>();
 
-    @Column(nullable = false)
     private String theme;
 
     @CreationTimestamp
