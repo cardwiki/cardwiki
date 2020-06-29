@@ -3,9 +3,6 @@ package at.ac.tuwien.sepm.groupphase.backend.repository;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Progress;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Set;
@@ -17,8 +14,10 @@ public interface ProgressRepository extends JpaRepository<Progress,Progress.Id> 
 
     void deleteById_CardId(Long cardId);
 
+    void deleteById_UserIdAndId_Card_Deck_Id(Long userId, Long deckId);
+
     boolean existsById_CardId(Long cardId);
- 
+
     /**
      * Find all progress entries of user for exporting data
      *

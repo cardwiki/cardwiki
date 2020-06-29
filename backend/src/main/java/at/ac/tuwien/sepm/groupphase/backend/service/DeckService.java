@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepm.groupphase.backend.service;
 
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckProgressDto;
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckProgressDetailsDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Revision;
 import at.ac.tuwien.sepm.groupphase.backend.exception.DeckNotFoundException;
@@ -102,4 +103,19 @@ public interface DeckService {
      * @return deck progress for a user
      */
     DeckProgressDto getProgress(Long deckId);
+
+    /**
+     * Return all decks learned by a user
+     * with progress data
+     *
+     * @param pageable pagination parameters
+     * @return learned decks with progress information
+     */
+    Page<DeckProgressDetailsDto> getLearnedDecksWithStatus(Pageable pageable);
+
+    /**
+     * Delete the progress of a user for a specified card deck.
+     * @param deckId of the card deck for which the progress is to be deleted.
+     */
+    void deleteUserProgress(Long deckId);
 }

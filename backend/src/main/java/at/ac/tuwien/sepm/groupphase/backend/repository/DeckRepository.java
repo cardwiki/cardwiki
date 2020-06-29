@@ -95,4 +95,13 @@ public interface DeckRepository extends JpaRepository<Deck, Long> {
      */
     @Query("SELECT count(*) FROM Card c inner join RevisionEdit r on r=c.latestRevision WHERE c.deck.id = :deckId")
     int countCards(@Param("deckId") long deckId);
+
+    /**
+     * Return all decks learned by a user.
+     * @param userId of the user.
+     * @param pageable pagination parameters for the query.
+     * @return decks learned by user
+     */
+    @Query("SELECT d FROM Deck d WHERE d.id IN (SELECT DISTINCT c.deck.id FROM Card c INNER JOIN RevisionEdit r ON r = c.latestRevision INNER JOIN Progress p ON r.card = p.id.card WHERE p.id.user.id = :userId)")
+    Page<Deck> findByUserProgress(@Param("userId") long userId, Pageable pageable);
 }

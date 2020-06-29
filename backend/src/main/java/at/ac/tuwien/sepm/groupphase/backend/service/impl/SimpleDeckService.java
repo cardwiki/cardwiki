@@ -1,11 +1,13 @@
 package at.ac.tuwien.sepm.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckProgressDto;
+import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckProgressDetailsDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
 import at.ac.tuwien.sepm.groupphase.backend.exception.BadRequestException;
 import at.ac.tuwien.sepm.groupphase.backend.exception.DeckNotFoundException;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
+import at.ac.tuwien.sepm.groupphase.backend.repository.ProgressRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.RevisionRepository;
 import at.ac.tuwien.sepm.groupphase.backend.service.CategoryService;
 import at.ac.tuwien.sepm.groupphase.backend.service.DeckService;
@@ -38,14 +40,22 @@ public class SimpleDeckService implements DeckService {
     private final CategoryService categoryService;
     private final CardRepository cardRepository;
     private final RevisionRepository revisionRepository;
+    private final ProgressRepository progressRepository;
 
-    public SimpleDeckService(DeckRepository deckRepository, UserService userService, CategoryService categoryService,
-                             CardRepository cardRepository, RevisionRepository revisionRepository) {
+    public SimpleDeckService(
+        DeckRepository deckRepository,
+        UserService userService,
+        CategoryService categoryService,
+        CardRepository cardRepository,
+        RevisionRepository revisionRepository,
+        ProgressRepository progressRepository)
+    {
         this.deckRepository = deckRepository;
         this.userService = userService;
         this.categoryService = categoryService;
         this.cardRepository = cardRepository;
         this.revisionRepository = revisionRepository;
+        this.progressRepository = progressRepository;
     }
 
     @Transactional
@@ -156,11 +166,37 @@ public class SimpleDeckService implements DeckService {
 
     @Override
     public DeckProgressDto getProgress(Long deckId) {
+        LOGGER.debug("Get Progress for deck with id {}", deckId);
         long userId = userService.loadCurrentUserOrThrow().getId();
         int learning = deckRepository.countProgressStatuses(deckId, userId, Progress.Status.LEARNING);
         int reviewing = deckRepository.countProgressStatuses(deckId, userId, Progress.Status.REVIEWING);
 
         return new DeckProgressDto(deckRepository.countCards(deckId) - learning - reviewing, learning, reviewing);
+    }
+
+    @Override
+    @Transactional
+    public Page<DeckProgressDetailsDto> getLearnedDecksWithStatus(Pageable pageable) {
+        LOGGER.debug("Get learned decks");
+        long userId = userService.loadCurrentUserOrThrow().getId();
+        return deckRepository.findByUserProgress(userId, pageable)
+            .map(x -> {
+                DeckProgressDetailsDto deckProgressDetailsDto = new DeckProgressDetailsDto();
+                deckProgressDetailsDto.setDeckId(x.getId());
+                deckProgressDetailsDto.setDeckName(x.getName());
+                deckProgressDetailsDto.setLearningCount(deckRepository.countProgressStatuses(x.getId(), userId, Progress.Status.LEARNING));
+                deckProgressDetailsDto.setToReviewCount(deckRepository.countProgressStatuses(x.getId(), userId, Progress.Status.REVIEWING));
+                deckProgressDetailsDto.setNewCount(deckRepository.countCards(x.getId()) - deckProgressDetailsDto.getLearningCount() - deckProgressDetailsDto.getToReviewCount());
+                return deckProgressDetailsDto;
+            });
+    }
+
+    @Override
+    @Transactional
+    public void deleteUserProgress(Long deckId) {
+        LOGGER.debug("Delete progress for deck with id {}", deckId);
+        Long userId = userService.loadCurrentUserOrThrow().getId();
+        progressRepository.deleteById_UserIdAndId_Card_Deck_Id(userId, deckId);
     }
 
     @Override

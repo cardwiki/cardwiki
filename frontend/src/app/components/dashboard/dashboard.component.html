@@ -16,3 +16,23 @@
         No favorites added. When viewing decks you can click "Save" to easily find them later on.
     </div>
 </div>
+<h2 *ngIf="learned && learned.content.length" class="mt-3">Learned Decks</h2>
+<div *ngIf="learned">
+    <div *ngIf="learned.content.length">
+        <ul class="list-group mb-2">
+            <a *ngFor="let progress of learned.content" routerLink="/decks/{{progress.deckId}}" class="list-group-item list-group-item-action">
+              {{progress.deckName}}
+              <div class="float-right">
+                <span class=text-primary>{{progress.newCount}} new</span>&nbsp;
+                <span class=text-danger>{{progress.learningCount}} learning</span>&nbsp;
+                <span class=text-success>{{progress.toReviewCount}} to review</span>
+                <button class="btn btn-outline-danger ml-2" (click)="deleteProgress($event, progress)">Delete Progress</button>
+              </div>
+            </a>
+        </ul>
+        <ngb-pagination *ngIf="learned.totalPages > 1"
+            [maxSize]="10" [page]="learned.pageable.pageNumber + 1" [rotate]="true"
+            [collectionSize]="learned.totalElements" [pageSize]="learned.pageable.pageSize"
+            (pageChange)="loadLearnedPage($event)"></ngb-pagination>
+    </div>
+</div>

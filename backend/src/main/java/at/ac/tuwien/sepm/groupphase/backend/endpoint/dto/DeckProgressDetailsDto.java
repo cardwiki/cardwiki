@@ -1,0 +1,12 @@
+package at.ac.tuwien.sepm.groupphase.backend.endpoint.dto;
+
+import lombok.Data;
+
+@Data
+public class DeckProgressDetailsDto {
+    private Long deckId;
+    private String deckName;
+    private int newCount;
+    private int learningCount;
+    private int toReviewCount;
+}
