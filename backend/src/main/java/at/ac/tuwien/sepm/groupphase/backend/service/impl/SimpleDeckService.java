@@ -196,6 +196,7 @@ public class SimpleDeckService implements DeckService {
     public void deleteUserProgress(Long deckId) {
         LOGGER.debug("Delete progress for deck with id {}", deckId);
         Long userId = userService.loadCurrentUserOrThrow().getId();
+        findOneOrThrow(deckId);
         progressRepository.deleteById_UserIdAndId_Card_Deck_Id(userId, deckId);
     }
 

@@ -2,6 +2,7 @@ package at.ac.tuwien.sepm.groupphase.backend.integrationtest;
 
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckUpdateDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
+import at.ac.tuwien.sepm.groupphase.backend.entity.Progress;
 import at.ac.tuwien.sepm.groupphase.backend.profiles.datagenerator.Agent;
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategorySimpleDto;
@@ -545,5 +546,77 @@ public class DeckEndpointTest extends TestDataGenerator {
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(new DeckUpdateDto())))
             .andExpect(status().is(403));
+    }
+
+    @Test
+    public void whenCardInDeckHasProgress_thenGetLearnedDecks_returnsDeck() throws Exception {
+        Agent agent = persistentAgent();
+        User user = agent.getUser();
+        Deck deck = agent.createDeck();
+        Card card1 = agent.createCardIn(deck);
+        Card card2 = agent.createCardIn(deck);
+        Card card3 = agent.createCardIn(deck);
+        Card card4 = agent.createCardIn(deck);
+        agent.createProgress(card2, Progress.Status.LEARNING);
+        agent.createProgress(card3, Progress.Status.REVIEWING);
+        agent.createProgress(card4, Progress.Status.REVIEWING);
+
+        mvc.perform(get("/api/v1/decks/progress")
+            .with(login(user.getAuthId())))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.content", hasSize(1)))
+            .andExpect(jsonPath("$.content[0].deckId").value(deck.getId()))
+            .andExpect(jsonPath("$.content[0].deckName").value(deck.getName()))
+            .andExpect(jsonPath("$.content[0].newCount").value(1))
+            .andExpect(jsonPath("$.content[0].learningCount").value(1))
+            .andExpect(jsonPath("$.content[0].toReviewCount").value(2));
+    }
+
+    @Test
+    public void getLearnedDecksForAnonymousThrowsForbidden() throws Exception {
+        mvc.perform(get("/api/v1/decks/progress"))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void deleteUserProgressReturnsOk() throws Exception {
+        Agent agent = persistentAgent();
+        User user = agent.getUser();
+        Deck deck = agent.createDeck();
+
+        mvc.perform(delete("/api/v1/decks/{deckId}/progress", deck.getId())
+            .with(login(user.getAuthId())))
+            .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void deleteUserProgressForAnonymousThrowsForbidden() throws Exception {
+        mvc.perform(get("/api/v1/decks/{deckId}/progress", 123L))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void deleteUserProgressForUnknownDeckThrowsNotFound() throws Exception {
+        mvc.perform(delete("/api/v1/decks/{deckId}/progress", 123L)
+            .with(login(givenUserAuthId())))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void deleteUserProgressThenGetLearnedDeckReturnsEmpty() throws Exception {
+        Agent agent = persistentAgent();
+        User user = agent.getUser();
+        Deck deck = agent.createDeck();
+        Card card = agent.createCardIn(deck);
+        agent.createProgress(card, Progress.Status.LEARNING);
+
+        mvc.perform(delete("/api/v1/decks/{deckId}/progress", deck.getId())
+            .with(login(user.getAuthId())))
+            .andExpect(status().isNoContent());
+
+        mvc.perform(get("/api/v1/decks/progress", deck.getId())
+            .with(login(user.getAuthId())))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.content").isEmpty());
     }
 }
