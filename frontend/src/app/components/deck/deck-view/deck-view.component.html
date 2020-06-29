@@ -54,9 +54,9 @@
       <div class="col">
         <div class="row align-items-center">
           <div class="mr-2" *ngIf="progress">
-            <span class=newCount>{{progress.newCount}} new</span>&nbsp;
-            <span class=learningCount>{{progress.learningCount}} learning</span>&nbsp;
-            <span class=toReviewCount>{{progress.toReviewCount}} to review</span>
+            <span class=text-primary>{{progress.newCount}} new</span>&nbsp;
+            <span class=text-danger>{{progress.learningCount}} learning</span>&nbsp;
+            <span class=text-success>{{progress.toReviewCount}} to review</span>
           </div>
           <a routerLink="/learn/{{deck.id}}" class="btn btn-primary mr-1">Learn</a>
           <a routerLink="/decks/{{deck.id}}/preview" class="btn btn-light ml-1">Preview</a>
@@ -73,7 +73,7 @@
 
   <div class="table-responsive">
     <table class="table table-hover table-striped" *ngIf="cards">
-      <thead class="thead-light">
+      <thead>
         <tr>
           <th scope="col">#</th>
           <th scope="col">Front</th>
