@@ -18,6 +18,6 @@ public abstract class ImageMapper {
 
     @AfterMapping
     protected void filenameToUrl(@MappingTarget ImageDto imageDto) {
-        imageDto.setUrl(Paths.get(imageServedPath, imageDto.getFilename()).toString());
+        imageDto.setUrl(Paths.get(imageServedPath, imageDto.getFilename()).toString().replace('\\', '/'));
     }
 }

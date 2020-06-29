@@ -130,8 +130,8 @@ public class CardEndpointTest extends TestDataGenerator {
             .andExpect(status().is(201))
             .andExpect(jsonPath("$.deck.id").value(deck.getId()))
             .andExpect(jsonPath("$.id").isNumber())
-            .andExpect(jsonPath("$.imageFrontUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString()))
-            .andExpect(jsonPath("$.imageBackUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString()));
+            .andExpect(jsonPath("$.imageFrontUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString().replace('\\', '/')))
+            .andExpect(jsonPath("$.imageBackUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString().replace('\\', '/')));
     }
 
     @Test
@@ -155,8 +155,8 @@ public class CardEndpointTest extends TestDataGenerator {
             .andExpect(jsonPath("$.id").isNumber())
             .andExpect(jsonPath("$.textFront").value(FRONT_TEXT))
             .andExpect(jsonPath("$.textBack").value(BACK_TEXT))
-            .andExpect(jsonPath("$.imageFrontUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString()))
-            .andExpect(jsonPath("$.imageBackUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString()));
+            .andExpect(jsonPath("$.imageFrontUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString().replace('\\', '/')))
+            .andExpect(jsonPath("$.imageBackUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString().replace('\\', '/')));
     }
 
     @Test
@@ -293,8 +293,8 @@ public class CardEndpointTest extends TestDataGenerator {
             .andExpect(status().is(200))
             .andExpect(jsonPath("$.deck.id").value(deck.getId()))
             .andExpect(jsonPath("$.id").isNumber())
-            .andExpect(jsonPath("$.imageFrontUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString()))
-            .andExpect(jsonPath("$.imageBackUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString()));
+            .andExpect(jsonPath("$.imageFrontUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString().replace('\\', '/')))
+            .andExpect(jsonPath("$.imageBackUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString().replace('\\', '/')));
     }
 
     @Test
@@ -319,8 +319,8 @@ public class CardEndpointTest extends TestDataGenerator {
             .andExpect(jsonPath("$.id").isNumber())
             .andExpect(jsonPath("$.textFront").value(FRONT_TEXT))
             .andExpect(jsonPath("$.textBack").value(BACK_TEXT))
-            .andExpect(jsonPath("$.imageFrontUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString()))
-            .andExpect(jsonPath("$.imageBackUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString()));
+            .andExpect(jsonPath("$.imageFrontUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString().replace('\\', '/')))
+            .andExpect(jsonPath("$.imageBackUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString().replace('\\', '/')));
     }
 
     @Test

@@ -22,6 +22,6 @@ public class PropertyOverrideContextInitializer implements ApplicationContextIni
         tempDirectory.toFile().deleteOnExit();
 
         TestPropertySourceUtils.addInlinedPropertiesToEnvironment(
-            configurableApplicationContext, "cawi.image-saved-path=" + tempDirectory.toString());
+            configurableApplicationContext, "cawi.image-saved-path=" + tempDirectory.toString().replace('\\', '/'));
     }
 }

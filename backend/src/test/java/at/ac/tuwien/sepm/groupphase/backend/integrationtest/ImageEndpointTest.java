@@ -53,7 +53,7 @@ public class ImageEndpointTest extends TestDataGenerator {
         FileInputStream fileInputStream = new FileInputStream(testImagePath);
         MockMultipartFile multipartFile = new MockMultipartFile("file", fileInputStream);
 
-        String imagePath = Paths.get(imageServedPath, testImageHash).toString();
+        String imagePath = Paths.get(imageServedPath, testImageHash).toString().replace('\\', '/');
 
         mvc.perform(multipart("/api/v1/images")
             .file(multipartFile)
@@ -118,7 +118,7 @@ public class ImageEndpointTest extends TestDataGenerator {
             .with(mockLogin(USER_ROLES, user.getAuthId())))
             .andExpect(status().is(201))
             .andExpect(jsonPath("$.filename").value(testImageHash))
-            .andExpect(jsonPath("$.url").value(Paths.get(imageServedPath, testImageHash).toString()));
+            .andExpect(jsonPath("$.url").value(Paths.get(imageServedPath, testImageHash).toString().replace('\\', '/')));
 
         Paths.get(imageSavedPath, testImageHash).toFile().delete();
     }

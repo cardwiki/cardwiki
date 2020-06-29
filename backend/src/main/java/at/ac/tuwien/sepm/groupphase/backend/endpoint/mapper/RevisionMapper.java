@@ -75,7 +75,7 @@ abstract public class RevisionMapper {
     public String prefixImageServedPath(String filename){
         if (filename == null)
             return null;
-        return Paths.get(imageServedPath, filename).toString();
+        return Paths.get(imageServedPath, filename).toString().replace('\\', '/');
     }
 
 }
