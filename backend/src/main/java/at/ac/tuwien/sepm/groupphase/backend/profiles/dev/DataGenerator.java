@@ -92,6 +92,7 @@ public class DataGenerator {
 
         generateLargeTestDeck();
         generateSuperLargeTestDeck();
+        generateJapaneseDeck();
 
         if (ci != null){
             LOGGER.info("Detected CI mode ... shutting down");
@@ -177,5 +178,48 @@ public class DataGenerator {
         revision.setTextBack(deckSize + " test set card " + index + " back");
 
         card = cardRepository.save(card);
+    }
+
+    private void generateJapaneseDeck() {
+        User user = new User();
+        user.setAuthId("fake");
+        user.setDescription("");
+        user.setAdmin(false);
+        user.setEnabled(false);
+        user.setDeleted(false);
+        user.setUsername("test-user");
+
+        userRepository.saveAndFlush(user);
+
+        Deck deck = new Deck();
+        deck.setName("第3課");
+        deck.setCreatedBy(user);
+        deckRepository.saveAndFlush(deck);
+
+        final String[] fronts = {"飛行機", "電車", "家", "地下鉄", "休み", "銀行"};
+        final String[] backs = {"plane", "train", "home", "subway", "vacation", "Bank"};
+
+        for (int i = 0; i < Math.min(fronts.length, backs.length); i++) {
+            insertNewCard(deck, user, fronts[i], backs[i]);
+        }
+
+    }
+
+    private Card insertNewCard(Deck deck, User user, String front, String back) {
+        Card card = new Card();
+        card.setDeck(deck);
+        deck.getCards().add(card);
+        RevisionCreate revision = new RevisionCreate();
+
+        card.setLatestRevision(revision);
+        revision.setCard(card);
+        revision.setMessage("created");
+        revision.setCreatedBy(user);
+        user.getRevisions().add(revision);
+
+        revision.setTextFront(front);
+        revision.setTextBack(back);
+
+        return cardRepository.save(card);
     }
 }
