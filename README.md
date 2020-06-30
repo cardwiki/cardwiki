@@ -2,8 +2,8 @@
 
 ![](frontend/src/assets/logo.png)
 
-![](https://reset.inso.tuwien.ac.at/repo/2020ss-SEPM-group/ss20_sepm_qse_02/badges/development/pipeline.svg)
-![](https://reset.inso.tuwien.ac.at/repo/2020ss-SEPM-group/ss20_sepm_qse_02/badges/development/coverage.svg)
+![](https://github.com/cardwiki/cardwiki/workflows/Backend%20Tests/badge.svg)
+![](https://codecov.io/gh/cardwiki/cardwiki/branch/master/graph/badge.svg)
 
 ## Setup
 
