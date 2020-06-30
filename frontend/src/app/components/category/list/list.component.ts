@@ -21,12 +21,4 @@ export class ListComponent implements OnInit {
   }
 
   ngOnInit() {}
-
-  deleteCategory(category: CategorySimple) {
-    if (confirm(`Are you sure you want to permanently delete category '${category.name}'`)) {
-      this.categoryService.deleteCategory(category.id).subscribe(_ => {
-        this.list = this.list.filter(c => c !== category);
-      });
-    }
-  }
 }

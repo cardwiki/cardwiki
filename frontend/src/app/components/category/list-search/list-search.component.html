@@ -1,8 +1,9 @@
 <div *ngIf="specs" class="mb-3">
-  <form *ngIf="list.length > 0" class="form pl-2 mb-2" [formGroup]="searchForm" (keydown)="keyDownFunction($event)">
-    <div class="form-inline">
-      <div class="input-group flex-grow-1">
+  <form *ngIf="list.length > 0" class="form-inline pl-2 mb-2" [formGroup]="searchForm" (keydown)="keyDownFunction($event)">
+    <div class="">
+      <div class="form-group flex-grow-1">
         <input
+          class="form-control"
           type="text"
           id="search"
           formControlName="search"
@@ -10,15 +11,6 @@
           autocomplete="off"
           #searchFormField
         >
-        <div class="input-group-append">
-          <a
-            *ngIf="id"
-            routerLink="/categories/{{id}}/{{path === 'categories' ? 'subcategories' : path}}"
-            [queryParams]="{ filter: searchForm.value['search'] || ''}"
-          >
-            <button class="btn btn-outline-success mr-2">Search</button>
-          </a>
-        </div>
         </div>
       </div>
   </form>
