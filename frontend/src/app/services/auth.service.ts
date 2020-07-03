@@ -73,9 +73,8 @@ export class AuthService {
   }
 
   logoutUser(): void {
-    this.updateWhoAmI(undefined)
-    this.updateToken(undefined)
-    this.updateRedirectUrl(undefined)
+    this.resetStoredAuth()
+    this.refreshUserRoles()
   }
 
   /**
@@ -142,7 +141,7 @@ export class AuthService {
     // Token expired
     if (auth.token && this.getTokenExpirationDate(auth.token).valueOf() < new Date().valueOf()) {
       // Remove invalid token so anonymous requests succeed
-      this.logoutUser();
+      this.resetStoredAuth();
       return ['ANONYMOUS']
     }
 
@@ -187,6 +186,10 @@ export class AuthService {
   private storeAuth(auth: AuthStore) {
     const serialized = JSON.stringify(auth)
     localStorage.setItem('auth', serialized)
+  }
+
+  private resetStoredAuth() {
+    this.storeAuth({})
   }
 }
 
