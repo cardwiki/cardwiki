@@ -1,9 +1,10 @@
 # CardWiki
 
-![](frontend/src/assets/logo.png)
+![CardWiki logo](frontend/src/assets/logo.png)
 
-![](https://github.com/cardwiki/cardwiki/workflows/Backend%20Tests/badge.svg)
-![](https://codecov.io/gh/cardwiki/cardwiki/branch/master/graph/badge.svg)
+![Backend Tests](https://github.com/cardwiki/cardwiki/workflows/Backend%20Tests/badge.svg)
+![Frontend compiles](https://github.com/cardwiki/cardwiki/workflows/Frontend%20compiles/badge.svg)
+![Backend code coverage](https://codecov.io/gh/cardwiki/cardwiki/branch/master/graph/badge.svg)
 
 ## Setup
 
