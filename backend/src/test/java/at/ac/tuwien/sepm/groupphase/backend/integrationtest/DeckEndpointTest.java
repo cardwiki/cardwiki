@@ -3,6 +3,7 @@ package at.ac.tuwien.sepm.groupphase.backend.integrationtest;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.DeckUpdateDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Progress;
+import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionCreate;
 import at.ac.tuwien.sepm.groupphase.backend.profiles.datagenerator.Agent;
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategorySimpleDto;
@@ -15,6 +16,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,6 +32,7 @@ import java.util.stream.Collectors;
 
 import static at.ac.tuwien.sepm.groupphase.backend.integrationtest.security.MockedLogins.*;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -48,9 +52,6 @@ public class DeckEndpointTest extends TestDataGenerator {
 
     @Autowired
     private CardRepository cardRepository;
-
-    private static final String testFilePath = "src/test/resources/test.csv";
-
 
     @Test
     public void givenAuthenticatedUser_whenCreateDeck_thenReturnDeck() throws Exception {
@@ -294,57 +295,64 @@ public class DeckEndpointTest extends TestDataGenerator {
         assertTrue(cardRepository.findById(cardId).isEmpty());
     }
 
-    @Test
-    public void givenAuthenticatedUserAndDeck_whenImportCards_thenReturnOk() throws Exception {
-        User user = givenApplicationUser();
+    @ParameterizedTest
+    @ValueSource(strings = {"test front,test back", "front,back\nfront2,back2"})
+    public void givenAuthenticatedUserAndDeck_whenImportCards_thenReturnOk(String content) throws Exception {
         Deck deck = persistentAgent().createDeck();
-        FileInputStream fileInputStream = new FileInputStream(testFilePath);
-        MockMultipartFile multipartFile = new MockMultipartFile("file", fileInputStream);
+        MockMultipartFile multipartFile = new MockMultipartFile("file", "testFile.csv", "text/csv", content.getBytes());
 
-        mvc.perform(multipart("/api/v1/decks/" + deck.getId() + "/cards")
+        mvc.perform(multipart("/api/v1/decks/{deckId}/cards", deck.getId())
             .file(multipartFile)
-            .with(login(user.getAuthId())))
+            .with(login(givenUserAuthId())))
             .andExpect(status().isOk());
+        
+        long lines = 1 + content.chars().filter(c -> c == '\n').count();
+        assertEquals(lines, deck.getCards().size(), "Created one card per line");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"too few columns", "   ,blank", "blank,\t", "too,many,columns"})
+    public void givenAuthenticatedUserAndDeck_whenImportInvalidCards_thenThrowBadRequest(String content) throws Exception {
+        Deck deck = persistentAgent().createDeck();
+        MockMultipartFile multipartFile = new MockMultipartFile("file", "testFile.csv", "text/csv", content.getBytes());
+
+        mvc.perform(multipart("/api/v1/decks/{deckId}/cards", deck.getId())
+            .file(multipartFile)
+            .with(login(givenUserAuthId())))
+            .andExpect(status().isBadRequest());
     }
 
     @Test
-    public void givenNoAuthentication_whenImportCards_thenThrow403() throws Exception {
+    public void givenNoAuthentication_whenImportCards_thenThrowForbidden() throws Exception {
         Deck deck = persistentAgent().createDeck();
-        FileInputStream fileInputStream = new FileInputStream(testFilePath);
-        MockMultipartFile multipartFile = new MockMultipartFile("file", fileInputStream);
+        MockMultipartFile multipartFile = new MockMultipartFile("file", "testFile.csv", "text/csv", "test front,test back".getBytes());
 
-        mvc.perform(multipart("/api/v1/decks/" + deck.getId() + "/cards")
+        mvc.perform(multipart("/api/v1/decks/{deckId}/cards", deck.getId())
             .file(multipartFile))
             .andExpect(status().isForbidden());
     }
 
     @Test
     public void givenDeck_whenExport_thenReturnCsv() throws Exception {
-        Deck deck = persistentAgent().createDeck();
+        Agent agent = persistentAgent();
+        Deck deck = agent.createDeck();
+        RevisionCreate revisionCreate = new RevisionCreate();
+        revisionCreate.setTextFront("front side");
+        revisionCreate.setTextBack("back side");
+        revisionCreate.setMessage("test message");
+        agent.createCardIn(deck, revisionCreate);
 
         mvc.perform(get("/api/v1/decks/" + deck.getId())
             .header("Accept", "text/csv"))
             .andExpect(status().isOk())
-            .andExpect(content().contentType("text/csv;charset=UTF-8"));
+            .andExpect(content().contentType("text/csv;charset=UTF-8"))
+            .andExpect(content().string(containsString("front side,back side")));
     }
 
     @Test
     public void givenNothing_whenExportNonExistentDeck_thenThrowNotFound() throws Exception {
       mvc.perform(get("/api/v1/decks/" + 753L))
             .andExpect(status().isNotFound());
-    }
-
-    @Test
-    public void givenNothing_whenImportCardsWithUnsupportedContentType_thenThrowBadRequest() throws Exception {
-        User user = givenApplicationUser();
-        Deck deck = persistentAgent().createDeck();
-        FileInputStream fileInputStream = new FileInputStream("src/test/resources/test.png");
-        MockMultipartFile multipartFile = new MockMultipartFile("file", fileInputStream);
-
-        mvc.perform(multipart("/api/v1/decks/" + deck.getId() + "/cards")
-            .file(multipartFile)
-            .with(login(user.getAuthId())))
-            .andExpect(status().isBadRequest());
     }
 
     @Test
