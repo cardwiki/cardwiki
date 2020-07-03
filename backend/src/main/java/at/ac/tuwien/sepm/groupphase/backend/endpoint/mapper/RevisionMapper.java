@@ -48,7 +48,6 @@ abstract public class RevisionMapper {
     public abstract RevisionCreate revisionEditDtoToRevisionCreate(RevisionInputDto edit);
 
     @Mapping(source = "edit.card.id", target = "id")
-    @Mapping(source = "edit.card.deck", target = "deck")
     @Mapping(source = "edit.imageFront.filename", target = "imageFrontUrl", qualifiedByName = "prefixImagesServedPath")
     @Mapping(source = "edit.imageBack.filename", target = "imageBackUrl", qualifiedByName = "prefixImagesServedPath")
     public abstract CardSimpleDto revisionEditToCardSimpleDto(RevisionEdit edit);

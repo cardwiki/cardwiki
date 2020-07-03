@@ -1,5 +1,4 @@
-import {CardSimple} from "./cardSimple";
-import { RevisionSimple, RevisionType } from './revisionSimple';
+import {RevisionType} from './revisionSimple';
 import {DeckSimple} from './deckSimple';
 import {Image} from "./image";
 import {UserSimple} from "./userSimple";

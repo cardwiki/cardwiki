@@ -42,7 +42,7 @@ public class CardEndpointTest extends TestDataGenerator {
     // TODO: Test getCardsByDeckId
 
     @Test
-    public void createCardReturnsCardDetails() throws Exception {
+    public void createCardReturnsCardSimple() throws Exception {
         Deck deck = givenDeck();
         User user = givenApplicationUser();
         RevisionInputDto dto = new RevisionInputDto();
@@ -54,14 +54,13 @@ public class CardEndpointTest extends TestDataGenerator {
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(201))
-            .andExpect(jsonPath("$.deck.id").value(deck.getId()))
             .andExpect(jsonPath("$.id").isNumber())
             .andExpect(jsonPath("$.textFront").value(FRONT_TEXT))
             .andExpect(jsonPath("$.textBack").value(BACK_TEXT));
     }
 
     @Test
-    public void createCardWithMessageReturnsCardDetails() throws Exception {
+    public void createCardWithMessageReturnsCardSimple() throws Exception {
         Deck deck = givenDeck();
         User user = givenApplicationUser();
         RevisionInputDto dto = new RevisionInputDto();
@@ -75,7 +74,6 @@ public class CardEndpointTest extends TestDataGenerator {
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(201))
-            .andExpect(jsonPath("$.deck.id").value(deck.getId()))
             .andExpect(jsonPath("$.id").isNumber())
             .andExpect(jsonPath("$.textFront").value(FRONT_TEXT))
             .andExpect(jsonPath("$.textBack").value(BACK_TEXT));
@@ -114,7 +112,7 @@ public class CardEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    public void createCardWithImagesReturnsCardDetailsWithImageDtos() throws Exception {
+    public void createCardWithImagesReturnsCardSimpleWithImageDtos() throws Exception {
         Deck deck = givenDeck();
         User user = givenApplicationUser();
         Image image = givenImage();
@@ -128,14 +126,13 @@ public class CardEndpointTest extends TestDataGenerator {
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(201))
-            .andExpect(jsonPath("$.deck.id").value(deck.getId()))
             .andExpect(jsonPath("$.id").isNumber())
             .andExpect(jsonPath("$.imageFrontUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString().replace('\\', '/')))
             .andExpect(jsonPath("$.imageBackUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString().replace('\\', '/')));
     }
 
     @Test
-    public void createCardWithTextAndImagesReturnsCardDetails() throws Exception {
+    public void createCardWithTextAndImagesReturnsCardSimple() throws Exception {
         Deck deck = givenDeck();
         User user = givenApplicationUser();
         Image image = givenImage();
@@ -151,7 +148,6 @@ public class CardEndpointTest extends TestDataGenerator {
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(201))
-            .andExpect(jsonPath("$.deck.id").value(deck.getId()))
             .andExpect(jsonPath("$.id").isNumber())
             .andExpect(jsonPath("$.textFront").value(FRONT_TEXT))
             .andExpect(jsonPath("$.textBack").value(BACK_TEXT))
@@ -256,7 +252,7 @@ public class CardEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    public void editCardReturnsCardDetails() throws Exception {
+    public void editCardReturnsCardSimple() throws Exception {
         Card card = givenCard();
         Deck deck = card.getDeck();
         User user = givenApplicationUser();
@@ -269,14 +265,13 @@ public class CardEndpointTest extends TestDataGenerator {
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(200))
-            .andExpect(jsonPath("$.deck.id").value(deck.getId()))
             .andExpect(jsonPath("$.id").isNumber())
             .andExpect(jsonPath("$.textFront").value(FRONT_TEXT))
             .andExpect(jsonPath("$.textBack").value(BACK_TEXT));
     }
 
     @Test
-    public void editCardWithNewImagesReturnsCardDetails() throws Exception {
+    public void editCardWithNewImagesReturnsCardSimple() throws Exception {
         Card card = givenCard();
         Deck deck = card.getDeck();
         User user = givenApplicationUser();
@@ -291,14 +286,13 @@ public class CardEndpointTest extends TestDataGenerator {
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(200))
-            .andExpect(jsonPath("$.deck.id").value(deck.getId()))
             .andExpect(jsonPath("$.id").isNumber())
             .andExpect(jsonPath("$.imageFrontUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString().replace('\\', '/')))
             .andExpect(jsonPath("$.imageBackUrl").value(Paths.get(imageServedPath, dto.getImageFrontFilename()).toString().replace('\\', '/')));
     }
 
     @Test
-    public void editCardWithTextAndNewImagesReturnsCardDetails() throws Exception {
+    public void editCardWithTextAndNewImagesReturnsCardSimple() throws Exception {
         Card card = givenCard();
         Deck deck = card.getDeck();
         User user = givenApplicationUser();
@@ -315,7 +309,6 @@ public class CardEndpointTest extends TestDataGenerator {
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().is(200))
-            .andExpect(jsonPath("$.deck.id").value(deck.getId()))
             .andExpect(jsonPath("$.id").isNumber())
             .andExpect(jsonPath("$.textFront").value(FRONT_TEXT))
             .andExpect(jsonPath("$.textBack").value(BACK_TEXT))
