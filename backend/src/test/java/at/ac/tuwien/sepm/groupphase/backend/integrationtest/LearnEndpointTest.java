@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepm.groupphase.backend.integrationtest;
 
+import at.ac.tuwien.sepm.groupphase.backend.profiles.datagenerator.Agent;
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
@@ -72,6 +73,20 @@ public class LearnEndpointTest extends TestDataGenerator {
                 .with(mockLogin(USER_ROLES, user.getAuthId()))
                 .contentType("application/json")
         ).andExpect(status().isOk()).andExpect(jsonPath("$[0].textFront").value(edit.getTextFront()));
+    }
+
+    @Test
+    public void givenRevisionDelete_whenGetNext_thenEmpty() throws Exception {
+        Agent agent = persistentAgent();
+        Deck deck = agent.createDeck();
+        Card card = agent.createCardIn(deck);
+        agent.addRevisionDelete(card);
+
+        mvc.perform(get("/api/v1/learn/next")
+            .queryParam("deckId", deck.getId().toString())
+            .with(login(givenUserAuthId())))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$").isEmpty());
     }
 
     @Test

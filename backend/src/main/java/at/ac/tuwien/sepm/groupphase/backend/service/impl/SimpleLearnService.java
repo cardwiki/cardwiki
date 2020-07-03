@@ -44,14 +44,13 @@ public class SimpleLearnService implements LearnService {
     public List<Card> findNextCardsByDeckId(Long deckId, Pageable pageable) {
         LOGGER.debug("Get next card for deck with id {}", deckId);
 
+        User user = userService.loadCurrentUserOrThrow();
+
         if (!deckRepository.existsById(deckId)){
             throw new BadRequestException("deckId does not exist");
         }
 
-        return cardRepository.findNextCards(deckId, userService.loadCurrentUserOrThrow().getId(), pageable).stream()
-            .peek((x) -> x.setDeck(null))
-            .filter(card -> card.getLatestRevision() != null && card.getLatestRevision() != null) // TODO: do this in the SQL query
-            .collect(Collectors.toList());
+        return cardRepository.findNextCards(deckId, user.getId(), pageable);
     }
 
     private static final int[] LEARNING_STEPS = {1, 10}; // in minutes

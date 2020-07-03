@@ -63,7 +63,11 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     @EntityGraph(attributePaths = {"deck", "latestRevision"})
     Optional<Card> findById(@Param("cardId") Long cardId);
 
-    @Query("select c from Card c left join Progress p on c.id = p.id.card.id and p.id.user.id = :userId where c.deck.id=:deckId and (current_timestamp >= p.due or p.due is null) order by p.status asc nulls first, p.due asc nulls first")
+    @Query("select c from Card c " +
+    "inner join RevisionEdit r on r = c.latestRevision " +
+    "left join Progress p on c.id = p.id.card.id and p.id.user.id = :userId " +
+    "where c.deck.id=:deckId and (current_timestamp >= p.due or p.due is null) " +
+    "order by p.status asc nulls first, p.due asc nulls first")
     List<Card> findNextCards(@Param("deckId") Long deckId, @Param("userId") Long userId, Pageable pageable);
 
     /**
