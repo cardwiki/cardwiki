@@ -233,11 +233,11 @@ public class SimpleDeckService implements DeckService {
                 LOGGER.info("csvRecord: " + csvRecord.get(i));
             }
             if (csvRecord.size() != 2) {
-                throw new BadRequestException("Incorrectly formatted csv.");
+                throw new BadRequestException("Every row of the csv file must have exactly 2 columns");
             }
             String textFront = csvRecord.get(0);
             String textBack = csvRecord.get(1);
-            // TODO: Add test case for blank front/back side
+
             if (textFront.trim().isEmpty())
                 throw new BadRequestException("Front side may not be empty");
             if (textBack.trim().isEmpty())
