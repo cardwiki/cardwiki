@@ -9,7 +9,7 @@ import java.util.List;
 public interface LearnService {
     /**
      * @param deckId
-     * @return the next card to learn
+     * @return next cards to learn
      */
     List<Card> findNextCardsByDeckId(Long deckId, Pageable pageable);
 

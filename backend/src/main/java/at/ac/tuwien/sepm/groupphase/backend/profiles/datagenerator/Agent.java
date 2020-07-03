@@ -95,8 +95,19 @@ public class Agent {
         revisionCreate.setTextFront("front text");
         revisionCreate.setTextBack("back text");
         revisionCreate.setMessage("test message");
-        revisionCreate.setCreatedBy(user);
         return createCardIn(deck, revisionCreate);
+    }
+
+    public RevisionDelete addRevisionDelete(Card card) {
+        RevisionDelete revisionDelete = new RevisionDelete();
+        revisionDelete.setMessage("Agent removeCard");
+        revisionDelete.setCard(card);
+        card.getRevisions().add(revisionDelete);
+        card.setLatestRevision(revisionDelete);
+        revisionDelete.setCreatedBy(user);
+        user.getRevisions().add(revisionDelete);
+        beforeReturn(revisionDelete);
+        return revisionDelete;
     }
 
     public Comment createCommentIn(Deck deck){
