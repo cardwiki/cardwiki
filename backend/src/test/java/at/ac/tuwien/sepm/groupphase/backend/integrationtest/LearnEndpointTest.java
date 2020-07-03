@@ -80,7 +80,7 @@ public class LearnEndpointTest extends TestDataGenerator {
         Agent agent = persistentAgent();
         Deck deck = agent.createDeck();
         Card card = agent.createCardIn(deck);
-        agent.addRevisionDelete(card);
+        agent.deleteCard(card);
 
         mvc.perform(get("/api/v1/learn/next")
             .queryParam("deckId", deck.getId().toString())

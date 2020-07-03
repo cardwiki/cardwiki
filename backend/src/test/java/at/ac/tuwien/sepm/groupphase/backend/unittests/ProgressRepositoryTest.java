@@ -1,7 +1,9 @@
 package at.ac.tuwien.sepm.groupphase.backend.unittests;
 
+import at.ac.tuwien.sepm.groupphase.backend.profiles.datagenerator.Agent;
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
+import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Progress;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
@@ -30,13 +32,15 @@ public class ProgressRepositoryTest extends TestDataGenerator {
 
     @Test
     public void givenNewCard_whenFindNext_thenReturnCard() {
-        User user = givenApplicationUser();
-        Card card = givenCard();
+        Agent agent = persistentAgent();
+        User user = agent.getUser();
+        Deck deck = agent.createDeck();
+        Card card = agent.createCardIn(deck);
 
         assertEquals(
             1,
             cardRepository.findNextCards(
-                card.getDeck().getId(),
+                deck.getId(),
                 user.getId(),
                 Pageable.unpaged()
             ).size()
@@ -45,14 +49,23 @@ public class ProgressRepositoryTest extends TestDataGenerator {
 
     @Test
     public void givenDueCard_whenFindNext_thenReturnCard() {
-        Progress progress = givenProgress();
+        Agent agent = persistentAgent();
+        User user = agent.getUser();
+        Deck deck = agent.createDeck();
+        Card card = agent.createCardIn(deck);
+
+        Progress progress = new Progress();
+        progress.setEasinessFactor(0);
+        progress.setStatus(Progress.Status.LEARNING);
+        progress.setInterval(0);
         progress.setDue(LocalDateTime.now().minusMinutes(1));
+        agent.createProgress(card, progress);
 
         assertEquals(
             1,
             cardRepository.findNextCards(
-                progress.getId().getCard().getDeck().getId(),
-                progress.getId().getUser().getId(),
+                deck.getId(),
+                user.getId(),
                 Pageable.unpaged()
             ).size()
         );
@@ -60,14 +73,41 @@ public class ProgressRepositoryTest extends TestDataGenerator {
 
     @Test
     public void givenCardNotDue_whenFindNext_thenReturnEmptyList() {
-        Progress progress = givenProgress();
+        Agent agent = persistentAgent();
+        User user = agent.getUser();
+        Deck deck = agent.createDeck();
+        Card card = agent.createCardIn(deck);
+
+        Progress progress = new Progress();
+        progress.setEasinessFactor(0);
+        progress.setStatus(Progress.Status.LEARNING);
+        progress.setInterval(0);
         progress.setDue(LocalDateTime.now().plusMinutes(1));
+        agent.createProgress(card, progress);
 
         assertEquals(
             0,
             cardRepository.findNextCards(
-                progress.getId().getCard().getDeck().getId(),
-                progress.getId().getUser().getId(),
+                deck.getId(),
+                user.getId(),
+                Pageable.unpaged()
+            ).size()
+        );
+    }
+
+    @Test
+    public void givenDeletedCard_whenFindNext_thenReturnEmptyList() {
+        Agent agent = persistentAgent();
+        User user = agent.getUser();
+        Deck deck = agent.createDeck();
+        Card card = agent.createCardIn(deck);
+        agent.deleteCard(card);
+
+        assertEquals(
+            0,
+            cardRepository.findNextCards(
+                deck.getId(),
+                user.getId(),
                 Pageable.unpaged()
             ).size()
         );
