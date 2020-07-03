@@ -1,4 +1,4 @@
-# SEPM Group Phase
+# CardWiki Frontend
 
 ## First Steps
 

@@ -2,28 +2,30 @@
 
 ![CardWiki logo](frontend/src/assets/logo.png)
 
+A flashcard learning web app where decks can be edited collaboratively (like in a wiki).
+
 ![Backend Tests](https://github.com/cardwiki/cardwiki/workflows/Backend%20Tests/badge.svg)
 ![Frontend compiles](https://github.com/cardwiki/cardwiki/workflows/Frontend%20compiles/badge.svg)
 ![Backend code coverage](https://codecov.io/gh/cardwiki/cardwiki/branch/master/graph/badge.svg)
 
+## Features
+
+* **Learn with spaced-repetition** (our algorithm is inspired by Anki & SuperMemo2)
+* **Markdown, LaTeX, images**
+* **Share & collaborate**: Decks are public and can be edited by anyone.
+* **History**: Revisions can be easily reviewed and reverted.
+* **Organize** cards into categories.
+* **Remix**: both decks and cards can be easily copied.
+* **No password**: Login with GitHub, GitLab or Google
+
 ## Setup
 
-Running the backend in IntelliJ requires the [Lombok Plugin](https://projectlombok.org/setup/intellij).
+The backend is written in Java with [Spring Boot](https://spring.io/projects/spring-boot) and the [Hibernate ORM](https://hibernate.org/orm/). The frontend is written in TypeScript with [Angular](https://angular.io/).
 
-## Howto user story
+For setup instructions refer to the READMEs in [backend](backend/README.md) and [frontend](frontend/README.md).
 
-1. create a GitLab issue `US01: Login` and assign yourself to it
-2. create a new branch in GitLab from `development` e.g. `us01-login`
-3. `git fetch origin us01-login`
-4. `git checkout us01-login`
-7. `doWork();`
-8. `git pull origin development`
-8. `git push`
-9. create a merge request on GitLab, source: your branch, target: development  
-   add `closes #<issue id>` or `part of #<issue id>` in the description
+## Contributing
 
-Do not merge your own merge requests! Don't forget to log your time!
+Issues and pull requests are welcome!
 
-## DTO Naming Convention
-
-Put the entity name first, e.g. `CategoryDetailedDto` instead of `DetailedCategoryDto`.
+For contributing code, check out our [contributions guide](CONTRIBUTING.md).
