@@ -1,4 +1,4 @@
-# Backend Template for SEPM Group Phase
+# CardWiki Backend
 
 ## How to run it
 
