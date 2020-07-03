@@ -98,18 +98,6 @@ public class Agent {
         return createCardIn(deck, revisionCreate);
     }
 
-    public RevisionDelete addRevisionDelete(Card card) {
-        RevisionDelete revisionDelete = new RevisionDelete();
-        revisionDelete.setMessage("Agent removeCard");
-        revisionDelete.setCard(card);
-        card.getRevisions().add(revisionDelete);
-        card.setLatestRevision(revisionDelete);
-        revisionDelete.setCreatedBy(user);
-        user.getRevisions().add(revisionDelete);
-        beforeReturn(revisionDelete);
-        return revisionDelete;
-    }
-
     public Comment createCommentIn(Deck deck){
         return createCommentIn(deck, "What a beautiful deck");
     }
@@ -192,11 +180,15 @@ public class Agent {
 
     public Progress createProgress(Card card, Progress.Status status) {
         Progress progress = new Progress();
-        progress.setId(new Progress.Id(user, card));
         progress.setDue(LocalDateTime.now().plusDays(3L));
         progress.setEasinessFactor(5);
         progress.setInterval(2);
         progress.setStatus(status);
+        return createProgress(card, progress);
+    }
+
+    public Progress createProgress(Card card, Progress progress) {
+        progress.setId(new Progress.Id(user, card));
         user.getProgress().add(progress);
         beforeReturn(progress);
         return progress;
