@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "sepm-group-phase": {
+    "cardwiki": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/sepm-group-phase",
+            "outputPath": "dist/cardwiki",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -68,18 +68,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "sepm-group-phase:build"
+            "browserTarget": "cardwiki:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sepm-group-phase:build:production"
+              "browserTarget": "cardwiki:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sepm-group-phase:build"
+            "browserTarget": "cardwiki:build"
           }
         },
         "test": {
@@ -113,7 +113,7 @@
         }
       }
     },
-    "sepm-group-phase-e2e": {
+    "cardwiki-e2e": {
       "root": "e2e/",
       "projectType": "application",
       "prefix": "",
@@ -122,11 +122,11 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "sepm-group-phase:serve"
+            "devServerTarget": "cardwiki:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "sepm-group-phase:serve:production"
+              "devServerTarget": "cardwiki:serve:production"
             }
           }
         },
@@ -142,5 +142,5 @@
       }
     }
   },
-  "defaultProject": "sepm-group-phase"
+  "defaultProject": "cardwiki"
 }
