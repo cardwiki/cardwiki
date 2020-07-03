@@ -236,9 +236,14 @@ public class SimpleDeckService implements DeckService {
                 throw new BadRequestException("Incorrectly formatted csv.");
             }
             String textFront = csvRecord.get(0);
+            String textBack = csvRecord.get(1);
+            // TODO: Add test case for blank front/back side
+            if (textFront.trim().isEmpty())
+                throw new BadRequestException("Front side may not be empty");
+            if (textBack.trim().isEmpty())
+                throw new BadRequestException("Back side may not be empty");
 
             if(!cardRepository.existsByDeckAndRevisionEditContent(deckId, textFront)) {
-                String textBack = csvRecord.get(1);
 
                 Card card = new Card();
                 card.setDeck(deck);
