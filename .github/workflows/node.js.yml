@@ -9,6 +9,10 @@ on:
   pull_request:
     branches: [ master ]
 
+defaults:
+  run:
+    working-directory: frontend
+
 jobs:
   build:
 
@@ -24,5 +28,6 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - run: npm --prefix frontend ci
-    - run: cd frontend && npx ng build --prod
+    - run: npm ci
+    - run: npm run build:prod
+    - run: npm run lint
