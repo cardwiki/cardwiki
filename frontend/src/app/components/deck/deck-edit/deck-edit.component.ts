@@ -39,14 +39,14 @@ export class DeckEditComponent implements OnInit {
   save(): void {
     this.deckService.updateDeck(this.deckId, this.deck).subscribe(
       () => {
-        this.notificationService.success('Updated Deck')
-        this.location.back()
+        this.notificationService.success('Updated Deck');
+        this.location.back();
       }
     );
   }
 
   cancel(): void {
-    this.location.back()
+    this.location.back();
   }
 
   openCategoryPicker(): void {
@@ -58,13 +58,14 @@ export class DeckEditComponent implements OnInit {
   }
 
   addCategory(category: CategorySimple) {
-    if (this.deck.categories.some(c => c.id === category.id))
+    if (this.deck.categories.some(c => c.id === category.id)) {
       this.notificationService.warning(`Category ${category.name} has already been added`);
-    else
+    } else {
       this.deck.categories.push(category);
+    }
   }
 
   removeCategory(category: CategorySimple): void {
-    this.deck.categories = this.deck.categories.filter(c => c !== category)
+    this.deck.categories = this.deck.categories.filter(c => c !== category);
   }
 }

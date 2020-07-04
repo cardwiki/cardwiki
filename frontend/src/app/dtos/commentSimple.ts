@@ -1,4 +1,4 @@
-import { UserSimple } from './userSimple'
+import { UserSimple } from './userSimple';
 
 export class CommentSimple {
   constructor(

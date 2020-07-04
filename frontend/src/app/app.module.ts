@@ -52,7 +52,7 @@ import { WelcomeComponent } from './components/welcome/welcome.component';
 import { TitleComponent } from './components/title/title.component';
 import { CategorySearchComponent } from './components/category/category-search/category-search.component';
 import { CategoryPickerModalComponent } from './components/category/category-picker-modal/category-picker-modal.component';
-import {UiStyleToggleService} from "./services/ui-style-toggle.service";
+import {UiStyleToggleService} from './services/ui-style-toggle.service';
 
 export function themeFactory(themeService: UiStyleToggleService) {
   return () => themeService.setThemeOnStart();

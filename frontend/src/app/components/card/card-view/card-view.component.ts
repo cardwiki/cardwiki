@@ -9,8 +9,8 @@ import {CardUpdate} from '../../../dtos/cardUpdate';
 })
 export class CardViewComponent implements OnInit {
 
-  @Input() card: CardUpdate
-  @Input() side: 'front' | 'back'
+  @Input() card: CardUpdate;
+  @Input() side: 'front' | 'back';
 
   constructor(public globals: Globals) { }
 

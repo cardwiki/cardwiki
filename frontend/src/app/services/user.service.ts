@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpParams} from "@angular/common/http";
-import {Globals} from "../global/globals";
-import {Observable} from "rxjs";
-import {DeckSimple} from "../dtos/deckSimple";
-import {RevisionDetailed} from "../dtos/revisionDetailed";
-import {UserProfile} from "../dtos/userProfile";
-import {tap} from "rxjs/operators";
-import {ErrorHandlerService} from "./error-handler.service";
+import {HttpClient, HttpParams} from '@angular/common/http';
+import {Globals} from '../global/globals';
+import {Observable} from 'rxjs';
+import {DeckSimple} from '../dtos/deckSimple';
+import {RevisionDetailed} from '../dtos/revisionDetailed';
+import {UserProfile} from '../dtos/userProfile';
+import {tap} from 'rxjs/operators';
+import {ErrorHandlerService} from './error-handler.service';
 import { Pageable } from '../dtos/pageable';
 import { Page } from '../dtos/page';
 
@@ -30,7 +30,7 @@ export class UserService {
     const params = {
       username,
       ...pageable.toObject(),
-    }
+    };
     return this.httpClient.get<Page<UserProfile>>(this.userBaseUri, {params})
       .pipe(tap(null, this.errorHandler.handleError('Could not find Users')));
   }

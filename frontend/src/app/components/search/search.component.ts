@@ -14,44 +14,44 @@ import { TitleService } from 'src/app/services/title.service';
 })
 export class SearchComponent implements OnInit {
 
-  private queryParams: SearchQueryParams = {}
-  public newQueryParams: SearchQueryParams = {}
-  private readonly limit = 10
+  private queryParams: SearchQueryParams = {};
+  public newQueryParams: SearchQueryParams = {};
+  private readonly limit = 10;
 
-  public page: Page<DeckDetails>
-  public decks: DeckDetails[]
-  public loading: boolean
-  
+  public page: Page<DeckDetails>;
+  public decks: DeckDetails[];
+  public loading: boolean;
+
   constructor(private deckService: DeckService, private route: ActivatedRoute, private router: Router,
               private titleService: TitleService) { }
 
   ngOnInit(): void {
-    this.titleService.setTitle('Decks', 'Deck search')
+    this.titleService.setTitle('Decks', 'Deck search');
     this.route.queryParamMap.subscribe(paramMap => {
       this.queryParams = {
         name: paramMap.get('name') || '',
-      }
-      this.newQueryParams = Object.assign({}, this.queryParams)
-      this.page = null
-      this.decks = []
+      };
+      this.newQueryParams = Object.assign({}, this.queryParams);
+      this.page = null;
+      this.decks = [];
 
-      this.fetchSearchResults()
-    })
+      this.fetchSearchResults();
+    });
   }
 
   /**
    * Fetch and load search results
    */
   fetchSearchResults(): void {
-    const { name } = this.newQueryParams
-    this.loading = true
-    const pageNumber = this.page ? this.page.pageable.pageNumber + 1 : 0 
+    const { name } = this.newQueryParams;
+    this.loading = true;
+    const pageNumber = this.page ? this.page.pageable.pageNumber + 1 : 0;
 
     this.deckService.searchByName(name, new Pageable(pageNumber, this.limit))
       .subscribe(deckPage => {
-        this.page = deckPage
-        this.decks.push(...deckPage.content)
-      }).add(() => this.loading = false)
+        this.page = deckPage;
+        this.decks.push(...deckPage.content);
+      }).add(() => this.loading = false);
   }
 
   /**
@@ -61,17 +61,17 @@ export class SearchComponent implements OnInit {
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: this.newQueryParams,
-    })
+    });
   }
 
   loadMore(): void {
     // Search for the same term
-    this.newQueryParams = Object.assign({}, this.queryParams)
-    this.fetchSearchResults()
+    this.newQueryParams = Object.assign({}, this.queryParams);
+    this.fetchSearchResults();
   }
 
   onSubmit(): void {
-    this.updateQueryUrl()
+    this.updateQueryUrl();
   }
 
   deleteDeck(event: any, deck: DeckDetails): void {

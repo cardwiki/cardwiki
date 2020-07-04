@@ -1,9 +1,9 @@
 import {Component, HostListener, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {DeckDetails} from "../../../dtos/deckDetails";
-import {CardSimple} from "../../../dtos/cardSimple";
-import {DeckService} from "../../../services/deck.service";
-import {CardService} from "../../../services/card.service";
+import {DeckDetails} from '../../../dtos/deckDetails';
+import {CardSimple} from '../../../dtos/cardSimple';
+import {DeckService} from '../../../services/deck.service';
+import {CardService} from '../../../services/card.service';
 import {Pageable} from 'src/app/dtos/pageable';
 import {Page} from 'src/app/dtos/page';
 import {Globals} from '../../../global/globals';
@@ -17,14 +17,8 @@ import { TitleService } from 'src/app/services/title.service';
 
 export class DeckPreviewComponent implements OnInit {
 
-  @HostListener('document:keydown', ['$event'])
-  handleKeyboardEvent(event: KeyboardEvent) {
-    if (event.key === 'ArrowRight') this.nextCard();
-    else if (event.key === 'ArrowLeft') this.previousCard();
-    else if (event.key === 'ArrowUp') this.flipTo('front');
-    else if (event.key === 'ArrowDown') this.flipTo('back');
-    else if (event.key === ' ') this.flip();
-  }
+  constructor(private deckService: DeckService, private cardService: CardService, private route: ActivatedRoute, public globals: Globals,
+              private titleService: TitleService) { }
 
   readonly fetchSize = 25;
   readonly minPrefetched = 10; // fetch next cards when (remaining cards <= minPrefetched)
@@ -36,12 +30,18 @@ export class DeckPreviewComponent implements OnInit {
   currentcard: CardSimple;
   flipped: boolean = false;
 
-  constructor(private deckService: DeckService, private cardService: CardService, private route: ActivatedRoute, public globals: Globals,
-              private titleService: TitleService) { }
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if (event.key === 'ArrowRight') { this.nextCard(); }
+    else if (event.key === 'ArrowLeft') { this.previousCard(); }
+    else if (event.key === 'ArrowUp') { this.flipTo('front'); }
+    else if (event.key === 'ArrowDown') { this.flipTo('back'); }
+    else if (event.key === ' ') { this.flip(); }
+  }
 
   ngOnInit(): void {
     this.deck = this.page = this.currentcard = null;
-    this.cards = []
+    this.cards = [];
     this.route.paramMap.subscribe(params => {
       this.loadDeck(Number(params.get('id')));
     });
@@ -56,14 +56,15 @@ export class DeckPreviewComponent implements OnInit {
   }
 
   loadNextCards() {
-    const nextPageNumber = this.page ? this.page.pageable.pageNumber + 1 : 0
+    const nextPageNumber = this.page ? this.page.pageable.pageNumber + 1 : 0;
     this.cardService.getCardsByDeckId(this.deck.id, new Pageable(nextPageNumber, this.fetchSize))
       .subscribe(page => {
-        console.log("Fetched next cards", page);
+        console.log('Fetched next cards', page);
         this.page = page;
         this.cards.push(...page.content);
-        if (this.currentcard === null)
+        if (this.currentcard === null) {
           this.gotoCard(0);
+        }
       });
   }
 
@@ -88,8 +89,9 @@ export class DeckPreviewComponent implements OnInit {
     this.currentcard = this.cards[index % this.cards.length];
     this.currentCardIndex = index;
 
-    if (this.shouldPreLoadNextCards())
+    if (this.shouldPreLoadNextCards()) {
       this.loadNextCards();
+    }
   }
 
   shouldPreLoadNextCards() {

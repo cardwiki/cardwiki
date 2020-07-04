@@ -1,11 +1,11 @@
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute} from "@angular/router";
-import {UserService} from "../../services/user.service";
-import {UserProfile} from "../../dtos/userProfile";
-import {DeckSimple} from "../../dtos/deckSimple";
-import {RevisionDetailed} from "../../dtos/revisionDetailed";
-import {Globals} from "../../global/globals";
-import {AuthService} from "../../services/auth.service";
+import {ActivatedRoute} from '@angular/router';
+import {UserService} from '../../services/user.service';
+import {UserProfile} from '../../dtos/userProfile';
+import {DeckSimple} from '../../dtos/deckSimple';
+import {RevisionDetailed} from '../../dtos/revisionDetailed';
+import {Globals} from '../../global/globals';
+import {AuthService} from '../../services/auth.service';
 import {RevisionType} from 'src/app/dtos/revisionSimple';
 import { Page } from 'src/app/dtos/page';
 import { Pageable } from 'src/app/dtos/pageable';
@@ -37,7 +37,7 @@ export class ProfileComponent implements OnInit {
     [RevisionType.CREATE] : 'Created',
     [RevisionType.EDIT] : 'Edited',
     [RevisionType.DELETE] : 'Deleted',
-  }
+  };
 
   constructor(public globals: Globals, private authService: AuthService, private userService: UserService, private route: ActivatedRoute,
               private titleService: TitleService) {
@@ -61,7 +61,7 @@ export class ProfileComponent implements OnInit {
       this.profile = profile;
       this.loadDecks();
       this.loadRevisions();
-    })
+    });
   }
 
   loadDecks(): void {
@@ -70,16 +70,16 @@ export class ProfileComponent implements OnInit {
       .subscribe(deckPage => {
         this.deckPage = deckPage;
         this.decks.push(...deckPage.content);
-      })
+      });
   }
 
   loadRevisions(): void {
     const nextPageNumber = this.revisionPage ? this.revisionPage.pageable.pageNumber + 1 : 0;
     this.userService.getRevisions(this.profile.id, new Pageable(nextPageNumber, this.REVISION_PAGINATION_LIMIT))
       .subscribe(revisionPage => {
-        this.revisionPage = revisionPage
-        this.revisions.push(...revisionPage.content)
-      })
+        this.revisionPage = revisionPage;
+        this.revisions.push(...revisionPage.content);
+      });
   }
 
   saveDescription(): void {
@@ -89,23 +89,23 @@ export class ProfileComponent implements OnInit {
         this.editingSuccess = true;
         setTimeout(() => {
           this.editingDescription = this.editingSuccess = false;
-        }, 1000)
+        }, 1000);
       }
     );
   }
 
   exportUserData(): void {
-    console.log('exporting user data...')
+    console.log('exporting user data...');
     this.userService.export(this.profile.id)
       .subscribe(blob => {
-        console.log('finished download', blob)
-        const file = document.createElement('a')
+        console.log('finished download', blob);
+        const file = document.createElement('a');
         const objectUrl = URL.createObjectURL(blob);
         file.href = objectUrl;
         file.download = `cardwiki_export_${this.profile.username}.json`;
         file.click();
         URL.revokeObjectURL(objectUrl);
         file.remove();
-      })
+      });
   }
 }

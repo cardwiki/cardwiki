@@ -128,7 +128,7 @@ export class DeckService {
   fetchProgress(deckId: number): Observable<DeckProgress> {
     console.log(`fetch progress deck with id ${deckId}`);
     return this.httpClient.get<DeckProgress>(this.deckBaseUri + '/' + deckId + '/progress')
-      .pipe(tap(null, this.errorHandler.handleError('Could not fetch progress')))
+      .pipe(tap(null, this.errorHandler.handleError('Could not fetch progress')));
   }
 
   /**

@@ -11,12 +11,12 @@ import { Location } from '@angular/common';
 })
 export class ConfirmModalComponent implements OnInit, OnDestroy {
 
-  @Input() title: string
-  @Input() message: string
-  @Input() action: string
+  @Input() title: string;
+  @Input() message: string;
+  @Input() action: string;
 
   private navigationSubscription: SubscriptionLike;
-  
+
   constructor(
     public activeModal: NgbActiveModal,
     private location: Location,

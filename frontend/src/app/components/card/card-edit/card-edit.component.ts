@@ -32,7 +32,7 @@ export class CardEditComponent implements OnInit {
       .subscribe(cardUpdate => {
         console.log('fetched card', cardUpdate);
         this.card = cardUpdate;
-      })
+      });
   }
 
   cardSubmit(): void {
@@ -41,9 +41,9 @@ export class CardEditComponent implements OnInit {
     this.cardService.editCard(this.cardId, this.card)
       .subscribe(card => {
         console.log('edited card', card);
-        this.notificationService.success('Updated Card')
-        this.location.back()
-      })
+        this.notificationService.success('Updated Card');
+        this.location.back();
+      });
   }
 
   cancel(): void {
