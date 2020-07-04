@@ -3,9 +3,8 @@ import { CommentSimple } from '../dtos/commentSimple';
 import { HttpClient } from '@angular/common/http';
 import { Globals } from '../global/globals';
 import { ErrorHandlerService } from './error-handler.service';
-import { AuthService } from './auth.service';
 import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
 import { Page } from '../dtos/page';
 import { Pageable } from '../dtos/pageable';
 
@@ -30,7 +29,7 @@ export class CommentService {
   addCommentToDeck(deckId: number, message: string): Observable<CommentSimple> {
     const dto = { message };
     return this.httpClient.post<CommentSimple>(`${this.deckBaseUri}/${deckId}/comments`, dto)
-      .pipe(tap({ error: this.errorHandler.handleError('Could not create comment') }));
+      .pipe(catchError(this.errorHandler.handleError('Could not create comment')));
   }
 
   /**
@@ -43,7 +42,7 @@ export class CommentService {
   editComment(commentId: number, message: string): Observable<CommentSimple> {
     const dto = { message };
     return this.httpClient.put<CommentSimple>(`${this.commentBaseUri}/${commentId}`, dto)
-      .pipe(tap(null, this.errorHandler.handleError('Could not edit comment')));
+      .pipe(catchError(this.errorHandler.handleError('Could not edit comment')));
   }
 
   /**
@@ -55,7 +54,7 @@ export class CommentService {
    */
   findByDeckId(deckId: number, pageable: Pageable): Observable<Page<CommentSimple>> {
     return this.httpClient.get<Page<CommentSimple>>(`${this.deckBaseUri}/${deckId}/comments`, { params: pageable.toHttpParams() })
-      .pipe(tap(null, this.errorHandler.handleError('Could not fetch comments')));
+      .pipe(catchError(this.errorHandler.handleError('Could not fetch comments')));
   }
 
   /**
@@ -66,7 +65,7 @@ export class CommentService {
    */
   findOne(commentId: number): Observable<CommentSimple> {
     return this.httpClient.get<CommentSimple>(`${this.commentBaseUri}/${commentId}`)
-      .pipe(tap(null, this.errorHandler.handleError('Could not fetch comment')));
+      .pipe(catchError(this.errorHandler.handleError('Could not fetch comment')));
   }
 
   /**
@@ -76,6 +75,6 @@ export class CommentService {
    */
   deleteComment(commentId: number): Observable<void> {
     return this.httpClient.delete<void>(`${this.commentBaseUri}/${commentId}`)
-      .pipe(tap(null, this.errorHandler.handleError('Could not delete comment')));
+      .pipe(catchError(this.errorHandler.handleError('Could not delete comment')));
   }
 }

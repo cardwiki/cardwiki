@@ -5,7 +5,7 @@ import {Observable} from 'rxjs';
 import {DeckSimple} from '../dtos/deckSimple';
 import {RevisionDetailed} from '../dtos/revisionDetailed';
 import {UserProfile} from '../dtos/userProfile';
-import {tap} from 'rxjs/operators';
+import {catchError} from 'rxjs/operators';
 import {ErrorHandlerService} from './error-handler.service';
 import { Pageable } from '../dtos/pageable';
 import { Page } from '../dtos/page';
@@ -32,7 +32,7 @@ export class UserService {
       ...pageable.toObject(),
     };
     return this.httpClient.get<Page<UserProfile>>(this.userBaseUri, {params})
-      .pipe(tap(null, this.errorHandler.handleError('Could not find Users')));
+      .pipe(catchError(this.errorHandler.handleError('Could not find Users')));
   }
 
   /**
@@ -44,7 +44,7 @@ export class UserService {
   getProfile(username: string): Observable<UserProfile> {
     console.log('load profile for user: ' + username);
     return this.httpClient.get<UserProfile>(`${this.userBaseUri}/byname/${username}`)
-      .pipe(tap(null, this.errorHandler.handleError('Could not load User Profile')));
+      .pipe(catchError(this.errorHandler.handleError('Could not load User Profile')));
   }
 
   /**
@@ -56,7 +56,7 @@ export class UserService {
   getDecks(userId: number, pageable: Pageable): Observable<Page<DeckSimple>> {
     console.log('load card decks for user: ' + userId);
     return this.httpClient.get<Page<DeckSimple>>(`${this.userBaseUri}/${userId}/decks`, { params: pageable.toHttpParams() })
-      .pipe(tap(null, this.errorHandler.handleError('Could not load User Decks')));
+      .pipe(catchError(this.errorHandler.handleError('Could not load User Decks')));
   }
 
   /**
@@ -68,7 +68,7 @@ export class UserService {
   getRevisions(userId: number, pageable: Pageable): Observable<Page<RevisionDetailed>> {
     console.log('load card revisions for user: ' + userId);
     return this.httpClient.get<Page<RevisionDetailed>>(`${this.userBaseUri}/${userId}/revisions`, { params: pageable.toHttpParams() })
-      .pipe(tap(null, this.errorHandler.handleError('Could not load User Revisions')));
+      .pipe(catchError(this.errorHandler.handleError('Could not load User Revisions')));
   }
 
   /**
@@ -80,7 +80,7 @@ export class UserService {
   editDescription(userid: number, description: string): Observable<UserProfile> {
     console.log('Save description: ' + description);
     return this.httpClient.patch<UserProfile>(`${this.userBaseUri}/${userid}`, {description: description})
-      .pipe(tap(null, this.errorHandler.handleError('Could not edit User description')));
+      .pipe(catchError(this.errorHandler.handleError('Could not edit User description')));
   }
 
   /**
@@ -94,7 +94,7 @@ export class UserService {
     const msg = enabled ? 'enable user' : 'disable user';
     console.log(`${msg} ${userid}`);
     return this.httpClient.patch<UserProfile>(`${this.userBaseUri}/${userid}`, {enabled: enabled, reason: reason})
-      .pipe(tap(null, this.errorHandler.handleError('Could not ' + msg)));
+      .pipe(catchError(this.errorHandler.handleError('Could not ' + msg)));
   }
 
   /**
@@ -107,7 +107,7 @@ export class UserService {
     const msg = admin ? 'promote user' : 'demote user';
     console.log(`${msg} ${userid}`);
     return this.httpClient.patch<UserProfile>(`${this.userBaseUri}/${userid}`, {admin: admin})
-      .pipe(tap(null, this.errorHandler.handleError('Could not ' + msg)));
+      .pipe(catchError(this.errorHandler.handleError('Could not ' + msg)));
   }
 
   /**
@@ -124,18 +124,18 @@ export class UserService {
       }
     });
     return this.httpClient.delete<void>(`${this.userBaseUri}/${userid}`, {params: params})
-      .pipe(tap(null, this.errorHandler.handleError('Could not delete user ' + userid)));
+      .pipe(catchError(this.errorHandler.handleError('Could not delete user ' + userid)));
   }
 
   setTheme(userid: number, theme: string): Observable<UserProfile> {
     console.log('set theme to', theme, 'for user', userid);
     return this.httpClient.patch<UserProfile>(`${this.userBaseUri}/${userid}`, {theme: theme})
-      .pipe(tap(null, this.errorHandler.handleError('Could not set User theme')));
+      .pipe(catchError(this.errorHandler.handleError('Could not set User theme')));
   }
 
   export(userId: number): Observable<Blob> {
     console.log('export user data', userId);
     return this.httpClient.get(`${this.userBaseUri}/${userId}/export`, { responseType: 'blob' })
-      .pipe(tap(null, this.errorHandler.handleError('Could not fetch user data')));
+      .pipe(catchError(this.errorHandler.handleError('Could not fetch user data')));
   }
 }

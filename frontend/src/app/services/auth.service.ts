@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Observable, BehaviorSubject} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
-import {tap, distinctUntilChanged} from 'rxjs/operators';
+import {tap, distinctUntilChanged, catchError} from 'rxjs/operators';
 import * as jwt_decode from 'jwt-decode';
 import {Globals} from '../global/globals';
 import { OAuth2ProviderDto } from '../dtos/oAuth2Provider';
@@ -37,13 +37,13 @@ export class AuthService {
 
   getAuthProviders(): Observable<OAuth2ProviderDto[]> {
     return this.httpClient.get<OAuth2ProviderDto[]>(this.baseUri + '/providers')
-      .pipe(tap(null, this.errorHandler.handleError('Could not fetch Login Providers')));
+      .pipe(catchError(this.errorHandler.handleError('Could not fetch Login Providers')));
   }
 
   whoAmI(): Observable<WhoAmI> {
     return this.httpClient.get<WhoAmI>(this.baseUri + '/whoami')
       .pipe(
-        tap(null, this.errorHandler.handleError('Could not fetch user info')),
+        catchError(this.errorHandler.handleError('Could not fetch user info')),
         tap(whoAmI => this.updateWhoAmI(whoAmI))
       );
   }
@@ -55,7 +55,7 @@ export class AuthService {
   register(username: string): Observable<UserRegistration> {
     return this.httpClient.post<UserRegistration>(this.globals.backendUri + '/users', {username: username, description: ''})
       .pipe(
-        tap(null, this.errorHandler.handleError('Could not register')),
+        catchError(this.errorHandler.handleError('Could not register')),
         tap(res => this.updateWhoAmI({ ...this.getStoredAuth().whoAmI,
                                       hasAccount: true, id: res.id, username: res.username, admin: res.admin }))
       );
