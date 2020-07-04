@@ -3,7 +3,7 @@ import {AuthService} from '../../services/auth.service';
 import { Router } from '@angular/router';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {DeckCreateModalComponent} from '../deck/deck-create-modal/deck-create-modal.component';
-import {Observable, of} from 'rxjs';
+import {Observable} from 'rxjs';
 import {DeckDetails} from '../../dtos/deckDetails';
 import { SearchQueryParams } from 'src/app/interfaces/search-query-params';
 import { NotificationService } from 'src/app/services/notification.service';

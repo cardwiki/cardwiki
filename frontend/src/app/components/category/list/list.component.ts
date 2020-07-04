@@ -1,6 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
 import { CategorySimple } from 'src/app/dtos/categorySimple';
-import {CategoryService} from '../../../services/category.service';
 
 @Component({
   selector: 'app-list',
@@ -13,10 +12,10 @@ export class ListComponent implements OnInit {
   @Input() specs: { listSize: number, pageSize: number, page: number };
   @Input() path: string;
 
-  constructor(private categoryService: CategoryService) {
+  constructor() {
   }
 
-  trackChange(index: number, item: any) {
+  trackChange(_index: number, item: CategorySimple) {
     return item.id;
   }
 

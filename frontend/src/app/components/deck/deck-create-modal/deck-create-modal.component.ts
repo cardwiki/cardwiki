@@ -4,8 +4,7 @@ import {DeckService} from '../../../services/deck.service';
 import {FormBuilder, Validators, FormGroup} from '@angular/forms';
 import {DeckSimple} from '../../../dtos/deckSimple';
 import { Location } from '@angular/common';
-import { Subject, Subscription, SubscriptionLike } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { SubscriptionLike } from 'rxjs';
 
 @Component({
   selector: 'app-deck-create',

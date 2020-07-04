@@ -31,7 +31,7 @@
     <div class="col" *ngIf="commentsPage">
       <div class="btn-toolbar float-right">
         <button class="btn btn-light float-right mr-2" (click)="exportCsv()"><i class="fas fa-file-download"></i> Download</button>
-        <button class="btn btn-light float-right mr-2" (click)="openImportModal(deck)"><i class="fas fa-file-upload"></i> Import</button>
+        <button class="btn btn-light float-right mr-2" (click)="openImportModal()"><i class="fas fa-file-upload"></i> Import</button>
         <button type="button" class="btn float-right mr-1" [ngClass]="displayComments ? 'btn-secondary' : 'btn-light'" (click)="toggleComments()">
           <i class="far fa-comments"></i> Comments ({{commentsPage.totalElements}})</button>
         </div>

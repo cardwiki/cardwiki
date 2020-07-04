@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, forkJoin, Observable, of} from 'rxjs';
+import {BehaviorSubject, forkJoin, Observable} from 'rxjs';
 import {CardUpdate} from '../dtos/cardUpdate';
 import {CardService} from './card.service';
 import {CardSimple} from '../dtos/cardSimple';

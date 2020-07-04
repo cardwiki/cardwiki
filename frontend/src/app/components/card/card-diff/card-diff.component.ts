@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import {Globals} from '../../../global/globals';
 import {CardService} from '../../../services/card.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
@@ -23,8 +22,7 @@ export class CardDiffComponent implements OnInit {
   private revisionIdNew: number;
   public cardDiff: CardContent;
 
-  // tslint:disable-next-line:max-line-length
-  constructor(private globals: Globals, private cardService: CardService, private route: ActivatedRoute, private router: Router, private location: Location) { }
+  constructor(private cardService: CardService, private route: ActivatedRoute, private router: Router, private location: Location) { }
 
   ngOnInit(): void {
     this.cardId = Number(this.route.snapshot.paramMap.get('cardId'));
@@ -66,8 +64,9 @@ export class CardDiffComponent implements OnInit {
   }
 
   undo(): void {
-    // tslint:disable-next-line:max-line-length
-    const card: CardUpdate = new CardUpdate(this.cardRevisionOld.textFront, this.cardRevisionOld.textBack, this.cardRevisionOld.imageFront, this.cardRevisionOld.imageBack, 'Revert to ' + this.cardRevisionOld.message);
+    const card: CardUpdate = new CardUpdate(this.cardRevisionOld.textFront, this.cardRevisionOld.textBack,
+                                            this.cardRevisionOld.imageFront, this.cardRevisionOld.imageBack,
+                                            'Revert to ' + this.cardRevisionOld.message);
     this.cardService.editCard(this.cardId, card)
       .subscribe(simpleCard => {
         if (simpleCard.id === this.cardId) {
