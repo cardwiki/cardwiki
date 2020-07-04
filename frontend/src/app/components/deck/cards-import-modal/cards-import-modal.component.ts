@@ -46,8 +46,8 @@ export class CardsImportModalComponent implements OnInit {
       && this.fileForm.controls.fileSelect.touched
       && this.fileForm.controls.fileSelect.dirty
     ) {
-      // tslint:disable-next-line:max-line-length
-      return this.fileForm.controls.fileSelect.value.substr(this.fileForm.controls.fileSelect.value.lastIndexOf('.') + 1).toLocaleLowerCase() === 'csv'
+      const fileName = this.fileForm.controls.fileSelect.value;
+      return fileName.substr(fileName.lastIndexOf('.') + 1).toLocaleLowerCase() === 'csv'
         ? null
         : {'extensionInvalid': true};
     }

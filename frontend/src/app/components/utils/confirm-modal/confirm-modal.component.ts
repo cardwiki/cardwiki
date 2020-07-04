@@ -1,7 +1,6 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { SubscriptionLike } from 'rxjs';
-import { Navigation } from '@angular/router';
 import { Location } from '@angular/common';
 
 @Component({

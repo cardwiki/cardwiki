@@ -7,7 +7,6 @@ import {DeckDetails} from '../../../dtos/deckDetails';
 import {Router} from '@angular/router';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {NotificationService} from '../../../services/notification.service';
-import {CardService} from '../../../services/card.service';
 import {ClipboardService} from '../../../services/clipboard.service';
 import {TitleService} from '../../../services/title.service';
 
@@ -21,7 +20,7 @@ export class ClipboardViewComponent implements OnInit {
   clipboard: CardUpdate[];
 
   constructor(public globals: Globals, private router: Router, private modalService: NgbModal,
-              private notificationService: NotificationService, private cardService: CardService,
+              private notificationService: NotificationService,
               private clipboardService: ClipboardService, private titleService: TitleService) { }
 
   ngOnInit(): void {
