@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {DeckService} from '../../../services/deck.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
@@ -12,7 +12,7 @@ import { Location } from '@angular/common';
   templateUrl: './deck-fork-modal.component.html',
   styleUrls: ['./deck-fork-modal.component.css']
 })
-export class DeckForkModalComponent implements OnInit {
+export class DeckForkModalComponent implements OnInit, OnDestroy {
   deckForm: FormGroup;
   deck: DeckDetails;
   private locationSubscription: SubscriptionLike;

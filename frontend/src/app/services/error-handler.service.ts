@@ -105,7 +105,7 @@ export class ErrorHandlerService {
     if (this.isValidationError(httpError.error)) {
       const validationError = httpError.error as ValidationError;
       description = validationError.validation
-        .map(err => Object.entries(err).map(([fieldName, description]) => `${fieldName}: ${description}`).join('\n'))
+        .map(err => Object.entries(err).map(([fieldName, fieldError]) => `${fieldName}: ${fieldError}`).join('\n'))
         .join('\n');
     }
     return `Invalid Data\n${description}`;
@@ -113,7 +113,6 @@ export class ErrorHandlerService {
 
   /**
    * Check if error is a ValidationError
-   * @param httpError
    */
   private isValidationError(error: any) {
     return error && typeof error === 'object' &&

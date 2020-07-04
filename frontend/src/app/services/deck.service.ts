@@ -123,7 +123,6 @@ export class DeckService {
 
   /**
    * Fetches progress of the given deck
-   * @param deckId
    */
   fetchProgress(deckId: number): Observable<DeckProgress> {
     console.log(`fetch progress deck with id ${deckId}`);

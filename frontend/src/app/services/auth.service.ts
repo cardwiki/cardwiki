@@ -56,7 +56,8 @@ export class AuthService {
     return this.httpClient.post<UserRegistration>(this.globals.backendUri + '/users', {username: username, description: ''})
       .pipe(
         tap(null, this.errorHandler.handleError('Could not register')),
-        tap(res => this.updateWhoAmI({ ...this.getStoredAuth().whoAmI, hasAccount: true, id: res.id, username: res.username, admin: res.admin }))
+        tap(res => this.updateWhoAmI({ ...this.getStoredAuth().whoAmI,
+                                      hasAccount: true, id: res.id, username: res.username, admin: res.admin }))
       );
   }
 
@@ -78,8 +79,7 @@ export class AuthService {
   }
 
   /**
-   * Update stored token and update user roles
-   * @param token
+   * Update stored JWT token and update user roles
    */
   updateToken(token: string): void {
     this.storeAuth({
@@ -114,7 +114,6 @@ export class AuthService {
 
   /**
    * Update stored whoAmI and udpate user roles
-   * @param whoAmI
    */
   private updateWhoAmI(whoAmI: WhoAmI): void {
     this.storeAuth({

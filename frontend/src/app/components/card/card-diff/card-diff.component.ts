@@ -49,8 +49,7 @@ export class CardDiffComponent implements OnInit {
         if (this.revisionIdNew) {
           if (this.cardRevisionNew.cardId !== this.cardId) {
             this.location.back();
-          }
-          else {
+          } else {
             const dmp = new diff_match_patch();
             const diffFront = dmp.diff_main(this.cardRevisionOld.textFront, this.cardRevisionNew.textFront);
             const diffBack = dmp.diff_main(this.cardRevisionOld.textBack, this.cardRevisionNew.textBack);
