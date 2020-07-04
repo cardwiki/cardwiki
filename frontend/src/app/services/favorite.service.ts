@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Globals } from '../global/globals';
 import { ErrorHandlerService } from './error-handler.service';
 import { DeckSimple } from '../dtos/deckSimple';
-import { tap, map, catchError } from 'rxjs/operators';
+import { map, catchError } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { Page } from '../dtos/page';
 import { Pageable } from '../dtos/pageable';
@@ -25,7 +25,7 @@ export class FavoriteService {
    */
   addFavorite(deckId: number): Observable<DeckSimple> {
     return this.httpClient.put<DeckSimple>(this.getFavoriteUri(deckId), {})
-      .pipe(tap(null, this.errorHandler.handleError('Could not add favorite')));
+      .pipe(catchError(this.errorHandler.handleError('Could not add favorite')));
   }
 
   /**
@@ -35,7 +35,7 @@ export class FavoriteService {
     const params = pageable.toHttpParams();
 
     return this.httpClient.get<Page<DeckSimple>>(this.getFavoriteUri(), { params })
-      .pipe(tap(null, this.errorHandler.handleError('Could not get favorites')));
+      .pipe(catchError(this.errorHandler.handleError('Could not get favorites')));
   }
 
   /**
@@ -48,7 +48,7 @@ export class FavoriteService {
     return this.httpClient.get<void>(this.getFavoriteUri(deckId))
       .pipe(
         catchError(this.errorHandler.catchStatus(404, false)),
-        tap(null, this.errorHandler.handleError('Could not check if deck is a favorite')),
+        catchError(this.errorHandler.handleError('Could not check if deck is a favorite')),
         map(val => val !== false),
       );
   }
@@ -58,7 +58,7 @@ export class FavoriteService {
    */
   removeFavorite(deckId: number): Observable<void> {
     return this.httpClient.delete<void>(this.getFavoriteUri(deckId))
-      .pipe(tap(null, this.errorHandler.handleError('Could not add favorite')));
+      .pipe(catchError(this.errorHandler.handleError('Could not add favorite')));
   }
 
   private getFavoriteUri(deckId?: number): string {

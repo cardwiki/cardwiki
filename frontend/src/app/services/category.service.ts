@@ -6,7 +6,7 @@ import {CategoryDetails} from '../dtos/categoryDetails';
 import { CategoryUpdate } from '../dtos/categoryUpdate';
 import { CategorySimple } from '../dtos/categorySimple';
 import { ErrorHandlerService } from './error-handler.service';
-import { tap } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
 import { Pageable } from '../dtos/pageable';
 import { Page } from '../dtos/page';
 
@@ -33,7 +33,7 @@ export class CategoryService {
       ...pageable.toObject(),
     };
     return this.httpClient.get<Page<CategorySimple>>(this.categoryBaseUri, { params })
-      .pipe(tap(null, this.errorHandler.handleError('Could not search for Categories')));
+      .pipe(catchError(this.errorHandler.handleError('Could not search for Categories')));
   }
 
   /**
@@ -43,7 +43,7 @@ export class CategoryService {
   getCategoryById(id: number): Observable<CategoryDetails> {
     console.log('Load details for category with id ' + id);
     return this.httpClient.get<CategoryDetails>(this.categoryBaseUri + '/' + id)
-      .pipe(tap(null, this.errorHandler.handleError('Could not fetch Category')));
+      .pipe(catchError(this.errorHandler.handleError('Could not fetch Category')));
   }
 
   /**
@@ -53,7 +53,7 @@ export class CategoryService {
   createCategory(category: CategoryUpdate): Observable<CategoryDetails> {
     console.log('Create category with name ' + category.name);
     return this.httpClient.post<CategoryDetails>(this.categoryBaseUri, category)
-      .pipe(tap(null, this.errorHandler.handleError('Could not create Category')));
+      .pipe(catchError(this.errorHandler.handleError('Could not create Category')));
   }
 
   /**
@@ -64,7 +64,7 @@ export class CategoryService {
   editCategory(id: number, category: CategoryUpdate): Observable<CategoryDetails> {
     console.log('Edit category with id ' + id);
     return this.httpClient.put<CategoryDetails>(this.categoryBaseUri + '/' + id, category)
-      .pipe(tap(null, this.errorHandler.handleError('Could not update Category')));
+      .pipe(catchError(this.errorHandler.handleError('Could not update Category')));
   }
 
   /**
@@ -75,6 +75,6 @@ export class CategoryService {
   deleteCategory(id: number) {
     console.log('Delete category with id ' + id);
     return this.httpClient.delete<void>(this.categoryBaseUri + '/' + id)
-      .pipe(tap(null, this.errorHandler.handleError('Could not delete Category')));
+      .pipe(catchError(this.errorHandler.handleError('Could not delete Category')));
   }
 }

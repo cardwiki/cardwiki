@@ -3,7 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {Globals} from '../global/globals';
 import {Observable} from 'rxjs';
 import {Image} from '../dtos/image';
-import {tap} from 'rxjs/operators';
+import {catchError} from 'rxjs/operators';
 import {ErrorHandlerService} from './error-handler.service';
 
 @Injectable({
@@ -21,7 +21,7 @@ export class ImageService {
   upload(data: FormData): Observable<Image> {
     console.log('upload image');
     return this.httpClient.post<Image>(this.imageBaseUri, data)
-      .pipe(tap(null, this.errorHandler.handleError('Could not upload Image')));
+      .pipe(catchError(this.errorHandler.handleError('Could not upload Image')));
   }
 
 }
