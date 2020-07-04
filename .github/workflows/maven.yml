@@ -9,6 +9,10 @@ on:
   pull_request:
     branches: [ master ]
 
+defaults:
+  run:
+    working-directory: backend
+
 jobs:
   build:
 
@@ -20,6 +24,6 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
-    - run: mvn -f backend/ test
-    - run: mvn -f backend/ spring-boot:run -Dspring-boot.run.profiles=dev -Dspring-boot.run.arguments=--ci=yes
+    - run: mvn test
+    - run: mvn spring-boot:run -Dspring-boot.run.profiles=dev -Dspring-boot.run.arguments=--ci=yes
     - uses: codecov/codecov-action@v1
