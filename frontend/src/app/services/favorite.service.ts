@@ -14,7 +14,8 @@ import { AuthService } from './auth.service';
 })
 export class FavoriteService {
 
-  constructor(private httpClient: HttpClient, private globals: Globals, private errorHandler: ErrorHandlerService, private authService: AuthService) {
+  constructor(private httpClient: HttpClient, private globals: Globals, private errorHandler: ErrorHandlerService,
+              private authService: AuthService) {
   }
 
   /**
@@ -29,8 +30,6 @@ export class FavoriteService {
 
   /**
    * Get page of favorites of the logged in user
-   *
-   * @param pageable
    */
   getFavorites(pageable: Pageable): Observable<Page<DeckSimple>> {
     const params = pageable.toHttpParams();
@@ -56,8 +55,6 @@ export class FavoriteService {
 
   /**
    * Remove deck from the favorites of the logged in user
-   *
-   * @param deckId
    */
   removeFavorite(deckId: number): Observable<void> {
     return this.httpClient.delete<void>(this.getFavoriteUri(deckId))

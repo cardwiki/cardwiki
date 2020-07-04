@@ -17,7 +17,7 @@ export class CommentService {
   private deckBaseUri = this.globals.backendUri + '/decks';
   private commentBaseUri = this.globals.backendUri + '/comments';
 
-  constructor(private httpClient: HttpClient, private globals: Globals, private errorHandler: ErrorHandlerService, private authService: AuthService) {
+  constructor(private httpClient: HttpClient, private globals: Globals, private errorHandler: ErrorHandlerService) {
   }
 
   /**
@@ -30,7 +30,7 @@ export class CommentService {
   addCommentToDeck(deckId: number, message: string): Observable<CommentSimple> {
     const dto = { message };
     return this.httpClient.post<CommentSimple>(`${this.deckBaseUri}/${deckId}/comments`, dto)
-      .pipe(tap(null, this.errorHandler.handleError('Could not create comment')));
+      .pipe(tap({ error: this.errorHandler.handleError('Could not create comment') }));
   }
 
   /**

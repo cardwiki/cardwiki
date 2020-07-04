@@ -32,11 +32,16 @@ export class DeckPreviewComponent implements OnInit {
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
-    if (event.key === 'ArrowRight') { this.nextCard(); }
-    else if (event.key === 'ArrowLeft') { this.previousCard(); }
-    else if (event.key === 'ArrowUp') { this.flipTo('front'); }
-    else if (event.key === 'ArrowDown') { this.flipTo('back'); }
-    else if (event.key === ' ') { this.flip(); }
+    const actions: { [key: string]: () => void} = {
+      ArrowRight: () => this.nextCard(),
+      ArrowLeft: () => this.previousCard(),
+      ArrowUp: () => this.flipTo('front'),
+      ArrowDown: () => this.flipTo('back'),
+      ' ': () => this.flip(),
+    };
+    if (event.key in actions) {
+      actions[event.key]();
+    }
   }
 
   ngOnInit(): void {

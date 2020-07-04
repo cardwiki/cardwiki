@@ -15,7 +15,8 @@ import {UiStyleToggleService} from '../../services/ui-style-toggle.service';
 })
 export class LoginComponent implements OnInit {
 
-  constructor(public authService: AuthService, private router: Router, private route: ActivatedRoute, private titleService: TitleService, private uiStyleToggleService: UiStyleToggleService) {
+  constructor(public authService: AuthService, private router: Router, private route: ActivatedRoute, private titleService: TitleService,
+              private uiStyleToggleService: UiStyleToggleService) {
     this.registerForm = new FormGroup({
       'username': new FormControl(this.username, [
         Validators.required,
