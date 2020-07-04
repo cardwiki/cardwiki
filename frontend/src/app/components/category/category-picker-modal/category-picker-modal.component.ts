@@ -51,7 +51,7 @@ export class CategoryPickerModalComponent implements OnInit, OnDestroy {
         this.categories = page.content;
         this.canSubmit = page.totalElements === 1;
         this.countNotShown = page.totalElements - page.numberOfElements;
-      })
+      });
   }
 
   onSelect(category: CategorySimple) {

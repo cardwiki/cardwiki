@@ -9,13 +9,13 @@ export class Pageable {
     toHttpParams(): HttpParams {
         return new HttpParams({
             fromObject: this.toObject()
-        })
+        });
     }
 
     toObject(): { [k: string]: string } {
         return {
             limit: String(this.pageSize),
             offset: String(this.pageNumber),
-        }
+        };
     }
 }

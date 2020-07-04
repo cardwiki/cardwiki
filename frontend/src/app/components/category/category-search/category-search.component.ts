@@ -12,7 +12,7 @@ import { Pageable } from 'src/app/dtos/pageable';
   styleUrls: ['./category-search.component.css']
 })
 export class CategorySearchComponent implements OnInit {
-  
+
   readonly limit = 10;
 
   searchTerm = '';
@@ -28,7 +28,7 @@ export class CategorySearchComponent implements OnInit {
     this.titleService.setTitle('Categories', 'Category search');
     this.loadCategories();
   }
-  
+
   resetResults() {
     this.page = null;
     this.categories = [];
@@ -52,7 +52,7 @@ export class CategorySearchComponent implements OnInit {
     const nextPage = this.page ? this.page.pageable.pageNumber + 1 : 0;
     this.categoryService.searchByName(this.searchTerm, new Pageable(nextPage, this.limit))
       .subscribe(categoryPage => {
-        this.page = categoryPage
+        this.page = categoryPage;
         this.categories.push(...categoryPage.content);
       });
   }

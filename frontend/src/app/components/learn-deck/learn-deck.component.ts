@@ -61,7 +61,7 @@ export class LearnDeckComponent implements OnInit {
    this.learnService.getNextCards(deckId)
       .subscribe(cards => {
         console.log('next cards list: ', cards);
-        this.card = cards.length ? cards[0] : null
+        this.card = cards.length ? cards[0] : null;
       },
         error => {
         console.log(error);
@@ -80,15 +80,15 @@ export class LearnDeckComponent implements OnInit {
   }
 
   onAgain() {
-    this.onNext(AttemptStatus.AGAIN)
+    this.onNext(AttemptStatus.AGAIN);
   }
 
   onGood() {
-    this.onNext(AttemptStatus.GOOD)
+    this.onNext(AttemptStatus.GOOD);
   }
 
   onEasy() {
-    this.onNext(AttemptStatus.EASY)
+    this.onNext(AttemptStatus.EASY);
   }
 
   async triggerNext(status: AttemptStatus) {

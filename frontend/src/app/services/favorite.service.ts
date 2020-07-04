@@ -19,29 +19,29 @@ export class FavoriteService {
 
   /**
    * Add a deck to the favorites of the logged in user
-   * 
+   *
    * @param deckId deck which should be added as favorite
    */
   addFavorite(deckId: number): Observable<DeckSimple> {
     return this.httpClient.put<DeckSimple>(this.getFavoriteUri(deckId), {})
-      .pipe(tap(null, this.errorHandler.handleError('Could not add favorite')))
+      .pipe(tap(null, this.errorHandler.handleError('Could not add favorite')));
   }
 
   /**
    * Get page of favorites of the logged in user
-   * 
-   * @param pageable 
+   *
+   * @param pageable
    */
   getFavorites(pageable: Pageable): Observable<Page<DeckSimple>> {
-    const params = pageable.toHttpParams()
+    const params = pageable.toHttpParams();
 
     return this.httpClient.get<Page<DeckSimple>>(this.getFavoriteUri(), { params })
-      .pipe(tap(null, this.errorHandler.handleError('Could not get favorites')))
+      .pipe(tap(null, this.errorHandler.handleError('Could not get favorites')));
   }
 
   /**
    * Check if a deck is in the favorites of the logged in user
-   * 
+   *
    * @param deckId deck which should be checked
    */
   hasFavorite(deckId: number): Observable<boolean> {
@@ -51,26 +51,26 @@ export class FavoriteService {
         catchError(this.errorHandler.catchStatus(404, false)),
         tap(null, this.errorHandler.handleError('Could not check if deck is a favorite')),
         map(val => val !== false),
-      )
+      );
   }
 
   /**
    * Remove deck from the favorites of the logged in user
-   * 
-   * @param deckId 
+   *
+   * @param deckId
    */
   removeFavorite(deckId: number): Observable<void> {
     return this.httpClient.delete<void>(this.getFavoriteUri(deckId))
-      .pipe(tap(null, this.errorHandler.handleError('Could not add favorite')))
+      .pipe(tap(null, this.errorHandler.handleError('Could not add favorite')));
   }
 
   private getFavoriteUri(deckId?: number): string {
-    const userId = this.authService.getUserId()
+    const userId = this.authService.getUserId();
     if (typeof userId !== 'number') {
-      console.error('Invalid userId', userId)
-      throw new Error('Invalid userId for getFavoriteUri')
+      console.error('Invalid userId', userId);
+      throw new Error('Invalid userId for getFavoriteUri');
     }
 
-    return `${this.globals.backendUri}/users/${userId}/favorites` + (deckId ? `/${deckId}` : '')
+    return `${this.globals.backendUri}/users/${userId}/favorites` + (deckId ? `/${deckId}` : '');
   }
 }

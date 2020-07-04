@@ -1,7 +1,7 @@
 import {RevisionType} from './revisionSimple';
 import {DeckSimple} from './deckSimple';
-import {Image} from "./image";
-import {UserSimple} from "./userSimple";
+import {Image} from './image';
+import {UserSimple} from './userSimple';
 
 export class RevisionDetailed {
   constructor(

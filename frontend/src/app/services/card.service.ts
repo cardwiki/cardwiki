@@ -15,8 +15,8 @@ import {RevisionDetailed} from '../dtos/revisionDetailed';
 })
 export class CardService {
 
-  private deckBaseUri = this.globals.backendUri + '/decks'
-  private cardBaseUri = this.globals.backendUri + '/cards'
+  private deckBaseUri = this.globals.backendUri + '/decks';
+  private cardBaseUri = this.globals.backendUri + '/cards';
 
   constructor(private httpClient: HttpClient, private globals: Globals, private errorHandler: ErrorHandlerService) {
   }
@@ -27,9 +27,9 @@ export class CardService {
    */
   createCard(deckId: number, card: CardUpdate): Observable<CardSimple> {
     console.log('create card', deckId, card);
-    const dto = this.toCardUpdateDto(card)
+    const dto = this.toCardUpdateDto(card);
     return this.httpClient.post<CardSimple>(`${this.deckBaseUri}/${deckId}/cards`, dto)
-      .pipe(tap(null, this.errorHandler.handleError('Could not create Card')))
+      .pipe(tap(null, this.errorHandler.handleError('Could not create Card')));
   }
 
   /**
@@ -41,7 +41,7 @@ export class CardService {
   getCardsByDeckId(deckId: number, pageable: Pageable): Observable<Page<CardSimple>> {
     console.log('get cards for deck with id ' + deckId);
     return this.httpClient.get<Page<CardSimple>>(`${this.deckBaseUri}/${deckId}/cards`, { params: pageable.toHttpParams() })
-      .pipe(tap(null, this.errorHandler.handleError('Could not fetch Cards')))
+      .pipe(tap(null, this.errorHandler.handleError('Could not fetch Cards')));
   }
 
   /**
@@ -57,15 +57,15 @@ export class CardService {
 
   editCard(cardId: number, card: CardUpdate): Observable<CardSimple> {
     console.log(`edit card with id ${cardId}: ${card}`);
-    const dto = this.toCardUpdateDto(card)
+    const dto = this.toCardUpdateDto(card);
     return this.httpClient.patch<CardSimple>(`${this.cardBaseUri}/${cardId}`, dto)
-      .pipe(tap(null, this.errorHandler.handleError('Could not edit Card')))
+      .pipe(tap(null, this.errorHandler.handleError('Could not edit Card')));
   }
 
   fetchCard(cardId: number): Observable<CardUpdate> {
     console.log(`fetch card with id ${cardId}`);
     return this.httpClient.get<CardUpdate>(`${this.cardBaseUri}/${cardId}`)
-      .pipe(tap(null, this.errorHandler.handleError('Could not fetch Card')))
+      .pipe(tap(null, this.errorHandler.handleError('Could not fetch Card')));
   }
 
   /**
@@ -86,8 +86,8 @@ export class CardService {
    */
   fetchRevisionsById(revisionIds: number[]): Observable<{[key: number]: RevisionDetailed}> {
     console.log(`fetch revisions ${revisionIds}`);
-    return this.httpClient.get<{[key: number]: RevisionDetailed}>(`${this.globals.backendUri}/revisions/byid?${revisionIds.map(id => `id=${id}`).join("&")}`)
-      .pipe(tap(null, this.errorHandler.handleError('Could not fetch Revisions')))
+    return this.httpClient.get<{[key: number]: RevisionDetailed}>(`${this.globals.backendUri}/revisions/byid?${revisionIds.map(id => `id=${id}`).join('&')}`)
+      .pipe(tap(null, this.errorHandler.handleError('Could not fetch Revisions')));
   }
 
   /**
@@ -99,7 +99,7 @@ export class CardService {
   fetchRevisions(cardId: number, pageable: Pageable): Observable<Page<RevisionDetailed>> {
     console.log(`fetch revisions for card with id ${cardId}`);
     return this.httpClient.get<Page<RevisionDetailed>>(`${this.cardBaseUri}/${cardId}/revisions`, { params: pageable.toHttpParams() })
-      .pipe(tap(null, this.errorHandler.handleError('Could not fetch Revisions')))
+      .pipe(tap(null, this.errorHandler.handleError('Could not fetch Revisions')));
   }
 
   private toCardUpdateDto(card: CardUpdate): CardUpdateDto {
@@ -107,7 +107,7 @@ export class CardService {
     cardUpdateDto.imageFrontFilename = card.imageFront?.filename || null;
     cardUpdateDto.imageBackFilename = card.imageBack?.filename || null;
 
-    return cardUpdateDto
+    return cardUpdateDto;
   }
 }
 

@@ -4,15 +4,15 @@ import { distinctUntilChanged } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
-  public readonly toasts$: Observable<Toast[]>
+  public readonly toasts$: Observable<Toast[]>;
 
   private toasts: Toast[];
-  private readonly toastsSubject: BehaviorSubject<Toast[]>
+  private readonly toastsSubject: BehaviorSubject<Toast[]>;
 
   constructor() {
-    this.toasts = []
-    this.toastsSubject = new BehaviorSubject([])
-    this.toasts$ = this.toastsSubject.pipe(distinctUntilChanged())
+    this.toasts = [];
+    this.toastsSubject = new BehaviorSubject([]);
+    this.toasts$ = this.toastsSubject.pipe(distinctUntilChanged());
   }
 
   /**
@@ -20,10 +20,10 @@ export class NotificationService {
    * @param msg message for the user
    */
   info(msg: string) {
-    console.info('notification', msg)
+    console.info('notification', msg);
     this.show(msg, {
       classname: 'bg-info text-light',
-    })
+    });
   }
 
   /**
@@ -31,11 +31,11 @@ export class NotificationService {
    * @param msg message for the user
    */
   success(msg: string) {
-    console.log('notification', msg)
+    console.log('notification', msg);
     this.show(msg, {
       classname: 'bg-success text-light',
       delay: 3000,
-    })
+    });
   }
 
   /**
@@ -43,10 +43,10 @@ export class NotificationService {
    * @param msg message for the user
    */
   warning(msg: string) {
-    console.warn('notification', msg)
+    console.warn('notification', msg);
     this.show(msg, {
       classname: 'bg-warning',
-    })
+    });
   }
 
   /**
@@ -54,7 +54,7 @@ export class NotificationService {
    * @param msg message for the user
    */
   error(msg: string) {
-    console.error('notification', msg)
+    console.error('notification', msg);
     this.show(msg, {
       classname: 'bg-danger text-light',
     });
@@ -62,17 +62,17 @@ export class NotificationService {
 
   /**
    * Remove a toast
-   * 
+   *
    * @param toast toast to be removed
    */
   remove(toast: Toast) {
-    this.toasts = this.toasts.filter(t => t !== toast)
-    this.updateObservable()
+    this.toasts = this.toasts.filter(t => t !== toast);
+    this.updateObservable();
   }
 
   /**
    * Show a toast
-   * 
+   *
    * @param message message for the user
    * @param [options] options for the toast behavior and design
    */
@@ -80,24 +80,24 @@ export class NotificationService {
     const defaultOptions = {
       autohide: 'delay' in options,
       classname: '',
-    }
-    options = { ...defaultOptions, ...options }
-    this.toasts.push({ message, options })
-    this.updateObservable()
+    };
+    options = { ...defaultOptions, ...options };
+    this.toasts.push({ message, options });
+    this.updateObservable();
   }
 
   private updateObservable() {
-    this.toastsSubject.next([...this.toasts])
+    this.toastsSubject.next([...this.toasts]);
   }
 }
 
 export interface Toast {
-  message: string
-  options: ToastOptions
+  message: string;
+  options: ToastOptions;
 }
 
 export interface ToastOptions {
-  autohide?: boolean
-  delay?: number
-  classname?: string
+  autohide?: boolean;
+  delay?: number;
+  classname?: string;
 }

@@ -8,7 +8,7 @@ import {DeckDetails} from '../../dtos/deckDetails';
 import { SearchQueryParams } from 'src/app/interfaces/search-query-params';
 import { NotificationService } from 'src/app/services/notification.service';
 import {ClipboardService} from '../../services/clipboard.service';
-import {UiStyleToggleService} from "../../services/ui-style-toggle.service";
+import {UiStyleToggleService} from '../../services/ui-style-toggle.service';
 
 @Component({
   selector: 'app-header',

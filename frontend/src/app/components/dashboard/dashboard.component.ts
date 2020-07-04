@@ -15,11 +15,11 @@ import {DeckService} from '../../services/deck.service';
 })
 export class DashboardComponent implements OnInit {
 
-  favorites: Page<DeckSimple>
-  learned: Page<DeckProgressDetails>
+  favorites: Page<DeckSimple>;
+  learned: Page<DeckProgressDetails>;
 
-  readonly favoritesPageSize = 10
-  readonly learnedPageSize = 10
+  readonly favoritesPageSize = 10;
+  readonly learnedPageSize = 10;
 
   constructor(
     private favoriteService: FavoriteService,
@@ -29,26 +29,26 @@ export class DashboardComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.titleService.setTitle('Dashboard', null)
-    this.loadFavoritePage(1)
+    this.titleService.setTitle('Dashboard', null);
+    this.loadFavoritePage(1);
     this.loadLearnedPage(1);
   }
 
   removeFavorite(deckId: number) {
     this.favoriteService.removeFavorite(deckId)
       .subscribe(() => {
-        this.notificationService.success('Removed deck from Favorites')
-        this.favorites.content = this.favorites.content.filter(f => f.id !== deckId)
-      })
+        this.notificationService.success('Removed deck from Favorites');
+        this.favorites.content = this.favorites.content.filter(f => f.id !== deckId);
+      });
   }
 
   /**
    * @param page page number 1-indexed
    */
   loadFavoritePage(page: number) {
-    const pageable = new Pageable(page - 1, this.favoritesPageSize)
+    const pageable = new Pageable(page - 1, this.favoritesPageSize);
     this.favoriteService.getFavorites(pageable)
-      .subscribe(favorites => this.favorites = favorites)
+      .subscribe(favorites => this.favorites = favorites);
   }
 
   /**

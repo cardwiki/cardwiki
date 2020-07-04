@@ -16,7 +16,7 @@ export class CommentFormComponent implements OnInit {
   @Output() private cancel: EventEmitter<string> = new EventEmitter();
   showCancelButton = false;
 
-  @ViewChild('commentForm') private commentForm: NgForm
+  @ViewChild('commentForm') private commentForm: NgForm;
 
   constructor(public globals: Globals) { }
 

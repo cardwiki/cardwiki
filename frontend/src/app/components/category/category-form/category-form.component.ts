@@ -35,7 +35,7 @@ export class CategoryFormComponent implements OnInit {
     this.categoryForm.reset();
     this.setDefaults();
     this.nameErrors = null;
-    this.categoryForm.statusChanges.subscribe(() => this.nameErrors = this.checkNameErrors())
+    this.categoryForm.statusChanges.subscribe(() => this.nameErrors = this.checkNameErrors());
   }
 
   /**
@@ -48,14 +48,14 @@ export class CategoryFormComponent implements OnInit {
     if (this.mode === 'Update') {
       this.categoryService.editCategory(this.category.id, payload).subscribe(
         (category) => {
-          this.notificationService.success('Updated Category')
-          this.router.navigate(['categories', category.id])
+          this.notificationService.success('Updated Category');
+          this.router.navigate(['categories', category.id]);
       });
     } else {
       this.categoryService.createCategory(payload)
         .subscribe((category) => {
-          this.notificationService.success('Created Category')
-          this.router.navigate(['categories', category.id])
+          this.notificationService.success('Created Category');
+          this.router.navigate(['categories', category.id]);
       });
     }
   }
@@ -97,7 +97,7 @@ export class CategoryFormComponent implements OnInit {
   }
 
   onCancel(): void {
-    this.location.back()
+    this.location.back();
   }
 
   setDefaults(): void {

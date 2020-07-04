@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import {Globals} from "../../../global/globals";
-import {CardService} from "../../../services/card.service";
-import {ActivatedRoute, Router} from "@angular/router";
-import {Location} from "@angular/common";
-import {diff_match_patch} from "diff-match-patch";
-import {RevisionDetailed} from "../../../dtos/revisionDetailed";
-import {CardContent} from "../../../dtos/cardContent";
-import {CardUpdate} from "../../../dtos/cardUpdate";
+import {Globals} from '../../../global/globals';
+import {CardService} from '../../../services/card.service';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Location} from '@angular/common';
+import {diff_match_patch} from 'diff-match-patch';
+import {RevisionDetailed} from '../../../dtos/revisionDetailed';
+import {CardContent} from '../../../dtos/cardContent';
+import {CardUpdate} from '../../../dtos/cardUpdate';
 
 @Component({
   selector: 'app-card-diff',
@@ -41,36 +41,40 @@ export class CardDiffComponent implements OnInit {
     this.cardService.fetchRevisionsById(this.revisionIdNew ? [this.revisionIdOld, this.revisionIdNew] : [this.revisionIdOld])
       .subscribe(cardRevisions => {
         console.log('fetched revisions', cardRevisions);
-        this.cardRevisionOld = cardRevisions[this.revisionIdOld]
-        this.cardRevisionNew = cardRevisions[this.revisionIdNew]
-        if (this.cardRevisionOld.cardId !== this.cardId) this.location.back()
+        this.cardRevisionOld = cardRevisions[this.revisionIdOld];
+        this.cardRevisionNew = cardRevisions[this.revisionIdNew];
+        if (this.cardRevisionOld.cardId !== this.cardId) {
+          this.location.back();
+        }
         if (this.revisionIdNew) {
-          if (this.cardRevisionNew.cardId !== this.cardId) this.location.back()
+          if (this.cardRevisionNew.cardId !== this.cardId) {
+            this.location.back();
+          }
           else {
             const dmp = new diff_match_patch();
-            let diffFront = dmp.diff_main(this.cardRevisionOld.textFront, this.cardRevisionNew.textFront)
-            let diffBack = dmp.diff_main(this.cardRevisionOld.textBack, this.cardRevisionNew.textBack)
-            dmp.diff_cleanupSemantic(diffFront)
-            dmp.diff_cleanupSemantic(diffBack)
+            const diffFront = dmp.diff_main(this.cardRevisionOld.textFront, this.cardRevisionNew.textFront);
+            const diffBack = dmp.diff_main(this.cardRevisionOld.textBack, this.cardRevisionNew.textBack);
+            dmp.diff_cleanupSemantic(diffFront);
+            dmp.diff_cleanupSemantic(diffBack);
             this.cardDiff = new CardContent(
               dmp.diff_prettyHtml(diffFront),
               dmp.diff_prettyHtml(diffBack),
               null, null
-            )
+            );
           }
         }
-      })
+      });
   }
 
   undo(): void {
     // tslint:disable-next-line:max-line-length
-    const card: CardUpdate = new CardUpdate(this.cardRevisionOld.textFront, this.cardRevisionOld.textBack, this.cardRevisionOld.imageFront, this.cardRevisionOld.imageBack, "Revert to " + this.cardRevisionOld.message)
+    const card: CardUpdate = new CardUpdate(this.cardRevisionOld.textFront, this.cardRevisionOld.textBack, this.cardRevisionOld.imageFront, this.cardRevisionOld.imageBack, 'Revert to ' + this.cardRevisionOld.message);
     this.cardService.editCard(this.cardId, card)
       .subscribe(simpleCard => {
         if (simpleCard.id === this.cardId) {
-          this.router.navigate(["decks", this.deckId, "cards", this.cardId, "history"])
+          this.router.navigate(['decks', this.deckId, 'cards', this.cardId, 'history']);
         }
-      })
+      });
   }
 
 }

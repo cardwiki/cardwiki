@@ -13,8 +13,8 @@ export class CardFormComponent implements OnInit {
   originalFilenameFront: string = 'Choose file';
   originalFilenameBack: string = 'Choose file';
 
-  @Input() action: string
-  @Input() card: CardUpdate
+  @Input() action: string;
+  @Input() card: CardUpdate;
   @Output() cardSubmit: EventEmitter<CardUpdate> = new EventEmitter();
   @Output() cancel: EventEmitter<void> = new EventEmitter();
   constructor(public globals: Globals, public imageService: ImageService) { }
@@ -23,25 +23,25 @@ export class CardFormComponent implements OnInit {
   }
 
   autoSizeTextarea({ target: textArea }: any) {
-    textArea.style.height = Math.max(textArea.offsetHeight, textArea.scrollHeight) + "px";
+    textArea.style.height = Math.max(textArea.offsetHeight, textArea.scrollHeight) + 'px';
   }
 
   onSubmit() {
     console.log('submitting card form', this.card);
     if (this.card.textFront === '') {
-      this.card.textFront = null
+      this.card.textFront = null;
     }
     if (this.card.textBack === '') {
-      this.card.textBack = null
+      this.card.textBack = null;
     }
-    this.card.message = this.card.message || null
-    console.log('submitting card form', this.card)
-    this.cardSubmit.emit(this.card)
+    this.card.message = this.card.message || null;
+    console.log('submitting card form', this.card);
+    this.cardSubmit.emit(this.card);
   }
 
   onCancel() {
     console.log('cancelling card form');
-    this.cancel.emit()
+    this.cancel.emit();
   }
 
   async onFileChange(event: any, side: string) {

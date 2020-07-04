@@ -17,7 +17,7 @@ export class CategoryUpdateComponent {
   constructor(private route: ActivatedRoute, private categoryService: CategoryService, private titleService: TitleService) {
     this.route.params.subscribe(params => {
       this.category = null;
-      this.doSearch(params.id)
+      this.doSearch(params.id);
     });
   }
 

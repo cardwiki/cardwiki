@@ -11,13 +11,13 @@ import { Observable } from 'rxjs';
   host: {'[class.ngb-toasts]': 'true'}
 })
 export class ToastsContainerComponent {
-  public toasts$: Observable<Toast[]>
+  public toasts$: Observable<Toast[]>;
 
   constructor(private notificationService: NotificationService) {
-    this.toasts$ = notificationService.toasts$
+    this.toasts$ = notificationService.toasts$;
   }
 
   remove(toast: Toast) {
-    this.notificationService.remove(toast)
+    this.notificationService.remove(toast);
   }
 }

@@ -31,7 +31,7 @@ export class CategoryService {
     const params = {
       name,
       ...pageable.toObject(),
-    }
+    };
     return this.httpClient.get<Page<CategorySimple>>(this.categoryBaseUri, { params })
       .pipe(tap(null, this.errorHandler.handleError('Could not search for Categories')));
   }
@@ -43,7 +43,7 @@ export class CategoryService {
   getCategoryById(id: number): Observable<CategoryDetails> {
     console.log('Load details for category with id ' + id);
     return this.httpClient.get<CategoryDetails>(this.categoryBaseUri + '/' + id)
-      .pipe(tap(null, this.errorHandler.handleError('Could not fetch Category')))
+      .pipe(tap(null, this.errorHandler.handleError('Could not fetch Category')));
   }
 
   /**
@@ -53,7 +53,7 @@ export class CategoryService {
   createCategory(category: CategoryUpdate): Observable<CategoryDetails> {
     console.log('Create category with name ' + category.name);
     return this.httpClient.post<CategoryDetails>(this.categoryBaseUri, category)
-      .pipe(tap(null, this.errorHandler.handleError('Could not create Category')))
+      .pipe(tap(null, this.errorHandler.handleError('Could not create Category')));
   }
 
   /**
@@ -64,7 +64,7 @@ export class CategoryService {
   editCategory(id: number, category: CategoryUpdate): Observable<CategoryDetails> {
     console.log('Edit category with id ' + id);
     return this.httpClient.put<CategoryDetails>(this.categoryBaseUri + '/' + id, category)
-      .pipe(tap(null, this.errorHandler.handleError('Could not update Category')))
+      .pipe(tap(null, this.errorHandler.handleError('Could not update Category')));
   }
 
   /**

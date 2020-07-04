@@ -24,7 +24,7 @@ export class TitleService {
 
   /**
    * Set title and header
-   * 
+   *
    * @param title title shown in the tab preview. null for default
    * @param header header shown in the page. if null it will be omitted
    */

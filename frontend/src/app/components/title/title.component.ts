@@ -13,7 +13,7 @@ export class TitleComponent implements OnInit {
 
   constructor(titleService: TitleService, title: Title) {
     this.header$ = titleService.header$;
-    titleService.title$.subscribe(t => title.setTitle(t))
+    titleService.title$.subscribe(t => title.setTitle(t));
   }
 
   ngOnInit(): void {

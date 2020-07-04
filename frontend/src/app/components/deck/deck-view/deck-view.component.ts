@@ -59,13 +59,13 @@ export class DeckViewComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
-      this.deck = this.page = null
-      this.loadingError = null
-      this.cards = []
-      this.isFavorite$ = new Subject()
-      this.displayComments = false
-      this.commentsPage = null
-      this.comments = []
+      this.deck = this.page = null;
+      this.loadingError = null;
+      this.cards = [];
+      this.isFavorite$ = new Subject();
+      this.displayComments = false;
+      this.commentsPage = null;
+      this.comments = [];
       this.loadDeck(Number(params.get('id')));
     });
     this.clipboardService.clipboard$.subscribe(clipboard => this.clipboardSize = clipboard.length);
@@ -79,8 +79,8 @@ export class DeckViewComponent implements OnInit {
       this.cards = [];
       this.loadMoreCards();
       this.loadMoreComments();
-      if (this.authService.isLoggedIn()){
-        this.favoriteService.hasFavorite(id).subscribe(isFavorite => this.isFavorite$.next(isFavorite))
+      if (this.authService.isLoggedIn()) {
+        this.favoriteService.hasFavorite(id).subscribe(isFavorite => this.isFavorite$.next(isFavorite));
         this.deckService.fetchProgress(id).subscribe(progress => this.progress = progress);
       }
     }, err => {
@@ -91,12 +91,12 @@ export class DeckViewComponent implements OnInit {
   }
 
   loadMoreCards() {
-    const nextPageNumber = this.page ? this.page.pageable.pageNumber + 1 : 0
-    this.loadingCards = true
+    const nextPageNumber = this.page ? this.page.pageable.pageNumber + 1 : 0;
+    this.loadingCards = true;
     this.cardService.getCardsByDeckId(this.deck.id, new Pageable(nextPageNumber, this.limit))
       .subscribe(page => {
         this.page = page;
-        this.cards.push(...page.content)
+        this.cards.push(...page.content);
       }).add(() => this.loadingCards = false);
   }
 

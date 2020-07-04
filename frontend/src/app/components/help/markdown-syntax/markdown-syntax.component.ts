@@ -17,7 +17,7 @@ export class MarkdownSyntaxComponent implements OnInit {
 
 1. first
 2. second
- 
+
  And tables like this
 | First Header  | Second Header | Third Header |
 | ------------- | ------------- | ------------ |
@@ -35,7 +35,7 @@ $$x = \\frac{a}{\\sqrt[3]{b}}$$
 $$f(x) = \\int_{-\\infty}^\\infty
     \\hat f\\xi\\,e^{2 \\pi i \\xi x}
     \\,d\\xi$$`
-  }
+  };
 
   constructor(private titleService: TitleService) { }
 

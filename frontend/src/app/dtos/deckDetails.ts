@@ -1,7 +1,7 @@
 import { CategorySimple } from './categorySimple';
 import { DeckSimple } from './deckSimple';
 
-export class DeckDetails extends DeckSimple{
+export class DeckDetails extends DeckSimple {
   constructor(
     public id: number,
     public name: string,
@@ -10,6 +10,6 @@ export class DeckDetails extends DeckSimple{
     public updatedAt: string,
     public categories: CategorySimple[]
   ) {
-    super(id, name)
+    super(id, name);
   }
 }
