@@ -141,8 +141,9 @@ public class DeckEndpoint {
         response.addHeader("Content-Type", "text/csv;charset=UTF-8");
         try {
             deckService.createCsvData(response.getWriter(), id);
-        } catch(IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error encoding cards.");
+        } catch(IOException ex) {
+            LOGGER.error("Card export failed", ex);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error exporting cards.");
         }
     }
 
@@ -154,8 +155,9 @@ public class DeckEndpoint {
         LOGGER.info("POST {} to /api/v1/decks/{}", file.getOriginalFilename(), id);
         try {
             return deckMapper.deckToDeckDto(deckService.addCards(id, file));
-        } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error reading cards.");
+        } catch (IOException ex) {
+            LOGGER.error("Card import failed", ex);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error importing cards.");
         }
     }
 }

@@ -38,20 +38,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<Object> internalServerError(RuntimeException ex, WebRequest request){
         // TODO: return proper JSON
-        ex.printStackTrace();
+        LOGGER.error("500 Internal Server Error", ex);
         // Don't leak exception messages by default.
         return handleExceptionInternal(ex, "internal server error", new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     protected ResponseEntity<Object> handleUnauthorized(RuntimeException ex, WebRequest request) {
-        LOGGER.error(ex.getMessage());
+        LOGGER.info("403 Unauthorized: {}", ex.getMessage());
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.FORBIDDEN, request);
     }
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     protected ResponseEntity<Object> handleSizeLimitExceeded(RuntimeException ex, WebRequest request) {
-        LOGGER.error(ex.getMessage());
+        LOGGER.info("400 Size limit exceeded: {}", ex.getMessage());
         String message = String.format("Uploads cannot be larger than %d MB", maxFileSize.toMegabytes());
         return handleExceptionInternal(ex, message, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
@@ -67,31 +67,32 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(value = {NotFoundException.class})
     protected ResponseEntity<Object> handleNotFound(RuntimeException ex, WebRequest request) {
-        LOGGER.error(ex.getMessage());
+        LOGGER.info("404 Not found: {}", ex.getMessage());
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
 
     @ExceptionHandler(value = {ConflictException.class})
     protected ResponseEntity<Object> handleConflict(RuntimeException ex, WebRequest request) {
-        LOGGER.error(ex.getMessage());
+        LOGGER.info("409 Conflict: {}", ex.getMessage());
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.CONFLICT, request);
     }
 
     @ExceptionHandler(value = {BadRequestException.class})
     protected ResponseEntity<Object> handleBadRequest(RuntimeException ex, WebRequest request) {
-        LOGGER.error(ex.getMessage());
+        LOGGER.info("400 Bad Request: {}", ex.getMessage());
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
+    // TODO: Replace with AccessDeniedException from the spring framework
     @ExceptionHandler(value = {InsufficientAuthorizationException.class})
     protected ResponseEntity<Object> handleInsufficientAuthorization(RuntimeException ex, WebRequest request) {
-        LOGGER.error(ex.getMessage());
+        LOGGER.info("403 Insufficient Authorization: {}", ex.getMessage());
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.FORBIDDEN, request);
     }
 
     /**
      * TODO:    Added because non-object RequestParams which are validated with @Validated are not caught by handleMethodArgumentNotValid
-     *          Should be merged with handleMethodArgumentNotValid if possible or transformed into a better format
+     *          Should be removed because it catches validation errors from the entities
      */
     @ExceptionHandler(value = {ConstraintViolationException.class})
     public ResponseEntity<Object> handleValidationFailure(ConstraintViolationException ex, WebRequest request) {
@@ -109,6 +110,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
                                                                   HttpHeaders headers,
                                                                   HttpStatus status, WebRequest request) {
+        LOGGER.info("400 Validation Error: {}", ex.getMessage());
+
         // List of validation errors in format
         // [ { field: description } ]
         List<Map<String, String>> errors = ex.getBindingResult()

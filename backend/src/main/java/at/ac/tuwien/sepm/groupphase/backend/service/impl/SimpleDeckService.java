@@ -204,21 +204,25 @@ public class SimpleDeckService implements DeckService {
     @Transactional
     public void createCsvData(PrintWriter pw, Long deckId) throws IOException {
         LOGGER.debug("Write deck with id {} to file.", deckId);
-        CSVPrinter printer = new CSVPrinter(pw, CSVFormat.DEFAULT);
-        cardRepository.findLatestEditRevisionsByDeck_Id(deckId)
-            .forEach(revisionEdit -> {
-                try {
-                    printer.printRecord(revisionEdit.getTextFront(), revisionEdit.getTextBack());
-                } catch (IOException e) {
-                    LOGGER.info("An error occurred converting records to csv: {}", e);
-                }
-            });
-        printer.close();
+        try (CSVPrinter printer = new CSVPrinter(pw, CSVFormat.DEFAULT)) {
+            cardRepository.findLatestEditRevisionsByDeck_Id(deckId)
+                .forEach(revisionEdit -> {
+                    try {
+                        printer.printRecord(revisionEdit.getTextFront(), revisionEdit.getTextBack());
+                    } catch (IOException ex) {
+                        // Wrapping as unchecked exception to get it outside of lambda expression
+                        throw new UncheckedIOException(ex);
+                    }
+                });
+        } catch (UncheckedIOException ex) {
+            throw ex.getCause();
+        }
     }
 
     @Override
     @Transactional
     public Deck addCards(Long deckId, MultipartFile file) throws IOException {
+        LOGGER.debug("Importing file into deck {}: {}", deckId, file);
         // fetch information
         Deck deck = deckRepository.getOne(deckId);
         User user = userService.loadCurrentUserOrThrow();
@@ -230,7 +234,7 @@ public class SimpleDeckService implements DeckService {
         // create new cards
         for (CSVRecord csvRecord : csvRecords) {
             for (int i = 0; i < csvRecord.size(); i++) {
-                LOGGER.info("csvRecord: " + csvRecord.get(i));
+                LOGGER.trace("csvRecord: " + csvRecord.get(i));
             }
             if (csvRecord.size() != 2) {
                 throw new BadRequestException("Every row of the csv file must have exactly 2 columns");
@@ -259,7 +263,7 @@ public class SimpleDeckService implements DeckService {
 
                 deckRepository.saveAndFlush(deck);
             } else {
-                LOGGER.info("Card with front {} already exists.", csvRecord.get(0));
+                LOGGER.debug("Card with front {} already exists.", csvRecord.get(0));
             }
 
         }
