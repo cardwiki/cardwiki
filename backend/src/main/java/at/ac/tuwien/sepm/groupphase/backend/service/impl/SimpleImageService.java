@@ -44,7 +44,7 @@ public class SimpleImageService implements ImageService {
 
     @Override
     public Image create(MultipartFile file) {
-        LOGGER.info("Create a new image");
+        LOGGER.debug("Create a new image");
         byte[] bytes;
         try {
             bytes = file.getBytes();
