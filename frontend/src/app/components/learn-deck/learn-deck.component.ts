@@ -7,6 +7,7 @@ import {LearnService} from '../../services/learn.service';
 import {LearnAttempt, AttemptStatus } from '../../dtos/learnAttempt';
 import {Globals} from '../../global/globals';
 import { TitleService } from 'src/app/services/title.service';
+import { Pageable } from 'src/app/dtos/pageable';
 
 @Component({
   selector: 'app-learn-deck',
@@ -34,14 +35,13 @@ export class LearnDeckComponent implements OnInit {
     if (event.key === ' ') {
       this.onFlip();
     } else if (this.flipped) {
-      if (event.key === '1') {
-        this.onAgain();
-      }
-      if (event.key === '2') {
-        this.onGood();
-      }
-      if (event.key === '3') {
-        this.onEasy();
+      const shortcuts: { [key: string]: () => void} = {
+        1: () => this.onAgain(),
+        2: () => this.onGood(),
+        3: () => this.onEasy(),
+      };
+      if (event.key in shortcuts) {
+        shortcuts[event.key]();
       }
     }
   }
@@ -58,7 +58,8 @@ export class LearnDeckComponent implements OnInit {
   }
 
   getNextCard(deckId: number) {
-   this.learnService.getNextCards(deckId)
+    // TODO: Fetch more cards with one query
+    this.learnService.getNextCards(deckId, new Pageable(0, 1))
       .subscribe(cards => {
         console.log('next cards list: ', cards);
         this.card = cards.length ? cards[0] : null;
