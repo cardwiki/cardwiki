@@ -223,51 +223,56 @@ public class SimpleDeckService implements DeckService {
     @Transactional
     public Deck addCards(Long deckId, MultipartFile file) throws IOException {
         LOGGER.debug("Importing file into deck {}: {}", deckId, file);
+
         // fetch information
-        Deck deck = deckRepository.getOne(deckId);
+        Deck deck = findOneOrThrow(deckId);
         User user = userService.loadCurrentUserOrThrow();
+
         // parse csv file
         Reader in = new BufferedReader(new InputStreamReader(file.getInputStream(), "UTF-8"));
         CSVParser csvParser = new CSVParser(in, CSVFormat.DEFAULT.withTrim().withIgnoreSurroundingSpaces());
-        Iterable<CSVRecord> csvRecords = csvParser.getRecords();
 
-        // create new cards
-        for (CSVRecord csvRecord : csvRecords) {
-            for (int i = 0; i < csvRecord.size(); i++) {
-                LOGGER.trace("csvRecord: " + csvRecord.get(i));
-            }
-            if (csvRecord.size() != 2) {
-                throw new BadRequestException("Every row of the csv file must have exactly 2 columns");
-            }
-            String textFront = csvRecord.get(0);
-            String textBack = csvRecord.get(1);
+        // parse into revisions and validate
+        List<RevisionCreate> parsedRevisions = csvParser.getRecords().stream()
+            .map(csvRecord -> {
+                if (csvRecord.size() != 2) {
+                    throw new BadRequestException("Every row of the csv file must have exactly 2 columns");
+                }
+                RevisionCreate revisionCreate = new RevisionCreate();
+                revisionCreate.setTextFront(csvRecord.get(0));
+                revisionCreate.setTextBack(csvRecord.get(1));
 
-            if (textFront.trim().isEmpty())
-                throw new BadRequestException("Front side may not be empty");
-            if (textBack.trim().isEmpty())
-                throw new BadRequestException("Back side may not be empty");
+                if (revisionCreate.getTextFront().trim().isEmpty())
+                    throw new BadRequestException("Front side may not be empty");
+                if (revisionCreate.getTextBack().trim().isEmpty())
+                    throw new BadRequestException("Back side may not be empty");
+                
+                return revisionCreate;
+            }).collect(Collectors.toList());
+        List<String> parsedFrontTexts = parsedRevisions.stream().map(RevisionEdit::getTextFront).collect(Collectors.toList());
 
-            if(!cardRepository.existsByDeckAndRevisionEditContent(deckId, textFront)) {
+        // get front texts which already exist in deck
+        Set<String> existingFrontTexts = cardRepository.filterExistingFrontTexts(deckId, parsedFrontTexts);
+
+        // Add new cards to deck
+        List<Card> newCards = parsedRevisions.stream()
+            .filter(r -> !existingFrontTexts.contains(r.getTextFront()))
+            .map(r -> {
+                r.setMessage("Imported");
+                r.setCreatedBy(user);
+                user.getRevisions().add(r);
 
                 Card card = new Card();
+                card.setLatestRevision(r);
+                card.getRevisions().add(r);
+                r.setCard(card);
                 card.setDeck(deck);
                 deck.getCards().add(card);
-                RevisionCreate revisionCreate = new RevisionCreate();
-                revisionCreate.setMessage("Created");
-                revisionCreate.setTextFront(textFront);
-                revisionCreate.setTextBack(textBack);
-                revisionCreate.setCard(card);
-                revisionCreate.setCreatedBy(user);
-                user.getRevisions().add(revisionCreate);
-                card.setLatestRevision(revisionCreate);
 
-                deckRepository.saveAndFlush(deck);
-            } else {
-                LOGGER.debug("Card with front {} already exists.", csvRecord.get(0));
-            }
+                return card;
+            }).collect(Collectors.toList());
 
-        }
-        Hibernate.initialize(deck.getCategories());
-        return deck;
+        cardRepository.saveAll(newCards);
+        return deckRepository.saveAndFlush(deck);
     }
 }

@@ -305,9 +305,30 @@ public class DeckEndpointTest extends TestDataGenerator {
             .file(multipartFile)
             .with(login(givenUserAuthId())))
             .andExpect(status().isOk());
-        
+
         long lines = 1 + content.chars().filter(c -> c == '\n').count();
         assertEquals(lines, deck.getCards().size(), "Created one card per line");
+    }
+
+    @Test
+    public void givenAuthenticatedUserAndDeck_whenImportExistingCards_thenReturnOk() throws Exception {
+        Agent agent = persistentAgent();
+        Deck deck = agent.createDeck();
+        RevisionCreate revisionCreate = new RevisionCreate();
+        revisionCreate.setMessage("Created");
+        revisionCreate.setTextFront("Existing Front");
+        revisionCreate.setTextBack("Random Back");
+        agent.createCardIn(deck, revisionCreate);
+
+        MockMultipartFile multipartFile = new MockMultipartFile("file", "testFile.csv", "text/csv",
+                                                                "Existing Front,Not existing Back".getBytes());
+
+        mvc.perform(multipart("/api/v1/decks/{deckId}/cards", deck.getId())
+            .file(multipartFile)
+            .with(login(givenUserAuthId())))
+            .andExpect(status().isOk());
+
+        assertEquals(1, deck.getCards().size(), "Import ignored existing card");
     }
 
     @ParameterizedTest

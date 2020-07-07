@@ -2,6 +2,7 @@ package at.ac.tuwien.sepm.groupphase.backend.unittests;
 
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.entity.*;
+import at.ac.tuwien.sepm.groupphase.backend.profiles.datagenerator.Agent;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
 import org.junit.jupiter.api.Test;
@@ -12,7 +13,10 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -141,33 +145,33 @@ public class CardRepositoryTest extends TestDataGenerator {
     }
 
     @Test
-    public void givenDeckContainingCardWithContent_whenExistsByDeckAndRevisionEditContentWithGivenContent_thenReturnTrue() {
-        Deck deck = givenDeck();
-        Card card = givenCard();
-        User user = givenApplicationUser();
+    public void givenDeckWithFrontText_whenFilterExistingFrontTexts_thenReturnFrontText() {
+        Agent agent = persistentAgent();
+        Deck deck = agent.createDeck();
+        RevisionCreate revisionCreate = new RevisionCreate();
+        revisionCreate.setMessage("Created");
+        revisionCreate.setTextFront("Existing Front");
+        revisionCreate.setTextBack("Random Back Side");
+        agent.createCardIn(deck, revisionCreate);
 
-        RevisionCreate revision = new RevisionCreate();
-        revision.setMessage("some message");
-        card.setLatestRevision(revision);
-        revision.setCard(card);
-        revision.setCreatedBy(user);
-        revision.setTextBack("test back");
-        revision.setTextFront("test front");
-        deck.getCards().add(card);
-        card.setDeck(deck);
-        deckRepository.saveAndFlush(deck);
+        Set<String> filtered = cardRepository.filterExistingFrontTexts(deck.getId(), Collections.singletonList("Existing Front"));
 
-        assertTrue(cardRepository.existsByDeckAndRevisionEditContent(deck.getId(), revision.getTextFront()));
+        assertEquals(1, filtered.size(), "Filtered set found existing revision");
+        assertTrue(filtered.contains("Existing Front"), "Filtered set includes existing revision");
     }
 
     @Test
-    public void givenNothing_whenExistsByDeckAndRevisionEditContentWithIdOfNonExistentDeck_thenReturnFalse() {
-        assertFalse(cardRepository.existsByDeckAndRevisionEditContent(123L, "test"));
-    }
+    public void givenDeckWithDifferentFrontText_whenFilterExistingFrontTexts_thenReturnFrontText() {
+        Agent agent = persistentAgent();
+        Deck deck = agent.createDeck();
+        RevisionCreate revisionCreate = new RevisionCreate();
+        revisionCreate.setMessage("Created");
+        revisionCreate.setTextFront("Existing Front");
+        revisionCreate.setTextBack("Random Back Side");
+        agent.createCardIn(deck, revisionCreate);
 
-    @Test
-    public void givenDeck_whenExistsByDeckAndRevisionEditContentWithNonExistentContent_thenReturnFalse() {
-        Deck deck = getSampleDeck();
-        assertFalse(cardRepository.existsByDeckAndRevisionEditContent(deck.getId(), "non existent front side text"));
+        Set<String> filtered = cardRepository.filterExistingFrontTexts(deck.getId(), Collections.singletonList("Other Front"));
+
+        assertTrue(filtered.isEmpty(), "Filtered set found no existing revisions");
     }
 }
