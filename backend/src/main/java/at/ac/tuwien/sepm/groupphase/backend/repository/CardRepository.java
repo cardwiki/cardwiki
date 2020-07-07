@@ -11,7 +11,9 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 @Repository
@@ -71,12 +73,15 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     List<Card> findNextCards(@Param("deckId") Long deckId, @Param("userId") Long userId, Pageable pageable);
 
     /**
-     * Check if a card exists with certain content
+     * Filter front texts by existing front texts in deck
      *
-     * @param textFront card content parameter
-     * @return true if such a card exists, false else
+     * @param deckId id of the deck
+     * @param frontTexts collection of front texts that should be filtered
+     * @return all elements from frontTexts that exist in deck
      */
-    @Query("select case when count(r) > 0 then true else false end from Card c inner join RevisionEdit r on r=c.latestRevision" +
-         " where r.textFront=:textFront and c.deck.id=:deckId")
-    boolean existsByDeckAndRevisionEditContent(@Param("deckId") Long deckId, @Param("textFront") String textFront);
+    @Query("select r.textFront from RevisionEdit r" +
+        " inner join Card c on r = c.latestRevision" +
+        " where c.deck.id = :deckId" +
+        "   and r.textFront in :textFronts")
+    Set<String> filterExistingFrontTexts(@Param("deckId") Long deckId, @Param("textFronts") Collection<String> frontTexts);
 }
