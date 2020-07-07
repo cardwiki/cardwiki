@@ -63,9 +63,10 @@ export class LearnDeckComponent implements OnInit {
       .subscribe(cards => {
         console.log('next cards list: ', cards);
         this.card = cards.length ? cards[0] : null;
+        this.flipped = false;
       },
         error => {
-        console.log(error);
+        console.error(error);
       });
   }
 
@@ -74,10 +75,9 @@ export class LearnDeckComponent implements OnInit {
   }
 
   async onNext(status: AttemptStatus) {
-    this.flipped = false;
-    console.log('Attempting to submit status: ' + status);
-    await this.triggerNext(status);
-    this.getNextCard(this.deck.id);
+    console.log('onNext: ' + status);
+    this.learnService.sendAttemptStatus(new LearnAttempt(this.card.id, status))
+      .subscribe(() => this.getNextCard(this.deck.id));
   }
 
   onAgain() {
@@ -90,12 +90,5 @@ export class LearnDeckComponent implements OnInit {
 
   onEasy() {
     this.onNext(AttemptStatus.EASY);
-  }
-
-  async triggerNext(status: AttemptStatus) {
-    console.log('Submitted status: ' + status);
-    if (this.card.id > 0) {
-      await this.learnService.sendAttemptStatus(new LearnAttempt(this.card.id, status)).toPromise();
-    }
   }
 }
