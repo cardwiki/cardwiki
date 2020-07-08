@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Repository
-public interface CategoryRepository extends JpaRepository<Category, Long>, CategoryRepositoryCustom {
+public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     /**
      * finds a category without loading parent or children
@@ -50,4 +50,25 @@ public interface CategoryRepository extends JpaRepository<Category, Long>, Categ
      * @return all categories by user
      */
     Set<Category> findExportByCreatedBy_Id(Long userId);
+
+    /**
+     * checks if there is a circular relation between two categories
+     *
+     * @param id of a category
+     * @param parentId of the corresponding parent category
+     * @return true if there is a circular relation between the two categories, else false
+     */
+    @Query(nativeQuery = true, value =
+        "SELECT CASE WHEN EXISTS (" +
+            "WITH link(id, parent_id, level) AS (" +
+                "SELECT id, parent_id, 0 FROM categories WHERE categories.id=:parentId " +
+                "UNION ALL " +
+                "SELECT categories.id, categories.parent_id, LEVEL + 1 " +
+                "FROM link INNER JOIN categories ON link.parent_id = categories.id " +
+                "AND categories.id!=:parentId" +
+                ") " +
+            "SELECT id FROM link WHERE link.id=:id" +
+        ") THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END"
+    )
+    boolean ancestorExistsWithId(@Param("id") Long id, @Param("parentId") Long parentId);
 }
