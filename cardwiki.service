@@ -1,0 +1,11 @@
+[Unit]
+Description=CardWiki Backend
+
+[Service]
+WorkingDirectory=/%h
+ExecStart=/usr/bin/java -jar -Dspring.profiles.active=prod cardwiki.jar
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=default.target
