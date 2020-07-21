@@ -41,7 +41,7 @@ public class DevAuthProviderEndpoint {
     @GetMapping("/{username}")
     public RedirectView get(@PathVariable String username, HttpServletRequest request, HttpServletResponse response){
         SecurityConfig.addTokenCookie(username, securityProps, request, response);
-        return new RedirectView(SecurityConfig.FRONTEND);
+        return new RedirectView(securityProps.getFrontendSuccessURL());
     }
 }
 

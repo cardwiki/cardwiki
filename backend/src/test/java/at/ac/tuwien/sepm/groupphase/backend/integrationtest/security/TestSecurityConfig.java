@@ -9,22 +9,19 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResponseClient;
-import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AccessTokenResponse;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @EnableWebSecurity
 @Configuration
 @ActiveProfiles("test")
 @Order(-1)
 public class TestSecurityConfig extends WebSecurityConfigurerAdapter {
-    public static final SecurityProps SECURITY_PROPS = new SecurityProps("CardWikiIsAmazingAndThisSecretIsTotallySuperSecureAndUnguessable", 60-000);
+    public static final SecurityProps SECURITY_PROPS = new SecurityProps("CardWikiIsAmazingAndThisSecretIsTotallySuperSecureAndUnguessable", 60000, "http://localhost:1234");
 
     @Autowired
     private UserService userService;

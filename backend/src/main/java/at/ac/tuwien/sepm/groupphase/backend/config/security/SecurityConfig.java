@@ -47,8 +47,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         staticConfigure(httpSecurity, userService, securityProps);
     }
 
-    public static final String FRONTEND = "http://localhost:4200/login?success";
-
     public static void addTokenCookie(String authId, SecurityProps securityProps, HttpServletRequest request, HttpServletResponse response){
         String token = Jwts.builder()
             .setSubject(authId)
@@ -106,7 +104,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 addTokenCookie(auth.getAuthorizedClientRegistrationId() + ":" + auth.getName(), securityProps, request, response);
 
                 // TODO: support multiple frontends
-                response.sendRedirect(FRONTEND);
+                response.sendRedirect(securityProps.getFrontendSuccessURL());
             });
 
         // for every request we query the database for user roles
