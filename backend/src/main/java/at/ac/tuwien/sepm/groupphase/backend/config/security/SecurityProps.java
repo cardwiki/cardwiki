@@ -10,13 +10,16 @@ public class SecurityProps {
 
     private final int expirationTime;
 
+    private final String frontendSuccessURL;
+
     @Autowired
     public SecurityProps(
         @Value("${cawi.jwt-secret}") String secret,
-        @Value("${cawi.jwt-expiration-time}") int expirationTime
-    ){
+        @Value("${cawi.jwt-expiration-time}") int expirationTime,
+        @Value("${cawi.frontend-success-url}") String frontendSuccessURL){
         this.secret = secret;
         this.expirationTime = expirationTime;
+        this.frontendSuccessURL = frontendSuccessURL;
     }
 
 
@@ -26,5 +29,9 @@ public class SecurityProps {
 
     public int getExpirationTime() {
         return expirationTime;
+    }
+
+    public String getFrontendSuccessURL() {
+        return frontendSuccessURL;
     }
 }
