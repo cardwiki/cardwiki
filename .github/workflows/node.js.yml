@@ -29,5 +29,6 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
+    - run: cp src/environments/config{,.prod}.ts
     - run: npm run build:prod
     - run: npm run lint
