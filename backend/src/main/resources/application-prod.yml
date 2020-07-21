@@ -3,3 +3,28 @@ server:
     session:
       cookie:
         secure: true
+  forward-headers-strategy: NATIVE
+
+spring:
+  datasource:
+    url: jdbc:h2:file:./database/db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: admin
+    password: EDITME
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: EDITME
+            client-secret: EDITME
+          google:
+            client-id: EDITME
+            client-secret: EDITME
+          gitlab:
+            client-id: EDITME
+            client-secret: EDITME
+
+cawi:
+  jwt-secret: EDITME
+  frontend-success-url: https://EDITME.example.com/login?success
