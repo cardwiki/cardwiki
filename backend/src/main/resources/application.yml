@@ -4,6 +4,9 @@ logging:
     root: INFO
 
 spring:
+  liquibase:
+    enabled: true
+    changeLog: classpath:/db/migration/db.changelog-master.xml
   datasource:
     url: jdbc:h2:file:./database/db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     driver-class-name: org.h2.Driver
@@ -13,7 +16,7 @@ spring:
     # Set this property to true if you want to see the executed queries
     show-sql: false
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     # Allows to fetch lazy properties outside of the original transaction. Although this sounds helpful, the property
     # is disabled since it breaks the principle of least astonishment and leads to bad performance. The learn more,
     # follow this link: https://bit.ly/2LaX9ku

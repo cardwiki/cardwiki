@@ -1,0 +1,376 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.0.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+    <changeSet author="a_a (generated)" id="1595617797662-1">
+        <createTable tableName="CARDS">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_3"/>
+            </column>
+            <column name="CREATED_AT" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DECK_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LATEST_REVISION" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-2">
+        <createTable tableName="CATEGORIES">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_6"/>
+            </column>
+            <column name="CREATED_AT" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_AT" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PARENT_ID" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-3">
+        <createTable tableName="CATEGORY_DECK">
+            <column name="CATEGORY_ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_C"/>
+            </column>
+            <column name="DECK_ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_C"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-4">
+        <createTable tableName="COMMENTS">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_A"/>
+            </column>
+            <column name="CREATED_AT" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MESSAGE" type="VARCHAR(500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_AT" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DECK" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-5">
+        <createTable tableName="DECKS">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_3D"/>
+            </column>
+            <column name="CREATED_AT" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_AT" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-6">
+        <createTable tableName="FAVORITES">
+            <column name="DECK_ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_3B"/>
+            </column>
+            <column name="USER_ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_3B"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-7">
+        <createTable tableName="IMAGES">
+            <column name="FILENAME" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_8"/>
+            </column>
+            <column name="CREATED_AT" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-8">
+        <createTable tableName="PROGRESS">
+            <column name="DUE" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EASINESS_FACTOR" type="DOUBLE(17)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IVL" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STATUS" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USER_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CARD_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-9">
+        <createTable tableName="REVISIONS">
+            <column name="TYPE" type="VARCHAR(31)">
+                <constraints nullable="false"/>
+            </column>
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_C4"/>
+            </column>
+            <column name="CREATED_AT" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MESSAGE" type="VARCHAR(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CARD_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-10">
+        <createTable tableName="REVISION_CREATE">
+            <column name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_69"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-11">
+        <createTable tableName="REVISION_DELETE">
+            <column name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_6A"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-12">
+        <createTable tableName="REVISION_EDITS">
+            <column name="TEXT_BACK" type="VARCHAR(1000)"/>
+            <column name="TEXT_FRONT" type="VARCHAR(1000)"/>
+            <column name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_FB"/>
+            </column>
+            <column name="IMAGE_BACK_ID" type="VARCHAR(255)"/>
+            <column name="IMAGE_FRONT_ID" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-13">
+        <createTable tableName="USERS">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_4"/>
+            </column>
+            <column name="ADMIN" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="AUTH_ID" type="VARCHAR(255)"/>
+            <column name="CREATED_AT" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DELETED" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DESCRIPTION" type="VARCHAR(5000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ENABLED" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REASON" type="VARCHAR(255)"/>
+            <column name="THEME" type="VARCHAR(255)"/>
+            <column name="UPDATED_AT" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USERNAME" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-14">
+        <addPrimaryKey columnNames="CARD_ID, USER_ID" constraintName="CONSTRAINT_F" tableName="PROGRESS"/>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-15">
+        <addUniqueConstraint columnNames="AUTH_ID" constraintName="AUTHID_UNIQUE" tableName="USERS"/>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-16">
+        <addUniqueConstraint columnNames="NAME" constraintName="NAME_UNIQUE" tableName="CATEGORIES"/>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-17">
+        <addUniqueConstraint columnNames="USERNAME" constraintName="USERNAME_UNIQUE" tableName="USERS"/>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-18">
+        <createIndex indexName="FK2PNFSROBWHGTEBL4A7K8XS39M_INDEX_A" tableName="COMMENTS">
+            <column name="DECK"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-19">
+        <createIndex indexName="FK44LFN5QJTV4KJIUVWNQ6NL0E7_INDEX_A" tableName="COMMENTS">
+            <column name="CREATED_BY"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-20">
+        <createIndex indexName="FK5IENPGK5JIR54RQIKI5EQ2L7O_INDEX_3" tableName="DECKS">
+            <column name="CREATED_BY"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-21">
+        <createIndex indexName="FK5YFRU0AU6KPYQS4TONKY5VFNE_INDEX_6" tableName="CATEGORIES">
+            <column name="CREATED_BY"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-22">
+        <createIndex indexName="FKB2WMGXENERUM0DVGUPT7FV3LU_INDEX_C" tableName="REVISIONS">
+            <column name="CREATED_BY"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-23">
+        <createIndex indexName="FKET6NTIBAABPDPPI58AHN1P6IC_INDEX_C" tableName="CATEGORY_DECK">
+            <column name="DECK_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-24">
+        <createIndex indexName="FKFDC53KGLFN60U05R5PIVLYM1Q_INDEX_F" tableName="REVISION_EDITS">
+            <column name="IMAGE_BACK_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-25">
+        <createIndex indexName="FKFXTBAFL2S5HHKBEH1NPHGAQFJ_INDEX_C" tableName="CATEGORY_DECK">
+            <column name="CATEGORY_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-26">
+        <createIndex indexName="FKI7EG9PR1NOOC66S02HT1H3EW8_INDEX_3" tableName="CARDS">
+            <column name="DECK_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-27">
+        <createIndex indexName="FKK7DU8B8EWIPAWNNPG76D55FUS_INDEX_3" tableName="FAVORITES">
+            <column name="USER_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-28">
+        <createIndex indexName="FKLRVS311V1ASE5TBB1MC9L7USC_INDEX_3" tableName="CARDS">
+            <column name="LATEST_REVISION"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-29">
+        <createIndex indexName="FKOVXB9PE4UY7OQ4CJGG6WCEBSO_INDEX_3" tableName="FAVORITES">
+            <column name="DECK_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-30">
+        <createIndex indexName="FKP1M9F9RM7XY8NK7A820DVH6C4_INDEX_8" tableName="IMAGES">
+            <column name="CREATED_BY"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-31">
+        <createIndex indexName="FKRW5C44SY16N6ANGHSLTOJ9O3T_INDEX_C" tableName="REVISIONS">
+            <column name="CARD_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-32">
+        <createIndex indexName="FKSAOK720GSU4U2WRGBK10B5N8D_INDEX_6" tableName="CATEGORIES">
+            <column name="PARENT_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-33">
+        <createIndex indexName="FKSORCT4WR1YXV9KHB2WWEDY4JT_INDEX_F" tableName="REVISION_EDITS">
+            <column name="IMAGE_FRONT_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-34">
+        <createIndex indexName="FK_PROGRESS_CARD_INDEX_F" tableName="PROGRESS">
+            <column name="CARD_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-35">
+        <createIndex indexName="FK_PROGRESS_USER_INDEX_F" tableName="PROGRESS">
+            <column name="USER_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-36">
+        <addForeignKeyConstraint baseColumnNames="DECK" baseTableName="COMMENTS" constraintName="FK2PNFSROBWHGTEBL4A7K8XS39M" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="DECKS" validate="true"/>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-37">
+        <addForeignKeyConstraint baseColumnNames="CREATED_BY" baseTableName="COMMENTS" constraintName="FK44LFN5QJTV4KJIUVWNQ6NL0E7" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="USERS" validate="true"/>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-38">
+        <addForeignKeyConstraint baseColumnNames="CREATED_BY" baseTableName="DECKS" constraintName="FK5IENPGK5JIR54RQIKI5EQ2L7O" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="USERS" validate="true"/>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-39">
+        <addForeignKeyConstraint baseColumnNames="CREATED_BY" baseTableName="CATEGORIES" constraintName="FK5YFRU0AU6KPYQS4TONKY5VFNE" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="USERS" validate="true"/>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-40">
+        <addForeignKeyConstraint baseColumnNames="CREATED_BY" baseTableName="REVISIONS" constraintName="FKB2WMGXENERUM0DVGUPT7FV3LU" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="USERS" validate="true"/>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-41">
+        <addForeignKeyConstraint baseColumnNames="DECK_ID" baseTableName="CATEGORY_DECK" constraintName="FKET6NTIBAABPDPPI58AHN1P6IC" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="DECKS" validate="true"/>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-42">
+        <addForeignKeyConstraint baseColumnNames="ID" baseTableName="REVISION_DELETE" constraintName="FKFAXYF567QBJWDCUKDQ4HYQCU3" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="REVISIONS" validate="true"/>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-43">
+        <addForeignKeyConstraint baseColumnNames="IMAGE_BACK_ID" baseTableName="REVISION_EDITS" constraintName="FKFDC53KGLFN60U05R5PIVLYM1Q" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="FILENAME" referencedTableName="IMAGES" validate="true"/>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-44">
+        <addForeignKeyConstraint baseColumnNames="CATEGORY_ID" baseTableName="CATEGORY_DECK" constraintName="FKFXTBAFL2S5HHKBEH1NPHGAQFJ" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="CATEGORIES" validate="true"/>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-45">
+        <addForeignKeyConstraint baseColumnNames="DECK_ID" baseTableName="CARDS" constraintName="FKI7EG9PR1NOOC66S02HT1H3EW8" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="DECKS" validate="true"/>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-46">
+        <addForeignKeyConstraint baseColumnNames="ID" baseTableName="REVISION_EDITS" constraintName="FKISMX3ANYK5K1KBL6XKC6BMAKM" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="REVISIONS" validate="true"/>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-47">
+        <addForeignKeyConstraint baseColumnNames="USER_ID" baseTableName="FAVORITES" constraintName="FKK7DU8B8EWIPAWNNPG76D55FUS" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="USERS" validate="true"/>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-48">
+        <addForeignKeyConstraint baseColumnNames="LATEST_REVISION" baseTableName="CARDS" constraintName="FKLRVS311V1ASE5TBB1MC9L7USC" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="REVISIONS" validate="true"/>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-49">
+        <addForeignKeyConstraint baseColumnNames="ID" baseTableName="REVISION_CREATE" constraintName="FKNWPA5VRHMSHE7OGAMRJCLO2AG" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="REVISION_EDITS" validate="true"/>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-50">
+        <addForeignKeyConstraint baseColumnNames="DECK_ID" baseTableName="FAVORITES" constraintName="FKOVXB9PE4UY7OQ4CJGG6WCEBSO" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="DECKS" validate="true"/>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-51">
+        <addForeignKeyConstraint baseColumnNames="CREATED_BY" baseTableName="IMAGES" constraintName="FKP1M9F9RM7XY8NK7A820DVH6C4" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="USERS" validate="true"/>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-52">
+        <addForeignKeyConstraint baseColumnNames="CARD_ID" baseTableName="REVISIONS" constraintName="FKRW5C44SY16N6ANGHSLTOJ9O3T" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="CARDS" validate="true"/>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-53">
+        <addForeignKeyConstraint baseColumnNames="PARENT_ID" baseTableName="CATEGORIES" constraintName="FKSAOK720GSU4U2WRGBK10B5N8D" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="CATEGORIES" validate="true"/>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-54">
+        <addForeignKeyConstraint baseColumnNames="IMAGE_FRONT_ID" baseTableName="REVISION_EDITS" constraintName="FKSORCT4WR1YXV9KHB2WWEDY4JT" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="FILENAME" referencedTableName="IMAGES" validate="true"/>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-55">
+        <addForeignKeyConstraint baseColumnNames="CARD_ID" baseTableName="PROGRESS" constraintName="FK_PROGRESS_CARD" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="CARDS" validate="true"/>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595617797662-56">
+        <addForeignKeyConstraint baseColumnNames="USER_ID" baseTableName="PROGRESS" constraintName="FK_PROGRESS_USER" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="USERS" validate="true"/>
+    </changeSet>
+</databaseChangeLog>

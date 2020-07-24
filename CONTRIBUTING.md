@@ -10,6 +10,22 @@ If you start the backend with the `dev` profile, the database is populated with 
 
 Note that if the H2 database is not clean, the test data won't be inserted
 
+### Database migration
+
+For database migration we use [Liquibase](https://www.liquibase.org/). Changes in the database scheme are stored in the migration folder.
+
+To automatically generate the changelog you can follow these steps:
+
+1. Make changes in the entities
+2. Have your database on the previous version without your changes
+3. Run `mvn compile` and `mvn liquibase:diff`. The file liquibase-diff-changeLog.xml will be generated
+4. Verify the changes
+5. Rename it and include it in db.changelog-master.xml
+6. Optionally run `mvn liquibase:updateSQL` to inspect the SQL statements (somewhere in the target folder)
+7. Run the application to see if the migration works (e.g. inspect the logs, or the tables via the h2-console)
+
+In general, running the application will apply all new database migrations.
+
 ## Frontend
 
 For developing the frontend we recommend either IntelliJ or [VS Code](https://code.visualstudio.com/).
