@@ -22,7 +22,6 @@ import {ClipboardService} from '../../../services/clipboard.service';
 import {ClipboardPasteModalComponent} from '../../clipboard/clipboard-paste-modal/clipboard-paste-modal.component';
 import {CardUpdate} from '../../../dtos/cardUpdate';
 import { TitleService } from 'src/app/services/title.service';
-import { DeckProgress } from 'src/app/dtos/deckProgress';
 
 @Component({
   selector: 'app-deck-view',
@@ -37,8 +36,6 @@ export class DeckViewComponent implements OnInit {
   isFavorite$: Subject<boolean>;
   clipboardSize: number;
   loadingError: string;
-  progress: DeckProgress;
-
 
   page: Page<CardSimple>;
   cards: CardSimple[];
@@ -81,7 +78,6 @@ export class DeckViewComponent implements OnInit {
       this.loadMoreComments();
       if (this.authService.isLoggedIn()) {
         this.favoriteService.hasFavorite(id).subscribe(isFavorite => this.isFavorite$.next(isFavorite));
-        this.deckService.fetchProgress(id).subscribe(progress => this.progress = progress);
       }
     }, err => {
       this.loadingError = err && err.status === 404 ?

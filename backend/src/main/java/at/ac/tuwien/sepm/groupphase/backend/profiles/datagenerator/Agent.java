@@ -174,21 +174,35 @@ public class Agent {
         return deck;
     }
 
-    public Progress createProgress(Card card) {
-        return createProgress(card, Progress.Status.REVIEWING);
-    }
-
-    public Progress createProgress(Card card, Progress.Status status) {
+    public Progress createProgress(Card card, Progress.Status status, boolean reverse) {
         Progress progress = new Progress();
         progress.setDue(LocalDateTime.now().plusDays(3L));
         progress.setEasinessFactor(5);
         progress.setInterval(2);
         progress.setStatus(status);
-        return createProgress(card, progress);
+        return createProgress(card, progress, reverse);
     }
 
-    public Progress createProgress(Card card, Progress progress) {
-        progress.setId(new Progress.Id(user, card));
+    public Progress createProgressDue(Card card, boolean reverse) {
+        Progress progress = new Progress();
+        progress.setDue(LocalDateTime.now().minusMinutes(1L));
+        progress.setEasinessFactor(5);
+        progress.setInterval(2);
+        progress.setStatus(Progress.Status.REVIEWING);
+        return createProgress(card, progress, reverse);
+    }
+
+    public Progress createProgressNotDue(Card card, boolean reverse) {
+        Progress progress = new Progress();
+        progress.setDue(LocalDateTime.now().plusMinutes(1L));
+        progress.setEasinessFactor(5);
+        progress.setInterval(2);
+        progress.setStatus(Progress.Status.REVIEWING);
+        return createProgress(card, progress, reverse);
+    }
+
+    public Progress createProgress(Card card, Progress progress, boolean reverse) {
+        progress.setId(new Progress.Id(user, card, reverse));
         user.getProgress().add(progress);
         beforeReturn(progress);
         return progress;

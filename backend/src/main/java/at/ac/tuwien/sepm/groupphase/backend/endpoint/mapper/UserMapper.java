@@ -24,6 +24,7 @@ public interface UserMapper {
     @Mapping(source = "revisions", target = "revisions", qualifiedByName = "revisionsToRevisionExportDtoList")
     UserExportDto userToUserExportDto(User user);
 
+    @Mapping(source = "progress.id.reverse", target = "reverse")
     @Mapping(source = "progress.id.card.id", target = "cardId")
     @Mapping(source = "progress.id.card.latestRevision", target = "latestRevision", qualifiedByName = "revisionToRevisionExportDto")
     ProgressExportDto progressToProgressExportDto(Progress progress);

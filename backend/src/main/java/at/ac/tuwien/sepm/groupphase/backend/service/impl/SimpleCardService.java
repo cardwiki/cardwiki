@@ -84,7 +84,7 @@ public class SimpleCardService implements CardService {
     @Override
     @Transactional
     public Page<RevisionEdit> findLatestEditRevisionsByDeckId(Long deckId, Pageable pageable) {
-        LOGGER.debug("Find latest edit revisions id {} {}", deckId, pageable); // TODO
+        LOGGER.debug("Find latest edit revisions id {} {}", deckId, pageable);
         deckService.findOneOrThrow(deckId);
         return cardRepository.findLatestEditRevisionsByDeck_Id(deckId, pageable);
     }

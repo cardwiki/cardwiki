@@ -98,13 +98,6 @@ public interface DeckService {
     Page<Revision> getRevisions(Long id, Pageable pageable);
 
     /**
-     * Return deck progress for currently logged in user
-     * @param deckId
-     * @return deck progress for a user
-     */
-    DeckProgressDto getProgress(Long deckId);
-
-    /**
      * Return all decks learned by a user
      * with progress data
      *
@@ -116,6 +109,7 @@ public interface DeckService {
     /**
      * Delete the progress of a user for a specified card deck.
      * @param deckId of the card deck for which the progress is to be deleted.
+     * @param reverse whether to delete normal or reverse progress
      */
-    void deleteUserProgress(Long deckId);
+    void deleteUserProgress(Long deckId, boolean reverse);
 }

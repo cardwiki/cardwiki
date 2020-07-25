@@ -23,10 +23,11 @@ export class LearnService {
    * @param deckId id of deck to learn
    * @param pageable pagination config
    */
-  getNextCards(deckId: number, pageable: Pageable): Observable<CardSimple[]> {
+  getNextCards(deckId: number, reverse: boolean, pageable: Pageable): Observable<CardSimple[]> {
     console.log('Get next cards of Deck with id ' + deckId);
     const params = {
       deckId: String(deckId),
+      reverse: String(reverse),
       ...pageable.toObject(),
     };
     return this.httpClient.get<CardSimple[]>(this.learnBaseUri + '/next', { params })

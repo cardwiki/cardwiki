@@ -6,7 +6,6 @@ import lombok.Data;
 public class DeckProgressDetailsDto {
     private Long deckId;
     private String deckName;
-    private int newCount;
-    private int learningCount;
-    private int toReviewCount;
+    private DeckProgressDto normal;
+    private DeckProgressDto reverse;
 }

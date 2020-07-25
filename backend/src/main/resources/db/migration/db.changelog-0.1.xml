@@ -1,0 +1,28 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.0.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+    <changeSet author="a_a" id="1595625874321-3">
+        <addColumn tableName="progress">
+            <column name="reverse" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="a_a" id="1595625874321-3.1">
+        <dropDefaultValue tableName="progress"
+                columnDataType="BOOLEAN"
+                columnName="reverse" />
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595625874321-4">
+        <createIndex indexName="IX_progressPK" tableName="progress" unique="true">
+            <column name="card_id"/>
+            <column name="reverse"/>
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595625874321-1">
+        <dropPrimaryKey tableName="progress"/>
+    </changeSet>
+    <changeSet author="a_a (generated)" id="1595625874321-2">
+        <addPrimaryKey columnNames="card_id, reverse, user_id" constraintName="progressPK" tableName="progress"/>
+    </changeSet>
+</databaseChangeLog>

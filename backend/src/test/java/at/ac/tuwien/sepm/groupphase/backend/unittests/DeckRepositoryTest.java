@@ -1,5 +1,8 @@
 package at.ac.tuwien.sepm.groupphase.backend.unittests;
 
+import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
+import at.ac.tuwien.sepm.groupphase.backend.entity.Progress;
+import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.profiles.datagenerator.Agent;
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
@@ -131,5 +134,25 @@ public class DeckRepositoryTest extends TestDataGenerator {
 
     @Test void givenNothing_whenExistsByIdAndFavoredById_thenThrow() {
         assertFalse(() -> deckRepository.existsByIdAndFavoredById(0L, 0L));
+    }
+
+    @Test void givenProgress_whenCountProgressStatuses_thenReturnCount() {
+        Agent agent = persistentAgent();
+        User user = agent.getUser();
+        Deck deck = agent.createDeck();
+        Card card1 = agent.createCardIn(deck);
+        Card card2 = agent.createCardIn(deck);
+        Card card3 = agent.createCardIn(deck);
+        Card card4 = agent.createCardIn(deck);
+        agent.createProgress(card2, Progress.Status.LEARNING, false);
+        agent.createProgress(card3, Progress.Status.REVIEWING, false);
+        agent.createProgress(card4, Progress.Status.REVIEWING, false);
+        agent.createProgress(card4, Progress.Status.REVIEWING, true);
+
+        assertAll(
+            () -> assertEquals(1, deckRepository.countProgressStatuses(user, deck, false, Progress.Status.LEARNING)),
+            () -> assertEquals(2, deckRepository.countProgressStatuses(user, deck, false, Progress.Status.REVIEWING)),
+            () -> assertEquals(1, deckRepository.countProgressStatuses(user, deck, true, Progress.Status.REVIEWING))
+        );
     }
 }

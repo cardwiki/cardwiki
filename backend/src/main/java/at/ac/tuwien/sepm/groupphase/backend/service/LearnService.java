@@ -9,9 +9,11 @@ import java.util.List;
 public interface LearnService {
     /**
      * @param deckId
+     * @param reverse
+     * @param pageable
      * @return next cards to learn
      */
-    List<Card> findNextCardsByDeckId(Long deckId, Pageable pageable);
+    List<Card> findNextCards(Long deckId, boolean reverse, Pageable pageable);
 
     /**
      * Save a new attempt.

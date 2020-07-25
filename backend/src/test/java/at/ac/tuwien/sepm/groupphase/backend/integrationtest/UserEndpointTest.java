@@ -411,14 +411,12 @@ public class UserEndpointTest extends TestDataGenerator {
     }
 
     @Test
+    // TODO: Test if favorites and progress is deleted
     public void adminDeleteUser() throws Exception {
-        User admin = givenApplicationUser();
-        admin.setAdmin(true);
-        Progress progress = givenProgress();
-        User user = progress.getId().getUser();
+        User user = persistentAgent().getUser();
 
         mvc.perform(delete("/api/v1/users/{userId}?reason=reason", user.getId())
-            .with(login(admin.getAuthId())))
+            .with(login(givenAdminAuthId())))
             .andExpect(status().isNoContent());
 
         assertFalse(user.isEnabled());
@@ -428,13 +426,10 @@ public class UserEndpointTest extends TestDataGenerator {
 
     @Test
     public void adminDeleteUserWithoutReason_badRequest() throws Exception {
-        User admin = givenApplicationUser();
-        admin.setAdmin(true);
-        Progress progress = givenProgress();
-        User user = progress.getId().getUser();
+        User user = persistentAgent().getUser();
 
         mvc.perform(delete("/api/v1/users/{userId}", user.getId())
-            .with(login(admin.getAuthId())))
+            .with(login(givenAdminAuthId())))
             .andExpect(status().isBadRequest());
     }
 
@@ -461,7 +456,7 @@ public class UserEndpointTest extends TestDataGenerator {
         revisionCreate.setMessage("created this card");
         Card card = agent.createCardIn(deck, revisionCreate);
 
-        Progress progress = agent.createProgress(card);
+        Progress progress = agent.createProgress(card, Progress.Status.LEARNING, false);
 
         mvc.perform(get("/api/v1/users/{userId}/export", user.getId())
             .with(login(user.getAuthId())))
@@ -506,6 +501,8 @@ public class UserEndpointTest extends TestDataGenerator {
             .andExpect(jsonPath("$.progress[0].latestRevision.deck.name").value(deck.getName()))
             .andExpect(jsonPath("$.progress[0].latestRevision.textFront").value(revisionCreate.getTextFront()))
             .andExpect(jsonPath("$.progress[0].latestRevision.textBack").value(revisionCreate.getTextBack()))
+            .andExpect(jsonPath("$.progress[0].status").value("LEARNING"))
+            .andExpect(jsonPath("$.progress[0].reverse").value(false))
             .andExpect(jsonPath("$.progress[0].due", validIsoDateTime()))
             .andExpect(jsonPath("$.progress[0].interval").value(progress.getInterval()))
             .andExpect(jsonPath("$.progress[0].easinessFactor").value(progress.getEasinessFactor()));

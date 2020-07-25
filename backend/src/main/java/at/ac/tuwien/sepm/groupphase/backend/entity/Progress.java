@@ -91,12 +91,16 @@ public class Progress {
         @JoinColumn(foreignKey = @ForeignKey(name = FKNAME_CARD))
         private Card card;
 
+        @Column(nullable = false)
+        private boolean reverse;
+
         public Id() {
         }
 
-        public Id(User user, Card card) {
+        public Id(User user, Card card, boolean reverse) {
             this.user = user;
             this.card = card;
+            this.reverse = reverse;
         }
 
         public User getUser() {
@@ -115,18 +119,27 @@ public class Progress {
             this.card = card;
         }
 
+        public boolean isReverse() {
+            return reverse;
+        }
+
+        public void setReverse(boolean reverse) {
+            this.reverse = reverse;
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Id id = (Id) o;
             return user.equals(id.user) &&
-                card.equals(id.card);
+                card.equals(id.card) &&
+                reverse == id.reverse;
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(user, card);
+            return Objects.hash(user, card, reverse);
         }
     }
 }

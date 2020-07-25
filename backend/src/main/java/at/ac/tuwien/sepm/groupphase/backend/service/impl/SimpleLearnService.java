@@ -41,8 +41,8 @@ public class SimpleLearnService implements LearnService {
     }
 
     @Override
-    public List<Card> findNextCardsByDeckId(Long deckId, Pageable pageable) {
-        LOGGER.debug("Get next card for deck with id {}", deckId);
+    public List<Card> findNextCards(Long deckId, boolean reverse, Pageable pageable) {
+        LOGGER.debug("Get next card for deck with id {} reverse={}", deckId, reverse);
 
         User user = userService.loadCurrentUserOrThrow();
 
@@ -50,7 +50,7 @@ public class SimpleLearnService implements LearnService {
             throw new BadRequestException("deckId does not exist");
         }
 
-        return cardRepository.findNextCards(deckId, user.getId(), pageable);
+        return cardRepository.findNextCards(deckId, user.getId(), reverse, pageable);
     }
 
     private static final int[] LEARNING_STEPS = {1, 10}; // in minutes
@@ -65,7 +65,7 @@ public class SimpleLearnService implements LearnService {
         Card card = new Card();
         card.setId(attempt.getCardId());
 
-        Progress.Id id = new Progress.Id(user, card);
+        Progress.Id id = new Progress.Id(user, card, attempt.isReverse());
 
         Progress progress = progressRepository.findById(id).orElse(new Progress(id));
 

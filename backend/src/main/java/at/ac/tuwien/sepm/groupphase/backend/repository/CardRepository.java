@@ -65,12 +65,29 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     @EntityGraph(attributePaths = {"deck", "latestRevision"})
     Optional<Card> findById(@Param("cardId") Long cardId);
 
-    @Query("select c from Card c " +
-    "inner join RevisionEdit r on r = c.latestRevision " +
-    "left join Progress p on c.id = p.id.card.id and p.id.user.id = :userId " +
-    "where c.deck.id=:deckId and (current_timestamp >= p.due or p.due is null) " +
-    "order by p.status asc nulls first, p.due asc nulls first")
-    List<Card> findNextCards(@Param("deckId") Long deckId, @Param("userId") Long userId, Pageable pageable);
+
+    // Using native query due to performance issues with the jqpl version (> 500ms for 1000 cards with progress)
+    static final String findNextCardsQuery = " FROM cards c " +
+        " INNER JOIN revision_edits re ON c.latest_revision = re.id" +
+        " LEFT OUTER JOIN progress p ON (" +
+            " c.id = p.card_id " +
+            " AND p.user_id = :userId" +
+            " AND p.reverse = :reverse" +
+        " )" +
+        " WHERE c.deck_id = :deckId AND (p.due IS NULL OR NOW() >= p.due)";
+    static final String findNextCardsOrder = " ORDER BY p.status ASC NULLS FIRST, p.due ASC NULLS FIRST";
+    /**
+     * Find next cards to learn
+     *
+     * @param deckId of the deck
+     * @param userId of the learning user
+     * @param reverse learn back to front instead of front to back
+     * @param pageable pagination config
+     */
+    @Query(nativeQuery = true,
+        value = "SELECT *" + findNextCardsQuery + findNextCardsOrder,
+        countQuery = "SELECT count(*)" + findNextCardsQuery)
+    List<Card> findNextCards(@Param("deckId") Long deckId, @Param("userId") Long userId, @Param("reverse") boolean reverse, Pageable pageable);
 
     /**
      * Filter front texts by existing front texts in deck

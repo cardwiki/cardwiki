@@ -7,6 +7,7 @@ import { NotificationService } from 'src/app/services/notification.service';
 import { TitleService } from 'src/app/services/title.service';
 import {DeckProgressDetails} from '../../dtos/deckProgressDetails';
 import {DeckService} from '../../services/deck.service';
+import { DeckProgress } from 'src/app/dtos/deckProgress';
 
 @Component({
   selector: 'app-dashboard',
@@ -16,10 +17,11 @@ import {DeckService} from '../../services/deck.service';
 export class DashboardComponent implements OnInit {
 
   favorites: Page<DeckSimple>;
-  learned: Page<DeckProgressDetails>;
+  progressList: ProgressEntry[];
+  progressPage: Page<DeckProgressDetails>;
 
   readonly favoritesPageSize = 10;
-  readonly learnedPageSize = 10;
+  readonly learnedPageSize = 15;
 
   constructor(
     private favoriteService: FavoriteService,
@@ -57,16 +59,26 @@ export class DashboardComponent implements OnInit {
   loadLearnedPage(page: number) {
     const pageable = new Pageable(page - 1, this.learnedPageSize);
     this.deckService.getLearnedDecks(pageable)
-      .subscribe(decks => this.learned = decks);
+      .subscribe(decks => {
+        this.progressPage = decks;
+        this.progressList = decks.content.flatMap(({ deckId, deckName, normal, reverse }) => {
+          return [
+            normal ? {deckId, deckName, reverse: false, ...normal } : null,
+            reverse ? {deckId, deckName, reverse: true, ...reverse } : null,
+          ].filter(p => p !== null);
+        });
+      });
   }
 
-  deleteProgress(event: any, progress: DeckProgressDetails): void {
+  deleteProgress(event: any, progress: ProgressEntry): void {
     event.stopPropagation();
     event.preventDefault();
-    if (confirm(`Do you want to permanently delete your progress for deck '${progress.deckName}'`)) {
-      this.deckService.deleteProgress(progress.deckId).subscribe(_ => {
-        this.learned.content = this.learned.content.filter(p => p !== progress);
+    if (confirm(`Do you want to permanently delete your progress for deck '${progress.deckName}'${progress.reverse ? ' (reverse)' : ''}`)) {
+      this.deckService.deleteProgress(progress.deckId, progress.reverse).subscribe(() => {
+        this.loadLearnedPage(1);
       });
     }
   }
 }
+
+type ProgressEntry = DeckProgress & { deckId: number, deckName: string, reverse: boolean };

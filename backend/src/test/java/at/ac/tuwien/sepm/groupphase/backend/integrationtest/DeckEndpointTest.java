@@ -408,20 +408,6 @@ public class DeckEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    public void getProgress_loggedInDeckExists_returnsOk() throws Exception {
-        Agent agent = persistentAgent();
-        Deck deck = agent.createDeck();
-        for (int i = 0; i < 3; i++) {
-            agent.createCardIn(deck);
-        }
-        mvc.perform(get("/api/v1/decks/{id}/progress", deck.getId()).with(login(givenUserAuthId())))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.newCount").value(3))
-            .andExpect(jsonPath("$.learningCount").value(0))
-            .andExpect(jsonPath("$.toReviewCount").value(0));
-    }
-
-    @Test
     public void getDeckReturnsDeck() throws Exception {
         Agent agent = persistentAgent();
         Deck deck = agent.createDeck();
@@ -578,7 +564,7 @@ public class DeckEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    public void whenCardInDeckHasProgress_thenGetLearnedDecks_returnsDeck() throws Exception {
+    public void whenCardInDeckHasProgress_thenGetLearnedDecks_returnsDecksWithProgress() throws Exception {
         Agent agent = persistentAgent();
         User user = agent.getUser();
         Deck deck = agent.createDeck();
@@ -586,9 +572,10 @@ public class DeckEndpointTest extends TestDataGenerator {
         Card card2 = agent.createCardIn(deck);
         Card card3 = agent.createCardIn(deck);
         Card card4 = agent.createCardIn(deck);
-        agent.createProgress(card2, Progress.Status.LEARNING);
-        agent.createProgress(card3, Progress.Status.REVIEWING);
-        agent.createProgress(card4, Progress.Status.REVIEWING);
+        agent.createProgress(card2, Progress.Status.LEARNING, false);
+        agent.createProgress(card3, Progress.Status.REVIEWING, false);
+        agent.createProgress(card4, Progress.Status.REVIEWING, false);
+        agent.createProgress(card4, Progress.Status.REVIEWING, true);
 
         mvc.perform(get("/api/v1/decks/progress")
             .with(login(user.getAuthId())))
@@ -596,9 +583,28 @@ public class DeckEndpointTest extends TestDataGenerator {
             .andExpect(jsonPath("$.content", hasSize(1)))
             .andExpect(jsonPath("$.content[0].deckId").value(deck.getId()))
             .andExpect(jsonPath("$.content[0].deckName").value(deck.getName()))
-            .andExpect(jsonPath("$.content[0].newCount").value(1))
-            .andExpect(jsonPath("$.content[0].learningCount").value(1))
-            .andExpect(jsonPath("$.content[0].toReviewCount").value(2));
+            .andExpect(jsonPath("$.content[0].normal.newCount").value(1))
+            .andExpect(jsonPath("$.content[0].normal.learningCount").value(1))
+            .andExpect(jsonPath("$.content[0].normal.toReviewCount").value(2))
+            .andExpect(jsonPath("$.content[0].reverse.newCount").value(3))
+            .andExpect(jsonPath("$.content[0].reverse.learningCount").value(0))
+            .andExpect(jsonPath("$.content[0].reverse.toReviewCount").value(1));
+    }
+
+    @Test
+    public void whenNoReverse_thenGetLearnedDecks_returnsDecksWithNoReverseProgress() throws Exception {
+        Agent agent = persistentAgent();
+        User user = agent.getUser();
+        Deck deck = agent.createDeck();
+        Card card = agent.createCardIn(deck);
+        agent.createProgress(card, Progress.Status.LEARNING, false);
+
+        mvc.perform(get("/api/v1/decks/progress")
+            .with(login(user.getAuthId())))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.content", hasSize(1)))
+            .andExpect(jsonPath("$.content[0].normal").exists())
+            .andExpect(jsonPath("$.content[0].reverse").doesNotExist());
     }
 
     @Test
@@ -608,7 +614,7 @@ public class DeckEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    public void deleteUserProgressReturnsOk() throws Exception {
+    public void deleteUserProgressReturnsNoContent() throws Exception {
         Agent agent = persistentAgent();
         User user = agent.getUser();
         Deck deck = agent.createDeck();
@@ -619,8 +625,20 @@ public class DeckEndpointTest extends TestDataGenerator {
     }
 
     @Test
+    public void deleteUserProgressReverseReturnsNoContent() throws Exception {
+        Agent agent = persistentAgent();
+        User user = agent.getUser();
+        Deck deck = agent.createDeck();
+
+        mvc.perform(delete("/api/v1/decks/{deckId}/progress", deck.getId())
+            .queryParam("reverse", "true")
+            .with(login(user.getAuthId())))
+            .andExpect(status().isNoContent());
+    }
+
+    @Test
     public void deleteUserProgressForAnonymousThrowsForbidden() throws Exception {
-        mvc.perform(get("/api/v1/decks/{deckId}/progress", 123L))
+        mvc.perform(delete("/api/v1/decks/{deckId}/progress", 123L))
             .andExpect(status().isForbidden());
     }
 
@@ -637,13 +655,14 @@ public class DeckEndpointTest extends TestDataGenerator {
         User user = agent.getUser();
         Deck deck = agent.createDeck();
         Card card = agent.createCardIn(deck);
-        agent.createProgress(card, Progress.Status.LEARNING);
+        agent.createProgress(card, Progress.Status.LEARNING, true);
 
         mvc.perform(delete("/api/v1/decks/{deckId}/progress", deck.getId())
+            .queryParam("reverse", "true")
             .with(login(user.getAuthId())))
             .andExpect(status().isNoContent());
 
-        mvc.perform(get("/api/v1/decks/progress", deck.getId())
+        mvc.perform(get("/api/v1/decks/progress")
             .with(login(user.getAuthId())))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.content").isEmpty());

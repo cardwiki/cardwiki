@@ -3,7 +3,7 @@ package at.ac.tuwien.sepm.groupphase.backend.endpoint.dto;
 import lombok.Data;
 
 import java.util.List;
-import java.time.LocalDateTime; 
+import java.time.LocalDateTime;
 
 @Data
 public class UserExportDto {

@@ -108,14 +108,6 @@ public class DeckEndpoint {
     }
 
     @Secured("ROLE_USER")
-    @GetMapping("/{id}/progress")
-    @ApiOperation(value = "Get deck progress of current user", authorizations = @Authorization("user"))
-    public DeckProgressDto getDeckProgress(@PathVariable Long id){
-        LOGGER.info("GET /api/v1/decks/{}/progress", id);
-        return deckService.getProgress(id);
-    }
-
-    @Secured("ROLE_USER")
     @GetMapping("/progress")
     @ApiOperation(value = "Get all learned decks", authorizations = @Authorization("user"))
     public Page<DeckProgressDetailsDto> getLearnedDecks(@SortDefault(direction = Sort.Direction.ASC) Pageable pageable) {
@@ -127,9 +119,9 @@ public class DeckEndpoint {
     @DeleteMapping("/{id}/progress")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiOperation(value = "Remove user progress for card deck", authorizations = @Authorization("user"))
-    public void deleteUserProgress(@PathVariable Long id) {
-        LOGGER.info("DELETE /api/v1/decks/{}/progress", id);
-        deckService.deleteUserProgress(id);
+    public void deleteUserProgress(@PathVariable Long id, @RequestParam(defaultValue = "false") boolean reverse) {
+        LOGGER.info("DELETE /api/v1/decks/{}/progress", id, reverse);
+        deckService.deleteUserProgress(id, reverse);
     }
 
     @GetMapping(value = "/{id}", produces = "text/csv")

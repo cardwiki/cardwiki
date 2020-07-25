@@ -42,6 +42,7 @@ public class ProgressRepositoryTest extends TestDataGenerator {
             cardRepository.findNextCards(
                 deck.getId(),
                 user.getId(),
+                false,
                 Pageable.unpaged()
             ).size()
         );
@@ -53,19 +54,14 @@ public class ProgressRepositoryTest extends TestDataGenerator {
         User user = agent.getUser();
         Deck deck = agent.createDeck();
         Card card = agent.createCardIn(deck);
-
-        Progress progress = new Progress();
-        progress.setEasinessFactor(0);
-        progress.setStatus(Progress.Status.LEARNING);
-        progress.setInterval(0);
-        progress.setDue(LocalDateTime.now().minusMinutes(1));
-        agent.createProgress(card, progress);
+        agent.createProgressDue(card, false);
 
         assertEquals(
             1,
             cardRepository.findNextCards(
                 deck.getId(),
                 user.getId(),
+                false,
                 Pageable.unpaged()
             ).size()
         );
@@ -77,19 +73,52 @@ public class ProgressRepositoryTest extends TestDataGenerator {
         User user = agent.getUser();
         Deck deck = agent.createDeck();
         Card card = agent.createCardIn(deck);
-
-        Progress progress = new Progress();
-        progress.setEasinessFactor(0);
-        progress.setStatus(Progress.Status.LEARNING);
-        progress.setInterval(0);
-        progress.setDue(LocalDateTime.now().plusMinutes(1));
-        agent.createProgress(card, progress);
+        agent.createProgressNotDue(card, false);
 
         assertEquals(
             0,
             cardRepository.findNextCards(
                 deck.getId(),
                 user.getId(),
+                false,
+                Pageable.unpaged()
+            ).size()
+        );
+    }
+
+    @Test
+    public void givenDueReverseCard_whenFindNext_thenReturnCard() {
+        Agent agent = persistentAgent();
+        User user = agent.getUser();
+        Deck deck = agent.createDeck();
+        Card card = agent.createCardIn(deck);
+        agent.createProgressDue(card, true);
+
+        assertEquals(
+            1,
+            cardRepository.findNextCards(
+                deck.getId(),
+                user.getId(),
+                true,
+                Pageable.unpaged()
+            ).size()
+        );
+    }
+
+    @Test
+    public void givenNotDueReverseCard_whenFindNextNormal_thenReturnSingleResult() {
+        Agent agent = persistentAgent();
+        User user = agent.getUser();
+        Deck deck = agent.createDeck();
+        Card card = agent.createCardIn(deck);
+        agent.createProgressNotDue(card, true);
+
+        assertEquals(
+            1,
+            cardRepository.findNextCards(
+                deck.getId(),
+                user.getId(),
+                false,
                 Pageable.unpaged()
             ).size()
         );
@@ -108,6 +137,7 @@ public class ProgressRepositoryTest extends TestDataGenerator {
             cardRepository.findNextCards(
                 deck.getId(),
                 user.getId(),
+                false,
                 Pageable.unpaged()
             ).size()
         );
