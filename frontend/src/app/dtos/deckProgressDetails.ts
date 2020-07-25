@@ -1,10 +1,11 @@
+import { DeckProgress } from './deckProgress';
+
 export class DeckProgressDetails {
   constructor(
     public deckId: number,
     public deckName: string,
-    public newCount: number,
-    public learningCount: number,
-    public toReviewCount: number
+    public normal: DeckProgress,
+    public reverse: DeckProgress,
   ) {
   }
 }

@@ -14,7 +14,7 @@ public interface ProgressRepository extends JpaRepository<Progress,Progress.Id> 
 
     void deleteById_CardId(Long cardId);
 
-    void deleteById_UserIdAndId_Card_Deck_Id(Long userId, Long deckId);
+    void deleteById_UserIdAndId_Card_Deck_IdAndId_Reverse(Long userId, Long deckId, boolean reverse);
 
     boolean existsById_CardId(Long cardId);
 

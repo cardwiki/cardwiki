@@ -19,12 +19,14 @@ export class LearnDeckComponent implements OnInit {
   deck: DeckSimple;
   card: CardSimple;
   flipped: boolean;
+  reverse: boolean;
 
   constructor(private deckService: DeckService, private learnService: LearnService, private route: ActivatedRoute, public globals: Globals,
               private titleService: TitleService) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
+      this.reverse = 'reverse' in this.route.snapshot.queryParams;
       this.loadDeck(Number(params.get('id')));
       this.getNextCard(Number(params.get('id')));
     });
@@ -59,9 +61,12 @@ export class LearnDeckComponent implements OnInit {
 
   getNextCard(deckId: number) {
     // TODO: Fetch more cards with one query
-    this.learnService.getNextCards(deckId, new Pageable(0, 1))
+    this.learnService.getNextCards(deckId, this.reverse, new Pageable(0, 1))
       .subscribe(cards => {
         console.log('next cards list: ', cards);
+        if (this.reverse) {
+          cards = cards.map(c => this.reverseCard(c));
+        }
         this.card = cards.length ? cards[0] : null;
         this.flipped = false;
       },
@@ -70,13 +75,27 @@ export class LearnDeckComponent implements OnInit {
       });
   }
 
+  /**
+   * Exchange front and back side of a card
+   *
+   * @param card card where front and back will be replaced
+   */
+  reverseCard(card: CardSimple): CardSimple {
+    return new CardSimple(card.id,
+      card.textBack,
+      card.textFront,
+      card.imageBackUrl,
+      card.imageFrontUrl,
+    );
+  }
+
   onFlip() {
     this.flipped = true;
   }
 
   async onNext(status: AttemptStatus) {
     console.log('onNext: ' + status);
-    this.learnService.sendAttemptStatus(new LearnAttempt(this.card.id, status))
+    this.learnService.sendAttemptStatus(new LearnAttempt(this.card.id, status, this.reverse))
       .subscribe(() => this.getNextCard(this.deck.id));
   }
 

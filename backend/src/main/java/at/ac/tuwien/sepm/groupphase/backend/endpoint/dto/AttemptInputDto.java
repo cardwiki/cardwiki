@@ -9,6 +9,7 @@ public class AttemptInputDto {
     private Long cardId;
     @NotNull
     private Status status;
+    private boolean reverse;
 
     public enum Status {
         AGAIN,

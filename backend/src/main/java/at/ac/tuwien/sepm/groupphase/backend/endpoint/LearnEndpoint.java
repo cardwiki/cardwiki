@@ -46,10 +46,10 @@ public class LearnEndpoint {
     @Secured("ROLE_USER")
     @GetMapping("/next")
     @ApiOperation(value = "Get the next cards of a deck to learn", authorizations = {@Authorization("user")})
-    public List<CardSimpleDto> getNextCards(@RequestParam Long deckId, Pageable pageable){
+    public List<CardSimpleDto> getNextCards(@RequestParam long deckId, @RequestParam(defaultValue = "false") boolean reverse, Pageable pageable){
         // TODO: Return page so the frontend knows how many more cards can be learned
-        LOGGER.info("GET /api/v1/learn/next?deckId={} {}", deckId, pageable);
-        return learnService.findNextCardsByDeckId(deckId, pageable).stream()
+        LOGGER.info("GET /api/v1/learn/next?deckId={}&reverse={} {}", deckId, reverse, pageable);
+        return learnService.findNextCards(deckId, reverse, pageable).stream()
             .map(card -> revisionMapper.revisionEditToCardSimpleDto((RevisionEdit) card.getLatestRevision()))
             .collect(Collectors.toList());
     }

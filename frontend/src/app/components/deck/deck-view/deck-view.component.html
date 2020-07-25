@@ -53,13 +53,16 @@
     <div class="row justify-content-between">
       <div class="col">
         <div class="row align-items-center">
-          <div class="mr-2" *ngIf="progress">
-            <span class=text-primary>{{progress.newCount}} new</span>&nbsp;
-            <span class=text-danger>{{progress.learningCount}} learning</span>&nbsp;
-            <span class=text-success>{{progress.toReviewCount}} to review</span>
+          <div class="btn-group">
+            <a routerLink="/learn/{{deck.id}}"  class="btn btn-primary">Learn</a>
+            <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="sr-only">Toggle Learning Dropdown</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right">
+              <a class="dropdown-item" routerLink="/learn/{{deck.id}}" [queryParams]="{reverse: ''}">Learn in Reverse</a>
+              <a class="dropdown-item" routerLink="/decks/{{deck.id}}/preview">Preview</a>
+            </div>
           </div>
-          <a routerLink="/learn/{{deck.id}}" class="btn btn-primary mr-1">Learn</a>
-          <a routerLink="/decks/{{deck.id}}/preview" class="btn btn-light ml-1">Preview</a>
         </div>
       </div>
       <div class="col">

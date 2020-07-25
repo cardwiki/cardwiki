@@ -4,6 +4,7 @@ import at.ac.tuwien.sepm.groupphase.backend.profiles.datagenerator.Agent;
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
+import at.ac.tuwien.sepm.groupphase.backend.entity.Progress;
 import at.ac.tuwien.sepm.groupphase.backend.entity.RevisionEdit;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,6 +16,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
+
+import static org.hamcrest.Matchers.hasSize;
 import static at.ac.tuwien.sepm.groupphase.backend.integrationtest.security.MockedLogins.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -35,7 +39,18 @@ public class LearnEndpointTest extends TestDataGenerator {
 
         mvc.perform(
             get("/api/v1/learn/next")
+                .queryParam("reverse", "false")
                 .with(mockLogin(USER_ROLES, user.getAuthId()))
+                .contentType("application/json")
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void givenAuthenticatedUser_whenGetNext_noReverseSpecified_then400() throws Exception {
+        mvc.perform(
+            get("/api/v1/learn/next")
+                .queryParam("deckId", "99")
+                .with(login(givenUserAuthId()))
                 .contentType("application/json")
         ).andExpect(status().isBadRequest());
     }
@@ -45,7 +60,9 @@ public class LearnEndpointTest extends TestDataGenerator {
         User user = givenApplicationUser();
 
         mvc.perform(
-            get("/api/v1/learn/next").queryParam("deckId", "99")
+            get("/api/v1/learn/next")
+                .queryParam("deckId", "99")
+                .queryParam("reverse", "false")
                 .with(mockLogin(USER_ROLES, user.getAuthId()))
                 .contentType("application/json")
         ).andExpect(status().isBadRequest());
@@ -57,22 +74,83 @@ public class LearnEndpointTest extends TestDataGenerator {
         Deck deck = givenDeck();
 
         mvc.perform(
-            get("/api/v1/learn/next").queryParam("deckId", deck.getId().toString())
+            get("/api/v1/learn/next")
+                .queryParam("deckId", deck.getId().toString())
+                .queryParam("reverse", "false")
                 .with(mockLogin(USER_ROLES, user.getAuthId()))
                 .contentType("application/json")
         ).andExpect(status().isOk()).andExpect(content().json("[]"));
     }
 
     @Test
-    public void givenAuthenticatedUser_whenGetNext_cardExists_then200() throws Exception {
+    public void givenAuthenticatedUser_whenGetNext_newCard_then200() throws Exception {
         User user = givenApplicationUser();
         RevisionEdit edit = givenRevisionEdit();
 
         mvc.perform(
-            get("/api/v1/learn/next").queryParam("deckId", edit.getCard().getDeck().getId().toString())
+            get("/api/v1/learn/next")
+                .queryParam("deckId", edit.getCard().getDeck().getId().toString())
+                .queryParam("reverse", "false")
                 .with(mockLogin(USER_ROLES, user.getAuthId()))
                 .contentType("application/json")
         ).andExpect(status().isOk()).andExpect(jsonPath("$[0].textFront").value(edit.getTextFront()));
+    }
+
+    @Test
+    public void givenAuthenticatedUser_whenGetNextReverse_dueReverseCard_thenSingleResult() throws Exception {
+        Agent agent = persistentAgent();
+        User user = agent.getUser();
+        Deck deck = agent.createDeck();
+        Card card = agent.createCardIn(deck);
+        agent.createProgressDue(card, true);
+
+        mvc.perform(
+            get("/api/v1/learn/next")
+                .queryParam("deckId", deck.getId().toString())
+                .queryParam("reverse", "true")
+                .with(login(user.getAuthId()))
+                .contentType("application/json")
+            )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(1)));
+    }
+
+    @Test
+    public void givenAuthenticatedUser_andNotDueReverseCard_whenGetNextNormal_thenSingleResult() throws Exception {
+        Agent agent = persistentAgent();
+        User user = agent.getUser();
+        Deck deck = agent.createDeck();
+        Card card = agent.createCardIn(deck);
+        agent.createProgressNotDue(card, true);
+
+        mvc.perform(
+            get("/api/v1/learn/next")
+                .queryParam("deckId", deck.getId().toString())
+                .queryParam("reverse", "false")
+                .with(login(user.getAuthId()))
+                .contentType("application/json")
+            )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(1)));
+    }
+
+    @Test
+    public void givenAuthenticatedUser_whenGetNext_cardNotDue_thenEmpty() throws Exception {
+        Agent agent = persistentAgent();
+        User user = agent.getUser();
+        Deck deck = agent.createDeck();
+        Card card = agent.createCardIn(deck);
+        agent.createProgressNotDue(card, true);
+
+        mvc.perform(
+            get("/api/v1/learn/next")
+                .queryParam("deckId", deck.getId().toString())
+                .queryParam("reverse", "true")
+                .with(login(user.getAuthId()))
+                .contentType("application/json")
+            )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$").isEmpty());
     }
 
     @Test
@@ -84,6 +162,7 @@ public class LearnEndpointTest extends TestDataGenerator {
 
         mvc.perform(get("/api/v1/learn/next")
             .queryParam("deckId", deck.getId().toString())
+            .queryParam("reverse", "false")
             .with(login(givenUserAuthId())))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").isEmpty());
@@ -91,19 +170,47 @@ public class LearnEndpointTest extends TestDataGenerator {
 
     @Test
     public void givenAuthenticatedUser_whenPostAttempt_then201() throws Exception {
-        User user = givenApplicationUser();
-        Card card = givenCard();
+        Agent agent = persistentAgent();
+        Deck deck = agent.createDeck();
+        Card card = agent.createCardIn(deck);
 
         ObjectNode input = objectMapper.createObjectNode();
         input.put("cardId", card.getId());
         input.put("status", "AGAIN");
+
         mvc.perform(
             post("/api/v1/learn/attempt")
-                .with(mockLogin(USER_ROLES, user.getAuthId()))
+                .with(login(givenUserAuthId()))
                 .contentType("application/json")
                 .content(input.toString())
         )
             .andExpect(status().isCreated());
+    }
+
+    @Test
+    public void givenAuthenticatedUser_whenPostAttemptReverse_thenFindNext_isEmpty() throws Exception {
+        Agent agent = persistentAgent();
+        User user = agent.getUser();
+        Deck deck = agent.createDeck();
+        Card card = agent.createCardIn(deck);
+
+        ObjectNode input = objectMapper.createObjectNode();
+        input.put("cardId", card.getId());
+        input.put("status", "AGAIN");
+        input.put("reverse", "true");
+
+        mvc.perform(post("/api/v1/learn/attempt")
+            .with(login(user.getAuthId()))
+            .contentType("application/json")
+            .content(input.toString()))
+            .andExpect(status().isCreated());
+
+        mvc.perform(get("/api/v1/learn/next")
+            .queryParam("deckId", deck.getId().toString())
+            .queryParam("reverse", "true")
+            .with(login(user.getAuthId())))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$").isEmpty());
     }
 
     @Test

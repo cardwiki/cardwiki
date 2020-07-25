@@ -51,7 +51,7 @@ public class LearnServiceTest extends TestDataGenerator {
 
         assertThrows(
             BadRequestException.class,
-            () -> learnService.findNextCardsByDeckId(1L, Pageable.unpaged())
+            () -> learnService.findNextCards(1L, false, Pageable.unpaged())
         );
     }
 

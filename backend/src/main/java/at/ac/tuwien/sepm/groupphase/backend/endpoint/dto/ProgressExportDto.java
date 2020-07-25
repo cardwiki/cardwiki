@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 public class ProgressExportDto {
     private Long cardId;
     private DeckSimpleDto deck;
+    private boolean reverse;
     private RevisionExportDto latestRevision;
     private LocalDateTime due;
     private Double easinessFactor;

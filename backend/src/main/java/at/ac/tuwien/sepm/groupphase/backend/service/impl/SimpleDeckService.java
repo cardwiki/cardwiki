@@ -67,6 +67,7 @@ public class SimpleDeckService implements DeckService {
         return deck.orElseThrow(() -> new DeckNotFoundException(String.format("Could not find card deck with id %s", id)));
     }
 
+    @Transactional
     @Override
     public Page<Deck> searchByName(String name, Pageable pageable) {
         LOGGER.debug("Search card decks for name {} {}", name, pageable);
@@ -149,6 +150,7 @@ public class SimpleDeckService implements DeckService {
         return deck;
     }
 
+    @Transactional
     @Override
     public void delete(Long id) {
         LOGGER.debug("Delete deck with id {}", id);
@@ -159,45 +161,53 @@ public class SimpleDeckService implements DeckService {
         }
 	}
 
+    @Transactional
+    @Override
     public Page<Revision> getRevisions(Long id, Pageable pageable) {
         LOGGER.debug("Load {} revisions with offset {} from deck {}", pageable.getPageSize(), pageable.getOffset(), id);
         return revisionRepository.findByCard_Deck_Id(id, pageable);
     }
 
     @Override
-    public DeckProgressDto getProgress(Long deckId) {
-        LOGGER.debug("Get Progress for deck with id {}", deckId);
-        long userId = userService.loadCurrentUserOrThrow().getId();
-        int learning = deckRepository.countProgressStatuses(deckId, userId, Progress.Status.LEARNING);
-        int reviewing = deckRepository.countProgressStatuses(deckId, userId, Progress.Status.REVIEWING);
-
-        return new DeckProgressDto(deckRepository.countCards(deckId) - learning - reviewing, learning, reviewing);
-    }
-
-    @Override
     @Transactional
     public Page<DeckProgressDetailsDto> getLearnedDecksWithStatus(Pageable pageable) {
         LOGGER.debug("Get learned decks");
-        long userId = userService.loadCurrentUserOrThrow().getId();
-        return deckRepository.findByUserProgress(userId, pageable)
-            .map(x -> {
-                DeckProgressDetailsDto deckProgressDetailsDto = new DeckProgressDetailsDto();
-                deckProgressDetailsDto.setDeckId(x.getId());
-                deckProgressDetailsDto.setDeckName(x.getName());
-                deckProgressDetailsDto.setLearningCount(deckRepository.countProgressStatuses(x.getId(), userId, Progress.Status.LEARNING));
-                deckProgressDetailsDto.setToReviewCount(deckRepository.countProgressStatuses(x.getId(), userId, Progress.Status.REVIEWING));
-                deckProgressDetailsDto.setNewCount(deckRepository.countCards(x.getId()) - deckProgressDetailsDto.getLearningCount() - deckProgressDetailsDto.getToReviewCount());
-                return deckProgressDetailsDto;
-            });
+        User user = userService.loadCurrentUserOrThrow();
+        return deckRepository.findByUserProgress(user, pageable)
+            .map(deck -> getDeckProgressDetails(deck, user));
+    }
+
+    @Transactional
+    public DeckProgressDetailsDto getDeckProgressDetails(Deck deck, User user) {
+        DeckProgressDetailsDto deckProgressDetailsDto = new DeckProgressDetailsDto();
+        deckProgressDetailsDto.setDeckId(deck.getId());
+        deckProgressDetailsDto.setDeckName(deck.getName());
+        deckProgressDetailsDto.setNormal(getDeckProgress(deck, user, false));
+        deckProgressDetailsDto.setReverse(getDeckProgress(deck, user, true));
+        return deckProgressDetailsDto;
+    }
+
+    /**
+     * @return deck progress or null if no progress has been made
+     */
+    @Transactional
+    public DeckProgressDto getDeckProgress(Deck deck, User user, boolean reverse) {
+        DeckProgressDto dto = new DeckProgressDto();
+        dto.setLearningCount(deckRepository.countProgressStatuses(user, deck, reverse, Progress.Status.LEARNING));
+        dto.setToReviewCount(deckRepository.countProgressStatuses(user, deck, reverse, Progress.Status.REVIEWING));
+        if (dto.getLearningCount() == 0 && dto.getToReviewCount() == 0)
+            return null;
+        dto.setNewCount(deckRepository.countCards(deck) - dto.getLearningCount() - dto.getToReviewCount());
+        return dto;
     }
 
     @Override
     @Transactional
-    public void deleteUserProgress(Long deckId) {
-        LOGGER.debug("Delete progress for deck with id {}", deckId);
+    public void deleteUserProgress(Long deckId, boolean reverse) {
+        LOGGER.debug("Delete progress for deck with id {} reverse={}", deckId, reverse);
         Long userId = userService.loadCurrentUserOrThrow().getId();
         findOneOrThrow(deckId);
-        progressRepository.deleteById_UserIdAndId_Card_Deck_Id(userId, deckId);
+        progressRepository.deleteById_UserIdAndId_Card_Deck_IdAndId_Reverse(userId, deckId, reverse);
     }
 
     @Override
@@ -246,7 +256,7 @@ public class SimpleDeckService implements DeckService {
                     throw new BadRequestException("Front side may not be empty");
                 if (revisionCreate.getTextBack().trim().isEmpty())
                     throw new BadRequestException("Back side may not be empty");
-                
+
                 return revisionCreate;
             }).collect(Collectors.toList());
         List<String> parsedFrontTexts = parsedRevisions.stream().map(RevisionEdit::getTextFront).collect(Collectors.toList());

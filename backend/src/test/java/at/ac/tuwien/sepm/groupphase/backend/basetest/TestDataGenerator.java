@@ -169,21 +169,6 @@ public abstract class TestDataGenerator {
         return categoryRepository.saveAndFlush(category);
     }
 
-    @Deprecated
-    public Progress givenProgress() {
-        User user = givenApplicationUser();
-        Card card = givenCard();
-
-        Progress.Id id = new Progress.Id(user, card);
-        Progress progress = new Progress(id);
-        progress.setDue(LocalDateTime.now());
-
-        em.persist(progress);
-        em.flush();
-
-        return progress;
-    }
-
     public Image givenImage() {
         User user = givenApplicationUser();
         Image image = new Image();

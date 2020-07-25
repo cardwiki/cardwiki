@@ -1,7 +1,8 @@
 export class LearnAttempt {
   constructor(
     public cardId: number,
-    public status: AttemptStatus
+    public status: AttemptStatus,
+    public reverse: boolean,
   ) { }
 }
 

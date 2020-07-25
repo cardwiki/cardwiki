@@ -3,6 +3,7 @@ package at.ac.tuwien.sepm.groupphase.backend.repository;
 
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Progress;
+import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -80,28 +81,32 @@ public interface DeckRepository extends JpaRepository<Deck, Long> {
 
     /**
      * Count how many cards a given deck contains that have the given status for the given user
-     * @param deckId
-     * @param userId
+     * @param user
+     * @param deck
      * @param status
      * @return Count how many cards a given deck contains that have the given status for the given user
      */
-    @Query("SELECT count(*) FROM Card c inner join RevisionEdit r on r=c.latestRevision LEFT JOIN Progress p ON c = p.id.card WHERE p.id.user.id = :userId AND c.deck.id = :deckId AND p.status = :status")
-    int countProgressStatuses(@Param("deckId") Long deckId, @Param("userId") Long userId, @Param("status") Progress.Status status);
+    @Query("SELECT count(c)" +
+        " FROM Card c" +
+        " INNER JOIN RevisionEdit r ON r=c.latestRevision" + // Exclude deleted cards
+        " INNER JOIN Progress p ON c = p.id.card" +
+        " WHERE p.id.user = :user AND p.id.card.deck = :deck AND p.id.reverse = :reverse AND p.status = :status")
+    int countProgressStatuses(@Param("user") User user, @Param("deck") Deck deck, @Param("reverse") boolean reverse, @Param("status") Progress.Status status);
 
     /**
      * Count cards in deck
-     * @param deckId
+     * @param deck
      * @return how many cards are in the deck
      */
-    @Query("SELECT count(*) FROM Card c inner join RevisionEdit r on r=c.latestRevision WHERE c.deck.id = :deckId")
-    int countCards(@Param("deckId") long deckId);
+    @Query("SELECT count(c) FROM Card c inner join RevisionEdit r on r=c.latestRevision WHERE c.deck = :deck")
+    int countCards(@Param("deck") Deck deck);
 
     /**
      * Return all decks learned by a user.
-     * @param userId of the user.
+     * @param user
      * @param pageable pagination parameters for the query.
      * @return decks learned by user
      */
-    @Query("SELECT d FROM Deck d WHERE d.id IN (SELECT DISTINCT c.deck.id FROM Card c INNER JOIN RevisionEdit r ON r = c.latestRevision INNER JOIN Progress p ON r.card = p.id.card WHERE p.id.user.id = :userId)")
-    Page<Deck> findByUserProgress(@Param("userId") long userId, Pageable pageable);
+    @Query("SELECT d FROM Deck d WHERE d.id IN (SELECT DISTINCT c.deck.id FROM Card c INNER JOIN RevisionEdit r ON r = c.latestRevision INNER JOIN Progress p ON r.card = p.id.card WHERE p.id.user = :user)")
+    Page<Deck> findByUserProgress(@Param("user") User user, Pageable pageable);
 }

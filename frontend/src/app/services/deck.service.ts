@@ -10,7 +10,6 @@ import { ErrorHandlerService } from './error-handler.service';
 import { catchError } from 'rxjs/operators';
 import { Page } from '../dtos/page';
 import { Pageable } from '../dtos/pageable';
-import { DeckProgress } from '../dtos/deckProgress';
 import {RevisionDetailed} from '../dtos/revisionDetailed';
 import {DeckProgressDetails} from '../dtos/deckProgressDetails';
 
@@ -122,15 +121,6 @@ export class DeckService {
   }
 
   /**
-   * Fetches progress of the given deck
-   */
-  fetchProgress(deckId: number): Observable<DeckProgress> {
-    console.log(`fetch progress deck with id ${deckId}`);
-    return this.httpClient.get<DeckProgress>(this.deckBaseUri + '/' + deckId + '/progress')
-      .pipe(catchError(this.errorHandler.handleError('Could not fetch progress')));
-  }
-
-  /**
    * Fetches the learned decks
    *
    * @param pageable pagination parameters
@@ -147,11 +137,12 @@ export class DeckService {
    * Delete the progress of the current user for deck id
    *
    * @param id of the deck
+   * @param reverse for which direction the progress should be deleted
    */
-  deleteProgress(id: number): Observable<void> {
-    console.log('delete progress for deck ' + id);
-
-    return this.httpClient.delete<void>(this.deckBaseUri + '/' + id + '/progress')
+  deleteProgress(id: number, reverse: boolean): Observable<void> {
+    console.log(`delete progress for deck ${id} reverse=${reverse}`);
+    const params = { reverse: reverse ? 'true' : 'false' };
+    return this.httpClient.delete<void>(this.deckBaseUri + '/' + id + '/progress', { params })
       .pipe(catchError(this.errorHandler.handleError('Could not delete progress')));
   }
 }
