@@ -24,6 +24,6 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
-    - run: mvn test
     - run: mvn spring-boot:run -Dspring-boot.run.profiles=dev -Dspring-boot.run.arguments=--ci=yes
+    - run: mvn test
     - uses: codecov/codecov-action@v1
