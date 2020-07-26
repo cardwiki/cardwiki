@@ -94,7 +94,7 @@ public class DataGenerator {
         generateSuperLargeTestDeck();
         generateJapaneseDeck();
 
-        if (ci != null){
+        if (ci != null && ci.equals("true")){
             LOGGER.info("Detected CI mode ... shutting down");
             SpringApplication.exit(appContext, () -> 0);
         }
