@@ -24,6 +24,7 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
-    - run: mvn spring-boot:run -Dspring-boot.run.profiles=dev -Dspring-boot.run.arguments=--ci=true
+    - name: Test data generator
+      run: EXIT=true ./rundev.sh
     - run: mvn test
     - uses: codecov/codecov-action@v1
