@@ -49,8 +49,8 @@ public class DataGenerator {
     @Autowired
     private ApplicationContext appContext;
 
-    @Value("${ci:#{null}}")
-    private String ci;
+    @Value("${exit:#{null}}")
+    private String exit;
 
     public DataGenerator(CardRepository cardRepository, DeckRepository deckRepository, UserRepository userRepository, CategoryRepository categoryRepository) {
         this.cardRepository = cardRepository;
@@ -94,8 +94,8 @@ public class DataGenerator {
         generateSuperLargeTestDeck();
         generateJapaneseDeck();
 
-        if (ci != null && ci.equals("true")){
-            LOGGER.info("Detected CI mode ... shutting down");
+        if (exit != null && exit.equals("true")){
+            LOGGER.info("Detected exit argument ... shutting down");
             SpringApplication.exit(appContext, () -> 0);
         }
     }

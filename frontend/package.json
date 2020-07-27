@@ -13,7 +13,7 @@
     "cypress:run": "cypress run",
     "e2e:ci": "start-test ci:frontend 4200 ci:backend http://localhost:8080/api/v1/auth/whoami cypress:run",
     "ci:frontend": "serve -s -l 4200 dist/cardwiki/",
-    "ci:backend": "cd ../backend; mvn -q spring-boot:run -Dspring-boot.run.profiles=dev -Dspring-boot.run.arguments=--ci=false"
+    "ci:backend": "cd ../backend; mvn -q spring-boot:run -Dspring-boot.run.profiles=dev"
   },
   "private": true,
   "dependencies": {
