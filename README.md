@@ -5,7 +5,7 @@
 A flashcard learning web app where decks can be edited collaboratively (like in a wiki).
 
 ![Backend Tests](https://github.com/cardwiki/cardwiki/workflows/Backend%20Tests/badge.svg)
-![Frontend compiles](https://github.com/cardwiki/cardwiki/workflows/Frontend%20compiles/badge.svg)
+![Frontend Tests](https://github.com/cardwiki/cardwiki/workflows/Frontend%20Tests/badge.svg)
 ![Backend code coverage](https://codecov.io/gh/cardwiki/cardwiki/branch/master/graph/badge.svg)
 
 ## Features
