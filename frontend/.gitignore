@@ -18,6 +18,9 @@ src/environments/config.prod.ts
 .settings/
 *.sublime-workspace
 
+# eslint
+.eslintcache
+
 # IDE - VSCode
 .vscode/*
 !.vscode/settings.json
