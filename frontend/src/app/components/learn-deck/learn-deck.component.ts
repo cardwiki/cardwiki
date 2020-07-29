@@ -33,7 +33,7 @@ export class LearnDeckComponent implements OnInit {
   }
 
   @HostListener('document:keydown', ['$event'])
-  handleKeyBoardEvent(event: KeyboardEvent) {
+  handleKeyBoardEvent(event: KeyboardEvent): void {
     if (event.key === ' ') {
       this.onFlip();
     } else if (this.flipped) {
@@ -48,7 +48,7 @@ export class LearnDeckComponent implements OnInit {
     }
   }
 
-  loadDeck(id: number) {
+  loadDeck(id: number): void {
     this.deckService.getDeckById(id).subscribe(deck => {
       this.titleService.setTitle(`Learn ${deck.name}`, null);
       console.log(deck);
@@ -59,7 +59,7 @@ export class LearnDeckComponent implements OnInit {
     });
   }
 
-  getNextCard(deckId: number) {
+  getNextCard(deckId: number): void {
     // TODO: Fetch more cards with one query
     this.learnService.getNextCards(deckId, this.reverse, new Pageable(0, 1))
       .subscribe(cards => {
@@ -89,25 +89,25 @@ export class LearnDeckComponent implements OnInit {
     );
   }
 
-  onFlip() {
+  onFlip(): void {
     this.flipped = true;
   }
 
-  async onNext(status: AttemptStatus) {
+  onNext(status: AttemptStatus): void {
     console.log('onNext: ' + status);
     this.learnService.sendAttemptStatus(new LearnAttempt(this.card.id, status, this.reverse))
       .subscribe(() => this.getNextCard(this.deck.id));
   }
 
-  onAgain() {
+  onAgain(): void {
     this.onNext(AttemptStatus.AGAIN);
   }
 
-  onGood() {
+  onGood(): void {
     this.onNext(AttemptStatus.GOOD);
   }
 
-  onEasy() {
+  onEasy(): void {
     this.onNext(AttemptStatus.EASY);
   }
 }

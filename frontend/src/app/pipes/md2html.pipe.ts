@@ -1,5 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import * as MarkdownIt from 'markdown-it';
+// TODO: add definition file for markdown-it-texmath
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Could not find a declaration file for module 'markdown-it-texmath'
 import * as MarkdownItTexmath from 'markdown-it-texmath';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';

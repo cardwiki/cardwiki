@@ -26,7 +26,7 @@ export class CategoryService {
    * @param name name to search for
    * @param pageable config for pagination
    */
-  searchByName(name: string, pageable: Pageable) {
+  searchByName(name: string, pageable: Pageable): Observable<Page<CategorySimple>> {
     console.log('search categories: ' + name);
     const params = {
       name,
@@ -72,7 +72,7 @@ export class CategoryService {
    *
    * @param id of the category to delete.
    */
-  deleteCategory(id: number) {
+  deleteCategory(id: number): Observable<void> {
     console.log('Delete category with id ' + id);
     return this.httpClient.delete<void>(this.categoryBaseUri + '/' + id)
       .pipe(catchError(this.errorHandler.handleError('Could not delete Category')));

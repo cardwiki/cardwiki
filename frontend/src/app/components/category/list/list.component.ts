@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import { CategorySimple } from 'src/app/dtos/categorySimple';
 
 @Component({
@@ -6,18 +6,13 @@ import { CategorySimple } from 'src/app/dtos/categorySimple';
   templateUrl: './list.component.html',
   styleUrls: ['./list.component.css']
 })
-export class ListComponent implements OnInit {
+export class ListComponent {
 
   @Input() list: CategorySimple[]; // Note: Currently also used with DeckSimple
   @Input() specs: { listSize: number, pageSize: number, page: number };
   @Input() path: string;
 
-  constructor() {
-  }
-
-  trackChange(_index: number, item: CategorySimple) {
+  trackChange(_index: number, item: CategorySimple): number {
     return item.id;
   }
-
-  ngOnInit() {}
 }

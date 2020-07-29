@@ -46,7 +46,7 @@ export class UiStyleToggleService {
     }
   }
 
-  public setThemeOnStart() {
+  public setThemeOnStart(): void {
     if (this.authService.isLoggedIn()) {
       this.username = this.authService.getUserName();
     }
@@ -62,7 +62,7 @@ export class UiStyleToggleService {
     });
   }
 
-  public toggle() {
+  public toggle(): void {
     if (this.darkThemeSelected) {
       this.setLightTheme();
     } else {

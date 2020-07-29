@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CardUpdate } from 'src/app/dtos/cardUpdate';
 import { Globals } from '../../../global/globals';
 import {ImageService} from '../../../services/image.service';
@@ -8,10 +8,10 @@ import {ImageService} from '../../../services/image.service';
   templateUrl: './card-form.component.html',
   styleUrls: ['./card-form.component.css']
 })
-export class CardFormComponent implements OnInit {
+export class CardFormComponent {
 
-  originalFilenameFront: string = 'Choose file';
-  originalFilenameBack: string = 'Choose file';
+  originalFilenameFront = 'Choose file';
+  originalFilenameBack = 'Choose file';
 
   @Input() action: string;
   @Input() card: CardUpdate;
@@ -19,14 +19,12 @@ export class CardFormComponent implements OnInit {
   @Output() cancel: EventEmitter<void> = new EventEmitter();
   constructor(public globals: Globals, public imageService: ImageService) { }
 
-  ngOnInit(): void {
-  }
-
-  autoSizeTextarea({ target: textArea }: any) {
+  autoSizeTextarea(event: Event): void {
+    const textArea = event.target as HTMLElement
     textArea.style.height = Math.max(textArea.offsetHeight, textArea.scrollHeight) + 'px';
   }
 
-  onSubmit() {
+  onSubmit(): void {
     console.log('submitting card form', this.card);
     if (this.card.textFront === '') {
       this.card.textFront = null;
@@ -39,14 +37,16 @@ export class CardFormComponent implements OnInit {
     this.cardSubmit.emit(this.card);
   }
 
-  onCancel() {
+  onCancel(): void {
     console.log('cancelling card form');
     this.cancel.emit();
   }
 
-  async onFileChange(event: any, side: string) {
-    if (event.target.files && event.target.files.length) {
-      const file = <File>event.target.files[0];
+  async onFileChange(event: Event, side: 'front' | 'back'): Promise<void> {
+    console.log('card form onFileChange', event)
+    const target = event.target as HTMLInputElement
+    if (target.files && target.files.length) {
+      const file = target.files[0];
       const formData = new FormData();
       formData.append('file', file, file.name);
 
@@ -60,7 +60,7 @@ export class CardFormComponent implements OnInit {
     }
   }
 
-  removeImage(side: string) {
+  removeImage(side: string): void {
     if (side === 'front') {
       this.card.imageFront = null;
       this.originalFilenameFront = '';

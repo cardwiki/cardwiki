@@ -19,7 +19,7 @@ export class NotificationService {
    * Log and display info for user
    * @param msg message for the user
    */
-  info(msg: string) {
+  info(msg: string): void {
     console.info('notification', msg);
     this.show(msg, {
       classname: 'bg-info text-light',
@@ -30,7 +30,7 @@ export class NotificationService {
    * Log and display success for user
    * @param msg message for the user
    */
-  success(msg: string) {
+  success(msg: string): void {
     console.log('notification', msg);
     this.show(msg, {
       classname: 'bg-success text-light',
@@ -42,7 +42,7 @@ export class NotificationService {
    * Log and display warning for user
    * @param msg message for the user
    */
-  warning(msg: string) {
+  warning(msg: string): void {
     console.warn('notification', msg);
     this.show(msg, {
       classname: 'bg-warning',
@@ -53,7 +53,7 @@ export class NotificationService {
    * Log and display error for user
    * @param msg message for the user
    */
-  error(msg: string) {
+  error(msg: string): void {
     console.error('notification', msg);
     this.show(msg, {
       classname: 'bg-danger text-light',
@@ -65,7 +65,7 @@ export class NotificationService {
    *
    * @param toast toast to be removed
    */
-  remove(toast: Toast) {
+  remove(toast: Toast): void {
     this.toasts = this.toasts.filter(t => t !== toast);
     this.updateObservable();
   }

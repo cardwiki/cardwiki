@@ -36,7 +36,7 @@ export class DashboardComponent implements OnInit {
     this.loadLearnedPage(1);
   }
 
-  removeFavorite(deckId: number) {
+  removeFavorite(deckId: number): void {
     this.favoriteService.removeFavorite(deckId)
       .subscribe(() => {
         this.notificationService.success('Removed deck from Favorites');
@@ -47,7 +47,7 @@ export class DashboardComponent implements OnInit {
   /**
    * @param page page number 1-indexed
    */
-  loadFavoritePage(page: number) {
+  loadFavoritePage(page: number): void {
     const pageable = new Pageable(page - 1, this.favoritesPageSize);
     this.favoriteService.getFavorites(pageable)
       .subscribe(favorites => this.favorites = favorites);
@@ -56,7 +56,7 @@ export class DashboardComponent implements OnInit {
   /**
    * @param page page number 1-indexed
    */
-  loadLearnedPage(page: number) {
+  loadLearnedPage(page: number): void {
     const pageable = new Pageable(page - 1, this.learnedPageSize);
     this.deckService.getLearnedDecks(pageable)
       .subscribe(decks => {
@@ -70,7 +70,7 @@ export class DashboardComponent implements OnInit {
       });
   }
 
-  deleteProgress(event: any, progress: ProgressEntry): void {
+  deleteProgress(event: Event, progress: ProgressEntry): void {
     event.stopPropagation();
     event.preventDefault();
     if (confirm(`Do you want to permanently delete your progress for deck '${progress.deckName}'${progress.reverse ? ' (reverse)' : ''}`)) {

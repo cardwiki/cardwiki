@@ -14,11 +14,11 @@ export class UserRoleDirective implements OnInit, OnDestroy {
 
   constructor(
     private viewContainerRef: ViewContainerRef,
-    private templateRef: TemplateRef<any>,
+    private templateRef: TemplateRef<unknown>,
     private authService: AuthService,
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.authService.userRoles$.pipe(
       takeUntil(this.stop$)
     ).subscribe(roles => {
@@ -36,7 +36,7 @@ export class UserRoleDirective implements OnInit, OnDestroy {
   }
 
   // Clear the subscription on destroy
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.stop$.next();
   }
 }

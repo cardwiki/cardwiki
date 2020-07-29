@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { TitleService } from 'src/app/services/title.service';
 import { Observable } from 'rxjs';
 import { Title } from '@angular/platform-browser';
@@ -8,15 +8,11 @@ import { Title } from '@angular/platform-browser';
   templateUrl: './title.component.html',
   styleUrls: ['./title.component.css']
 })
-export class TitleComponent implements OnInit {
+export class TitleComponent {
   header$: Observable<string>;
 
   constructor(titleService: TitleService, title: Title) {
     this.header$ = titleService.header$;
     titleService.title$.subscribe(t => title.setTitle(t));
   }
-
-  ngOnInit(): void {
-  }
-
 }

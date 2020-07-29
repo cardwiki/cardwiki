@@ -16,7 +16,7 @@ export class ToastsContainerComponent {
     this.toasts$ = notificationService.toasts$;
   }
 
-  remove(toast: Toast) {
+  remove(toast: Toast): void {
     this.notificationService.remove(toast);
   }
 }

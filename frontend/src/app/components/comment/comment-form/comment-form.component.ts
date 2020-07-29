@@ -20,20 +20,20 @@ export class CommentFormComponent implements OnInit {
 
   constructor(public globals: Globals) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.showCancelButton = this.cancel.observers.length > 0;
   }
 
-  onSubmit() {
+  onSubmit(): void {
     this.commentSubmit.emit(this.message || null);
   }
 
-  onCancel() {
+  onCancel(): void {
     this.cancel.emit();
   }
 
   // Can be called from outside via @ViewChild
-  reset() {
+  reset(): void {
     this.commentForm.resetForm();
   }
 }

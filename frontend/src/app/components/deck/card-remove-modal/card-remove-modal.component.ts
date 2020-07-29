@@ -29,13 +29,13 @@ export class CardRemoveModalComponent implements OnInit, OnDestroy {
       .subscribe(() => this.activeModal.dismiss());
   }
 
-  onSubmit() {
+  onSubmit(): void {
     this.activeModal.close(
       this.cardService.removeCard(this.card.id, this.message)
     );
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void{
     this.locationSubscription.unsubscribe();
   }
 }

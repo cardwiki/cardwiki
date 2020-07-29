@@ -28,10 +28,10 @@ export class DeckPreviewComponent implements OnInit {
   cards: CardSimple[];
   currentCardIndex = 0;
   currentcard: CardSimple;
-  flipped: boolean = false;
+  flipped = false;
 
   @HostListener('document:keydown', ['$event'])
-  handleKeyboardEvent(event: KeyboardEvent) {
+  handleKeyboardEvent(event: KeyboardEvent): void {
     const actions: { [key: string]: () => void} = {
       ArrowRight: () => this.nextCard(),
       ArrowLeft: () => this.previousCard(),
@@ -52,7 +52,7 @@ export class DeckPreviewComponent implements OnInit {
     });
   }
 
-  loadDeck(id: number) {
+  loadDeck(id: number): void {
     this.deckService.getDeckById(id).subscribe(deck => {
       this.titleService.setTitle(`View ${deck.name}`, null);
       this.deck = deck;
@@ -60,7 +60,7 @@ export class DeckPreviewComponent implements OnInit {
     });
   }
 
-  loadNextCards() {
+  loadNextCards(): void {
     const nextPageNumber = this.page ? this.page.pageable.pageNumber + 1 : 0;
     this.cardService.getCardsByDeckId(this.deck.id, new Pageable(nextPageNumber, this.fetchSize))
       .subscribe(page => {
@@ -99,7 +99,7 @@ export class DeckPreviewComponent implements OnInit {
     }
   }
 
-  shouldPreLoadNextCards() {
+  shouldPreLoadNextCards(): boolean {
     return !this.page.last && (this.cards.length - this.currentCardIndex <= this.minPrefetched);
   }
 }

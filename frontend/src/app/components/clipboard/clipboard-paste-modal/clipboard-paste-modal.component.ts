@@ -20,7 +20,7 @@ export class ClipboardPasteModalComponent implements OnInit {
     this.clipboardService.clipboard$.subscribe(clipboard => this.clipboard = clipboard);
   }
 
-  select(card: CardUpdate) {
+  select(card: CardUpdate): void {
     if (this.selection.includes(card)) {
       this.selection = this.selection.filter(c => c !== card);
     } else {
@@ -28,11 +28,11 @@ export class ClipboardPasteModalComponent implements OnInit {
     }
   }
 
-  selectAll() {
+  selectAll(): void {
     this.selection = this.selection === this.clipboard ? [] : this.clipboard;
   }
 
-  paste() {
+  paste(): void {
     this.activeModal.close(this.selection);
   }
 

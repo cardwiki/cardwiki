@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormControl, FormGroup, Validators, AbstractControl} from '@angular/forms';
 import {Router, ActivatedRoute } from '@angular/router';
 import {AuthService} from '../../services/auth.service';
 import {parse as parseCookie} from 'cookie';
@@ -26,7 +26,7 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  get formUsername() { return this.registerForm.get('username'); }
+  get formUsername(): AbstractControl { return this.registerForm.get('username'); }
   authProviders: OAuth2ProviderDto[];
   oAuthInfo: WhoAmI;
   registerForm: FormGroup;
@@ -63,7 +63,7 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  register(username: string) {
+  register(username: string): void {
     this.authService.register(username).subscribe(response => {
       console.log('Register response: ', response);
       if (response.username) {
@@ -71,7 +71,7 @@ export class LoginComponent implements OnInit {
       }
     });
   }
-  ConvertToLower(evt: string) {
+  ConvertToLower(evt: string): void {
     if (this._textValue && evt) {
       this._textValue = evt.toLowerCase();
     }

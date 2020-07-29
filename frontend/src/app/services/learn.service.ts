@@ -38,9 +38,9 @@ export class LearnService {
    * Sends the result of the last learn attempt to the backend
    * @param learnAttempt object containing the card id and the status to be submitted
    */
-  sendAttemptStatus(learnAttempt: LearnAttempt) {
+  sendAttemptStatus(learnAttempt: LearnAttempt): Observable<void> {
     console.log('Sending status for most recent attempt for Card with id ' + learnAttempt.cardId);
-    return this.httpClient.post<LearnAttempt>(this.learnBaseUri + '/attempt', learnAttempt)
+    return this.httpClient.post<void>(this.learnBaseUri + '/attempt', learnAttempt)
       .pipe(catchError(this.errorHandler.handleError('Could not save learning attempt')));
   }
 }

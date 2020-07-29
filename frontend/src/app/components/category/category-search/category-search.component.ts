@@ -29,12 +29,12 @@ export class CategorySearchComponent implements OnInit {
     this.loadCategories();
   }
 
-  resetResults() {
+  resetResults(): void {
     this.page = null;
     this.categories = [];
   }
 
-  onSubmit() {
+  onSubmit(): void {
     console.log('search', this.searchTerm);
     this.categories = [];
     this.router.navigate(
@@ -57,7 +57,7 @@ export class CategorySearchComponent implements OnInit {
       });
   }
 
-  deleteCategory(event: any, category: CategorySimple) {
+  deleteCategory(event: Event, category: CategorySimple): void {
     event.stopPropagation();
     event.preventDefault();
 

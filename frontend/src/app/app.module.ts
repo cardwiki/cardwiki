@@ -54,7 +54,7 @@ import { CategorySearchComponent } from './components/category/category-search/c
 import { CategoryPickerModalComponent } from './components/category/category-picker-modal/category-picker-modal.component';
 import {UiStyleToggleService} from './services/ui-style-toggle.service';
 
-export function themeFactory(themeService: UiStyleToggleService) {
+export function themeFactory(themeService: UiStyleToggleService): () => void {
   return () => themeService.setThemeOnStart();
 }
 

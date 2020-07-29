@@ -20,7 +20,7 @@ export class CategoryDetailsComponent {
     });
   }
 
-  doSearch(id: number) {
+  doSearch(id: number): void {
     this.categoryService.getCategoryById(id).subscribe(
       category => {
         this.category = category;

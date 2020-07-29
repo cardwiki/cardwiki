@@ -97,14 +97,14 @@ export class AuthService {
     return this.getStoredAuth().whoAmI?.id;
   }
 
-  updateRedirectUrl(url: string) {
+  updateRedirectUrl(url: string): void {
     this.storeAuth({
       ...this.getStoredAuth(),
       redirectUrl: url,
     });
   }
 
-  clearRedirectUrl() {
+  clearRedirectUrl(): void {
     this.updateRedirectUrl(undefined);
   }
 
@@ -159,7 +159,7 @@ export class AuthService {
 
   private getTokenExpirationDate(token: string): Date {
 
-    const decoded: any = jwt_decode(token);
+    const decoded = jwt_decode<JwtTokenContent>(token);
     if (decoded.exp === undefined) {
       return null;
     }
@@ -200,4 +200,9 @@ interface AuthStore {
   whoAmI?: WhoAmI;
   token?: string;
   redirectUrl?: string;
+}
+
+// TODO: check what properties exist
+interface JwtTokenContent {
+  exp?: number;
 }
