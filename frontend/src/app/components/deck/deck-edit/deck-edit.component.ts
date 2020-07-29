@@ -57,7 +57,7 @@ export class DeckEditComponent implements OnInit {
       .catch(err => console.log('Category picker cancelled', err));
   }
 
-  addCategory(category: CategorySimple) {
+  addCategory(category: CategorySimple): void {
     if (this.deck.categories.some(c => c.id === category.id)) {
       this.notificationService.warning(`Category ${category.name} has already been added`);
     } else {

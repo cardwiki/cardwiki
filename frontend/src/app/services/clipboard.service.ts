@@ -22,7 +22,7 @@ export class ClipboardService {
    * @param card to copy
    * @param deckName of the deck where the card is copied from
    */
-  copy(card: CardSimple, deckName: string) {
+  copy(card: CardSimple, deckName: string): void {
     console.log('Copy to clipboard');
     this.cardService.fetchCard(card.id).subscribe(cardUpdate => {
       cardUpdate.message = `Copied from ${deckName}`;
@@ -47,7 +47,7 @@ export class ClipboardService {
    * Removes a card from the clipboard
    * @param card to remove
    */
-  remove(card: CardUpdate) {
+  remove(card: CardUpdate): void {
     console.log('Remove from clipboard');
     this.set(this.clipboardSubject$.value.filter(c => c !== card));
   }
@@ -56,7 +56,7 @@ export class ClipboardService {
    * Updates clipboard and localstorage
    * @param clipboard new clipboard state
    */
-  set(clipboard: CardUpdate[]) {
+  set(clipboard: CardUpdate[]): void {
     this.clipboardSubject$.next(clipboard);
     localStorage.setItem('clipboard', JSON.stringify(clipboard));
   }
@@ -64,7 +64,7 @@ export class ClipboardService {
   /**
    * Clears clipboard and localstorage
    */
-  clear() {
+  clear(): void {
     this.clipboardSubject$.next([]);
     localStorage.removeItem('clipboard');
   }

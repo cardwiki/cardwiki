@@ -28,10 +28,10 @@ export class ProfileComponent implements OnInit {
   revisionPage: Page<RevisionDetailed>;
   revisions: RevisionDetailed[] = [];
 
-  me: boolean = false;
-  admin: boolean = false;
-  editingDescription: boolean = false;
-  editingSuccess: boolean = false;
+  me = false;
+  admin = false;
+  editingDescription = false;
+  editingSuccess = false;
 
   readonly revisionTypeToString: { [key in RevisionType]: string } = {
     [RevisionType.CREATE] : 'Created',

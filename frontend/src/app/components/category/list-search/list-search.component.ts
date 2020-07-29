@@ -26,11 +26,11 @@ export class ListSearchComponent implements OnInit {
     });
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.onChanges();
   }
 
-  onChanges() {
+  onChanges(): void {
     if (this.searchForm) {
       this.searchForm.controls.search.valueChanges.subscribe((value) => {
         this.filteredList = this.list.filter(item =>
@@ -44,14 +44,14 @@ export class ListSearchComponent implements OnInit {
   /**
    * applies the search filter and navigates to the result page
    */
-  applySearch() {
+  applySearch(): void {
     const path = this.path === 'categories' ? 'subcategories' : this.path;
     this.router.navigate(['/categories/' + this.id + '/' + path],
       { queryParams: { filter: this.searchForm.value.search || ''}})
       .then(() => (console.log('x')));
   }
 
-  keyDownFunction(event: KeyboardEvent) {
+  keyDownFunction(event: KeyboardEvent): void {
     if (event.key === 'Enter') {
       this.searchChild.nativeElement.blur();
       if (this.id) {
@@ -60,7 +60,7 @@ export class ListSearchComponent implements OnInit {
     }
   }
 
-  onReset() {
+  onReset(): void {
     this.searchForm.reset();
   }
 }

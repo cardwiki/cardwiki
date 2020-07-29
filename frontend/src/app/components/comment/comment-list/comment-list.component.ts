@@ -30,15 +30,14 @@ export class CommentListComponent {
     this.isAdmin$ = this.authService.userRoles$.pipe(map(roles => roles.includes('ADMIN')));
   }
 
-  editComment(id: number) {
+  editComment(id: number): void {
     this.editingCommentId = id;
   }
 
-  editCommentSubmit(message: string) {
+  editCommentSubmit(message: string): void {
     this.commentService.editComment(this.editingCommentId, message)
       .subscribe(comment => {
         this.notificationService.success('Edited comment');
-        this.comments = this.comments;
         const index = this.comments.findIndex(c => c.id === comment.id);
         this.comments[index] = comment;
         this.editingCommentId = -1;
@@ -46,11 +45,11 @@ export class CommentListComponent {
       });
   }
 
-  cancelEdit() {
+  cancelEdit(): void {
     this.editingCommentId = -1;
   }
 
-  deleteComment(id: number) {
+  deleteComment(id: number): void {
     const confirmationModal = this.modalService.open(ConfirmModalComponent);
     confirmationModal.componentInstance.title = 'Delete Comment';
     confirmationModal.componentInstance.message = 'Are you sure you want to delete this comment?';

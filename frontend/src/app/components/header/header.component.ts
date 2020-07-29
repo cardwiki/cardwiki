@@ -28,11 +28,11 @@ export class HeaderComponent implements OnInit {
     this.username$ = authService.userName$;
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.clipboardService.clipboard$.subscribe(clipboard => this.clipboardSize = clipboard.length);
   }
 
-  onSubmit() {
+  onSubmit(): void {
     console.log('search', this.searchTerm);
     const queryParams: SearchQueryParams = {
       name: this.searchTerm
@@ -42,7 +42,7 @@ export class HeaderComponent implements OnInit {
     });
   }
 
-  openDeckModal() {
+  openDeckModal(): void {
     const modalRef = this.modalService.open(DeckCreateModalComponent);
 
     modalRef.result.then(
@@ -52,14 +52,14 @@ export class HeaderComponent implements OnInit {
           this.router.navigate(['decks', deck.id]);
         }
       )
-    ).catch(() => {});
+    ).catch();
   }
 
-  logout() {
+  logout(): void {
     this.authService.logoutUser();
   }
 
-  toggleDarkMode() {
+  toggleDarkMode(): void {
     this.uiStyleToggleService.toggle();
   }
 }

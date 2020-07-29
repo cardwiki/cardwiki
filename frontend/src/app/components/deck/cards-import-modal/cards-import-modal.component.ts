@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {DeckService} from '../../../services/deck.service';
 import {FormBuilder, Validators, FormGroup} from '@angular/forms';
@@ -12,7 +12,7 @@ import {NotificationService} from '../../../services/notification.service';
   templateUrl: './cards-import-modal.component.html',
   styleUrls: ['./cards-import-modal.component.css']
 })
-export class CardsImportModalComponent implements OnInit {
+export class CardsImportModalComponent {
   deck: DeckSimple;
   fileForm: FormGroup;
   file: File;
@@ -29,16 +29,15 @@ export class CardsImportModalComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-  }
-
-  async onFileChange(event: any) {
-    if (event.target.files && event.target.files.length > 0) {
-      this.file = <File>event.target.files[0];
+  onFileChange(event: Event): void {
+    console.log('cards import onFileChange', event)
+    const target = event.target as HTMLInputElement
+    if (target.files && target.files.length > 0) {
+      this.file = target.files[0];
     }
   }
 
- extensionInvalid() {
+ extensionInvalid(): { extensionInvalid: boolean } {
     if (
       this.fileForm
       && this.fileForm.controls
@@ -53,7 +52,7 @@ export class CardsImportModalComponent implements OnInit {
     }
   }
 
-  checkErrors() {
+  checkErrors(): string {
     if (this.fileForm.controls.fileSelect.errors) {
       const errors = this.fileForm.controls.fileSelect.errors;
       if (errors.extensionInvalid) {

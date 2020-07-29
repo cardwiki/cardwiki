@@ -28,11 +28,11 @@ export class ClipboardViewComponent implements OnInit {
     this.clipboardService.clipboard$.subscribe(clipboard => this.clipboard = clipboard);
   }
 
-  remove(card: CardUpdate) {
+  remove(card: CardUpdate): void {
     this.clipboardService.remove(card);
   }
 
-  openDeckModal() {
+  openDeckModal(): void {
     const modalRef = this.modalService.open(DeckCreateModalComponent);
     modalRef.result.then(
       (res: Observable<DeckDetails>) => res.subscribe(
@@ -43,10 +43,10 @@ export class ClipboardViewComponent implements OnInit {
           });
         }
       )
-    ).catch(() => {});
+    ).catch();
   }
 
-  clear() {
+  clear(): void {
     this.clipboardService.clear();
   }
 }

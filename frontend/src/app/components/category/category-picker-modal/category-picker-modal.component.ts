@@ -39,12 +39,11 @@ export class CategoryPickerModalComponent implements OnInit, OnDestroy {
       .subscribe(() => this.activeModal.dismiss());
   }
 
-  onInput(event: any): void {
-    const target = event.target as HTMLInputElement;
-    this.searchTerm$.next(target.value);
+  onInput(event: Event): void {
+    this.searchTerm$.next((<HTMLInputElement> event.target).value);
   }
 
-  search(name: string) {
+  search(name: string): void {
     this.categoryService.searchByName(name, new Pageable(0, this.limit))
       .subscribe(page => {
         this.page = page;
@@ -54,15 +53,15 @@ export class CategoryPickerModalComponent implements OnInit, OnDestroy {
       });
   }
 
-  onSelect(category: CategorySimple) {
+  onSelect(category: CategorySimple): void {
     this.activeModal.close(category);
   }
 
-  onSubmit() {
+  onSubmit(): void {
     this.onSelect(this.categories[0]);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.locationSubscription.unsubscribe();
   }
 }

@@ -74,11 +74,11 @@ export class SearchComponent implements OnInit {
     this.updateQueryUrl();
   }
 
-  deleteDeck(event: any, deck: DeckDetails): void {
+  deleteDeck(event: Event, deck: DeckDetails): void {
     event.stopPropagation();
     event.preventDefault();
     if (confirm(`Are you sure you want to permanently delete deck '${deck.name}'?`)) {
-      this.deckService.delete(deck.id).subscribe(_ => {
+      this.deckService.delete(deck.id).subscribe(() => {
         this.decks = this.decks.filter(d => d !== deck);
       });
     }

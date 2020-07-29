@@ -26,17 +26,17 @@ export class UserSearchComponent implements OnInit {
     });
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.titleService.setTitle('Users', 'User search');
     this.loadUsers();
   }
 
-  resetResults() {
+  resetResults(): void {
     this.page = null;
     this.users = [];
   }
 
-  onSubmit() {
+  onSubmit(): void {
     console.log('search', this.searchTerm);
     this.users = [];
     this.router.navigate(
@@ -59,7 +59,7 @@ export class UserSearchComponent implements OnInit {
       });
   }
 
-  grantAdminRights(event: any, user: UserProfile): void {
+  grantAdminRights(event: Event, user: UserProfile): void {
     event.stopPropagation();
     event.preventDefault();
     if (confirm(`Are you sure you want to grant admin rights to user '${user.username}'`)) {
@@ -69,7 +69,7 @@ export class UserSearchComponent implements OnInit {
     }
   }
 
-  editEnabledStatus(event: any, user: UserProfile, enabled: boolean): void {
+  editEnabledStatus(event: Event, user: UserProfile, enabled: boolean): void {
     event.stopPropagation();
     event.preventDefault();
     let reason = null;
@@ -88,12 +88,12 @@ export class UserSearchComponent implements OnInit {
     });
   }
 
-  delete(event: any, user: UserProfile): void {
+  delete(event: Event, user: UserProfile): void {
     event.stopPropagation();
     event.preventDefault();
     const reason = prompt(`Why do you want to permanently delete user '${user.username}'?`);
     if (reason !== null) {
-      this.userService.delete(user.id, reason).subscribe(_ => {
+      this.userService.delete(user.id, reason).subscribe(() => {
         this.users = this.users.filter(u => u !== user);
       });
     }

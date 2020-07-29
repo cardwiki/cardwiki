@@ -29,7 +29,7 @@ export class ErrorHandlerService {
    * @throws error
    */
   public handleError(operation: string) {
-    return (error: any): never => {
+    return (error: unknown): never => {
       this.log(operation, error);
       this.notifyUser(operation, error);
 
@@ -44,7 +44,7 @@ export class ErrorHandlerService {
    * @param value value which should be resolved for further processing
    * @returns error handler which can be used inside catchError
    */
-  public catchStatus<T>(status: number | number[], value: T): (error: any) => Observable<T> {
+  public catchStatus<T>(status: number | number[], value: T): (error: unknown) => Observable<T> {
     const statuses = [status].flat();
 
     return (error: HttpErrorResponse): Observable<T> => {
@@ -55,7 +55,7 @@ export class ErrorHandlerService {
     };
   }
 
-  private log(operation: string, error: any): void {
+  private log(operation: string, error: unknown): void {
     console.error(operation, error);
   }
 
@@ -66,12 +66,12 @@ export class ErrorHandlerService {
    * @param operation - name of the operation that failed
    * @param error error to show
    */
-  private notifyUser(operation: string, error: any): void {
+  private notifyUser(operation: string, error: unknown): void {
     const msg = this.getUserMessage(operation, error);
     this.notificationService.error(msg);
   }
 
-  private getUserMessage(operation: string, error: any): string {
+  private getUserMessage(operation: string, error: unknown): string {
     let errMessage: string;
 
     if (!error || typeof error !== 'object' || !(error instanceof HttpErrorResponse)) {
@@ -103,7 +103,7 @@ export class ErrorHandlerService {
 
     // Validation error scheme specified in backend
     if (this.isValidationError(httpError.error)) {
-      const validationError = httpError.error as ValidationError;
+      const validationError = httpError.error;
       description = validationError.validation
         .map(err => Object.entries(err).map(([fieldName, fieldError]) => `${fieldName}: ${fieldError}`).join('\n'))
         .join('\n');
@@ -114,10 +114,11 @@ export class ErrorHandlerService {
   /**
    * Check if error is a ValidationError
    */
-  private isValidationError(error: any) {
-    return error && typeof error === 'object' &&
-      Array.isArray(error.validation) &&
-      error.validation.every((err: any) => typeof err === 'object');
+  private isValidationError(error: unknown): error is ValidationError {
+    if (!error || typeof error !== 'object')
+      return false
+    const validation: unknown = (<{validation: unknown}>error).validation
+    return Array.isArray(validation) && validation.every((err: unknown) => typeof err === 'object');
   }
 }
 

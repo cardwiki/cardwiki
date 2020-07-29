@@ -68,7 +68,7 @@ export class DeckViewComponent implements OnInit {
     this.clipboardService.clipboard$.subscribe(clipboard => this.clipboardSize = clipboard.length);
   }
 
-  loadDeck(id: number) {
+  loadDeck(id: number): void {
     // TODO: Use forkJoin to only update page when everything loaded (to prevent flickering)
     this.deckService.getDeckById(id).subscribe(deck => {
       this.titleService.setTitle(deck.name, null);
@@ -86,7 +86,7 @@ export class DeckViewComponent implements OnInit {
     });
   }
 
-  loadMoreCards() {
+  loadMoreCards(): void {
     const nextPageNumber = this.page ? this.page.pageable.pageNumber + 1 : 0;
     this.loadingCards = true;
     this.cardService.getCardsByDeckId(this.deck.id, new Pageable(nextPageNumber, this.limit))
@@ -96,7 +96,7 @@ export class DeckViewComponent implements OnInit {
       }).add(() => this.loadingCards = false);
   }
 
-  loadMoreComments() {
+  loadMoreComments(): void {
     const nextPageNumber = this.commentsPage ? this.commentsPage.pageable.pageNumber + 1 : 0;
     this.commentService.findByDeckId(this.deck.id, new Pageable(nextPageNumber, this.commentsPageSize))
       .subscribe(page => {
@@ -105,11 +105,11 @@ export class DeckViewComponent implements OnInit {
       });
   }
 
-  toggleComments() {
+  toggleComments(): void {
     this.displayComments = !this.displayComments;
   }
 
-  addComment(message: string) {
+  addComment(message: string): void {
     console.log('addComment', message);
     this.commentService.addCommentToDeck(this.deck.id, message)
       .subscribe(comment => {
@@ -120,7 +120,7 @@ export class DeckViewComponent implements OnInit {
       });
   }
 
-  openCardRemoveModal(card: CardSimple) {
+  openCardRemoveModal(card: CardSimple): void {
     const modalRef = this.modalService.open(CardRemoveModalComponent);
     modalRef.componentInstance.card = card;
 
@@ -134,7 +134,7 @@ export class DeckViewComponent implements OnInit {
     ).catch(err => console.error('Did not remove card', err));
   }
 
-  openForkModal() {
+  openForkModal(): void {
     const modalRef = this.modalService.open(DeckForkModalComponent);
     modalRef.componentInstance.deck = this.deck;
 
@@ -142,32 +142,31 @@ export class DeckViewComponent implements OnInit {
       (res: Observable<DeckDetails>) => res.subscribe(
         (deck: DeckDetails) => this.router.navigate(['decks', deck.id])
       )
-    ).catch(() => {});
+    ).catch();
   }
 
-  deleteCard(card: CardSimple) {
+  deleteCard(card: CardSimple): void {
     if (confirm('Are you sure you want to permanently delete this card?')) {
-      this.cardService.deleteCard(card.id).subscribe(_ => {
+      this.cardService.deleteCard(card.id).subscribe(() => {
         this.cards = this.cards.filter(c => c !== card);
       });
     }
   }
 
-  saveToFavorites() {
+  saveToFavorites(): void {
     this.favoriteService.addFavorite(this.deck.id)
       .subscribe(() => this.isFavorite$.next(true));
   }
 
-  removeFromFavorites() {
+  removeFromFavorites(): void {
     this.favoriteService.removeFavorite(this.deck.id)
       .subscribe(() => this.isFavorite$.next(false));
   }
 
-  exportCsv() {
-    this.deckService.exportDeckAsCsv(this.deck.id).subscribe((answer: any) => {
+  exportCsv(): void {
+    this.deckService.exportDeckAsCsv(this.deck.id).subscribe((content: Blob) => {
       const file = document.createElement('a');
-      const blob = new Blob([answer], {type: 'text/csv'});
-      const objectUrl = URL.createObjectURL(blob);
+      const objectUrl = URL.createObjectURL(content);
       file.href = objectUrl;
       file.download = this.deck.name + '.csv';
       file.click();
@@ -175,7 +174,7 @@ export class DeckViewComponent implements OnInit {
     });
   }
 
-  openImportModal() {
+  openImportModal(): void {
     const modalRef = this.modalService.open(CardsImportModalComponent, { size: 'lg' });
     modalRef.componentInstance.deck = this.deck;
 
@@ -183,26 +182,26 @@ export class DeckViewComponent implements OnInit {
       (res: Observable<DeckDetails>) => res.subscribe(
         (deckResult: DeckDetails) => this.router.navigate(['decks', deckResult])
       )
-    ).catch(() => {});
+    ).catch();
   }
 
-  copyToClipboard(card: CardSimple) {
+  copyToClipboard(card: CardSimple): void {
     this.clipboardService.copy(card, this.deck.name);
     this.notificationService.success('Copied to Clipboard');
   }
 
-  pasteFromClipboard(cards: CardUpdate[]) {
+  pasteFromClipboard(cards: CardUpdate[]): void {
     this.clipboardService.paste(this.deck.id, cards).subscribe(pastedCards => {
       this.cards.push(...pastedCards);
       this.notificationService.success('Cards pasted from Clipboard');
     });
   }
 
-  openClipboardPasteModal() {
+  openClipboardPasteModal(): void {
     const modalRef = this.modalService.open(ClipboardPasteModalComponent, { size: 'lg' });
     modalRef.result.then(
       (res: CardUpdate[]) => this.pasteFromClipboard(res)
-    ).catch(() => {});
+    ).catch();
   }
 
 }

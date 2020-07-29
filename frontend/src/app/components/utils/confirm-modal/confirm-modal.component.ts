@@ -26,11 +26,11 @@ export class ConfirmModalComponent implements OnInit, OnDestroy {
       .subscribe(() => this.activeModal.dismiss());
   }
 
-  onSubmit() {
+  onSubmit(): void {
     this.activeModal.close();
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.navigationSubscription.unsubscribe();
   }
 }

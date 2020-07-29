@@ -28,7 +28,7 @@ export class TitleService {
    * @param title title shown in the tab preview. null for default
    * @param header header shown in the page. if null it will be omitted
    */
-  setTitle(title: string, header = title) {
+  setTitle(title: string, header = title): void {
     title = title ? `${title} - ${this.titleSuffix}` : this.titleSuffix;
     this.titleSubject$.next(title);
     this.headerSubject$.next(header);

@@ -12,8 +12,6 @@ export class CardRevisionComponent implements OnInit {
   @Input() cardRevision: RevisionDetailed;
   public card: CardUpdate;
 
-  constructor() { }
-
   ngOnInit(): void {
     console.log(this.cardRevision);
     this.card = new CardUpdate(this.cardRevision.textFront, this.cardRevision.textBack,

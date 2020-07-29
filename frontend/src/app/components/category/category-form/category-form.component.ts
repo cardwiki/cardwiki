@@ -41,7 +41,7 @@ export class CategoryFormComponent implements OnInit {
   /**
    * Submits form data to createCategory() or editCategory() function
    */
-  submitCategoryForm() {
+  submitCategoryForm(): void {
     console.log('submitted form values:', this.categoryForm.value);
     const payload = new CategoryUpdate(this.categoryForm.value.name, this.parent);
 
@@ -91,7 +91,7 @@ export class CategoryFormComponent implements OnInit {
     return null;
   }
 
-  notBlankValidator(control: AbstractControl) {
+  notBlankValidator(control: AbstractControl): { nameIsBlank: boolean } {
     const isValid = (control.value || '').trim().length > 0;
     return isValid ? null : { nameIsBlank: true };
   }
