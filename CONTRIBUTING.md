@@ -6,7 +6,7 @@ For developing the backend we recommend [IntelliJ](https://www.jetbrains.com/ide
 
 If you start the backend with the `dev` profile, the database is populated with test data and you can easily log in with a test user and a test admin:
 
-	mvn spring-boot:run -Dspring-boot.run.profiles=dev
+	./backend/run-dev.sh
 
 Note that if the H2 database is not clean, the test data won't be inserted
 

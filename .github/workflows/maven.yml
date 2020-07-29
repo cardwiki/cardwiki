@@ -25,6 +25,6 @@ jobs:
       with:
         java-version: 11
     - name: Test data generator
-      run: EXIT=true mvn spring-boot:run -Dspring-boot.run.profiles=dev
+      run: EXIT=true ./run-dev.sh
     - run: mvn test
     - uses: codecov/codecov-action@v1
