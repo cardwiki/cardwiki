@@ -31,3 +31,12 @@ In general, running the application will apply all new database migrations.
 For developing the frontend we recommend either IntelliJ or [VS Code](https://code.visualstudio.com/).
 
 Angular provides `ng lint` for linting the source and `ng lint --fix` for fixing linting erros.
+
+### Cypress tests
+
+For end-to-end (E2E) testing we use [Cypress](https://docs.cypress.io). When writing and running tests, keep in mind that:
+
+- our E2E tests use our backend server
+- our E2E tests all use the same database
+
+To open the testing UI, first start the backend and serve the frontend, afterwards run `npm run cypress:open`. From there you can select which tests should run and interactively watch and debug them. Test runs likely require erasing the database and restarting the backend server.

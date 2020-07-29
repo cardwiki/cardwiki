@@ -32,7 +32,7 @@ export class LearnDeckComponent implements OnInit {
     });
   }
 
-  @HostListener('document:keypress', ['$event'])
+  @HostListener('document:keydown', ['$event'])
   handleKeyBoardEvent(event: KeyboardEvent) {
     if (event.key === ' ') {
       this.onFlip();
