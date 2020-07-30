@@ -1,4 +1,4 @@
-import {CardContent} from './cardContent';
+import { CardContent } from './cardContent';
 
 export class CardSimple extends CardContent {
   constructor(
@@ -6,7 +6,8 @@ export class CardSimple extends CardContent {
     public textFront: string,
     public textBack: string,
     public imageFrontUrl: string,
-    public imageBackUrl: string) {
+    public imageBackUrl: string
+  ) {
     super(textFront, textBack, imageFrontUrl, imageBackUrl);
   }
 }

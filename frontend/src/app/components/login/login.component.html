@@ -9,30 +9,71 @@
         </div>
 
         <div *ngIf="!oAuthInfo" class="card-body px-4">
-          <a *ngFor="let provider of authProviders" class="btn btn-lg btn-outline-dark btn-{{provider.name}} w-100 my-2" role="button" href="{{authService.getProviderUrl(provider.id)}}">
-            <img src="assets/images/{{provider.name}}.svg" height="24" class="mr-2 mb-1" type="image/svg+xml"/>
-            {{provider.name}}
+          <a
+            *ngFor="let provider of authProviders"
+            class="btn btn-lg btn-outline-dark btn-{{
+              provider.name
+            }} w-100 my-2"
+            role="button"
+            href="{{ authService.getProviderUrl(provider.id) }}"
+          >
+            <img
+              src="assets/images/{{ provider.name }}.svg"
+              height="24"
+              class="mr-2 mb-1"
+              type="image/svg+xml"
+            />
+            {{ provider.name }}
             <!--<span class="ml-2 mb-1" style="width: 24px;"></span> padding?-->
           </a>
         </div>
 
         <div *ngIf="oAuthInfo" class="card-body px-4">
-          <form [formGroup]="registerForm" (ngSubmit)="register(registerForm.value.username)">
+          <form
+            [formGroup]="registerForm"
+            (ngSubmit)="register(registerForm.value.username)"
+          >
             <div class="form-group">
-              <label for="usernameInput">Please choose a username to complete your registration:</label>
-              <input type="text" class="form-control" id="usernameInput" aria-describedby="usernameHelp" placeholder="Enter username" formControlName="username" [ngModel]="_textValue" (ngModelChange)="ConvertToLower($event)" required>
-              <small id="usernameHelp" class="form-text text-muted">Other users will be able to see this.</small>
-              <div *ngIf="formUsername.invalid && (formUsername.dirty || formUsername.touched)"
-                   class="alert alert-danger">
+              <label for="usernameInput"
+                >Please choose a username to complete your registration:</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                id="usernameInput"
+                aria-describedby="usernameHelp"
+                placeholder="Enter username"
+                formControlName="username"
+                [ngModel]="_textValue"
+                (ngModelChange)="ConvertToLower($event)"
+                required
+              />
+              <small id="usernameHelp" class="form-text text-muted"
+                >Other users will be able to see this.</small
+              >
+              <div
+                *ngIf="
+                  formUsername.invalid &&
+                  (formUsername.dirty || formUsername.touched)
+                "
+                class="alert alert-danger"
+              >
                 <div *ngIf="formUsername.errors.required">
                   Name is required.
                 </div>
                 <div *ngIf="formUsername.errors.pattern">
-                  Name must only contain alphanumeric characters, underscores or dashes.
+                  Name must only contain alphanumeric characters, underscores or
+                  dashes.
                 </div>
               </div>
             </div>
-            <button type="submit" class="btn btn-outline-dark" [disabled]="registerForm.invalid">Register</button>
+            <button
+              type="submit"
+              class="btn btn-outline-dark"
+              [disabled]="registerForm.invalid"
+            >
+              Register
+            </button>
           </form>
         </div>
       </div>

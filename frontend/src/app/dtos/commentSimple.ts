@@ -6,6 +6,6 @@ export class CommentSimple {
     public message: string,
     public createdAt: string,
     public updatedAt: string,
-    public createdBy: UserSimple,
+    public createdBy: UserSimple
   ) {}
 }

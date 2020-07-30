@@ -3,10 +3,9 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TitleService {
-
   title$: Observable<string>;
   header$: Observable<string>; // null if header should be hidden
 
@@ -16,10 +15,14 @@ export class TitleService {
 
   constructor() {
     this.titleSubject$ = new BehaviorSubject(this.titleSuffix);
-    this.title$ = this.titleSubject$.asObservable().pipe(distinctUntilChanged());
+    this.title$ = this.titleSubject$
+      .asObservable()
+      .pipe(distinctUntilChanged());
 
     this.headerSubject$ = new BehaviorSubject(null);
-    this.header$ = this.headerSubject$.asObservable().pipe(distinctUntilChanged());
+    this.header$ = this.headerSubject$
+      .asObservable()
+      .pipe(distinctUntilChanged());
   }
 
   /**

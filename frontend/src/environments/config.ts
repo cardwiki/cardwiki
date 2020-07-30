@@ -1,3 +1,3 @@
 export const config = {
-    backendBaseUri: 'http://localhost:8080'
+  backendBaseUri: 'http://localhost:8080',
 };

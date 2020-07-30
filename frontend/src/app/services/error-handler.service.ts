@@ -4,20 +4,22 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { throwError, of, Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ErrorHandlerService {
+  constructor(private notificationService: NotificationService) {}
 
-  constructor(private notificationService: NotificationService) { }
-
-  private readonly httpErrorMessages: { [status: string]: (err: HttpErrorResponse) => string } = {
+  private readonly httpErrorMessages: {
+    [status: string]: (err: HttpErrorResponse) => string;
+  } = {
     0: () => 'Could not connect to server',
-    400: err => this.getValidationMessage(err),
+    400: (err) => this.getValidationMessage(err),
     401: () => 'Not authenticated. Please log in and try again',
-    403: () => 'Invalid authorization. Please try to log out and log in if you should have access to this resource',
+    403: () =>
+      'Invalid authorization. Please try to log out and log in if you should have access to this resource',
     404: () => 'Could not find this resource',
-    409: err => this.getValidationMessage(err),
-    422: err => this.getValidationMessage(err),
+    409: (err) => this.getValidationMessage(err),
+    422: (err) => this.getValidationMessage(err),
     500: () => 'An internal server error occured',
     503: () => 'Service currently unavailable. Please try again later',
   };
@@ -44,7 +46,10 @@ export class ErrorHandlerService {
    * @param value value which should be resolved for further processing
    * @returns error handler which can be used inside catchError
    */
-  public catchStatus<T>(status: number | number[], value: T): (error: any) => Observable<T> {
+  public catchStatus<T>(
+    status: number | number[],
+    value: T
+  ): (error: any) => Observable<T> {
     const statuses = [status].flat();
 
     return (error: HttpErrorResponse): Observable<T> => {
@@ -74,13 +79,17 @@ export class ErrorHandlerService {
   private getUserMessage(operation: string, error: any): string {
     let errMessage: string;
 
-    if (!error || typeof error !== 'object' || !(error instanceof HttpErrorResponse)) {
+    if (
+      !error ||
+      typeof error !== 'object' ||
+      !(error instanceof HttpErrorResponse)
+    ) {
       errMessage = 'Unknwon Error' + (error ? ': ' + String(error) : '');
     } else if (error.error instanceof ErrorEvent) {
       errMessage = `Client error: ${error.error.message}`;
- } else {
+    } else {
       errMessage = this.getUserMessageForHttpError(error);
- }
+    }
 
     return `${operation}: \n${errMessage}`;
   }
@@ -105,7 +114,11 @@ export class ErrorHandlerService {
     if (this.isValidationError(httpError.error)) {
       const validationError = httpError.error as ValidationError;
       description = validationError.validation
-        .map(err => Object.entries(err).map(([fieldName, fieldError]) => `${fieldName}: ${fieldError}`).join('\n'))
+        .map((err) =>
+          Object.entries(err)
+            .map(([fieldName, fieldError]) => `${fieldName}: ${fieldError}`)
+            .join('\n')
+        )
         .join('\n');
     }
     return `Invalid Data\n${description}`;
@@ -115,9 +128,12 @@ export class ErrorHandlerService {
    * Check if error is a ValidationError
    */
   private isValidationError(error: any) {
-    return error && typeof error === 'object' &&
+    return (
+      error &&
+      typeof error === 'object' &&
       Array.isArray(error.validation) &&
-      error.validation.every((err: any) => typeof err === 'object');
+      error.validation.every((err: any) => typeof err === 'object')
+    );
   }
 }
 

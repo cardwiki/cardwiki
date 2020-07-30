@@ -8,6 +8,6 @@ export class UserProfile {
     public admin: boolean,
     public enabled: boolean,
     public deleted: boolean,
-    public theme: string) {
-  }
+    public theme: string
+  ) {}
 }

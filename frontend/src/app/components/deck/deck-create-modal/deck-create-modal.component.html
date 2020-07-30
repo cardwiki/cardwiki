@@ -10,12 +10,30 @@
     <div class="modal-body">
       <div class="form-group">
         <label for="name">Name</label>
-        <input ngbAutofocus type="text" class="form-control" id="name" formControlName="name">
+        <input
+          ngbAutofocus
+          type="text"
+          class="form-control"
+          id="name"
+          formControlName="name"
+        />
       </div>
     </div>
     <div class="modal-footer">
-      <button type="submit" class="btn btn-primary" [disabled]="!deckForm.valid">Create</button>
-      <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss()">Cancel</button>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="!deckForm.valid"
+      >
+        Create
+      </button>
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="activeModal.dismiss()"
+      >
+        Cancel
+      </button>
     </div>
   </form>
 </div>

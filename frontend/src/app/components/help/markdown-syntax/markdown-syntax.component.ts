@@ -4,10 +4,9 @@ import { TitleService } from 'src/app/services/title.service';
 @Component({
   selector: 'app-markdown-syntax',
   templateUrl: './markdown-syntax.component.html',
-  styleUrls: ['./markdown-syntax.component.css']
+  styleUrls: ['./markdown-syntax.component.css'],
 })
 export class MarkdownSyntaxComponent implements OnInit {
-
   public examples: { [key: string]: string } = {
     styles: `Make *italic*, **bold** or ~~strike-through~~ text by wrapping it in *, ** or ~~ respectively.`,
     structuring: `Create lists by starting lines with - or 1.
@@ -34,13 +33,12 @@ $$x = \\frac{a}{\\sqrt[3]{b}}$$
 
 $$f(x) = \\int_{-\\infty}^\\infty
     \\hat f\\xi\\,e^{2 \\pi i \\xi x}
-    \\,d\\xi$$`
+    \\,d\\xi$$`,
   };
 
-  constructor(private titleService: TitleService) { }
+  constructor(private titleService: TitleService) {}
 
   ngOnInit(): void {
     this.titleService.setTitle('Formatting Cards');
   }
-
 }

@@ -1,24 +1,50 @@
 <form (ngSubmit)="onSubmit()" #searchForm="ngForm">
-    <div class="input-group" role="group">
-        <input type="text" class="form-control" id="categoryName" name="categoryName" [(ngModel)]="searchTerm" placeholder="Find categories" aria-label="Find categories">
-        <div class="input-group-append">
-            <button type="submit" class="btn btn-outline-dark">Search</button>
-        </div>
+  <div class="input-group" role="group">
+    <input
+      type="text"
+      class="form-control"
+      id="categoryName"
+      name="categoryName"
+      [(ngModel)]="searchTerm"
+      placeholder="Find categories"
+      aria-label="Find categories"
+    />
+    <div class="input-group-append">
+      <button type="submit" class="btn btn-outline-dark">Search</button>
     </div>
+  </div>
 </form>
 
 <div class="mt-4">
-    <a *appUserRole="'USER'" routerLink="/categories/new" class="btn btn-outline-success mb-2">Add category</a>
-    <div *ngIf="page && !categories.length" class="alert-danger">No categories found.</div>
+  <a
+    *appUserRole="'USER'"
+    routerLink="/categories/new"
+    class="btn btn-outline-success mb-2"
+    >Add category</a
+  >
+  <div *ngIf="page && !categories.length" class="alert-danger">
+    No categories found.
+  </div>
 
-    <ul *ngIf="categories.length" class="list-group">
-        <a *ngFor="let category of categories" routerLink="/categories/{{category.id}}" class="list-group-item list-group-item-action">
-            {{category.name}}
-            <button *appUserRole="'ADMIN'" class="btn btn-outline-danger float-right" (click)="deleteCategory($event, category)">Delete</button>
-        </a>
-    </ul>
-    <div *ngIf="page && !page.last" class="mt-4">
-        <button class="btn btn-secondary" (click)="loadCategories()">Load more</button>
-    </div>
+  <ul *ngIf="categories.length" class="list-group">
+    <a
+      *ngFor="let category of categories"
+      routerLink="/categories/{{ category.id }}"
+      class="list-group-item list-group-item-action"
+    >
+      {{ category.name }}
+      <button
+        *appUserRole="'ADMIN'"
+        class="btn btn-outline-danger float-right"
+        (click)="deleteCategory($event, category)"
+      >
+        Delete
+      </button>
+    </a>
+  </ul>
+  <div *ngIf="page && !page.last" class="mt-4">
+    <button class="btn btn-secondary" (click)="loadCategories()">
+      Load more
+    </button>
+  </div>
 </div>
-

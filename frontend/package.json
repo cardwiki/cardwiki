@@ -7,8 +7,8 @@
     "build": "ng build",
     "build:prod": "ng build --prod",
     "test": "ng test",
-    "lint": "ng lint",
-    "lint:fix": "ng lint --fix",
+    "lint": "ng lint && prettier --list-different src",
+    "lint:fix": "ng lint --fix && prettier --write src",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
     "e2e:ci": "start-test ci:frontend 4200 ci:backend http://localhost:8080/api/v1/auth/whoami cypress:run",
@@ -39,6 +39,7 @@
     "lodash": "4.17.19",
     "markdown-it": "^10.0.0",
     "markdown-it-texmath": "^0.6.7",
+    "prettier": "^2.0.5",
     "rxjs": "6.5.5",
     "tslib": "1.11.1",
     "zone.js": "0.10.3"

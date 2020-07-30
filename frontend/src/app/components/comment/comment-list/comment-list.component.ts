@@ -12,10 +12,9 @@ import { CommentFormComponent } from '../comment-form/comment-form.component';
 @Component({
   selector: 'app-comment-list',
   templateUrl: './comment-list.component.html',
-  styleUrls: ['./comment-list.component.css']
+  styleUrls: ['./comment-list.component.css'],
 })
 export class CommentListComponent {
-
   @Input() comments: CommentSimple[];
 
   activeUserName$: Observable<string>;
@@ -24,10 +23,16 @@ export class CommentListComponent {
 
   @ViewChild('commentForm') private commentForm: CommentFormComponent;
 
-  constructor(private commentService: CommentService, private authService: AuthService, private notificationService: NotificationService,
-              private modalService: NgbModal) {
+  constructor(
+    private commentService: CommentService,
+    private authService: AuthService,
+    private notificationService: NotificationService,
+    private modalService: NgbModal
+  ) {
     this.activeUserName$ = this.authService.userName$;
-    this.isAdmin$ = this.authService.userRoles$.pipe(map(roles => roles.includes('ADMIN')));
+    this.isAdmin$ = this.authService.userRoles$.pipe(
+      map((roles) => roles.includes('ADMIN'))
+    );
   }
 
   editComment(id: number) {
@@ -35,11 +40,12 @@ export class CommentListComponent {
   }
 
   editCommentSubmit(message: string) {
-    this.commentService.editComment(this.editingCommentId, message)
-      .subscribe(comment => {
+    this.commentService
+      .editComment(this.editingCommentId, message)
+      .subscribe((comment) => {
         this.notificationService.success('Edited comment');
         this.comments = this.comments;
-        const index = this.comments.findIndex(c => c.id === comment.id);
+        const index = this.comments.findIndex((c) => c.id === comment.id);
         this.comments[index] = comment;
         this.editingCommentId = -1;
         this.commentForm.reset();
@@ -53,17 +59,18 @@ export class CommentListComponent {
   deleteComment(id: number) {
     const confirmationModal = this.modalService.open(ConfirmModalComponent);
     confirmationModal.componentInstance.title = 'Delete Comment';
-    confirmationModal.componentInstance.message = 'Are you sure you want to delete this comment?';
+    confirmationModal.componentInstance.message =
+      'Are you sure you want to delete this comment?';
     confirmationModal.componentInstance.action = 'Delete';
 
-    confirmationModal.result.then(() => {
-      this.commentService.deleteComment(id)
-        .subscribe(() => {
-          const index = this.comments.findIndex(c => c.id === id);
+    confirmationModal.result
+      .then(() => {
+        this.commentService.deleteComment(id).subscribe(() => {
+          const index = this.comments.findIndex((c) => c.id === id);
           this.comments.splice(index, 1);
           this.notificationService.success('Deleted comment');
         });
-    }).catch(err => console.log('Comment deletion cancelled', err));
+      })
+      .catch((err) => console.log('Comment deletion cancelled', err));
   }
-
 }

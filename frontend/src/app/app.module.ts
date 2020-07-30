@@ -1,16 +1,16 @@
-import {BrowserModule} from '@angular/platform-browser';
-import {APP_INITIALIZER, NgModule} from '@angular/core';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {HttpClientModule} from '@angular/common/http';
+import { BrowserModule } from '@angular/platform-browser';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
-import {AppRoutingModule} from './app-routing.module';
-import {AppComponent} from './app.component';
-import {HeaderComponent} from './components/header/header.component';
-import {FooterComponent} from './components/footer/footer.component';
-import {HomeComponent} from './components/home/home.component';
-import {LoginComponent} from './components/login/login.component';
-import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
-import {httpInterceptorProviders} from './interceptors';
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+import { HeaderComponent } from './components/header/header.component';
+import { FooterComponent } from './components/footer/footer.component';
+import { HomeComponent } from './components/home/home.component';
+import { LoginComponent } from './components/login/login.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { httpInterceptorProviders } from './interceptors';
 import { DeckViewComponent } from './components/deck/deck-view/deck-view.component';
 import { CategoryCreateComponent } from './components/category/category-create/category-create.component';
 import { CategoryFormComponent } from './components/category/category-form/category-form.component';
@@ -52,7 +52,7 @@ import { WelcomeComponent } from './components/welcome/welcome.component';
 import { TitleComponent } from './components/title/title.component';
 import { CategorySearchComponent } from './components/category/category-search/category-search.component';
 import { CategoryPickerModalComponent } from './components/category/category-picker-modal/category-picker-modal.component';
-import {UiStyleToggleService} from './services/ui-style-toggle.service';
+import { UiStyleToggleService } from './services/ui-style-toggle.service';
 
 export function themeFactory(themeService: UiStyleToggleService) {
   return () => themeService.setThemeOnStart();
@@ -113,15 +113,18 @@ export function themeFactory(themeService: UiStyleToggleService) {
     ReactiveFormsModule,
     HttpClientModule,
     NgbModule,
-    FormsModule
+    FormsModule,
   ],
   providers: [
-
     UiStyleToggleService,
-    {provide: APP_INITIALIZER, useFactory: themeFactory, deps: [UiStyleToggleService], multi: true},
-    httpInterceptorProviders
+    {
+      provide: APP_INITIALIZER,
+      useFactory: themeFactory,
+      deps: [UiStyleToggleService],
+      multi: true,
+    },
+    httpInterceptorProviders,
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule {
-}
+export class AppModule {}

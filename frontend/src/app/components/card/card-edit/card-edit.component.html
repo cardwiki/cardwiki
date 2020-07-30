@@ -1,13 +1,18 @@
 <div class="container">
   <div class="row">
     <div class="col">
-      <app-card-form action="Update" [card]="card" (cardSubmit)="cardSubmit()" (cancel)="cancel()"></app-card-form>
+      <app-card-form
+        action="Update"
+        [card]="card"
+        (cardSubmit)="cardSubmit()"
+        (cancel)="cancel()"
+      ></app-card-form>
     </div>
     <div class="col">
       <h3>Preview</h3>
       <h4>Front Side</h4>
       <app-card-view [card]="card" side="front"></app-card-view>
-      <hr>
+      <hr />
       <h4>Back Side</h4>
       <app-card-view [card]="card" side="back"></app-card-view>
     </div>

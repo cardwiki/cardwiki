@@ -1,15 +1,14 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CardUpdate } from 'src/app/dtos/cardUpdate';
 import { Globals } from '../../../global/globals';
-import {ImageService} from '../../../services/image.service';
+import { ImageService } from '../../../services/image.service';
 
 @Component({
   selector: 'app-card-form',
   templateUrl: './card-form.component.html',
-  styleUrls: ['./card-form.component.css']
+  styleUrls: ['./card-form.component.css'],
 })
 export class CardFormComponent implements OnInit {
-
   originalFilenameFront: string = 'Choose file';
   originalFilenameBack: string = 'Choose file';
 
@@ -17,13 +16,13 @@ export class CardFormComponent implements OnInit {
   @Input() card: CardUpdate;
   @Output() cardSubmit: EventEmitter<CardUpdate> = new EventEmitter();
   @Output() cancel: EventEmitter<void> = new EventEmitter();
-  constructor(public globals: Globals, public imageService: ImageService) { }
+  constructor(public globals: Globals, public imageService: ImageService) {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   autoSizeTextarea({ target: textArea }: any) {
-    textArea.style.height = Math.max(textArea.offsetHeight, textArea.scrollHeight) + 'px';
+    textArea.style.height =
+      Math.max(textArea.offsetHeight, textArea.scrollHeight) + 'px';
   }
 
   onSubmit() {
@@ -51,10 +50,14 @@ export class CardFormComponent implements OnInit {
       formData.append('file', file, file.name);
 
       if (side === 'front') {
-        this.card.imageFront = await this.imageService.upload(formData).toPromise();
+        this.card.imageFront = await this.imageService
+          .upload(formData)
+          .toPromise();
         this.originalFilenameFront = file.name;
       } else {
-        this.card.imageBack = await this.imageService.upload(formData).toPromise();
+        this.card.imageBack = await this.imageService
+          .upload(formData)
+          .toPromise();
         this.originalFilenameBack = file.name;
       }
     }

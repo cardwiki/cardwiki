@@ -1,32 +1,58 @@
 <ul class="list-unstyled">
-    <li *ngFor="let comment of comments" class="list-group-item">
-        <div class="container">
-            <div class="row">
-                <div class="col small">
-                    <a routerLink="/users/{{comment.createdBy.username}}/profile">{{comment.createdBy.username}}</a>
-                    on the {{comment.createdAt | date}}
-                    <div class="btn-group float-right">
-                        <ng-template [ngIf]="comment.createdBy.username === (activeUserName$ | async)">
-                            <button type="button" class="btn btn-light" (click)="editComment(comment.id)"><i class="fas fa-pencil-alt" title="Edit Comment"><span class="sr-only">Edit Comment</span></i></button>
-                        </ng-template>
-                        <ng-template [ngIf]="comment.createdBy.username === (activeUserName$ | async) || (isAdmin$ | async)">
-                            <button type="button" class="btn btn-light" (click)="deleteComment(comment.id)"><i class="fas fa-trash-alt" title="Delete Comment"></i><span class="sr-only">Delete Comment</span></button>
-                        </ng-template>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <div [innerHtml]="comment.message | md2html"></div>
-                </div>
-            </div>
-            <app-comment-form #commentForm *ngIf="comment.id === editingCommentId"
-                action="Update"
-                [message]="comment.message"
-                (commentSubmit)="editCommentSubmit($event)"
-                (cancel)="cancelEdit()"
+  <li *ngFor="let comment of comments" class="list-group-item">
+    <div class="container">
+      <div class="row">
+        <div class="col small">
+          <a routerLink="/users/{{ comment.createdBy.username }}/profile">{{
+            comment.createdBy.username
+          }}</a>
+          on the {{ comment.createdAt | date }}
+          <div class="btn-group float-right">
+            <ng-template
+              [ngIf]="comment.createdBy.username === (activeUserName$ | async)"
             >
-            </app-comment-form>
+              <button
+                type="button"
+                class="btn btn-light"
+                (click)="editComment(comment.id)"
+              >
+                <i class="fas fa-pencil-alt" title="Edit Comment"
+                  ><span class="sr-only">Edit Comment</span></i
+                >
+              </button>
+            </ng-template>
+            <ng-template
+              [ngIf]="
+                comment.createdBy.username === (activeUserName$ | async) ||
+                (isAdmin$ | async)
+              "
+            >
+              <button
+                type="button"
+                class="btn btn-light"
+                (click)="deleteComment(comment.id)"
+              >
+                <i class="fas fa-trash-alt" title="Delete Comment"></i
+                ><span class="sr-only">Delete Comment</span>
+              </button>
+            </ng-template>
+          </div>
         </div>
-    </li>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div [innerHtml]="comment.message | md2html"></div>
+        </div>
+      </div>
+      <app-comment-form
+        #commentForm
+        *ngIf="comment.id === editingCommentId"
+        action="Update"
+        [message]="comment.message"
+        (commentSubmit)="editCommentSubmit($event)"
+        (cancel)="cancelEdit()"
+      >
+      </app-comment-form>
+    </div>
+  </li>
 </ul>

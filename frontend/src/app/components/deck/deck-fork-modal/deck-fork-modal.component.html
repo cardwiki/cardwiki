@@ -9,22 +9,40 @@
     <div class="modal-body">
       <div class="modal-info mb-3">
         <p>
-        This creates a new card deck.
+          This creates a new card deck.
         </p>
         <p>
-          The new deck will be a copy of deck <strong>{{deck.name}}</strong> in its current state.
+          The new deck will be a copy of deck
+          <strong>{{ deck.name }}</strong> in its current state.
         </p>
       </div>
-      <div> </div>
-        <div class="form-group">
-          <label for="name">Name of new deck</label>
-          <input ngbAutofocus type="text" class="form-control" id="name" formControlName="name">
-        </div>
+      <div></div>
+      <div class="form-group">
+        <label for="name">Name of new deck</label>
+        <input
+          ngbAutofocus
+          type="text"
+          class="form-control"
+          id="name"
+          formControlName="name"
+        />
+      </div>
     </div>
     <div class="modal-footer">
-      <button type="submit" class="btn btn-primary" [disabled]="!deckForm.valid">Create</button>
-      <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss()">Cancel</button>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="!deckForm.valid"
+      >
+        Create
+      </button>
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="activeModal.dismiss()"
+      >
+        Cancel
+      </button>
     </div>
   </form>
 </div>
-

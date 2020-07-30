@@ -1,7 +1,14 @@
 <nav class="navbar navbar-expand-md navbar-light bg-light">
   <a class="navbar-brand ml-lg-5" routerLink="/">CardWiki</a>
-  <button class="navbar-toggler ml-5" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+  <button
+    class="navbar-toggler ml-5"
+    type="button"
+    data-toggle="collapse"
+    data-target="#navbarSupportedContent"
+    aria-controls="navbarSupportedContent"
+    aria-expanded="false"
+    aria-label="Toggle navigation"
+  >
     <span class="navbar-toggler-icon"></span>
   </button>
 
@@ -17,12 +24,25 @@
         <a class="nav-link" routerLink="/users">Users</a>
       </li>
       <li class="nav-item" *appUserRole="'USER'">
-        <a class="nav-link" (click)="openDeckModal(); false" href="#">Create new deck</a>
+        <a class="nav-link" (click)="openDeckModal(); (false)" href="#"
+          >Create new deck</a
+        >
       </li>
     </ul>
-    <form (ngSubmit)="onSubmit()" #searchForm="ngForm" class="form-inline my-2 my-lg-0 mr-auto mw-25 flex-grow-1">
+    <form
+      (ngSubmit)="onSubmit()"
+      #searchForm="ngForm"
+      class="form-inline my-2 my-lg-0 mr-auto mw-25 flex-grow-1"
+    >
       <div class="input-group flex-grow-1" role="group">
-        <input [(ngModel)]="searchTerm" name="searchTerm" class="form-control" type="search" placeholder="Find decks" aria-label="Search">
+        <input
+          [(ngModel)]="searchTerm"
+          name="searchTerm"
+          class="form-control"
+          type="search"
+          placeholder="Find decks"
+          aria-label="Search"
+        />
         <div class="input-group-append">
           <button class="btn btn-outline-success" type="submit">Search</button>
         </div>
@@ -31,23 +51,47 @@
     <ul class="navbar-nav flex-grow-1 ml-3">
       <li class="nav-item" *appUserRole="'USER'">
         <div class="container">
-          <a class="nav-link" routerLink="/clipboard">Clipboard <span class="badge badge-secondary align-middle">{{clipboardSize}}</span></a>
+          <a class="nav-link" routerLink="/clipboard"
+            >Clipboard
+            <span class="badge badge-secondary align-middle">{{
+              clipboardSize
+            }}</span></a
+          >
         </div>
       </li>
     </ul>
     <ul class="navbar-nav justify-content-end">
       <li class="nav-item">
-        <a class="nav-link" routerLink="/about" routerLinkActive="active">About</a>
+        <a class="nav-link" routerLink="/about" routerLinkActive="active"
+          >About</a
+        >
       </li>
       <li class="nav-item" *appUserRole="'ANONYMOUS'">
-        <a class="nav-link" routerLink="/login" routerLinkActive="active">Login</a>
+        <a class="nav-link" routerLink="/login" routerLinkActive="active"
+          >Login</a
+        >
       </li>
       <li class="nav-item dropdown" *appUserRole="'USER'">
-        <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          {{username$ | async}}
+        <a
+          class="nav-link dropdown-toggle"
+          href="#"
+          id="profileDropdown"
+          role="button"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          {{ username$ | async }}
         </a>
-        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
-          <a class="dropdown-item" routerLink="/users/{{username$ | async}}/profile">Profile</a>
+        <div
+          class="dropdown-menu dropdown-menu-right"
+          aria-labelledby="profileDropdown"
+        >
+          <a
+            class="dropdown-item"
+            routerLink="/users/{{ username$ | async }}/profile"
+            >Profile</a
+          >
           <a class="dropdown-item" routerLink="/" (click)="logout()">Logout</a>
         </div>
       </li>

@@ -1,5 +1,8 @@
-import {Component, HostBinding} from '@angular/core';
-import {NotificationService, Toast} from '../../services/notification.service';
+import { Component, HostBinding } from '@angular/core';
+import {
+  NotificationService,
+  Toast,
+} from '../../services/notification.service';
 import { Observable } from 'rxjs';
 
 @Component({

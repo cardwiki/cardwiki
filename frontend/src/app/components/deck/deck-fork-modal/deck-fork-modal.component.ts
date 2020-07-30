@@ -1,16 +1,16 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import {DeckService} from '../../../services/deck.service';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {DeckSimple} from '../../../dtos/deckSimple';
-import {DeckDetails} from '../../../dtos/deckDetails';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { DeckService } from '../../../services/deck.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { DeckSimple } from '../../../dtos/deckSimple';
+import { DeckDetails } from '../../../dtos/deckDetails';
 import { SubscriptionLike } from 'rxjs';
 import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-deck-create',
   templateUrl: './deck-fork-modal.component.html',
-  styleUrls: ['./deck-fork-modal.component.css']
+  styleUrls: ['./deck-fork-modal.component.css'],
 })
 export class DeckForkModalComponent implements OnInit, OnDestroy {
   deckForm: FormGroup;
@@ -21,21 +21,25 @@ export class DeckForkModalComponent implements OnInit, OnDestroy {
     public activeModal: NgbActiveModal,
     private deckService: DeckService,
     private formBuilder: FormBuilder,
-    private location: Location,
+    private location: Location
   ) {
     this.deckForm = this.formBuilder.group({
-      name: ['', [Validators.required, Validators.pattern(/\S+/)]]
+      name: ['', [Validators.required, Validators.pattern(/\S+/)]],
     });
   }
 
   ngOnInit(): void {
-    this.locationSubscription = this.location
-      .subscribe(() => this.activeModal.dismiss());
+    this.locationSubscription = this.location.subscribe(() =>
+      this.activeModal.dismiss()
+    );
   }
 
   forkDeck(): void {
     this.activeModal.close(
-      this.deckService.copy(this.deck.id, new DeckSimple(null, this.deckForm.value.name))
+      this.deckService.copy(
+        this.deck.id,
+        new DeckSimple(null, this.deckForm.value.name)
+      )
     );
   }
 

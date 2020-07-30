@@ -4,7 +4,7 @@ export class RevisionSimple {
     public type: RevisionType,
     public message: string,
     public createdBy: number,
-    public createdAt: Date,
+    public createdAt: Date
   ) {}
 }
 

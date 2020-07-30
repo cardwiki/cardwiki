@@ -11,10 +11,9 @@ import { Location } from '@angular/common';
 @Component({
   selector: 'app-category-picker-modal',
   templateUrl: './category-picker-modal.component.html',
-  styleUrls: ['./category-picker-modal.component.css']
+  styleUrls: ['./category-picker-modal.component.css'],
 })
 export class CategoryPickerModalComponent implements OnInit, OnDestroy {
-
   @Input() title: string;
 
   readonly limit = 8;
@@ -26,17 +25,21 @@ export class CategoryPickerModalComponent implements OnInit, OnDestroy {
   private searchTerm$: BehaviorSubject<string>;
   private locationSubscription: SubscriptionLike;
 
-  constructor(public activeModal: NgbActiveModal, private categoryService: CategoryService, private location: Location) {
+  constructor(
+    public activeModal: NgbActiveModal,
+    private categoryService: CategoryService,
+    private location: Location
+  ) {
     this.searchTerm$ = new BehaviorSubject('');
-    this.searchTerm$.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-    ).subscribe(term => this.search(term));
+    this.searchTerm$
+      .pipe(debounceTime(300), distinctUntilChanged())
+      .subscribe((term) => this.search(term));
   }
 
   ngOnInit(): void {
-    this.locationSubscription = this.location
-      .subscribe(() => this.activeModal.dismiss());
+    this.locationSubscription = this.location.subscribe(() =>
+      this.activeModal.dismiss()
+    );
   }
 
   onInput(event: any): void {
@@ -45,8 +48,9 @@ export class CategoryPickerModalComponent implements OnInit, OnDestroy {
   }
 
   search(name: string) {
-    this.categoryService.searchByName(name, new Pageable(0, this.limit))
-      .subscribe(page => {
+    this.categoryService
+      .searchByName(name, new Pageable(0, this.limit))
+      .subscribe((page) => {
         this.page = page;
         this.categories = page.content;
         this.canSubmit = page.totalElements === 1;

@@ -1,24 +1,42 @@
 <div class="container">
   <div class="row">
-    <a routerLink="/decks/{{deckId}}/cards/{{cardId}}/history" class="btn btn-light float-left mr-1"><i class="fas fa-arrow-left"></i> Back to Card History</a>
+    <a
+      routerLink="/decks/{{ deckId }}/cards/{{ cardId }}/history"
+      class="btn btn-light float-left mr-1"
+      ><i class="fas fa-arrow-left"></i> Back to Card History</a
+    >
   </div>
   <div *ngIf="cardDiff" class="mt-3">
-    <h3>Difference: </h3>
-    <ng-container *appUserRole="'USER'"><button *ngIf="cardRevisionNew" class="btn btn-light mb-2" (click)="undo()">Revert</button></ng-container>
+    <h3>Difference:</h3>
+    <ng-container *appUserRole="'USER'"
+      ><button
+        *ngIf="cardRevisionNew"
+        class="btn btn-light mb-2"
+        (click)="undo()"
+      >
+        Revert
+      </button></ng-container
+    >
     <h4>Front Side</h4>
     <div class="row justify-content-center">
       <div [innerHtml]="cardDiff.textFront"></div>
     </div>
-    <hr class="mx-2">
+    <hr class="mx-2" />
     <h4>Back Side</h4>
     <div class="row justify-content-center">
       <div [innerHtml]="cardDiff.textBack"></div>
     </div>
-    <hr class="mx-2">
+    <hr class="mx-2" />
   </div>
   <div *ngIf="cardRevisionOld" class="row justify-content-center">
-    <app-card-revision class="w-50 p-4" [cardRevision]="cardRevisionOld"></app-card-revision>
-    <app-card-revision class="w-50 p-4" *ngIf="cardRevisionNew" [cardRevision]="cardRevisionNew"></app-card-revision>
+    <app-card-revision
+      class="w-50 p-4"
+      [cardRevision]="cardRevisionOld"
+    ></app-card-revision>
+    <app-card-revision
+      class="w-50 p-4"
+      *ngIf="cardRevisionNew"
+      [cardRevision]="cardRevisionNew"
+    ></app-card-revision>
   </div>
 </div>
-

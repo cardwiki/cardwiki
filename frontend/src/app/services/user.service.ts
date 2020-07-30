@@ -1,23 +1,26 @@
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpParams} from '@angular/common/http';
-import {Globals} from '../global/globals';
-import {Observable} from 'rxjs';
-import {DeckSimple} from '../dtos/deckSimple';
-import {RevisionDetailed} from '../dtos/revisionDetailed';
-import {UserProfile} from '../dtos/userProfile';
-import {catchError} from 'rxjs/operators';
-import {ErrorHandlerService} from './error-handler.service';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Globals } from '../global/globals';
+import { Observable } from 'rxjs';
+import { DeckSimple } from '../dtos/deckSimple';
+import { RevisionDetailed } from '../dtos/revisionDetailed';
+import { UserProfile } from '../dtos/userProfile';
+import { catchError } from 'rxjs/operators';
+import { ErrorHandlerService } from './error-handler.service';
 import { Pageable } from '../dtos/pageable';
 import { Page } from '../dtos/page';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserService {
-
   private userBaseUri: string = this.globals.backendUri + '/users';
 
-  constructor(private httpClient: HttpClient, private globals: Globals, private errorHandler: ErrorHandlerService) { }
+  constructor(
+    private httpClient: HttpClient,
+    private globals: Globals,
+    private errorHandler: ErrorHandlerService
+  ) {}
 
   /**
    * Fetch users containing {@code username} in their username
@@ -25,13 +28,17 @@ export class UserService {
    * @param username to search for
    * @param pageable config for pagination
    */
-  searchUsers(username: string, pageable: Pageable): Observable<Page<UserProfile>> {
+  searchUsers(
+    username: string,
+    pageable: Pageable
+  ): Observable<Page<UserProfile>> {
     console.log('search for users with username: ' + username);
     const params = {
       username,
       ...pageable.toObject(),
     };
-    return this.httpClient.get<Page<UserProfile>>(this.userBaseUri, {params})
+    return this.httpClient
+      .get<Page<UserProfile>>(this.userBaseUri, { params })
       .pipe(catchError(this.errorHandler.handleError('Could not find Users')));
   }
 
@@ -43,8 +50,11 @@ export class UserService {
    */
   getProfile(username: string): Observable<UserProfile> {
     console.log('load profile for user: ' + username);
-    return this.httpClient.get<UserProfile>(`${this.userBaseUri}/byname/${username}`)
-      .pipe(catchError(this.errorHandler.handleError('Could not load User Profile')));
+    return this.httpClient
+      .get<UserProfile>(`${this.userBaseUri}/byname/${username}`)
+      .pipe(
+        catchError(this.errorHandler.handleError('Could not load User Profile'))
+      );
   }
 
   /**
@@ -55,8 +65,13 @@ export class UserService {
    */
   getDecks(userId: number, pageable: Pageable): Observable<Page<DeckSimple>> {
     console.log('load card decks for user: ' + userId);
-    return this.httpClient.get<Page<DeckSimple>>(`${this.userBaseUri}/${userId}/decks`, { params: pageable.toHttpParams() })
-      .pipe(catchError(this.errorHandler.handleError('Could not load User Decks')));
+    return this.httpClient
+      .get<Page<DeckSimple>>(`${this.userBaseUri}/${userId}/decks`, {
+        params: pageable.toHttpParams(),
+      })
+      .pipe(
+        catchError(this.errorHandler.handleError('Could not load User Decks'))
+      );
   }
 
   /**
@@ -65,10 +80,20 @@ export class UserService {
    * @param userId to query revisions for
    * @param pageable config for pagination
    */
-  getRevisions(userId: number, pageable: Pageable): Observable<Page<RevisionDetailed>> {
+  getRevisions(
+    userId: number,
+    pageable: Pageable
+  ): Observable<Page<RevisionDetailed>> {
     console.log('load card revisions for user: ' + userId);
-    return this.httpClient.get<Page<RevisionDetailed>>(`${this.userBaseUri}/${userId}/revisions`, { params: pageable.toHttpParams() })
-      .pipe(catchError(this.errorHandler.handleError('Could not load User Revisions')));
+    return this.httpClient
+      .get<Page<RevisionDetailed>>(`${this.userBaseUri}/${userId}/revisions`, {
+        params: pageable.toHttpParams(),
+      })
+      .pipe(
+        catchError(
+          this.errorHandler.handleError('Could not load User Revisions')
+        )
+      );
   }
 
   /**
@@ -77,10 +102,20 @@ export class UserService {
    * @param userid to query revisions for
    * @param description to save
    */
-  editDescription(userid: number, description: string): Observable<UserProfile> {
+  editDescription(
+    userid: number,
+    description: string
+  ): Observable<UserProfile> {
     console.log('Save description: ' + description);
-    return this.httpClient.patch<UserProfile>(`${this.userBaseUri}/${userid}`, {description: description})
-      .pipe(catchError(this.errorHandler.handleError('Could not edit User description')));
+    return this.httpClient
+      .patch<UserProfile>(`${this.userBaseUri}/${userid}`, {
+        description: description,
+      })
+      .pipe(
+        catchError(
+          this.errorHandler.handleError('Could not edit User description')
+        )
+      );
   }
 
   /**
@@ -90,10 +125,18 @@ export class UserService {
    * @param enabled the 'enabled' status to set.
    * @param reason why this user is disabled
    */
-  editEnabledStatus(userid: number, enabled: boolean, reason?: string): Observable<UserProfile> {
+  editEnabledStatus(
+    userid: number,
+    enabled: boolean,
+    reason?: string
+  ): Observable<UserProfile> {
     const msg = enabled ? 'enable user' : 'disable user';
     console.log(`${msg} ${userid}`);
-    return this.httpClient.patch<UserProfile>(`${this.userBaseUri}/${userid}`, {enabled: enabled, reason: reason})
+    return this.httpClient
+      .patch<UserProfile>(`${this.userBaseUri}/${userid}`, {
+        enabled: enabled,
+        reason: reason,
+      })
       .pipe(catchError(this.errorHandler.handleError('Could not ' + msg)));
   }
 
@@ -106,7 +149,8 @@ export class UserService {
   editAdminStatus(userid: number, admin: boolean): Observable<UserProfile> {
     const msg = admin ? 'promote user' : 'demote user';
     console.log(`${msg} ${userid}`);
-    return this.httpClient.patch<UserProfile>(`${this.userBaseUri}/${userid}`, {admin: admin})
+    return this.httpClient
+      .patch<UserProfile>(`${this.userBaseUri}/${userid}`, { admin: admin })
       .pipe(catchError(this.errorHandler.handleError('Could not ' + msg)));
   }
 
@@ -120,22 +164,33 @@ export class UserService {
     console.log('delete user ' + userid);
     const params = new HttpParams({
       fromObject: {
-        reason: reason
-      }
+        reason: reason,
+      },
     });
-    return this.httpClient.delete<void>(`${this.userBaseUri}/${userid}`, {params: params})
-      .pipe(catchError(this.errorHandler.handleError('Could not delete user ' + userid)));
+    return this.httpClient
+      .delete<void>(`${this.userBaseUri}/${userid}`, { params: params })
+      .pipe(
+        catchError(
+          this.errorHandler.handleError('Could not delete user ' + userid)
+        )
+      );
   }
 
   setTheme(userid: number, theme: string): Observable<UserProfile> {
     console.log('set theme to', theme, 'for user', userid);
-    return this.httpClient.patch<UserProfile>(`${this.userBaseUri}/${userid}`, {theme: theme})
-      .pipe(catchError(this.errorHandler.handleError('Could not set User theme')));
+    return this.httpClient
+      .patch<UserProfile>(`${this.userBaseUri}/${userid}`, { theme: theme })
+      .pipe(
+        catchError(this.errorHandler.handleError('Could not set User theme'))
+      );
   }
 
   export(userId: number): Observable<Blob> {
     console.log('export user data', userId);
-    return this.httpClient.get(`${this.userBaseUri}/${userId}/export`, { responseType: 'blob' })
-      .pipe(catchError(this.errorHandler.handleError('Could not fetch user data')));
+    return this.httpClient
+      .get(`${this.userBaseUri}/${userId}/export`, { responseType: 'blob' })
+      .pipe(
+        catchError(this.errorHandler.handleError('Could not fetch user data'))
+      );
   }
 }

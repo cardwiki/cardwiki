@@ -10,10 +10,9 @@ import { TitleService } from 'src/app/services/title.service';
 @Component({
   selector: 'app-search',
   templateUrl: './search.component.html',
-  styleUrls: ['./search.component.css']
+  styleUrls: ['./search.component.css'],
 })
 export class SearchComponent implements OnInit {
-
   private queryParams: SearchQueryParams = {};
   public newQueryParams: SearchQueryParams = {};
   private readonly limit = 10;
@@ -22,12 +21,16 @@ export class SearchComponent implements OnInit {
   public decks: DeckDetails[];
   public loading: boolean;
 
-  constructor(private deckService: DeckService, private route: ActivatedRoute, private router: Router,
-              private titleService: TitleService) { }
+  constructor(
+    private deckService: DeckService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private titleService: TitleService
+  ) {}
 
   ngOnInit(): void {
     this.titleService.setTitle('Decks', 'Deck search');
-    this.route.queryParamMap.subscribe(paramMap => {
+    this.route.queryParamMap.subscribe((paramMap) => {
       this.queryParams = {
         name: paramMap.get('name') || '',
       };
@@ -47,11 +50,13 @@ export class SearchComponent implements OnInit {
     this.loading = true;
     const pageNumber = this.page ? this.page.pageable.pageNumber + 1 : 0;
 
-    this.deckService.searchByName(name, new Pageable(pageNumber, this.limit))
-      .subscribe(deckPage => {
+    this.deckService
+      .searchByName(name, new Pageable(pageNumber, this.limit))
+      .subscribe((deckPage) => {
         this.page = deckPage;
         this.decks.push(...deckPage.content);
-      }).add(() => this.loading = false);
+      })
+      .add(() => (this.loading = false));
   }
 
   /**
@@ -77,9 +82,13 @@ export class SearchComponent implements OnInit {
   deleteDeck(event: any, deck: DeckDetails): void {
     event.stopPropagation();
     event.preventDefault();
-    if (confirm(`Are you sure you want to permanently delete deck '${deck.name}'?`)) {
-      this.deckService.delete(deck.id).subscribe(_ => {
-        this.decks = this.decks.filter(d => d !== deck);
+    if (
+      confirm(
+        `Are you sure you want to permanently delete deck '${deck.name}'?`
+      )
+    ) {
+      this.deckService.delete(deck.id).subscribe((_) => {
+        this.decks = this.decks.filter((d) => d !== deck);
       });
     }
   }

@@ -1,15 +1,15 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import {DeckService} from '../../../services/deck.service';
-import {FormBuilder, Validators, FormGroup} from '@angular/forms';
-import {DeckSimple} from '../../../dtos/deckSimple';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { DeckService } from '../../../services/deck.service';
+import { FormBuilder, Validators, FormGroup } from '@angular/forms';
+import { DeckSimple } from '../../../dtos/deckSimple';
 import { Location } from '@angular/common';
 import { SubscriptionLike } from 'rxjs';
 
 @Component({
   selector: 'app-deck-create',
   templateUrl: './deck-create-modal.component.html',
-  styleUrls: ['./deck-create-modal.component.css']
+  styleUrls: ['./deck-create-modal.component.css'],
 })
 export class DeckCreateModalComponent implements OnInit, OnDestroy {
   deckForm: FormGroup;
@@ -19,16 +19,17 @@ export class DeckCreateModalComponent implements OnInit, OnDestroy {
     public activeModal: NgbActiveModal,
     private deckService: DeckService,
     private formBuilder: FormBuilder,
-    private location: Location,
+    private location: Location
   ) {
     this.deckForm = this.formBuilder.group({
-       name: ['', [Validators.required, Validators.pattern(/\S+/)]]
+      name: ['', [Validators.required, Validators.pattern(/\S+/)]],
     });
   }
 
   ngOnInit(): void {
-    this.locationSubscription = this.location
-      .subscribe(() => this.activeModal.dismiss());
+    this.locationSubscription = this.location.subscribe(() =>
+      this.activeModal.dismiss()
+    );
   }
 
   createDeck(): void {

@@ -1,34 +1,81 @@
 <form #historyForm="ngForm" *ngIf="revisions" class="container">
   <div class="row">
-    <a routerLink="/decks/{{deckId}}" class="btn btn-light float-left mr-1"><i class="fas fa-arrow-left"></i> Back to Deck</a>
+    <a routerLink="/decks/{{ deckId }}" class="btn btn-light float-left mr-1"
+      ><i class="fas fa-arrow-left"></i> Back to Deck</a
+    >
   </div>
   <div class="row my-3">
     <h2>Card History</h2>
   </div>
-  <button type="link" class="btn btn-sm btn-light my-2"
-          routerLink="/decks/{{deckId}}/cards/{{cardId}}"
-          [queryParams]="{revision: selectedRevisionIdOld, diff: selectedRevisionIdNew}"
-          [disabled]="!selectedRevisionIdOld || !selectedRevisionIdNew">Compare</button>
-  <div class="card my-1" *ngFor="let revision of revisions, let index = index">
-    <div class="card-body p-1" >
-      <input class="mx-1" type="radio" [(ngModel)]="selectedRevisionIdOld"
-             [value]="revision.id" name="oldid"
-             [attr.disabled]="selectedRevisionIdNew-1<revision.id ? 1 : null"/>
-      <input class="mx-1" type="radio" [(ngModel)]="selectedRevisionIdNew"
-             [value]="revision.id" name="newid"
-             [attr.disabled]="selectedRevisionIdOld+1>revision.id ? 1 : null"/>
-      {{revision.createdAt | date : 'medium'}}:
-      <a routerLink="/users/{{revision.createdBy.username}}/profile">{{revision.createdBy.username}}</a>
-      <a routerLink="/decks/{{deckId}}/cards/{{revision.cardId}}" [queryParams]="{revision: revision.id, diff: revisions[index+1] ? revisions[index+1].id : undefined}">
-        {{revisionTypeToString[revision.type]}}</a>
+  <button
+    type="link"
+    class="btn btn-sm btn-light my-2"
+    routerLink="/decks/{{ deckId }}/cards/{{ cardId }}"
+    [queryParams]="{
+      revision: selectedRevisionIdOld,
+      diff: selectedRevisionIdNew
+    }"
+    [disabled]="!selectedRevisionIdOld || !selectedRevisionIdNew"
+  >
+    Compare
+  </button>
+  <div class="card my-1" *ngFor="let revision of revisions; let index = index">
+    <div class="card-body p-1">
+      <input
+        class="mx-1"
+        type="radio"
+        [(ngModel)]="selectedRevisionIdOld"
+        [value]="revision.id"
+        name="oldid"
+        [attr.disabled]="selectedRevisionIdNew - 1 < revision.id ? 1 : null"
+      />
+      <input
+        class="mx-1"
+        type="radio"
+        [(ngModel)]="selectedRevisionIdNew"
+        [value]="revision.id"
+        name="newid"
+        [attr.disabled]="selectedRevisionIdOld + 1 > revision.id ? 1 : null"
+      />
+      {{ revision.createdAt | date: 'medium' }}:
+      <a routerLink="/users/{{ revision.createdBy.username }}/profile">{{
+        revision.createdBy.username
+      }}</a>
+      <a
+        routerLink="/decks/{{ deckId }}/cards/{{ revision.cardId }}"
+        [queryParams]="{
+          revision: revision.id,
+          diff: revisions[index + 1] ? revisions[index + 1].id : undefined
+        }"
+      >
+        {{ revisionTypeToString[revision.type] }}</a
+      >
       card
-      <a routerLink="/decks/{{deckId}}/cards/{{revision.cardId}}">
-        {{revision.textFront && revision.textFront.length > REVISIONTEXT_TRUNCATE ? (revision.textFront | slice:0:REVISIONTEXT_TRUNCATE)+'...' : revision.textFront}}</a>:
-      {{revision.message}}
-      <ng-container *appUserRole="'USER'"><button *ngIf="revisions.indexOf(revision) !== 0" class="btn btn-sm btn-light ml-2" (click)="undo(revision.id)">Restore</button></ng-container>
+      <a routerLink="/decks/{{ deckId }}/cards/{{ revision.cardId }}">
+        {{
+          revision.textFront &&
+          revision.textFront.length > REVISIONTEXT_TRUNCATE
+            ? (revision.textFront | slice: 0:REVISIONTEXT_TRUNCATE) + '...'
+            : revision.textFront
+        }}</a
+      >:
+      {{ revision.message }}
+      <ng-container *appUserRole="'USER'"
+        ><button
+          *ngIf="revisions.indexOf(revision) !== 0"
+          class="btn btn-sm btn-light ml-2"
+          (click)="undo(revision.id)"
+        >
+          Restore
+        </button></ng-container
+      >
     </div>
   </div>
-  <button *ngIf="revisionPage && !revisionPage.last" class="btn btn-light p-1" (click)="loadRevisions()">
+  <button
+    *ngIf="revisionPage && !revisionPage.last"
+    class="btn btn-light p-1"
+    (click)="loadRevisions()"
+  >
     Load more...
   </button>
 </form>

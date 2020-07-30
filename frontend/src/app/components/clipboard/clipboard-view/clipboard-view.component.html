@@ -1,33 +1,62 @@
-  <div class="row mb-3">
-    <div class="container d-flex justify-content-end" *ngIf="clipboard.length > 0">
-      <button type="button" class="btn btn-light mr-1" (click)="clear()" title="Remove all cards from clipboard"><i class="fas fa-broom"></i> Clear</button>
-      <button type="button" class="btn btn-primary" (click)="openDeckModal()"><i class="fas fa-plus"></i> Create new deck with Clipboard</button>
-    </div>
+<div class="row mb-3">
+  <div
+    class="container d-flex justify-content-end"
+    *ngIf="clipboard.length > 0"
+  >
+    <button
+      type="button"
+      class="btn btn-light mr-1"
+      (click)="clear()"
+      title="Remove all cards from clipboard"
+    >
+      <i class="fas fa-broom"></i> Clear
+    </button>
+    <button type="button" class="btn btn-primary" (click)="openDeckModal()">
+      <i class="fas fa-plus"></i> Create new deck with Clipboard
+    </button>
   </div>
-  <ul class="list-group">
-    <li class="list-group-item d-flex" *ngFor="let card of clipboard">
-      <div class="w-50 d-flex align-items-center">
-        <div *ngIf="card.imageFront" class="mr-3">
-          <img src="{{globals.backendBaseUri}}{{card.imageFront.url}}" class="float-left img-fluid img-thumbnail">
-        </div>
-        <div *ngIf="card.textFront" [innerHtml]="card.textFront | md2html"></div>
+</div>
+<ul class="list-group">
+  <li class="list-group-item d-flex" *ngFor="let card of clipboard">
+    <div class="w-50 d-flex align-items-center">
+      <div *ngIf="card.imageFront" class="mr-3">
+        <img
+          src="{{ globals.backendBaseUri }}{{ card.imageFront.url }}"
+          class="float-left img-fluid img-thumbnail"
+        />
       </div>
-      <div class="w-50 d-flex align-items-center">
-        <div *ngIf="card.imageBack" class="mr-3">
-          <img src="{{globals.backendBaseUri}}{{card.imageBack.url}}" class="float-left img-fluid img-thumbnail">
-        </div>
-        <div *ngIf="card.textBack" [innerHtml]="card.textBack | md2html"></div>
+      <div *ngIf="card.textFront" [innerHtml]="card.textFront | md2html"></div>
+    </div>
+    <div class="w-50 d-flex align-items-center">
+      <div *ngIf="card.imageBack" class="mr-3">
+        <img
+          src="{{ globals.backendBaseUri }}{{ card.imageBack.url }}"
+          class="float-left img-fluid img-thumbnail"
+        />
       </div>
-      <div class="d-flex align-items-center">
-        <button type="button" class="btn btn-light remove-button" (click)="remove(card)" title="Remove card from clipboard"><i class="fas fa-trash-alt"></i></button>
-      </div>
-    </li>
-  </ul>
+      <div *ngIf="card.textBack" [innerHtml]="card.textBack | md2html"></div>
+    </div>
+    <div class="d-flex align-items-center">
+      <button
+        type="button"
+        class="btn btn-light remove-button"
+        (click)="remove(card)"
+        title="Remove card from clipboard"
+      >
+        <i class="fas fa-trash-alt"></i>
+      </button>
+    </div>
+  </li>
+</ul>
 <div class="container" *ngIf="clipboard.length === 0">
   <p>There are no cards on your clipboard yet.</p>
-  <p>To add cards, simply press the copy button on any card when viewing a deck.</p>
+  <p>
+    To add cards, simply press the copy button on any card when viewing a deck.
+  </p>
 </div>
 <div class="container mt-3 mb-5">
-  <i><strong>Hint:</strong> Your clipboard is only stored in your browser and not synchronized between devices.</i>
+  <i
+    ><strong>Hint:</strong> Your clipboard is only stored in your browser and
+    not synchronized between devices.</i
+  >
 </div>
-

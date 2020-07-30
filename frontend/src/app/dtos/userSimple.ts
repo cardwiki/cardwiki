@@ -1,6 +1,3 @@
 export class UserSimple {
-  constructor(
-    public id: number,
-    public username: string,
-  ) {}
+  constructor(public id: number, public username: string) {}
 }

@@ -1,7 +1,7 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, AbstractControl} from '@angular/forms';
-import {CategoryDetails} from '../../../dtos/categoryDetails';
-import {CategoryService} from '../../../services/category.service';
+import { Component, Input, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, AbstractControl } from '@angular/forms';
+import { CategoryDetails } from '../../../dtos/categoryDetails';
+import { CategoryService } from '../../../services/category.service';
 import { Location } from '@angular/common';
 import { NotificationService } from 'src/app/services/notification.service';
 import { Router } from '@angular/router';
@@ -13,10 +13,9 @@ import { CategoryPickerModalComponent } from '../category-picker-modal/category-
 @Component({
   selector: 'app-category-form',
   templateUrl: './category-form.component.html',
-  styleUrls: ['./category-form.component.css']
+  styleUrls: ['./category-form.component.css'],
 })
 export class CategoryFormComponent implements OnInit {
-
   @Input() mode: 'Create' | 'Update';
   @Input() category: CategoryDetails;
   @Input() title: string;
@@ -24,8 +23,14 @@ export class CategoryFormComponent implements OnInit {
   parent: CategorySimple;
   nameErrors: string;
 
-  constructor(private formBuilder: FormBuilder, private categoryService: CategoryService, private modalService: NgbModal,
-              private location: Location, private router: Router, private notificationService: NotificationService) {
+  constructor(
+    private formBuilder: FormBuilder,
+    private categoryService: CategoryService,
+    private modalService: NgbModal,
+    private location: Location,
+    private router: Router,
+    private notificationService: NotificationService
+  ) {
     this.categoryForm = this.formBuilder.group({
       name: ['', [this.notBlankValidator]],
     });
@@ -35,7 +40,9 @@ export class CategoryFormComponent implements OnInit {
     this.categoryForm.reset();
     this.setDefaults();
     this.nameErrors = null;
-    this.categoryForm.statusChanges.subscribe(() => this.nameErrors = this.checkNameErrors());
+    this.categoryForm.statusChanges.subscribe(
+      () => (this.nameErrors = this.checkNameErrors())
+    );
   }
 
   /**
@@ -43,29 +50,34 @@ export class CategoryFormComponent implements OnInit {
    */
   submitCategoryForm() {
     console.log('submitted form values:', this.categoryForm.value);
-    const payload = new CategoryUpdate(this.categoryForm.value.name, this.parent);
+    const payload = new CategoryUpdate(
+      this.categoryForm.value.name,
+      this.parent
+    );
 
     if (this.mode === 'Update') {
-      this.categoryService.editCategory(this.category.id, payload).subscribe(
-        (category) => {
+      this.categoryService
+        .editCategory(this.category.id, payload)
+        .subscribe((category) => {
           this.notificationService.success('Updated Category');
           this.router.navigate(['categories', category.id]);
-      });
+        });
     } else {
-      this.categoryService.createCategory(payload)
-        .subscribe((category) => {
-          this.notificationService.success('Created Category');
-          this.router.navigate(['categories', category.id]);
+      this.categoryService.createCategory(payload).subscribe((category) => {
+        this.notificationService.success('Created Category');
+        this.router.navigate(['categories', category.id]);
       });
     }
   }
 
   openParentModal(): void {
-    const categoryPickerModal = this.modalService.open(CategoryPickerModalComponent);
+    const categoryPickerModal = this.modalService.open(
+      CategoryPickerModalComponent
+    );
     categoryPickerModal.componentInstance.title = 'Select parent category';
     categoryPickerModal.result
-      .then((category: CategorySimple) => this.parent = category)
-      .catch(err => console.log('Parent picker cancelled', err));
+      .then((category: CategorySimple) => (this.parent = category))
+      .catch((err) => console.log('Parent picker cancelled', err));
   }
 
   removeParent(): void {
