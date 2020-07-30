@@ -1,5 +1,10 @@
 <div *ngIf="specs" class="mb-3">
-  <form *ngIf="list.length > 0" class="form-inline pl-2 mb-2" [formGroup]="searchForm" (keydown)="keyDownFunction($event)">
+  <form
+    *ngIf="list.length > 0"
+    class="form-inline pl-2 mb-2"
+    [formGroup]="searchForm"
+    (keydown)="keyDownFunction($event)"
+  >
     <div class="">
       <div class="form-group flex-grow-1">
         <input
@@ -10,9 +15,9 @@
           name="search"
           autocomplete="off"
           #searchFormField
-        >
-        </div>
+        />
       </div>
+    </div>
   </form>
   <app-list
     [list]="filteredList ? filteredList : list"

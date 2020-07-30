@@ -66,7 +66,7 @@ export class NotificationService {
    * @param toast toast to be removed
    */
   remove(toast: Toast): void {
-    this.toasts = this.toasts.filter(t => t !== toast);
+    this.toasts = this.toasts.filter((t) => t !== toast);
     this.updateObservable();
   }
 

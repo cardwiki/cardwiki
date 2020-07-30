@@ -5,7 +5,6 @@ export class DeckProgressDetails {
     public deckId: number,
     public deckName: string,
     public normal: DeckProgress,
-    public reverse: DeckProgress,
-  ) {
-  }
+    public reverse: DeckProgress
+  ) {}
 }

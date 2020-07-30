@@ -1,10 +1,33 @@
 <form (ngSubmit)="onSubmit()" #commentForm="ngForm">
-    <small>You can format comments with <abbr title="Markdown allows text styling, lists and more">markdown</abbr> and <abbr title="With KaTeX you can create math formulas">katex</abbr> (<a routerLink="/help/markdown-syntax" target="blank">Help</a>)</small>
-    <div class="form-group">
-        <textarea class="form-control" placeholder="Leave a comment here" aria-label="Comment on Deck"
-            [(ngModel)]="message" name="message" minlength="1" maxlength="{{globals.maxCommentSize}}" required></textarea>
-    </div>
+  <small>
+    You can format comments with
+    <abbr title="Markdown allows text styling, lists and more">markdown</abbr>
+    and
+    <abbr title="With KaTeX you can create math formulas">katex</abbr>
+    (
+    <a routerLink="/help/markdown-syntax" target="blank">Help</a>
+    )
+  </small>
+  <div class="form-group">
+    <textarea
+      class="form-control"
+      placeholder="Leave a comment here"
+      aria-label="Comment on Deck"
+      [(ngModel)]="message"
+      name="message"
+      minlength="1"
+      maxlength="{{ globals.maxCommentSize }}"
+      required
+    ></textarea>
+  </div>
 
-    <button type="submit" class="btn btn-primary">{{action}}</button>
-    <button *ngIf="showCancelButton" type="button" class="btn btn-outline-danger ml-2" (click)="onCancel()">Cancel</button>
+  <button type="submit" class="btn btn-primary">{{ action }}</button>
+  <button
+    *ngIf="showCancelButton"
+    type="button"
+    class="btn btn-outline-danger ml-2"
+    (click)="onCancel()"
+  >
+    Cancel
+  </button>
 </form>

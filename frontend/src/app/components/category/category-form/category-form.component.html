@@ -3,10 +3,17 @@
     <span class="anchor" id="formLogin"></span>
     <div class="card rounded-0">
       <div class="card-header">
-        <h3 class="mb-0">{{title}} {{mode === 'Update' ? "'"+category.name+"'" : category.name}}</h3>
+        <h3 class="mb-0">
+          {{ title }}
+          {{ mode === 'Update' ? "'" + category.name + "'" : category.name }}
+        </h3>
       </div>
       <div class="card-body">
-        <form class="form" [formGroup]="categoryForm" (ngSubmit)="submitCategoryForm()">
+        <form
+          class="form"
+          [formGroup]="categoryForm"
+          (ngSubmit)="submitCategoryForm()"
+        >
           <div class="form-group">
             <label for="categoryName">Name</label>
             <input
@@ -20,9 +27,16 @@
               maxLength="200"
               autocomplete="off"
               required
+            />
+            <div
+              *ngIf="
+                categoryForm.controls.name.invalid &&
+                (categoryForm.controls.name.dirty ||
+                  categoryForm.controls.name.touched)
+              "
+              class="error"
             >
-            <div *ngIf="categoryForm.controls.name.invalid && (categoryForm.controls.name.dirty || categoryForm.controls.name.touched)" class="error">
-              <small class="form-text text-warning">{{nameErrors}}</small>
+              <small class="form-text text-warning">{{ nameErrors }}</small>
             </div>
           </div>
 
@@ -30,18 +44,46 @@
             <label for="staticParent" (click)="openParentModal()">Parent</label>
             <div class="input-group" role="group">
               <div class="input-group-prepend">
-                <button type="button" (click)="openParentModal()" class="btn btn-outline-dark">Select</button>
+                <button
+                  type="button"
+                  (click)="openParentModal()"
+                  class="btn btn-outline-dark"
+                >
+                  Select
+                </button>
               </div>
-              <input type="text" readonly class="form-control" id="staticParent" [value]="parent?.name || 'No parent selected'">
+              <input
+                type="text"
+                readonly
+                class="form-control"
+                id="staticParent"
+                [value]="parent?.name || 'No parent selected'"
+              />
               <div class="input-group-append" *ngIf="parent">
-                <button type="button" (click)="removeParent()" class="btn btn-outline-warning">Clear</button>
+                <button
+                  type="button"
+                  (click)="removeParent()"
+                  class="btn btn-outline-warning"
+                >
+                  Clear
+                </button>
               </div>
             </div>
           </div>
-          <button type="submit" class="btn btn-primary" [disabled]="!(categoryForm.status === 'VALID')">
-            {{mode}}
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="!(categoryForm.status === 'VALID')"
+          >
+            {{ mode }}
           </button>
-          <button type="button" class="btn btn-outline-danger ml-2" (click)="onCancel()">Cancel</button>
+          <button
+            type="button"
+            class="btn btn-outline-danger ml-2"
+            (click)="onCancel()"
+          >
+            Cancel
+          </button>
         </form>
       </div>
     </div>

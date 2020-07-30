@@ -1,24 +1,27 @@
-import {Component, HostListener, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
-import {DeckDetails} from '../../../dtos/deckDetails';
-import {CardSimple} from '../../../dtos/cardSimple';
-import {DeckService} from '../../../services/deck.service';
-import {CardService} from '../../../services/card.service';
-import {Pageable} from 'src/app/dtos/pageable';
-import {Page} from 'src/app/dtos/page';
-import {Globals} from '../../../global/globals';
+import { Component, HostListener, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { DeckDetails } from '../../../dtos/deckDetails';
+import { CardSimple } from '../../../dtos/cardSimple';
+import { DeckService } from '../../../services/deck.service';
+import { CardService } from '../../../services/card.service';
+import { Pageable } from 'src/app/dtos/pageable';
+import { Page } from 'src/app/dtos/page';
+import { Globals } from '../../../global/globals';
 import { TitleService } from 'src/app/services/title.service';
 
 @Component({
   selector: 'app-deck-preview',
   templateUrl: './deck-preview.component.html',
-  styleUrls: ['./deck-preview.component.css']
+  styleUrls: ['./deck-preview.component.css'],
 })
-
 export class DeckPreviewComponent implements OnInit {
-
-  constructor(private deckService: DeckService, private cardService: CardService, private route: ActivatedRoute, public globals: Globals,
-              private titleService: TitleService) { }
+  constructor(
+    private deckService: DeckService,
+    private cardService: CardService,
+    private route: ActivatedRoute,
+    public globals: Globals,
+    private titleService: TitleService
+  ) {}
 
   readonly fetchSize = 25;
   readonly minPrefetched = 10; // fetch next cards when (remaining cards <= minPrefetched)
@@ -32,7 +35,7 @@ export class DeckPreviewComponent implements OnInit {
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent): void {
-    const actions: { [key: string]: () => void} = {
+    const actions: { [key: string]: () => void } = {
       ArrowRight: () => this.nextCard(),
       ArrowLeft: () => this.previousCard(),
       ArrowUp: () => this.flipTo('front'),
@@ -47,13 +50,13 @@ export class DeckPreviewComponent implements OnInit {
   ngOnInit(): void {
     this.deck = this.page = this.currentcard = null;
     this.cards = [];
-    this.route.paramMap.subscribe(params => {
+    this.route.paramMap.subscribe((params) => {
       this.loadDeck(Number(params.get('id')));
     });
   }
 
   loadDeck(id: number): void {
-    this.deckService.getDeckById(id).subscribe(deck => {
+    this.deckService.getDeckById(id).subscribe((deck) => {
       this.titleService.setTitle(`View ${deck.name}`, null);
       this.deck = deck;
       this.loadNextCards();
@@ -62,8 +65,12 @@ export class DeckPreviewComponent implements OnInit {
 
   loadNextCards(): void {
     const nextPageNumber = this.page ? this.page.pageable.pageNumber + 1 : 0;
-    this.cardService.getCardsByDeckId(this.deck.id, new Pageable(nextPageNumber, this.fetchSize))
-      .subscribe(page => {
+    this.cardService
+      .getCardsByDeckId(
+        this.deck.id,
+        new Pageable(nextPageNumber, this.fetchSize)
+      )
+      .subscribe((page) => {
         console.log('Fetched next cards', page);
         this.page = page;
         this.cards.push(...page.content);
@@ -100,6 +107,9 @@ export class DeckPreviewComponent implements OnInit {
   }
 
   shouldPreLoadNextCards(): boolean {
-    return !this.page.last && (this.cards.length - this.currentCardIndex <= this.minPrefetched);
+    return (
+      !this.page.last &&
+      this.cards.length - this.currentCardIndex <= this.minPrefetched
+    );
   }
 }

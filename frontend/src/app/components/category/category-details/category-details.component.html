@@ -1,39 +1,56 @@
 <div *ngIf="category" class="container">
   <div *ngIf="category.name">
-	<div class="pt-3 pb-3 pr-3"> <!-- TODO -->
-	  <a *ngIf="category.parent" routerLink="/categories/{{category.parent.id}}">
-		<i class="fas fa-arrow-up"></i> {{category.parent.name}}
-	  </a>
-	  <div class=float-right>
-	    <a class="btn btn-light" routerLink="/categories/{{category.id}}/edit"><i class="fas fa-pencil-alt"></i> Edit</a>
+    <div class="pt-3 pb-3 pr-3">
+      <!-- TODO -->
+      <a
+        *ngIf="category.parent"
+        routerLink="/categories/{{ category.parent.id }}"
+      >
+        <i class="fas fa-arrow-up"></i>
+        {{ category.parent.name }}
+      </a>
+      <div class="float-right">
+        <a
+          class="btn btn-light"
+          routerLink="/categories/{{ category.id }}/edit"
+        >
+          <i class="fas fa-pencil-alt"></i>
+          Edit
+        </a>
       </div>
-	  <h1><i class="far fa-folder"></i> {{category.name}}</h1>
-	</div>
-	<div *ngIf="category.children" class=mb-3>
-	  <h2>Subcategories</h2>
-	  <app-list-search
-		[list]="category.children"
-		[specs]="{ listSize: category.children.length, pageSize: 7, page: 1 }"
-		[path]="'categories'"
-		[messages]="{ success: 'Success', error: 'Error' }"
-		[id]="category.id"
-	  >
-	  </app-list-search>
-	  <a class="btn btn-outline-success" routerLink="/categories/new" [queryParams]="{ parentId: category.id }">Add subcategory</a>
-	</div>
-	<div *ngIf="category.decks">
-	  <h2>Decks</h2>
-	  <div>
-		<app-list-search
-		  [list]="category.decks"
-		  [specs]="{ listSize: category.decks.length, pageSize: 7, page: 1 }"
-		  [path]="'decks'"
-		  [messages]="{ success: 'Success', error: 'Error' }"
-		  [id]="category.id"
-		>
-		</app-list-search>
-	  </div>
-	</div>
+      <h1>
+        <i class="far fa-folder"></i>
+        {{ category.name }}
+      </h1>
+    </div>
+    <div *ngIf="category.children" class="mb-3">
+      <h2>Subcategories</h2>
+      <app-list-search
+        [list]="category.children"
+        [specs]="{ listSize: category.children.length, pageSize: 7, page: 1 }"
+        [path]="'categories'"
+        [messages]="{ success: 'Success', error: 'Error' }"
+        [id]="category.id"
+      ></app-list-search>
+      <a
+        class="btn btn-outline-success"
+        routerLink="/categories/new"
+        [queryParams]="{ parentId: category.id }"
+      >
+        Add subcategory
+      </a>
+    </div>
+    <div *ngIf="category.decks">
+      <h2>Decks</h2>
+      <div>
+        <app-list-search
+          [list]="category.decks"
+          [specs]="{ listSize: category.decks.length, pageSize: 7, page: 1 }"
+          [path]="'decks'"
+          [messages]="{ success: 'Success', error: 'Error' }"
+          [id]="category.id"
+        ></app-list-search>
+      </div>
+    </div>
   </div>
 </div>
-

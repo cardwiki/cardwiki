@@ -1,31 +1,61 @@
 <div class="container d-flex flex-column" *ngIf="deck">
-	<p>
-		<button class="btn btn-link" routerLink="/decks/{{deck.id}}">back to deck {{deck.name}}</button>
-		{{reverse ? '(Learning in Reverse)' : ''}}
-	</p>
-	<div class="d-flex align-items-center flex-column wrapper" *ngIf=card>
-		<div class=card-container>
-      <img class="img-fluid img-thumbnail img-front mb-2" *ngIf="card.imageFrontUrl" src="{{globals.backendBaseUri}}{{card.imageFrontUrl}}">
-			<div class=lgfont *ngIf="card.textFront" [innerHtml]="card.textFront | md2html"></div>
-			<div class="scene text-center" (click)="onFlip()">
-				<div class=flip-card [ngClass]="flipped ? 'flipped' : ''">
-					<div class="flip-card-face please-flip">flip backside by clicking here or pressing spacebar</div>
-          <div class="flip-card-face flip-card-face-back">
-              <img class="img-fluid img-thumbnail img-back my-3" *ngIf="card.imageBackUrl" src="{{globals.backendBaseUri}}{{card.imageBackUrl}}">
-              <div class="lgfont" *ngIf="card.textBack" [innerHtml]="card.textBack  | md2html"></div>
+  <p>
+    <button class="btn btn-link" routerLink="/decks/{{ deck.id }}">
+      back to deck {{ deck.name }}
+    </button>
+    {{ reverse ? '(Learning in Reverse)' : '' }}
+  </p>
+  <div class="d-flex align-items-center flex-column wrapper" *ngIf="card">
+    <div class="card-container">
+      <img
+        class="img-fluid img-thumbnail img-front mb-2"
+        *ngIf="card.imageFrontUrl"
+        src="{{ globals.backendBaseUri }}{{ card.imageFrontUrl }}"
+      />
+      <div
+        class="lgfont"
+        *ngIf="card.textFront"
+        [innerHtml]="card.textFront | md2html"
+      ></div>
+      <div class="scene text-center" (click)="onFlip()">
+        <div class="flip-card" [ngClass]="flipped ? 'flipped' : ''">
+          <div class="flip-card-face please-flip">
+            flip backside by clicking here or pressing spacebar
           </div>
-				</div>
-			</div>
-		</div>
-		<table *ngIf="flipped" class="text-center mt-3">
-			<tr>
-				<td><button class="btn btn-outline-info" (click)="onAgain()">Again</button></td>
-				<td><button class="btn btn-outline-info mx-3" (click)="onGood()">Good</button></td>
-				<td><button class="btn btn-outline-info" (click)="onEasy()">Easy</button></td>
-			</tr>
-		</table>
-	</div>
-	<p *ngIf=!card class="text-center lgfont">
-	There are no more cards to learn at the moment.
-	</p>
+          <div class="flip-card-face flip-card-face-back">
+            <img
+              class="img-fluid img-thumbnail img-back my-3"
+              *ngIf="card.imageBackUrl"
+              src="{{ globals.backendBaseUri }}{{ card.imageBackUrl }}"
+            />
+            <div
+              class="lgfont"
+              *ngIf="card.textBack"
+              [innerHtml]="card.textBack | md2html"
+            ></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <table *ngIf="flipped" class="text-center mt-3">
+      <tr>
+        <td>
+          <button class="btn btn-outline-info" (click)="onAgain()">
+            Again
+          </button>
+        </td>
+        <td>
+          <button class="btn btn-outline-info mx-3" (click)="onGood()">
+            Good
+          </button>
+        </td>
+        <td>
+          <button class="btn btn-outline-info" (click)="onEasy()">Easy</button>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <p *ngIf="!card" class="text-center lgfont">
+    There are no more cards to learn at the moment.
+  </p>
 </div>

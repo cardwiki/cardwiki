@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {Globals} from '../global/globals';
-import {Observable} from 'rxjs';
-import {CategoryDetails} from '../dtos/categoryDetails';
+import { HttpClient } from '@angular/common/http';
+import { Globals } from '../global/globals';
+import { Observable } from 'rxjs';
+import { CategoryDetails } from '../dtos/categoryDetails';
 import { CategoryUpdate } from '../dtos/categoryUpdate';
 import { CategorySimple } from '../dtos/categorySimple';
 import { ErrorHandlerService } from './error-handler.service';
@@ -11,14 +11,16 @@ import { Pageable } from '../dtos/pageable';
 import { Page } from '../dtos/page';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CategoryService {
-
   private categoryBaseUri: string = this.globals.backendUri + '/categories';
 
-  constructor(private httpClient: HttpClient, private globals: Globals, private errorHandler: ErrorHandlerService) {
-  }
+  constructor(
+    private httpClient: HttpClient,
+    private globals: Globals,
+    private errorHandler: ErrorHandlerService
+  ) {}
 
   /**
    * Search for categories by name
@@ -26,14 +28,22 @@ export class CategoryService {
    * @param name name to search for
    * @param pageable config for pagination
    */
-  searchByName(name: string, pageable: Pageable): Observable<Page<CategorySimple>> {
+  searchByName(
+    name: string,
+    pageable: Pageable
+  ): Observable<Page<CategorySimple>> {
     console.log('search categories: ' + name);
     const params = {
       name,
       ...pageable.toObject(),
     };
-    return this.httpClient.get<Page<CategorySimple>>(this.categoryBaseUri, { params })
-      .pipe(catchError(this.errorHandler.handleError('Could not search for Categories')));
+    return this.httpClient
+      .get<Page<CategorySimple>>(this.categoryBaseUri, { params })
+      .pipe(
+        catchError(
+          this.errorHandler.handleError('Could not search for Categories')
+        )
+      );
   }
 
   /**
@@ -42,8 +52,11 @@ export class CategoryService {
    */
   getCategoryById(id: number): Observable<CategoryDetails> {
     console.log('Load details for category with id ' + id);
-    return this.httpClient.get<CategoryDetails>(this.categoryBaseUri + '/' + id)
-      .pipe(catchError(this.errorHandler.handleError('Could not fetch Category')));
+    return this.httpClient
+      .get<CategoryDetails>(this.categoryBaseUri + '/' + id)
+      .pipe(
+        catchError(this.errorHandler.handleError('Could not fetch Category'))
+      );
   }
 
   /**
@@ -52,8 +65,11 @@ export class CategoryService {
    */
   createCategory(category: CategoryUpdate): Observable<CategoryDetails> {
     console.log('Create category with name ' + category.name);
-    return this.httpClient.post<CategoryDetails>(this.categoryBaseUri, category)
-      .pipe(catchError(this.errorHandler.handleError('Could not create Category')));
+    return this.httpClient
+      .post<CategoryDetails>(this.categoryBaseUri, category)
+      .pipe(
+        catchError(this.errorHandler.handleError('Could not create Category'))
+      );
   }
 
   /**
@@ -61,10 +77,16 @@ export class CategoryService {
    * @param id id of the category to update
    * @param category Dto containing the data to update category with
    */
-  editCategory(id: number, category: CategoryUpdate): Observable<CategoryDetails> {
+  editCategory(
+    id: number,
+    category: CategoryUpdate
+  ): Observable<CategoryDetails> {
     console.log('Edit category with id ' + id);
-    return this.httpClient.put<CategoryDetails>(this.categoryBaseUri + '/' + id, category)
-      .pipe(catchError(this.errorHandler.handleError('Could not update Category')));
+    return this.httpClient
+      .put<CategoryDetails>(this.categoryBaseUri + '/' + id, category)
+      .pipe(
+        catchError(this.errorHandler.handleError('Could not update Category'))
+      );
   }
 
   /**
@@ -74,7 +96,10 @@ export class CategoryService {
    */
   deleteCategory(id: number): Observable<void> {
     console.log('Delete category with id ' + id);
-    return this.httpClient.delete<void>(this.categoryBaseUri + '/' + id)
-      .pipe(catchError(this.errorHandler.handleError('Could not delete Category')));
+    return this.httpClient
+      .delete<void>(this.categoryBaseUri + '/' + id)
+      .pipe(
+        catchError(this.errorHandler.handleError('Could not delete Category'))
+      );
   }
 }

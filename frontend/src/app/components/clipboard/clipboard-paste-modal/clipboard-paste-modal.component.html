@@ -1,36 +1,70 @@
 <div class="modal-content">
   <div class="modal-header">
     <h5 class="modal-title">Clipboard</h5>
-    <button type="button" class="close" (click)="activeModal.dismiss()">&times;</button>
+    <button type="button" class="close" (click)="activeModal.dismiss()">
+      &times;
+    </button>
   </div>
 
   <div class="modal-body">
-      <ul class="list-group m-0">
-        <button *ngFor="let card of clipboard" [style.background]="selection.includes(card) ? 'lightgrey' : null" class="list-group-item list-group-item-action" (click)="select(card)">
-          <div class="container d-flex">
-            <div class="w-50 d-flex align-items-center">
-              <div *ngIf="card.imageFront" class="mr-3">
-                <img src="{{globals.backendBaseUri}}{{card.imageFront.url}}" class="float-left img-fluid img-thumbnail">
-              </div>
-              <div *ngIf="card.textFront" [innerHtml]="card.textFront | md2html"></div>
+    <ul class="list-group m-0">
+      <button
+        *ngFor="let card of clipboard"
+        [style.background]="selection.includes(card) ? 'lightgrey' : null"
+        class="list-group-item list-group-item-action"
+        (click)="select(card)"
+      >
+        <div class="container d-flex">
+          <div class="w-50 d-flex align-items-center">
+            <div *ngIf="card.imageFront" class="mr-3">
+              <img
+                src="{{ globals.backendBaseUri }}{{ card.imageFront.url }}"
+                class="float-left img-fluid img-thumbnail"
+              />
             </div>
-            <div class="flex-grow-1 d-flex align-items-center">
-              <div *ngIf="card.imageBack" class="mr-3">
-                <img src="{{globals.backendBaseUri}}{{card.imageBack.url}}" class="float-left img-fluid img-thumbnail">
-              </div>
-              <div *ngIf="card.textBack" [innerHtml]="card.textBack | md2html"></div>
-            </div>
-            <div class="d-flex align-items-center">
-              <i [hidden]="!selection.includes(card)" class="fas fa-check"></i>
-            </div>
+            <div
+              *ngIf="card.textFront"
+              [innerHtml]="card.textFront | md2html"
+            ></div>
           </div>
-        </button>
-      </ul>
+          <div class="flex-grow-1 d-flex align-items-center">
+            <div *ngIf="card.imageBack" class="mr-3">
+              <img
+                src="{{ globals.backendBaseUri }}{{ card.imageBack.url }}"
+                class="float-left img-fluid img-thumbnail"
+              />
+            </div>
+            <div
+              *ngIf="card.textBack"
+              [innerHtml]="card.textBack | md2html"
+            ></div>
+          </div>
+          <div class="d-flex align-items-center">
+            <i [hidden]="!selection.includes(card)" class="fas fa-check"></i>
+          </div>
+        </div>
+      </button>
+    </ul>
   </div>
 
   <div class="modal-footer">
-    <button type="button" class="btn btn-primary" (click)="paste()" [disabled]="selection.length <= 0">Paste</button>
-    <button type="button" class="btn btn-primary" (click)="selectAll()">{{selection === clipboard ? 'Deselect' : 'Select'}} All</button>
-    <button type="button" class="btn btn-outline-danger" (click)="activeModal.dismiss()">Cancel</button>
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="paste()"
+      [disabled]="selection.length <= 0"
+    >
+      Paste
+    </button>
+    <button type="button" class="btn btn-primary" (click)="selectAll()">
+      {{ selection === clipboard ? 'Deselect' : 'Select' }} All
+    </button>
+    <button
+      type="button"
+      class="btn btn-outline-danger"
+      (click)="activeModal.dismiss()"
+    >
+      Cancel
+    </button>
   </div>
 </div>

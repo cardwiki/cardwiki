@@ -2,8 +2,8 @@ export class LearnAttempt {
   constructor(
     public cardId: number,
     public status: AttemptStatus,
-    public reverse: boolean,
-  ) { }
+    public reverse: boolean
+  ) {}
 }
 
 export enum AttemptStatus {

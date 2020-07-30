@@ -1,4 +1,4 @@
-import {Image} from './image';
+import { Image } from './image';
 
 export class CardUpdate implements CardTextContent {
   constructor(
@@ -6,6 +6,6 @@ export class CardUpdate implements CardTextContent {
     public textBack: string,
     public imageFront: Image,
     public imageBack: Image,
-    public message: string = null) {
-  }
+    public message: string = null
+  ) {}
 }

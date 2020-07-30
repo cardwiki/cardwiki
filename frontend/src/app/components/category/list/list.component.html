@@ -1,25 +1,30 @@
 <div *ngIf="specs" class="row ml-0">
   <div *ngIf="list.length > 0">
     <ul>
-      <li *ngFor="let item of list |
-                  slice: (specs.page - 1) * specs.pageSize : (specs.page - 1) * specs.pageSize + specs.pageSize
-                  trackBy: trackChange"
+      <li
+        *ngFor="
+          let item of list
+            | slice
+              : (specs.page - 1) * specs.pageSize
+              : (specs.page - 1) * specs.pageSize + specs.pageSize;
+          trackBy: trackChange
+        "
       >
-        <a class="text-body" routerLink="/{{path}}/{{item.id}}">{{item.name}}</a>
+        <a class="text-body" routerLink="/{{ path }}/{{ item.id }}">
+          {{ item.name }}
+        </a>
       </li>
     </ul>
     <div id="pagination">
       <ngb-pagination
         class="row ml-0 pl-4"
-        [(page)]=specs.page
-        [pageSize]=specs.pageSize
+        [(page)]="specs.page"
+        [pageSize]="specs.pageSize"
         [collectionSize]="list.length"
         size="sm"
         *ngIf="list.length > specs.pageSize"
-      >
-      </ngb-pagination>
+      ></ngb-pagination>
     </div>
   </div>
   <div *ngIf="list.length === 0" class="row pl-4 ml-0">None found.</div>
 </div>
-
