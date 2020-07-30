@@ -1,9 +1,15 @@
 <div class="container" *ngIf="profile">
-  <h1>{{profile.username}}</h1>
+  <h1>{{ profile.username }}</h1>
   <div class="row" *ngIf="me || admin">
     <div class="col">
       <div class="btn-toolbar float-right" *ngIf="me || admin">
-        <button type="button" class="btn btn-secondary" (click)="exportUserData()">Export Data</button>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="exportUserData()"
+        >
+          Export Data
+        </button>
       </div>
     </div>
   </div>
@@ -13,12 +19,41 @@
       <div class="card mt-4">
         <div class="card-header">
           Bio
-          <button *ngIf="(me || (admin && !profile.admin)) && !editingDescription" (click)="editingDescription = true" type="button" class="btn btn-sm btn-light float-right m-n1"><i class="fas fa-pencil-alt"></i></button>
-          <button *ngIf="editingDescription" (click)="saveDescription()"  type="button" class="btn btn-sm {{editingSuccess ? 'btn-success' : 'btn-light'}} float-right m-n1"><i class="fas fa-check-circle"></i></button>
+          <button
+            *ngIf="(me || (admin && !profile.admin)) && !editingDescription"
+            (click)="editingDescription = true"
+            type="button"
+            class="btn btn-sm btn-light float-right m-n1"
+          >
+            <i class="fas fa-pencil-alt"></i>
+          </button>
+          <button
+            *ngIf="editingDescription"
+            (click)="saveDescription()"
+            type="button"
+            class="btn btn-sm {{
+              editingSuccess ? 'btn-success' : 'btn-light'
+            }} float-right m-n1"
+          >
+            <i class="fas fa-check-circle"></i>
+          </button>
         </div>
         <div class="card-body">
-          <p *ngIf="!editingDescription" class="card-text" [innerHTML]="profile.description | md2html"></p>
-          <textarea *ngIf="editingDescription" class="form-control" aria-label="Front Text" [(ngModel)]="profile.description" name="description" required minlength="1" maxlength="{{globals.maxTextSize}}"></textarea>
+          <p
+            *ngIf="!editingDescription"
+            class="card-text"
+            [innerHTML]="profile.description | md2html"
+          ></p>
+          <textarea
+            *ngIf="editingDescription"
+            class="form-control"
+            aria-label="Front Text"
+            [(ngModel)]="profile.description"
+            name="description"
+            required
+            minlength="1"
+            maxlength="{{ globals.maxTextSize }}"
+          ></textarea>
         </div>
       </div>
     </div>
@@ -30,10 +65,14 @@
         </div>
         <ul class="list-group list-group-flush">
           <li *ngFor="let deck of decks" class="list-group-item">
-            <a routerLink="/decks/{{deck.id}}">{{deck.name}}</a>
+            <a routerLink="/decks/{{ deck.id }}">{{ deck.name }}</a>
           </li>
         </ul>
-        <button *ngIf="deckPage && !deckPage.last" class="card-footer btn p-1" (click)="loadDecks()">
+        <button
+          *ngIf="deckPage && !deckPage.last"
+          class="card-footer btn p-1"
+          (click)="loadDecks()"
+        >
           Load more...
         </button>
       </div>
@@ -46,15 +85,41 @@
         </div>
         <ul class="list-group list-group-flush">
           <li *ngFor="let revision of revisions" class="list-group-item">
-            {{revision.createdAt | date : 'medium' }}:
-            <a routerLink="/decks/{{revision.deck.id}}/cards/{{revision.cardId}}" [queryParams]="{revision: revision.id}">{{revisionTypeToString[revision.type]}}</a>
+            {{ revision.createdAt | date: 'medium' }}:
+            <a
+              routerLink="/decks/{{ revision.deck.id }}/cards/{{
+                revision.cardId
+              }}"
+              [queryParams]="{ revision: revision.id }"
+            >
+              {{ revisionTypeToString[revision.type] }}
+            </a>
             card
-            <a routerLink="/decks/{{revision.deck.id}}/cards/{{revision.cardId}}">{{revision.textFront && revision.textFront.length > REVISIONTEXT_TRUNCATE ? (revision.textFront | slice:0:REVISIONTEXT_TRUNCATE)+'...' : revision.textFront}}</a>
+            <a
+              routerLink="/decks/{{ revision.deck.id }}/cards/{{
+                revision.cardId
+              }}"
+            >
+              {{
+                revision.textFront &&
+                revision.textFront.length > REVISIONTEXT_TRUNCATE
+                  ? (revision.textFront | slice: 0:REVISIONTEXT_TRUNCATE) +
+                    '...'
+                  : revision.textFront
+              }}
+            </a>
             in
-            <a routerLink="/decks/{{revision.deck.id}}">{{revision.deck.name}}</a>.
+            <a routerLink="/decks/{{ revision.deck.id }}">
+              {{ revision.deck.name }}
+            </a>
+            .
           </li>
         </ul>
-        <button *ngIf="revisionPage && !revisionPage.last" class="card-footer btn p-1" (click)="loadRevisions()">
+        <button
+          *ngIf="revisionPage && !revisionPage.last"
+          class="card-footer btn p-1"
+          (click)="loadRevisions()"
+        >
           Load more...
         </button>
       </div>

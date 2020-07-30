@@ -1,35 +1,34 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {DeckDetails} from '../../../dtos/deckDetails';
-import {DeckService} from '../../../services/deck.service';
-import {ActivatedRoute, Router} from '@angular/router';
-import {CardService} from '../../../services/card.service';
-import {CardSimple} from '../../../dtos/cardSimple';
-import {NotificationService} from 'src/app/services/notification.service';
-import {DeckForkModalComponent} from '../deck-fork-modal/deck-fork-modal.component';
-import {Observable, Subject} from 'rxjs';
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {AuthService} from '../../../services/auth.service';
-import {Globals} from '../../../global/globals';
-import {FavoriteService} from 'src/app/services/favorite.service';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { DeckDetails } from '../../../dtos/deckDetails';
+import { DeckService } from '../../../services/deck.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { CardService } from '../../../services/card.service';
+import { CardSimple } from '../../../dtos/cardSimple';
+import { NotificationService } from 'src/app/services/notification.service';
+import { DeckForkModalComponent } from '../deck-fork-modal/deck-fork-modal.component';
+import { Observable, Subject } from 'rxjs';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { AuthService } from '../../../services/auth.service';
+import { Globals } from '../../../global/globals';
+import { FavoriteService } from 'src/app/services/favorite.service';
 import { CardRemoveModalComponent } from '../card-remove-modal/card-remove-modal.component';
 import { Pageable } from 'src/app/dtos/pageable';
 import { Page } from 'src/app/dtos/page';
 import { CommentService } from 'src/app/services/comment.service';
 import { CommentSimple } from 'src/app/dtos/commentSimple';
 import { CommentFormComponent } from '../../comment/comment-form/comment-form.component';
-import { CardsImportModalComponent} from '../cards-import-modal/cards-import-modal.component';
-import {ClipboardService} from '../../../services/clipboard.service';
-import {ClipboardPasteModalComponent} from '../../clipboard/clipboard-paste-modal/clipboard-paste-modal.component';
-import {CardUpdate} from '../../../dtos/cardUpdate';
+import { CardsImportModalComponent } from '../cards-import-modal/cards-import-modal.component';
+import { ClipboardService } from '../../../services/clipboard.service';
+import { ClipboardPasteModalComponent } from '../../clipboard/clipboard-paste-modal/clipboard-paste-modal.component';
+import { CardUpdate } from '../../../dtos/cardUpdate';
 import { TitleService } from 'src/app/services/title.service';
 
 @Component({
   selector: 'app-deck-view',
   templateUrl: './deck-view.component.html',
-  styleUrls: ['./deck-view.component.css']
+  styleUrls: ['./deck-view.component.css'],
 })
 export class DeckViewComponent implements OnInit {
-
   readonly limit = 50;
 
   deck: DeckDetails;
@@ -48,14 +47,23 @@ export class DeckViewComponent implements OnInit {
 
   @ViewChild('commentForm') private commentForm: CommentFormComponent;
 
-  constructor(private deckService: DeckService, private cardService: CardService, public globals: Globals,
-              private favoriteService: FavoriteService, private commentService: CommentService,
-              private route: ActivatedRoute, private router: Router, private modalService: NgbModal,
-              private authService: AuthService, private notificationService: NotificationService,
-              private clipboardService: ClipboardService, private titleService: TitleService) { }
+  constructor(
+    private deckService: DeckService,
+    private cardService: CardService,
+    public globals: Globals,
+    private favoriteService: FavoriteService,
+    private commentService: CommentService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private modalService: NgbModal,
+    private authService: AuthService,
+    private notificationService: NotificationService,
+    private clipboardService: ClipboardService,
+    private titleService: TitleService
+  ) {}
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe(params => {
+    this.route.paramMap.subscribe((params) => {
       this.deck = this.page = null;
       this.loadingError = null;
       this.cards = [];
@@ -65,41 +73,57 @@ export class DeckViewComponent implements OnInit {
       this.comments = [];
       this.loadDeck(Number(params.get('id')));
     });
-    this.clipboardService.clipboard$.subscribe(clipboard => this.clipboardSize = clipboard.length);
+    this.clipboardService.clipboard$.subscribe(
+      (clipboard) => (this.clipboardSize = clipboard.length)
+    );
   }
 
   loadDeck(id: number): void {
     // TODO: Use forkJoin to only update page when everything loaded (to prevent flickering)
-    this.deckService.getDeckById(id).subscribe(deck => {
-      this.titleService.setTitle(deck.name, null);
-      this.deck = deck;
-      this.cards = [];
-      this.loadMoreCards();
-      this.loadMoreComments();
-      if (this.authService.isLoggedIn()) {
-        this.favoriteService.hasFavorite(id).subscribe(isFavorite => this.isFavorite$.next(isFavorite));
+    this.deckService.getDeckById(id).subscribe(
+      (deck) => {
+        this.titleService.setTitle(deck.name, null);
+        this.deck = deck;
+        this.cards = [];
+        this.loadMoreCards();
+        this.loadMoreComments();
+        if (this.authService.isLoggedIn()) {
+          this.favoriteService
+            .hasFavorite(id)
+            .subscribe((isFavorite) => this.isFavorite$.next(isFavorite));
+        }
+      },
+      (err) => {
+        this.loadingError =
+          err && err.status === 404
+            ? 'This deck does not exist. Maybe it has been deleted or the link is broken'
+            : 'Could not load this deck.';
       }
-    }, err => {
-      this.loadingError = err && err.status === 404 ?
-        'This deck does not exist. Maybe it has been deleted or the link is broken'
-        : 'Could not load this deck.';
-    });
+    );
   }
 
   loadMoreCards(): void {
     const nextPageNumber = this.page ? this.page.pageable.pageNumber + 1 : 0;
     this.loadingCards = true;
-    this.cardService.getCardsByDeckId(this.deck.id, new Pageable(nextPageNumber, this.limit))
-      .subscribe(page => {
+    this.cardService
+      .getCardsByDeckId(this.deck.id, new Pageable(nextPageNumber, this.limit))
+      .subscribe((page) => {
         this.page = page;
         this.cards.push(...page.content);
-      }).add(() => this.loadingCards = false);
+      })
+      .add(() => (this.loadingCards = false));
   }
 
   loadMoreComments(): void {
-    const nextPageNumber = this.commentsPage ? this.commentsPage.pageable.pageNumber + 1 : 0;
-    this.commentService.findByDeckId(this.deck.id, new Pageable(nextPageNumber, this.commentsPageSize))
-      .subscribe(page => {
+    const nextPageNumber = this.commentsPage
+      ? this.commentsPage.pageable.pageNumber + 1
+      : 0;
+    this.commentService
+      .findByDeckId(
+        this.deck.id,
+        new Pageable(nextPageNumber, this.commentsPageSize)
+      )
+      .subscribe((page) => {
         this.commentsPage = page;
         this.comments.push(...page.content);
       });
@@ -111,8 +135,9 @@ export class DeckViewComponent implements OnInit {
 
   addComment(message: string): void {
     console.log('addComment', message);
-    this.commentService.addCommentToDeck(this.deck.id, message)
-      .subscribe(comment => {
+    this.commentService
+      .addCommentToDeck(this.deck.id, message)
+      .subscribe((comment) => {
         this.notificationService.success('Comment saved');
         this.comments.unshift(comment);
         this.commentsPage.totalElements += 1;
@@ -124,65 +149,75 @@ export class DeckViewComponent implements OnInit {
     const modalRef = this.modalService.open(CardRemoveModalComponent);
     modalRef.componentInstance.card = card;
 
-    modalRef.result.then(
-      (res: Observable<void>) => res.subscribe(
-        () => {
+    modalRef.result
+      .then((res: Observable<void>) =>
+        res.subscribe(() => {
           this.notificationService.success('Deleted Card');
-          this.cards = this.cards.filter(c => c !== card);
-        }
+          this.cards = this.cards.filter((c) => c !== card);
+        })
       )
-    ).catch(err => console.error('Did not remove card', err));
+      .catch((err) => console.error('Did not remove card', err));
   }
 
   openForkModal(): void {
     const modalRef = this.modalService.open(DeckForkModalComponent);
     modalRef.componentInstance.deck = this.deck;
 
-    modalRef.result.then(
-      (res: Observable<DeckDetails>) => res.subscribe(
-        (deck: DeckDetails) => this.router.navigate(['decks', deck.id])
+    modalRef.result
+      .then((res: Observable<DeckDetails>) =>
+        res.subscribe((deck: DeckDetails) =>
+          this.router.navigate(['decks', deck.id])
+        )
       )
-    ).catch();
+      .catch();
   }
 
   deleteCard(card: CardSimple): void {
     if (confirm('Are you sure you want to permanently delete this card?')) {
       this.cardService.deleteCard(card.id).subscribe(() => {
-        this.cards = this.cards.filter(c => c !== card);
+        this.cards = this.cards.filter((c) => c !== card);
       });
     }
   }
 
   saveToFavorites(): void {
-    this.favoriteService.addFavorite(this.deck.id)
+    this.favoriteService
+      .addFavorite(this.deck.id)
       .subscribe(() => this.isFavorite$.next(true));
   }
 
   removeFromFavorites(): void {
-    this.favoriteService.removeFavorite(this.deck.id)
+    this.favoriteService
+      .removeFavorite(this.deck.id)
       .subscribe(() => this.isFavorite$.next(false));
   }
 
   exportCsv(): void {
-    this.deckService.exportDeckAsCsv(this.deck.id).subscribe((content: Blob) => {
-      const file = document.createElement('a');
-      const objectUrl = URL.createObjectURL(content);
-      file.href = objectUrl;
-      file.download = this.deck.name + '.csv';
-      file.click();
-      URL.revokeObjectURL(objectUrl);
-    });
+    this.deckService
+      .exportDeckAsCsv(this.deck.id)
+      .subscribe((content: Blob) => {
+        const file = document.createElement('a');
+        const objectUrl = URL.createObjectURL(content);
+        file.href = objectUrl;
+        file.download = this.deck.name + '.csv';
+        file.click();
+        URL.revokeObjectURL(objectUrl);
+      });
   }
 
   openImportModal(): void {
-    const modalRef = this.modalService.open(CardsImportModalComponent, { size: 'lg' });
+    const modalRef = this.modalService.open(CardsImportModalComponent, {
+      size: 'lg',
+    });
     modalRef.componentInstance.deck = this.deck;
 
-    modalRef.result.then(
-      (res: Observable<DeckDetails>) => res.subscribe(
-        (deckResult: DeckDetails) => this.router.navigate(['decks', deckResult])
+    modalRef.result
+      .then((res: Observable<DeckDetails>) =>
+        res.subscribe((deckResult: DeckDetails) =>
+          this.router.navigate(['decks', deckResult])
+        )
       )
-    ).catch();
+      .catch();
   }
 
   copyToClipboard(card: CardSimple): void {
@@ -191,17 +226,20 @@ export class DeckViewComponent implements OnInit {
   }
 
   pasteFromClipboard(cards: CardUpdate[]): void {
-    this.clipboardService.paste(this.deck.id, cards).subscribe(pastedCards => {
-      this.cards.push(...pastedCards);
-      this.notificationService.success('Cards pasted from Clipboard');
-    });
+    this.clipboardService
+      .paste(this.deck.id, cards)
+      .subscribe((pastedCards) => {
+        this.cards.push(...pastedCards);
+        this.notificationService.success('Cards pasted from Clipboard');
+      });
   }
 
   openClipboardPasteModal(): void {
-    const modalRef = this.modalService.open(ClipboardPasteModalComponent, { size: 'lg' });
-    modalRef.result.then(
-      (res: CardUpdate[]) => this.pasteFromClipboard(res)
-    ).catch();
+    const modalRef = this.modalService.open(ClipboardPasteModalComponent, {
+      size: 'lg',
+    });
+    modalRef.result
+      .then((res: CardUpdate[]) => this.pasteFromClipboard(res))
+      .catch();
   }
-
 }

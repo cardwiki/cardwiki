@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {DeckService} from '../../../services/deck.service';
-import {ActivatedRoute} from '@angular/router';
-import {Location} from '@angular/common';
-import {DeckUpdate} from '../../../dtos/deckUpdate';
+import { DeckService } from '../../../services/deck.service';
+import { ActivatedRoute } from '@angular/router';
+import { Location } from '@angular/common';
+import { DeckUpdate } from '../../../dtos/deckUpdate';
 import { CategorySimple } from 'src/app/dtos/categorySimple';
 import { NotificationService } from 'src/app/services/notification.service';
 import { TitleService } from 'src/app/services/title.service';
@@ -12,10 +12,9 @@ import { CategoryPickerModalComponent } from '../../category/category-picker-mod
 @Component({
   selector: 'app-deck-edit',
   templateUrl: './deck-edit.component.html',
-  styleUrls: ['./deck-edit.component.css']
+  styleUrls: ['./deck-edit.component.css'],
 })
 export class DeckEditComponent implements OnInit {
-
   deckId: number;
   deck: DeckUpdate;
 
@@ -25,24 +24,22 @@ export class DeckEditComponent implements OnInit {
     private route: ActivatedRoute,
     private location: Location,
     private notificationService: NotificationService,
-    private titleService: TitleService,
+    private titleService: TitleService
   ) {}
 
   ngOnInit(): void {
     this.deckId = +this.route.snapshot.paramMap.get('id');
-    this.deckService.getDeckById(this.deckId).subscribe(deck => {
+    this.deckService.getDeckById(this.deckId).subscribe((deck) => {
       this.titleService.setTitle(`Edit ${deck.name}`, null);
       this.deck = new DeckUpdate(deck.name, deck.categories);
     });
   }
 
   save(): void {
-    this.deckService.updateDeck(this.deckId, this.deck).subscribe(
-      () => {
-        this.notificationService.success('Updated Deck');
-        this.location.back();
-      }
-    );
+    this.deckService.updateDeck(this.deckId, this.deck).subscribe(() => {
+      this.notificationService.success('Updated Deck');
+      this.location.back();
+    });
   }
 
   cancel(): void {
@@ -50,22 +47,26 @@ export class DeckEditComponent implements OnInit {
   }
 
   openCategoryPicker(): void {
-    const categoryPickerModal = this.modalService.open(CategoryPickerModalComponent);
+    const categoryPickerModal = this.modalService.open(
+      CategoryPickerModalComponent
+    );
     categoryPickerModal.componentInstance.title = 'Select category';
     categoryPickerModal.result
       .then((category: CategorySimple) => this.addCategory(category))
-      .catch(err => console.log('Category picker cancelled', err));
+      .catch((err) => console.log('Category picker cancelled', err));
   }
 
   addCategory(category: CategorySimple): void {
-    if (this.deck.categories.some(c => c.id === category.id)) {
-      this.notificationService.warning(`Category ${category.name} has already been added`);
+    if (this.deck.categories.some((c) => c.id === category.id)) {
+      this.notificationService.warning(
+        `Category ${category.name} has already been added`
+      );
     } else {
       this.deck.categories.push(category);
     }
   }
 
   removeCategory(category: CategorySimple): void {
-    this.deck.categories = this.deck.categories.filter(c => c !== category);
+    this.deck.categories = this.deck.categories.filter((c) => c !== category);
   }
 }

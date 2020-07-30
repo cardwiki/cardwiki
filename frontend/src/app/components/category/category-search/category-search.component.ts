@@ -9,19 +9,24 @@ import { Pageable } from 'src/app/dtos/pageable';
 @Component({
   selector: 'app-category-search',
   templateUrl: './category-search.component.html',
-  styleUrls: ['./category-search.component.css']
+  styleUrls: ['./category-search.component.css'],
 })
 export class CategorySearchComponent implements OnInit {
-
   readonly limit = 10;
 
   searchTerm = '';
   page: Page<CategorySimple>;
   categories: CategorySimple[] = [];
 
-  constructor(private route: ActivatedRoute, private router: Router,
-              private categoryService: CategoryService, private titleService: TitleService) {
-    this.route.queryParams.subscribe(params => this.searchTerm = params.name || '');
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private categoryService: CategoryService,
+    private titleService: TitleService
+  ) {
+    this.route.queryParams.subscribe(
+      (params) => (this.searchTerm = params.name || '')
+    );
   }
 
   ngOnInit(): void {
@@ -37,21 +42,20 @@ export class CategorySearchComponent implements OnInit {
   onSubmit(): void {
     console.log('search', this.searchTerm);
     this.categories = [];
-    this.router.navigate(
-      [],
-      {
-        relativeTo: this.route,
-        queryParams: { name: this.searchTerm },
-        queryParamsHandling: 'merge'
-      });
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { name: this.searchTerm },
+      queryParamsHandling: 'merge',
+    });
     this.resetResults();
     this.loadCategories();
   }
 
   loadCategories(): void {
     const nextPage = this.page ? this.page.pageable.pageNumber + 1 : 0;
-    this.categoryService.searchByName(this.searchTerm, new Pageable(nextPage, this.limit))
-      .subscribe(categoryPage => {
+    this.categoryService
+      .searchByName(this.searchTerm, new Pageable(nextPage, this.limit))
+      .subscribe((categoryPage) => {
         this.page = categoryPage;
         this.categories.push(...categoryPage.content);
       });
@@ -61,9 +65,13 @@ export class CategorySearchComponent implements OnInit {
     event.stopPropagation();
     event.preventDefault();
 
-    if (confirm(`Are you sure you want to permanently delete category '${category.name}'?`)) {
+    if (
+      confirm(
+        `Are you sure you want to permanently delete category '${category.name}'?`
+      )
+    ) {
       this.categoryService.deleteCategory(category.id).subscribe(() => {
-        this.categories = this.categories.filter(c => c !== category);
+        this.categories = this.categories.filter((c) => c !== category);
       });
     }
   }

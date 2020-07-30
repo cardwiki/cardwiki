@@ -1,27 +1,29 @@
 import { Injectable } from '@angular/core';
 
-import {HttpClient} from '@angular/common/http';
-import {Globals} from '../global/globals';
-import {Observable} from 'rxjs';
-import {DeckDetails} from '../dtos/deckDetails';
-import {DeckSimple} from '../dtos/deckSimple';
-import {DeckUpdate} from '../dtos/deckUpdate';
+import { HttpClient } from '@angular/common/http';
+import { Globals } from '../global/globals';
+import { Observable } from 'rxjs';
+import { DeckDetails } from '../dtos/deckDetails';
+import { DeckSimple } from '../dtos/deckSimple';
+import { DeckUpdate } from '../dtos/deckUpdate';
 import { ErrorHandlerService } from './error-handler.service';
 import { catchError } from 'rxjs/operators';
 import { Page } from '../dtos/page';
 import { Pageable } from '../dtos/pageable';
-import {RevisionDetailed} from '../dtos/revisionDetailed';
-import {DeckProgressDetails} from '../dtos/deckProgressDetails';
+import { RevisionDetailed } from '../dtos/revisionDetailed';
+import { DeckProgressDetails } from '../dtos/deckProgressDetails';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DeckService {
-
   private deckBaseUri: string = this.globals.backendUri + '/decks';
 
-  constructor(private httpClient: HttpClient, private globals: Globals, private errorHandler: ErrorHandlerService) {
-  }
+  constructor(
+    private httpClient: HttpClient,
+    private globals: Globals,
+    private errorHandler: ErrorHandlerService
+  ) {}
 
   /**
    * Loads a deck from the backend
@@ -29,7 +31,8 @@ export class DeckService {
    */
   getDeckById(id: number): Observable<DeckDetails> {
     console.log('Load Deck with id ' + id);
-    return this.httpClient.get<DeckDetails>(this.deckBaseUri + '/' + id)
+    return this.httpClient
+      .get<DeckDetails>(this.deckBaseUri + '/' + id)
       .pipe(catchError(this.errorHandler.handleError('Could not fetch Deck')));
   }
 
@@ -41,12 +44,13 @@ export class DeckService {
     console.log('Load Deck with id ' + id);
     const params = {
       headers: {
-        'accept': 'text/csv',
+        accept: 'text/csv',
         'content-type': 'text/html',
       },
       responseType: 'blob' as const,
-    }
-    return this.httpClient.get(this.deckBaseUri + '/' + id, params)
+    };
+    return this.httpClient
+      .get(this.deckBaseUri + '/' + id, params)
       .pipe(catchError(this.errorHandler.handleError('Could not fetch Deck')));
   }
 
@@ -57,7 +61,8 @@ export class DeckService {
    */
   updateDeck(deckId: number, deck: DeckUpdate): Observable<DeckDetails> {
     console.log('Update Deck with id ' + deckId);
-    return this.httpClient.patch<DeckDetails>(this.deckBaseUri + '/' + deckId, deck)
+    return this.httpClient
+      .patch<DeckDetails>(this.deckBaseUri + '/' + deckId, deck)
       .pipe(catchError(this.errorHandler.handleError('Could not update Deck')));
   }
 
@@ -68,7 +73,8 @@ export class DeckService {
    */
   create(deck: DeckSimple): Observable<DeckDetails> {
     console.log('Create card deck: ' + deck.name);
-    return this.httpClient.post<DeckDetails>(this.deckBaseUri, deck)
+    return this.httpClient
+      .post<DeckDetails>(this.deckBaseUri, deck)
       .pipe(catchError(this.errorHandler.handleError('Could not create Deck')));
   }
 
@@ -78,14 +84,20 @@ export class DeckService {
    * @param name to search for
    * @param pageable config for pagination
    */
-  searchByName(name: string, pageable: Pageable): Observable<Page<DeckDetails>> {
+  searchByName(
+    name: string,
+    pageable: Pageable
+  ): Observable<Page<DeckDetails>> {
     console.log('search card decks: ' + name);
     const params = {
       name,
       ...pageable.toObject(),
     };
-    return this.httpClient.get<Page<DeckDetails>>(this.deckBaseUri, { params })
-      .pipe(catchError(this.errorHandler.handleError('Could not search for Decks')));
+    return this.httpClient
+      .get<Page<DeckDetails>>(this.deckBaseUri, { params })
+      .pipe(
+        catchError(this.errorHandler.handleError('Could not search for Decks'))
+      );
   }
 
   /**
@@ -95,21 +107,33 @@ export class DeckService {
    */
   copy(deckId: number, deck: DeckSimple): Observable<DeckDetails> {
     console.log('Copy card deck with id ' + deckId);
-    return this.httpClient.post<DeckDetails>(this.deckBaseUri + '/' + deckId + '/copy', deck)
+    return this.httpClient
+      .post<DeckDetails>(this.deckBaseUri + '/' + deckId + '/copy', deck)
       .pipe(catchError(this.errorHandler.handleError('Could not fork Deck')));
   }
 
   delete(deckId: number): Observable<void> {
     console.log('Delete deck ' + deckId);
-    return this.httpClient.delete<void>(this.deckBaseUri + '/' + deckId)
-      .pipe(catchError(this.errorHandler.handleError('Could not delete deck ' + deckId)));
+    return this.httpClient
+      .delete<void>(this.deckBaseUri + '/' + deckId)
+      .pipe(
+        catchError(
+          this.errorHandler.handleError('Could not delete deck ' + deckId)
+        )
+      );
   }
-
 
   import(deckId: number, data: FormData): Observable<DeckDetails> {
     console.log('import cards to deck ' + deckId);
-    return this.httpClient.post<DeckDetails>(this.deckBaseUri + '/' + deckId + '/cards', data)
-      .pipe(catchError(this.errorHandler.handleError('Could not import cards to deck ' + deckId)));
+    return this.httpClient
+      .post<DeckDetails>(this.deckBaseUri + '/' + deckId + '/cards', data)
+      .pipe(
+        catchError(
+          this.errorHandler.handleError(
+            'Could not import cards to deck ' + deckId
+          )
+        )
+      );
   }
   /**
    * Fetches card revisions for cards in a deck
@@ -117,10 +141,19 @@ export class DeckService {
    * @param deckId of the deck to fetch revisions of
    * @param pageable config for pagination
    */
-  fetchRevisions(deckId: number, pageable: Pageable): Observable<Page<RevisionDetailed>> {
+  fetchRevisions(
+    deckId: number,
+    pageable: Pageable
+  ): Observable<Page<RevisionDetailed>> {
     console.log(`fetch revisions for cards in deck with id ${deckId}`);
-    return this.httpClient.get<Page<RevisionDetailed>>(this.deckBaseUri + '/' + deckId + '/revisions', { params: pageable.toHttpParams() })
-      .pipe(catchError(this.errorHandler.handleError('Could not fetch Revisions')));
+    return this.httpClient
+      .get<Page<RevisionDetailed>>(
+        this.deckBaseUri + '/' + deckId + '/revisions',
+        { params: pageable.toHttpParams() }
+      )
+      .pipe(
+        catchError(this.errorHandler.handleError('Could not fetch Revisions'))
+      );
   }
 
   /**
@@ -132,8 +165,13 @@ export class DeckService {
     console.log('fetch learned decks');
     const params = pageable.toHttpParams();
 
-    return this.httpClient.get<Page<DeckProgressDetails>>(this.deckBaseUri + '/progress', { params })
-      .pipe(catchError(this.errorHandler.handleError('Could not get learned decks')));
+    return this.httpClient
+      .get<Page<DeckProgressDetails>>(this.deckBaseUri + '/progress', {
+        params,
+      })
+      .pipe(
+        catchError(this.errorHandler.handleError('Could not get learned decks'))
+      );
   }
 
   /**
@@ -145,7 +183,10 @@ export class DeckService {
   deleteProgress(id: number, reverse: boolean): Observable<void> {
     console.log(`delete progress for deck ${id} reverse=${reverse}`);
     const params = { reverse: reverse ? 'true' : 'false' };
-    return this.httpClient.delete<void>(this.deckBaseUri + '/' + id + '/progress', { params })
-      .pipe(catchError(this.errorHandler.handleError('Could not delete progress')));
+    return this.httpClient
+      .delete<void>(this.deckBaseUri + '/' + id + '/progress', { params })
+      .pipe(
+        catchError(this.errorHandler.handleError('Could not delete progress'))
+      );
   }
 }

@@ -15,19 +15,12 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "target": "es2015",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
-    "lib": [
-      "es2019",
-      "dom"
-    ]
+    "typeRoots": ["node_modules/@types"],
+    "lib": ["es2019", "dom"]
   },
   "angularCompilerOptions": {
     "strictInjectionParameters": true,
     "strictTemplates": true
   },
-  "exclude": [
-    "**/*.spec.ts"
-  ]
+  "exclude": ["**/*.spec.ts"]
 }

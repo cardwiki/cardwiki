@@ -1,25 +1,56 @@
 <form (ngSubmit)="onSubmit()" #searchForm="ngForm">
-    <div class="input-group" role="group">
-        <input type="text" class="form-control" id="deckName" name="deckName" [(ngModel)]="newQueryParams.name" placeholder="Find decks">
-        <div class="input-group-append">
-            <button type="submit" class="btn btn-outline-dark" [disabled]="loading">Search</button>
-        </div>
+  <div class="input-group" role="group">
+    <input
+      type="text"
+      class="form-control"
+      id="deckName"
+      name="deckName"
+      [(ngModel)]="newQueryParams.name"
+      placeholder="Find decks"
+    />
+    <div class="input-group-append">
+      <button type="submit" class="btn btn-outline-dark" [disabled]="loading">
+        Search
+      </button>
     </div>
+  </div>
 </form>
 
 <ul class="list-group mt-4">
-    <a *ngFor="let deck of decks" routerLink="/decks/{{deck.id}}" class="list-group-item list-group-item-action">
-        {{deck.name}}
-        <span class="ml-2">
-            <a *ngFor="let category of deck.categories" routerLink="/categories/{{category.id}}"
-                class="badge badge-light border mr-1 font-weight-normal">{{category.name}}</a>
-        </span>
-        <button *appUserRole="'ADMIN'" class="btn btn-outline-danger float-right" (click)="deleteDeck($event, deck)">Delete</button>
-    </a>
+  <a
+    *ngFor="let deck of decks"
+    routerLink="/decks/{{ deck.id }}"
+    class="list-group-item list-group-item-action"
+  >
+    {{ deck.name }}
+    <span class="ml-2">
+      <a
+        *ngFor="let category of deck.categories"
+        routerLink="/categories/{{ category.id }}"
+        class="badge badge-light border mr-1 font-weight-normal"
+      >
+        {{ category.name }}
+      </a>
+    </span>
+    <button
+      *appUserRole="'ADMIN'"
+      class="btn btn-outline-danger float-right"
+      (click)="deleteDeck($event, deck)"
+    >
+      Delete
+    </button>
+  </a>
 </ul>
 <div *ngIf="loading" class="spinner-grow text-primary" role="status">
-    <span class="sr-only">Loading...</span>
+  <span class="sr-only">Loading...</span>
 </div>
 <div class="my-4">
-    <button *ngIf="page && !page.last" class="btn btn-secondary" (click)="loadMore()" [disabled]="loading">Load more</button>
+  <button
+    *ngIf="page && !page.last"
+    class="btn btn-secondary"
+    (click)="loadMore()"
+    [disabled]="loading"
+  >
+    Load more
+  </button>
 </div>

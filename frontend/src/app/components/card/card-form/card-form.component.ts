@@ -1,15 +1,14 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CardUpdate } from 'src/app/dtos/cardUpdate';
 import { Globals } from '../../../global/globals';
-import {ImageService} from '../../../services/image.service';
+import { ImageService } from '../../../services/image.service';
 
 @Component({
   selector: 'app-card-form',
   templateUrl: './card-form.component.html',
-  styleUrls: ['./card-form.component.css']
+  styleUrls: ['./card-form.component.css'],
 })
 export class CardFormComponent {
-
   originalFilenameFront = 'Choose file';
   originalFilenameBack = 'Choose file';
 
@@ -17,11 +16,12 @@ export class CardFormComponent {
   @Input() card: CardUpdate;
   @Output() cardSubmit: EventEmitter<CardUpdate> = new EventEmitter();
   @Output() cancel: EventEmitter<void> = new EventEmitter();
-  constructor(public globals: Globals, public imageService: ImageService) { }
+  constructor(public globals: Globals, public imageService: ImageService) {}
 
   autoSizeTextarea(event: Event): void {
-    const textArea = event.target as HTMLElement
-    textArea.style.height = Math.max(textArea.offsetHeight, textArea.scrollHeight) + 'px';
+    const textArea = event.target as HTMLElement;
+    textArea.style.height =
+      Math.max(textArea.offsetHeight, textArea.scrollHeight) + 'px';
   }
 
   onSubmit(): void {
@@ -43,18 +43,22 @@ export class CardFormComponent {
   }
 
   async onFileChange(event: Event, side: 'front' | 'back'): Promise<void> {
-    console.log('card form onFileChange', event)
-    const target = event.target as HTMLInputElement
+    console.log('card form onFileChange', event);
+    const target = event.target as HTMLInputElement;
     if (target.files && target.files.length) {
       const file = target.files[0];
       const formData = new FormData();
       formData.append('file', file, file.name);
 
       if (side === 'front') {
-        this.card.imageFront = await this.imageService.upload(formData).toPromise();
+        this.card.imageFront = await this.imageService
+          .upload(formData)
+          .toPromise();
         this.originalFilenameFront = file.name;
       } else {
-        this.card.imageBack = await this.imageService.upload(formData).toPromise();
+        this.card.imageBack = await this.imageService
+          .upload(formData)
+          .toPromise();
         this.originalFilenameBack = file.name;
       }
     }

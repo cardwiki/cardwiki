@@ -1,3 +1,3 @@
 export interface SearchQueryParams {
-    name?: string;
+  name?: string;
 }

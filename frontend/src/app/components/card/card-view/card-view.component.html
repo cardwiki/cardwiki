@@ -1,12 +1,18 @@
 <div *ngIf="side == 'front'">
   <div *ngIf="card.imageFront">
-    <img class="img-fluid img-thumbnail my-3" src="{{globals.backendBaseUri}}{{card.imageFront.url}}">
+    <img
+      class="img-fluid img-thumbnail my-3"
+      src="{{ globals.backendBaseUri }}{{ card.imageFront.url }}"
+    />
   </div>
   <div *ngIf="card.textFront" [innerHtml]="card.textFront | md2html"></div>
 </div>
 <div *ngIf="side == 'back'">
   <div *ngIf="card.imageBack">
-    <img class="img-fluid img-thumbnail my-3" src="{{globals.backendBaseUri}}{{card.imageBack.url}}">
+    <img
+      class="img-fluid img-thumbnail my-3"
+      src="{{ globals.backendBaseUri }}{{ card.imageBack.url }}"
+    />
   </div>
   <div *ngIf="card.textBack" [innerHtml]="card.textBack | md2html"></div>
 </div>

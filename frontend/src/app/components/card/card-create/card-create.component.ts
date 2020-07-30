@@ -9,15 +9,19 @@ import { TitleService } from 'src/app/services/title.service';
 @Component({
   selector: 'app-card-create',
   templateUrl: './card-create.component.html',
-  styleUrls: ['./card-create.component.css']
+  styleUrls: ['./card-create.component.css'],
 })
 export class CardCreateComponent implements OnInit {
-
   private deckId: number;
   public card: CardUpdate;
 
-  constructor(private cardService: CardService, private route: ActivatedRoute, private location: Location,
-              private notificationService: NotificationService, private titleService: TitleService) { }
+  constructor(
+    private cardService: CardService,
+    private route: ActivatedRoute,
+    private location: Location,
+    private notificationService: NotificationService,
+    private titleService: TitleService
+  ) {}
 
   ngOnInit(): void {
     this.titleService.setTitle('Create Card', 'Create a new Card');
@@ -28,13 +32,11 @@ export class CardCreateComponent implements OnInit {
   cardSubmit(): void {
     console.log('CardCreateComponent.onSubmit', this.deckId, this.card);
 
-    this.cardService.createCard(this.deckId, this.card)
-      .subscribe(
-        card => {
-          console.log('created card', card);
-          this.notificationService.success('Created new Card');
-          this.location.back();
-        });
+    this.cardService.createCard(this.deckId, this.card).subscribe((card) => {
+      console.log('created card', card);
+      this.notificationService.success('Created new Card');
+      this.location.back();
+    });
   }
 
   cancel(): void {

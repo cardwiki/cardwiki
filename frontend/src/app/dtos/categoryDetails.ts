@@ -1,4 +1,4 @@
-import {DeckSimple} from './deckSimple';
+import { DeckSimple } from './deckSimple';
 import { CategorySimple } from './categorySimple';
 
 export class CategoryDetails extends CategorySimple {
@@ -10,7 +10,8 @@ export class CategoryDetails extends CategorySimple {
     public children: CategorySimple[] = [],
     public createdAt: string = null,
     public updatedAt: string = null,
-    public decks: DeckSimple[] = []) {
-      super(id, name);
+    public decks: DeckSimple[] = []
+  ) {
+    super(id, name);
   }
 }

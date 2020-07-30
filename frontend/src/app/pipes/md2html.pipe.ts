@@ -7,10 +7,9 @@ import * as MarkdownItTexmath from 'markdown-it-texmath';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Pipe({
-  name: 'md2html'
+  name: 'md2html',
 })
 export class Md2htmlPipe implements PipeTransform {
-
   private converter: MarkdownIt;
 
   constructor(private sanitizer: DomSanitizer) {
@@ -36,5 +35,4 @@ export class Md2htmlPipe implements PipeTransform {
   private postProcess(html: string): string {
     return html.replace(/<table>/gi, '<table class="table">');
   }
-
 }

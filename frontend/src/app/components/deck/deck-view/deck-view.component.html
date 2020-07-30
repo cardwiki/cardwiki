@@ -1,51 +1,120 @@
 <div *ngIf="loadingError">
   <h1>Error loading deck</h1>
-  <p>{{loadingError}}</p>
+  <p>{{ loadingError }}</p>
 </div>
 <div class="container" *ngIf="deck">
   <div class="row justify-content-between">
     <div class="col">
-      <h1>{{deck.name}}</h1>
+      <h1>{{ deck.name }}</h1>
     </div>
     <div class="col">
       <div class="btn-toolbar float-right">
         <ng-template [appUserRole]="'USER'">
-          <a routerLink="/decks/{{deck.id}}/edit" class="btn btn-light float-right mr-1"><i class="fas fa-pencil-alt"></i> Edit</a>
-          <button *ngIf="isFavorite$ | async; else notFavorite" type="button" class="btn btn-light float-right mr-1" (click)="removeFromFavorites()"><i class="fas fa-star"></i> Saved</button>
+          <a
+            routerLink="/decks/{{ deck.id }}/edit"
+            class="btn btn-light float-right mr-1"
+          >
+            <i class="fas fa-pencil-alt"></i>
+            Edit
+          </a>
+          <button
+            *ngIf="isFavorite$ | async; else notFavorite"
+            type="button"
+            class="btn btn-light float-right mr-1"
+            (click)="removeFromFavorites()"
+          >
+            <i class="fas fa-star"></i>
+            Saved
+          </button>
           <ng-template #notFavorite>
-            <button type="button" class="btn btn-light float-right mr-1" (click)="saveToFavorites()"><i class="far fa-star"></i> Save</button>
+            <button
+              type="button"
+              class="btn btn-light float-right mr-1"
+              (click)="saveToFavorites()"
+            >
+              <i class="far fa-star"></i>
+              Save
+            </button>
           </ng-template>
-          <button *ngIf="cards.length" type="button" class="btn btn-light mr-1" (click)="openForkModal()">
-            <i class="fas fa-code-branch"></i> Fork
+          <button
+            *ngIf="cards.length"
+            type="button"
+            class="btn btn-light mr-1"
+            (click)="openForkModal()"
+          >
+            <i class="fas fa-code-branch"></i>
+            Fork
           </button>
         </ng-template>
-        <a type="link" routerLink="/decks/{{deck.id}}/history" class="btn btn-light float-right mr-1">
-          <i class="fas fa-list"></i> View History</a>
+        <a
+          type="link"
+          routerLink="/decks/{{ deck.id }}/history"
+          class="btn btn-light float-right mr-1"
+        >
+          <i class="fas fa-list"></i>
+          View History
+        </a>
       </div>
     </div>
   </div>
   <div class="row">
     <div class="col">
-      <a routerLink="/categories/{{category.id}}" class="badge badge-light border mr-1" *ngFor="let category of deck.categories" style="font-weight:normal">{{category.name}}</a>
+      <a
+        routerLink="/categories/{{ category.id }}"
+        class="badge badge-light border mr-1"
+        *ngFor="let category of deck.categories"
+        style="font-weight: normal;"
+      >
+        {{ category.name }}
+      </a>
     </div>
     <div class="col" *ngIf="commentsPage">
       <div class="btn-toolbar float-right">
-        <button class="btn btn-light float-right mr-2" (click)="exportCsv()"><i class="fas fa-file-download"></i> Download</button>
-        <button class="btn btn-light float-right mr-2" (click)="openImportModal()"><i class="fas fa-file-upload"></i> Import</button>
-        <button type="button" class="btn float-right mr-1" [ngClass]="displayComments ? 'btn-secondary' : 'btn-light'" (click)="toggleComments()">
-          <i class="far fa-comments"></i> Comments ({{commentsPage.totalElements}})</button>
-        </div>
+        <button class="btn btn-light float-right mr-2" (click)="exportCsv()">
+          <i class="fas fa-file-download"></i>
+          Download
+        </button>
+        <button
+          class="btn btn-light float-right mr-2"
+          (click)="openImportModal()"
+        >
+          <i class="fas fa-file-upload"></i>
+          Import
+        </button>
+        <button
+          type="button"
+          class="btn float-right mr-1"
+          [ngClass]="displayComments ? 'btn-secondary' : 'btn-light'"
+          (click)="toggleComments()"
+        >
+          <i class="far fa-comments"></i>
+          Comments ({{ commentsPage.totalElements }})
+        </button>
+      </div>
     </div>
   </div>
 
   <div class="container mt-5 mb-3" *ngIf="displayComments">
     <h2>Comments</h2>
-    <div class="mb-2" *ngIf="!commentsPage.totalElements">There are no comments on this deck yet.</div>
+    <div class="mb-2" *ngIf="!commentsPage.totalElements">
+      There are no comments on this deck yet.
+    </div>
     <app-comment-list [comments]="comments"></app-comment-list>
     <div class="my-4">
-      <button *ngIf="!commentsPage.last" class="btn btn-secondary" (click)="loadMoreComments()">Load more</button>
+      <button
+        *ngIf="!commentsPage.last"
+        class="btn btn-secondary"
+        (click)="loadMoreComments()"
+      >
+        Load more
+      </button>
     </div>
-    <app-comment-form *appUserRole="'USER'" #commentForm action="Post Comment" (commentSubmit)="addComment($event)"></app-comment-form>
+    <app-comment-form
+      *appUserRole="'USER'"
+      #commentForm
+      action="Post Comment"
+      (commentSubmit)="addComment($event)"
+    ></app-comment-form>
     <p *appUserRole="'ANONYMOUS'">Sign in to add comments.</p>
   </div>
 
@@ -54,21 +123,56 @@
       <div class="col">
         <div class="row align-items-center">
           <div class="btn-group">
-            <a routerLink="/learn/{{deck.id}}"  class="btn btn-primary">Learn</a>
-            <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <a routerLink="/learn/{{ deck.id }}" class="btn btn-primary">
+              Learn
+            </a>
+            <button
+              type="button"
+              class="btn btn-primary dropdown-toggle dropdown-toggle-split"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
               <span class="sr-only">Toggle Learning Dropdown</span>
             </button>
             <div class="dropdown-menu dropdown-menu-right">
-              <a class="dropdown-item" routerLink="/learn/{{deck.id}}" [queryParams]="{reverse: ''}">Learn in Reverse</a>
-              <a class="dropdown-item" routerLink="/decks/{{deck.id}}/preview">Preview</a>
+              <a
+                class="dropdown-item"
+                routerLink="/learn/{{ deck.id }}"
+                [queryParams]="{ reverse: '' }"
+              >
+                Learn in Reverse
+              </a>
+              <a
+                class="dropdown-item"
+                routerLink="/decks/{{ deck.id }}/preview"
+              >
+                Preview
+              </a>
             </div>
           </div>
         </div>
       </div>
       <div class="col">
         <div class="btn-toolbar float-right">
-          <button type="button" class="btn btn-light mr-1" (click)="openClipboardPasteModal()" [disabled]="clipboardSize <= 0" *appUserRole="'USER'" title="Import Cards from Clipboard"><i class="far fa-clipboard"></i> Paste</button>
-          <a routerLink="/decks/{{deck.id}}/cards/new" class="btn btn-primary float-right"><i class="fas fa-plus"></i> Add new card</a>
+          <button
+            type="button"
+            class="btn btn-light mr-1"
+            (click)="openClipboardPasteModal()"
+            [disabled]="clipboardSize <= 0"
+            *appUserRole="'USER'"
+            title="Import Cards from Clipboard"
+          >
+            <i class="far fa-clipboard"></i>
+            Paste
+          </button>
+          <a
+            routerLink="/decks/{{ deck.id }}/cards/new"
+            class="btn btn-primary float-right"
+          >
+            <i class="fas fa-plus"></i>
+            Add new card
+          </a>
         </div>
       </div>
     </div>
@@ -86,30 +190,78 @@
       </thead>
       <tbody *ngFor="let card of cards">
         <tr>
-          <th scope="row" class="align-middle">{{cards.indexOf(card) + 1}}</th>
+          <th scope="row" class="align-middle">
+            {{ cards.indexOf(card) + 1 }}
+          </th>
           <td class="w-50 align-middle">
             <div class="card-cell-container">
               <div *ngIf="card.imageFrontUrl" class="mr-3">
-                <img src="{{globals.backendBaseUri}}{{card.imageFrontUrl}}" class="float-left img-fluid img-thumbnail">
+                <img
+                  src="{{ globals.backendBaseUri }}{{ card.imageFrontUrl }}"
+                  class="float-left img-fluid img-thumbnail"
+                />
               </div>
-              <div *ngIf="card.textFront" [innerHtml]="card.textFront | md2html"></div>
+              <div
+                *ngIf="card.textFront"
+                [innerHtml]="card.textFront | md2html"
+              ></div>
             </div>
           </td>
           <td class="w-50 align-middle">
             <div class="card-cell-container">
               <div *ngIf="card.imageBackUrl" class="mr-3">
-                <img src="{{globals.backendBaseUri}}{{card.imageBackUrl}}" class="float-left img-fluid img-thumbnail">
+                <img
+                  src="{{ globals.backendBaseUri }}{{ card.imageBackUrl }}"
+                  class="float-left img-fluid img-thumbnail"
+                />
               </div>
-              <div *ngIf="card.textBack" [innerHtml]="card.textBack | md2html"></div>
+              <div
+                *ngIf="card.textBack"
+                [innerHtml]="card.textBack | md2html"
+              ></div>
             </div>
           </td>
           <td class="align-middle">
             <div class="btn-group card-actions">
-              <a routerLink="/decks/{{deck.id}}/cards/{{card.id}}/edit" class="btn btn-light" title="Edit card"><i class="fas fa-pencil-alt"></i></a>
-              <button *appUserRole="'USER'" type="button" class="btn btn-light" (click)="copyToClipboard(card)" title="Copy to clipboard"><i class="far fa-copy"></i></button>
-              <a routerLink="/decks/{{deck.id}}/cards/{{card.id}}/history" class="btn btn-light" title="View card history"><i class="fas fa-history"></i></a>
-              <button type="button" class="btn btn-light" (click)="openCardRemoveModal(card)" title="Delete card"><i class="fas fa-trash-alt"></i></button>
-              <button *appUserRole="'ADMIN'" class="btn btn-danger" (click)="deleteCard(card)" title="Delete card permanently">Delete</button>
+              <a
+                routerLink="/decks/{{ deck.id }}/cards/{{ card.id }}/edit"
+                class="btn btn-light"
+                title="Edit card"
+              >
+                <i class="fas fa-pencil-alt"></i>
+              </a>
+              <button
+                *appUserRole="'USER'"
+                type="button"
+                class="btn btn-light"
+                (click)="copyToClipboard(card)"
+                title="Copy to clipboard"
+              >
+                <i class="far fa-copy"></i>
+              </button>
+              <a
+                routerLink="/decks/{{ deck.id }}/cards/{{ card.id }}/history"
+                class="btn btn-light"
+                title="View card history"
+              >
+                <i class="fas fa-history"></i>
+              </a>
+              <button
+                type="button"
+                class="btn btn-light"
+                (click)="openCardRemoveModal(card)"
+                title="Delete card"
+              >
+                <i class="fas fa-trash-alt"></i>
+              </button>
+              <button
+                *appUserRole="'ADMIN'"
+                class="btn btn-danger"
+                (click)="deleteCard(card)"
+                title="Delete card permanently"
+              >
+                Delete
+              </button>
             </div>
           </td>
         </tr>
@@ -120,7 +272,13 @@
     <span class="sr-only">Loading...</span>
   </div>
   <div class="my-4">
-    <button *ngIf="page && !page.last" class="btn btn-secondary" (click)="loadMoreCards()" [disabled]="loadingCards">Load more</button>
+    <button
+      *ngIf="page && !page.last"
+      class="btn btn-secondary"
+      (click)="loadMoreCards()"
+      [disabled]="loadingCards"
+    >
+      Load more
+    </button>
   </div>
-
 </div>

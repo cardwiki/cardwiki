@@ -9,15 +9,17 @@ import { Page } from '../dtos/page';
 import { Pageable } from '../dtos/pageable';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CommentService {
-
   private deckBaseUri = this.globals.backendUri + '/decks';
   private commentBaseUri = this.globals.backendUri + '/comments';
 
-  constructor(private httpClient: HttpClient, private globals: Globals, private errorHandler: ErrorHandlerService) {
-  }
+  constructor(
+    private httpClient: HttpClient,
+    private globals: Globals,
+    private errorHandler: ErrorHandlerService
+  ) {}
 
   /**
    * Add a comment to a deck
@@ -28,8 +30,11 @@ export class CommentService {
    */
   addCommentToDeck(deckId: number, message: string): Observable<CommentSimple> {
     const dto = { message };
-    return this.httpClient.post<CommentSimple>(`${this.deckBaseUri}/${deckId}/comments`, dto)
-      .pipe(catchError(this.errorHandler.handleError('Could not create comment')));
+    return this.httpClient
+      .post<CommentSimple>(`${this.deckBaseUri}/${deckId}/comments`, dto)
+      .pipe(
+        catchError(this.errorHandler.handleError('Could not create comment'))
+      );
   }
 
   /**
@@ -41,8 +46,11 @@ export class CommentService {
    */
   editComment(commentId: number, message: string): Observable<CommentSimple> {
     const dto = { message };
-    return this.httpClient.put<CommentSimple>(`${this.commentBaseUri}/${commentId}`, dto)
-      .pipe(catchError(this.errorHandler.handleError('Could not edit comment')));
+    return this.httpClient
+      .put<CommentSimple>(`${this.commentBaseUri}/${commentId}`, dto)
+      .pipe(
+        catchError(this.errorHandler.handleError('Could not edit comment'))
+      );
   }
 
   /**
@@ -52,9 +60,17 @@ export class CommentService {
    * @param pageable pagination config
    * @return page of comments sorted by newest first
    */
-  findByDeckId(deckId: number, pageable: Pageable): Observable<Page<CommentSimple>> {
-    return this.httpClient.get<Page<CommentSimple>>(`${this.deckBaseUri}/${deckId}/comments`, { params: pageable.toHttpParams() })
-      .pipe(catchError(this.errorHandler.handleError('Could not fetch comments')));
+  findByDeckId(
+    deckId: number,
+    pageable: Pageable
+  ): Observable<Page<CommentSimple>> {
+    return this.httpClient
+      .get<Page<CommentSimple>>(`${this.deckBaseUri}/${deckId}/comments`, {
+        params: pageable.toHttpParams(),
+      })
+      .pipe(
+        catchError(this.errorHandler.handleError('Could not fetch comments'))
+      );
   }
 
   /**
@@ -64,8 +80,11 @@ export class CommentService {
    * @return comment
    */
   findOne(commentId: number): Observable<CommentSimple> {
-    return this.httpClient.get<CommentSimple>(`${this.commentBaseUri}/${commentId}`)
-      .pipe(catchError(this.errorHandler.handleError('Could not fetch comment')));
+    return this.httpClient
+      .get<CommentSimple>(`${this.commentBaseUri}/${commentId}`)
+      .pipe(
+        catchError(this.errorHandler.handleError('Could not fetch comment'))
+      );
   }
 
   /**
@@ -74,7 +93,10 @@ export class CommentService {
    * @param commentId id of the comment
    */
   deleteComment(commentId: number): Observable<void> {
-    return this.httpClient.delete<void>(`${this.commentBaseUri}/${commentId}`)
-      .pipe(catchError(this.errorHandler.handleError('Could not delete comment')));
+    return this.httpClient
+      .delete<void>(`${this.commentBaseUri}/${commentId}`)
+      .pipe(
+        catchError(this.errorHandler.handleError('Could not delete comment'))
+      );
   }
 }

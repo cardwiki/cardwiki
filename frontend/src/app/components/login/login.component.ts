@@ -1,32 +1,43 @@
-import {Component, OnInit} from '@angular/core';
-import {FormControl, FormGroup, Validators, AbstractControl} from '@angular/forms';
-import {Router, ActivatedRoute } from '@angular/router';
-import {AuthService} from '../../services/auth.service';
-import {parse as parseCookie} from 'cookie';
+import { Component, OnInit } from '@angular/core';
+import {
+  FormControl,
+  FormGroup,
+  Validators,
+  AbstractControl,
+} from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+import { parse as parseCookie } from 'cookie';
 import { OAuth2ProviderDto } from 'src/app/dtos/oAuth2Provider';
 import { WhoAmI } from 'src/app/dtos/whoAmI';
 import { TitleService } from 'src/app/services/title.service';
-import {UiStyleToggleService} from '../../services/ui-style-toggle.service';
+import { UiStyleToggleService } from '../../services/ui-style-toggle.service';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
-
-  constructor(public authService: AuthService, private router: Router, private route: ActivatedRoute, private titleService: TitleService,
-              private uiStyleToggleService: UiStyleToggleService) {
+  constructor(
+    public authService: AuthService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private titleService: TitleService,
+    private uiStyleToggleService: UiStyleToggleService
+  ) {
     this.registerForm = new FormGroup({
-      'username': new FormControl(this.username, [
+      username: new FormControl(this.username, [
         Validators.required,
         Validators.minLength(1),
-        Validators.pattern(/^[a-z0-9_-]+$/)
+        Validators.pattern(/^[a-z0-9_-]+$/),
       ]),
     });
   }
 
-  get formUsername(): AbstractControl { return this.registerForm.get('username'); }
+  get formUsername(): AbstractControl {
+    return this.registerForm.get('username');
+  }
   authProviders: OAuth2ProviderDto[];
   oAuthInfo: WhoAmI;
   registerForm: FormGroup;
@@ -38,8 +49,10 @@ export class LoginComponent implements OnInit {
     this.registerForm.reset();
     this.oAuthInfo = null;
     this.titleService.setTitle('Login', null);
-    this.authService.getAuthProviders().subscribe(providers => this.authProviders = providers);
-    this.route.queryParams.subscribe(params => {
+    this.authService
+      .getAuthProviders()
+      .subscribe((providers) => (this.authProviders = providers));
+    this.route.queryParams.subscribe((params) => {
       if ('success' in params) {
         this.handleSuccessfulLogin();
       }
@@ -48,7 +61,7 @@ export class LoginComponent implements OnInit {
 
   private handleSuccessfulLogin(): void {
     this.authService.updateToken(parseCookie(document.cookie).token);
-    this.authService.whoAmI().subscribe(info => {
+    this.authService.whoAmI().subscribe((info) => {
       this.oAuthInfo = info;
       console.log(info);
       if (info.authId === null) {
@@ -64,7 +77,7 @@ export class LoginComponent implements OnInit {
   }
 
   register(username: string): void {
-    this.authService.register(username).subscribe(response => {
+    this.authService.register(username).subscribe((response) => {
       console.log('Register response: ', response);
       if (response.username) {
         this.router.navigate(['/']);
@@ -76,5 +89,4 @@ export class LoginComponent implements OnInit {
       this._textValue = evt.toLowerCase();
     }
   }
-
 }

@@ -9,7 +9,7 @@ import { SubscriptionLike } from 'rxjs';
 @Component({
   selector: 'app-card-remove-modal',
   templateUrl: './card-remove-modal.component.html',
-  styleUrls: ['./card-remove-modal.component.css']
+  styleUrls: ['./card-remove-modal.component.css'],
 })
 export class CardRemoveModalComponent implements OnInit, OnDestroy {
   card: CardSimple;
@@ -21,12 +21,13 @@ export class CardRemoveModalComponent implements OnInit, OnDestroy {
     public activeModal: NgbActiveModal,
     public globals: Globals,
     private cardService: CardService,
-    private location: Location,
-  ) { }
+    private location: Location
+  ) {}
 
   ngOnInit(): void {
-    this.locationSubscription = this.location
-      .subscribe(() => this.activeModal.dismiss());
+    this.locationSubscription = this.location.subscribe(() =>
+      this.activeModal.dismiss()
+    );
   }
 
   onSubmit(): void {
@@ -35,7 +36,7 @@ export class CardRemoveModalComponent implements OnInit, OnDestroy {
     );
   }
 
-  ngOnDestroy(): void{
+  ngOnDestroy(): void {
     this.locationSubscription.unsubscribe();
   }
 }

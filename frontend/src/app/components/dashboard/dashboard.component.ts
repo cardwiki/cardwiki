@@ -5,17 +5,16 @@ import { Pageable } from 'src/app/dtos/pageable';
 import { Page } from 'src/app/dtos/page';
 import { NotificationService } from 'src/app/services/notification.service';
 import { TitleService } from 'src/app/services/title.service';
-import {DeckProgressDetails} from '../../dtos/deckProgressDetails';
-import {DeckService} from '../../services/deck.service';
+import { DeckProgressDetails } from '../../dtos/deckProgressDetails';
+import { DeckService } from '../../services/deck.service';
 import { DeckProgress } from 'src/app/dtos/deckProgress';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+  styleUrls: ['./dashboard.component.css'],
 })
 export class DashboardComponent implements OnInit {
-
   favorites: Page<DeckSimple>;
   progressList: ProgressEntry[];
   progressPage: Page<DeckProgressDetails>;
@@ -28,7 +27,7 @@ export class DashboardComponent implements OnInit {
     private notificationService: NotificationService,
     private titleService: TitleService,
     private deckService: DeckService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.titleService.setTitle('Dashboard', null);
@@ -37,11 +36,12 @@ export class DashboardComponent implements OnInit {
   }
 
   removeFavorite(deckId: number): void {
-    this.favoriteService.removeFavorite(deckId)
-      .subscribe(() => {
-        this.notificationService.success('Removed deck from Favorites');
-        this.favorites.content = this.favorites.content.filter(f => f.id !== deckId);
-      });
+    this.favoriteService.removeFavorite(deckId).subscribe(() => {
+      this.notificationService.success('Removed deck from Favorites');
+      this.favorites.content = this.favorites.content.filter(
+        (f) => f.id !== deckId
+      );
+    });
   }
 
   /**
@@ -49,8 +49,9 @@ export class DashboardComponent implements OnInit {
    */
   loadFavoritePage(page: number): void {
     const pageable = new Pageable(page - 1, this.favoritesPageSize);
-    this.favoriteService.getFavorites(pageable)
-      .subscribe(favorites => this.favorites = favorites);
+    this.favoriteService
+      .getFavorites(pageable)
+      .subscribe((favorites) => (this.favorites = favorites));
   }
 
   /**
@@ -58,27 +59,40 @@ export class DashboardComponent implements OnInit {
    */
   loadLearnedPage(page: number): void {
     const pageable = new Pageable(page - 1, this.learnedPageSize);
-    this.deckService.getLearnedDecks(pageable)
-      .subscribe(decks => {
-        this.progressPage = decks;
-        this.progressList = decks.content.flatMap(({ deckId, deckName, normal, reverse }) => {
+    this.deckService.getLearnedDecks(pageable).subscribe((decks) => {
+      this.progressPage = decks;
+      this.progressList = decks.content.flatMap(
+        ({ deckId, deckName, normal, reverse }) => {
           return [
-            normal ? {deckId, deckName, reverse: false, ...normal } : null,
-            reverse ? {deckId, deckName, reverse: true, ...reverse } : null,
-          ].filter(p => p !== null);
-        });
-      });
+            normal ? { deckId, deckName, reverse: false, ...normal } : null,
+            reverse ? { deckId, deckName, reverse: true, ...reverse } : null,
+          ].filter((p) => p !== null);
+        }
+      );
+    });
   }
 
   deleteProgress(event: Event, progress: ProgressEntry): void {
     event.stopPropagation();
     event.preventDefault();
-    if (confirm(`Do you want to permanently delete your progress for deck '${progress.deckName}'${progress.reverse ? ' (reverse)' : ''}`)) {
-      this.deckService.deleteProgress(progress.deckId, progress.reverse).subscribe(() => {
-        this.loadLearnedPage(1);
-      });
+    if (
+      confirm(
+        `Do you want to permanently delete your progress for deck '${
+          progress.deckName
+        }'${progress.reverse ? ' (reverse)' : ''}`
+      )
+    ) {
+      this.deckService
+        .deleteProgress(progress.deckId, progress.reverse)
+        .subscribe(() => {
+          this.loadLearnedPage(1);
+        });
     }
   }
 }
 
-type ProgressEntry = DeckProgress & { deckId: number, deckName: string, reverse: boolean };
+type ProgressEntry = DeckProgress & {
+  deckId: number;
+  deckName: string;
+  reverse: boolean;
+};

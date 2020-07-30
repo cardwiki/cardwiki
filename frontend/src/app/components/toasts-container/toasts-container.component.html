@@ -1,10 +1,17 @@
-<ngb-toast *ngFor="let toast of toasts$ | async"
-    [class]="toast.options.classname"
-    [autohide]="toast.options.autohide"
-    [delay]="toast.options.delay"
-    (hide)="remove(toast)">
-    <button type="button" class="ml-2 close" aria-label="Close" (click)="remove(toast)">
-        <i class="fas fa-times"></i>
-    </button>
-    <p>{{ toast.message }}</p>
+<ngb-toast
+  *ngFor="let toast of toasts$ | async"
+  [class]="toast.options.classname"
+  [autohide]="toast.options.autohide"
+  [delay]="toast.options.delay"
+  (hide)="remove(toast)"
+>
+  <button
+    type="button"
+    class="ml-2 close"
+    aria-label="Close"
+    (click)="remove(toast)"
+  >
+    <i class="fas fa-times"></i>
+  </button>
+  <p>{{ toast.message }}</p>
 </ngb-toast>

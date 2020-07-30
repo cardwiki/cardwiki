@@ -1,42 +1,107 @@
-<div class="container mb-5" *ngIf="cards.length" style="max-width: 700px">
+<div class="container mb-5" *ngIf="cards.length" style="max-width: 700px;">
   <div class="row">
     <div class="col-9">
-      <a routerLink="/decks/{{deck.id}}" class="btn btn-light float-left mr-1"><i class="fas fa-arrow-left"></i> Back to {{deck.name}}</a>
-      <ng-template #popControls><kbd>Spacebar</kbd> Flip card<br><kbd>Arrow Up</kbd> Show front of card<br><kbd>Arrow Down</kbd> Show back of card<br><kbd>Arrow Right</kbd> Next card<br><kbd>Arrow Left</kbd> Previous Card</ng-template>
-      <button type="button" class="btn btn-light ml-2" placement="bottom" triggers="mouseenter:mouseleave" [ngbPopover]="popControls">
+      <a
+        routerLink="/decks/{{ deck.id }}"
+        class="btn btn-light float-left mr-1"
+      >
+        <i class="fas fa-arrow-left"></i>
+        Back to {{ deck.name }}
+      </a>
+      <ng-template #popControls>
+        <kbd>Spacebar</kbd>
+        Flip card
+        <br />
+        <kbd>Arrow Up</kbd>
+        Show front of card
+        <br />
+        <kbd>Arrow Down</kbd>
+        Show back of card
+        <br />
+        <kbd>Arrow Right</kbd>
+        Next card
+        <br />
+        <kbd>Arrow Left</kbd>
+        Previous Card
+      </ng-template>
+      <button
+        type="button"
+        class="btn btn-light ml-2"
+        placement="bottom"
+        triggers="mouseenter:mouseleave"
+        [ngbPopover]="popControls"
+      >
         Controls
       </button>
     </div>
 
     <div class="col-3">
       <div class="btn-group float-right">
-        <a routerLink="/decks/{{deck.id}}/cards/{{currentcard.id}}/edit" class="btn btn-light"><i class="fas fa-pencil-alt"></i></a>
-        <button routerLink="/decks/{{deck.id}}/cards/{{currentcard.id}}/history" class="btn btn-light"><i class="fas fa-history"></i></button>
+        <a
+          routerLink="/decks/{{ deck.id }}/cards/{{ currentcard.id }}/edit"
+          class="btn btn-light"
+        >
+          <i class="fas fa-pencil-alt"></i>
+        </a>
+        <button
+          routerLink="/decks/{{ deck.id }}/cards/{{ currentcard.id }}/history"
+          class="btn btn-light"
+        >
+          <i class="fas fa-history"></i>
+        </button>
       </div>
     </div>
   </div>
 
   <div class="card text-center mt-3">
-    <div class="card-header">
-      Preview ({{flipped ? "Back" : "Front"}})
-    </div>
-    <div class="card-body card-content d-flex flex-column justify-content-around" (click)="flip()" style="min-height: 300px">
-      <img class="align-self-center img-fluid img-thumbnail m-0" *ngIf="!flipped && currentcard.imageFrontUrl" src="{{globals.backendBaseUri}}{{currentcard.imageFrontUrl}}">
-      <h5 class="card-title align-self-center m-0" *ngIf="!flipped && currentcard.textFront" [innerHtml]="currentcard.textFront | md2html"></h5>
-      <img class="align-self-center img-fluid img-thumbnail m-0" *ngIf="flipped && currentcard.imageBackUrl" src="{{globals.backendBaseUri}}{{currentcard.imageBackUrl}}">
-      <h5 class="card-title align-self-center m-0" *ngIf="flipped && currentcard.textBack" [innerHtml]="currentcard.textBack | md2html"></h5>
+    <div class="card-header">Preview ({{ flipped ? 'Back' : 'Front' }})</div>
+    <div
+      class="card-body card-content d-flex flex-column justify-content-around"
+      (click)="flip()"
+      style="min-height: 300px;"
+    >
+      <img
+        class="align-self-center img-fluid img-thumbnail m-0"
+        *ngIf="!flipped && currentcard.imageFrontUrl"
+        src="{{ globals.backendBaseUri }}{{ currentcard.imageFrontUrl }}"
+      />
+      <h5
+        class="card-title align-self-center m-0"
+        *ngIf="!flipped && currentcard.textFront"
+        [innerHtml]="currentcard.textFront | md2html"
+      ></h5>
+      <img
+        class="align-self-center img-fluid img-thumbnail m-0"
+        *ngIf="flipped && currentcard.imageBackUrl"
+        src="{{ globals.backendBaseUri }}{{ currentcard.imageBackUrl }}"
+      />
+      <h5
+        class="card-title align-self-center m-0"
+        *ngIf="flipped && currentcard.textBack"
+        [innerHtml]="currentcard.textBack | md2html"
+      ></h5>
     </div>
 
     <div class="card-footer btn-group p-0">
-      <button (click)="previousCard()" type="button" class="btn btn-light border-right card-navigation">
+      <button
+        (click)="previousCard()"
+        type="button"
+        class="btn btn-light border-right card-navigation"
+      >
         <div class="text-muted">
-          <i class="fas fa-arrow-left"></i> Previous
+          <i class="fas fa-arrow-left"></i>
+          Previous
         </div>
       </button>
 
-      <button (click)="nextCard()" type="button" class="btn btn-light border-left card-navigation">
+      <button
+        (click)="nextCard()"
+        type="button"
+        class="btn btn-light border-left card-navigation"
+      >
         <div class="text-muted">
-          Next <i class="fas fa-arrow-right"></i>
+          Next
+          <i class="fas fa-arrow-right"></i>
         </div>
       </button>
     </div>

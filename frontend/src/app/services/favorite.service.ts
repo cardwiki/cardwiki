@@ -10,13 +10,15 @@ import { Pageable } from '../dtos/pageable';
 import { AuthService } from './auth.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FavoriteService {
-
-  constructor(private httpClient: HttpClient, private globals: Globals, private errorHandler: ErrorHandlerService,
-              private authService: AuthService) {
-  }
+  constructor(
+    private httpClient: HttpClient,
+    private globals: Globals,
+    private errorHandler: ErrorHandlerService,
+    private authService: AuthService
+  ) {}
 
   /**
    * Add a deck to the favorites of the logged in user
@@ -24,8 +26,11 @@ export class FavoriteService {
    * @param deckId deck which should be added as favorite
    */
   addFavorite(deckId: number): Observable<DeckSimple> {
-    return this.httpClient.put<DeckSimple>(this.getFavoriteUri(deckId), {})
-      .pipe(catchError(this.errorHandler.handleError('Could not add favorite')));
+    return this.httpClient
+      .put<DeckSimple>(this.getFavoriteUri(deckId), {})
+      .pipe(
+        catchError(this.errorHandler.handleError('Could not add favorite'))
+      );
   }
 
   /**
@@ -34,8 +39,11 @@ export class FavoriteService {
   getFavorites(pageable: Pageable): Observable<Page<DeckSimple>> {
     const params = pageable.toHttpParams();
 
-    return this.httpClient.get<Page<DeckSimple>>(this.getFavoriteUri(), { params })
-      .pipe(catchError(this.errorHandler.handleError('Could not get favorites')));
+    return this.httpClient
+      .get<Page<DeckSimple>>(this.getFavoriteUri(), { params })
+      .pipe(
+        catchError(this.errorHandler.handleError('Could not get favorites'))
+      );
   }
 
   /**
@@ -45,20 +53,24 @@ export class FavoriteService {
    */
   hasFavorite(deckId: number): Observable<boolean> {
     // return false if the status is 404, else true for a successful response
-    return this.httpClient.get<void>(this.getFavoriteUri(deckId))
-      .pipe(
-        catchError(this.errorHandler.catchStatus(404, false)),
-        catchError(this.errorHandler.handleError('Could not check if deck is a favorite')),
-        map(val => val !== false),
-      );
+    return this.httpClient.get<void>(this.getFavoriteUri(deckId)).pipe(
+      catchError(this.errorHandler.catchStatus(404, false)),
+      catchError(
+        this.errorHandler.handleError('Could not check if deck is a favorite')
+      ),
+      map((val) => val !== false)
+    );
   }
 
   /**
    * Remove deck from the favorites of the logged in user
    */
   removeFavorite(deckId: number): Observable<void> {
-    return this.httpClient.delete<void>(this.getFavoriteUri(deckId))
-      .pipe(catchError(this.errorHandler.handleError('Could not add favorite')));
+    return this.httpClient
+      .delete<void>(this.getFavoriteUri(deckId))
+      .pipe(
+        catchError(this.errorHandler.handleError('Could not add favorite'))
+      );
   }
 
   private getFavoriteUri(deckId?: number): string {
@@ -68,6 +80,9 @@ export class FavoriteService {
       throw new Error('Invalid userId for getFavoriteUri');
     }
 
-    return `${this.globals.backendUri}/users/${userId}/favorites` + (deckId ? `/${deckId}` : '');
+    return (
+      `${this.globals.backendUri}/users/${userId}/favorites` +
+      (deckId ? `/${deckId}` : '')
+    );
   }
 }
