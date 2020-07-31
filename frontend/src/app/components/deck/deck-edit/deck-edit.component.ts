@@ -8,6 +8,7 @@ import { NotificationService } from 'src/app/services/notification.service';
 import { TitleService } from 'src/app/services/title.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CategoryPickerModalComponent } from '../../category/category-picker-modal/category-picker-modal.component';
+import { DeckDetails } from 'src/app/dtos/deckDetails';
 
 @Component({
   selector: 'app-deck-edit',
@@ -16,7 +17,7 @@ import { CategoryPickerModalComponent } from '../../category/category-picker-mod
 })
 export class DeckEditComponent implements OnInit {
   deckId: number;
-  deck: DeckUpdate;
+  deck: DeckDetails;
 
   constructor(
     private deckService: DeckService,
@@ -31,12 +32,16 @@ export class DeckEditComponent implements OnInit {
     this.deckId = +this.route.snapshot.paramMap.get('id');
     this.deckService.getDeckById(this.deckId).subscribe((deck) => {
       this.titleService.setTitle(`Edit ${deck.name}`, null);
-      this.deck = new DeckUpdate(deck.name, deck.categories);
+      this.deck = deck;
     });
   }
 
   save(): void {
-    this.deckService.updateDeck(this.deckId, this.deck).subscribe(() => {
+    const deckUpdate = new DeckUpdate(
+      this.deck.name,
+      this.deck.categories.map((c) => c.id)
+    );
+    this.deckService.updateDeck(this.deckId, deckUpdate).subscribe(() => {
       this.notificationService.success('Updated Deck');
       this.location.back();
     });

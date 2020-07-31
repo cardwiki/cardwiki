@@ -26,6 +26,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.*;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -474,14 +475,8 @@ public class DeckEndpointTest extends TestDataGenerator {
         Deck deck = agent.createDeck();
         Category category = agent.createCategory("test category");
 
-        CategorySimpleDto categorySimpleDto = new CategorySimpleDto();
-        categorySimpleDto.setId(category.getId());
-        categorySimpleDto.setName(category.getName());
-
-        Set<CategorySimpleDto> categories = new HashSet<>();
-        categories.add(categorySimpleDto);
         DeckUpdateDto deckUpdateDto = new DeckUpdateDto();
-        deckUpdateDto.setCategories(categories);
+        deckUpdateDto.setCategories(Collections.singleton(category.getId()));
 
         mvc.perform(patch("/api/v1/decks/{deckId}", deck.getId())
             .with(login(agent.getUser().getAuthId()))
@@ -504,14 +499,8 @@ public class DeckEndpointTest extends TestDataGenerator {
         Deck deck = agent.createDeck();
         Category category = agent.createCategory("test category");
 
-        CategorySimpleDto categorySimpleDto = new CategorySimpleDto();
-        categorySimpleDto.setId(category.getId());
-        categorySimpleDto.setName(category.getName());
-
-        Set<CategorySimpleDto> categories = new HashSet<>();
-        categories.add(categorySimpleDto);
         DeckUpdateDto deckUpdateDto = new DeckUpdateDto();
-        deckUpdateDto.setCategories(categories);
+        deckUpdateDto.setCategories(Collections.singleton(category.getId()));
         deckUpdateDto.setName("test deck");
 
         mvc.perform(patch("/api/v1/decks/{deckId}", deck.getId())
@@ -552,6 +541,19 @@ public class DeckEndpointTest extends TestDataGenerator {
             .with(login(agent.getUser().getAuthId()))
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(dto)))
+            .andExpect(status().is(400));
+    }
+
+    @Test
+    public void givenDeck_editDeckWithNullCategory_throwsBadRequest() throws Exception {
+        Agent agent = persistentAgent();
+        Deck deck = agent.createDeck();
+        Category category = agent.createCategory("foo");
+
+        mvc.perform(patch("/api/v1/decks/{deckId}", deck.getId())
+            .with(login(givenUserAuthId()))
+            .contentType("application/json")
+            .content("{ \"categories\": [null] }"))
             .andExpect(status().is(400));
     }
 
