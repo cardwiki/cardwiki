@@ -8,10 +8,15 @@ import at.ac.tuwien.sepm.groupphase.backend.profiles.datagenerator.Agent;
 import at.ac.tuwien.sepm.groupphase.backend.basetest.TestDataGenerator;
 import at.ac.tuwien.sepm.groupphase.backend.endpoint.dto.CategorySimpleDto;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Card;
+import at.ac.tuwien.sepm.groupphase.backend.entity.Category;
+import at.ac.tuwien.sepm.groupphase.backend.entity.Comment;
 import at.ac.tuwien.sepm.groupphase.backend.entity.Deck;
 import at.ac.tuwien.sepm.groupphase.backend.entity.User;
 import at.ac.tuwien.sepm.groupphase.backend.repository.CardRepository;
+import at.ac.tuwien.sepm.groupphase.backend.repository.CategoryRepository;
+import at.ac.tuwien.sepm.groupphase.backend.repository.CommentRepository;
 import at.ac.tuwien.sepm.groupphase.backend.repository.DeckRepository;
+import at.ac.tuwien.sepm.groupphase.backend.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hamcrest.Matchers;
@@ -53,6 +58,15 @@ public class DeckEndpointTest extends TestDataGenerator {
 
     @Autowired
     private CardRepository cardRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
+    
+    @Autowired
+    private CommentRepository commentRepository;
+    
+    @Autowired
+    private UserRepository userRepository;
 
     @Test
     public void givenAuthenticatedUser_whenCreateDeck_thenReturnDeck() throws Exception {
@@ -279,21 +293,28 @@ public class DeckEndpointTest extends TestDataGenerator {
     }
 
     @Test
-    public void givenAuthenticatedAdmin_whenDeleteDeck_thenDeckDeleted() throws Exception {
-        User user = givenApplicationUser();
-        user.setAdmin(true);
-        Card card = givenCard();
+    public void givenDeckWithRelations_whenDeleteDeck_thenDeckDeleted() throws Exception {
+        // test that deletion works properly even with foreign keys
+        Agent agent = persistentAgent();
+        User user = agent.getUser();
+        Deck deck = agent.createDeck();
+        Card card = agent.createCardIn(deck);
+        Comment comment = agent.createCommentIn(deck);
+        Category category = agent.createCategory("foo");
+        agent.addCategory(deck, category); 
+        agent.addFavorite(deck);
 
-        long deckId = card.getDeck().getId();
-        long cardId = card.getId();
-
-        mvc.perform(
-            delete("/api/v1/decks/" + deckId)
-            .with(login(user.getAuthId()))
-        ).andExpect(status().isNoContent());
-
-        assertTrue(deckRepository.findById(deckId).isEmpty());
-        assertTrue(cardRepository.findById(cardId).isEmpty());
+        mvc.perform(delete("/api/v1/decks/" + deck.getId())
+            .with(login(givenAdminAuthId())))
+            .andExpect(status().isNoContent());
+        
+        assertAll(
+            () -> assertFalse(deckRepository.existsById(deck.getId()), "deck does not exist after deletion"),
+            () -> assertFalse(cardRepository.existsById(card.getId()), "card does not exist after deck deletion"),
+            () -> assertFalse(commentRepository.existsById(comment.getId()), "comment does not exist after deck deletion"),
+            () -> assertTrue(categoryRepository.existsById(category.getId()), "category still exists after deck deletion"),
+            () -> assertTrue(userRepository.existsById(user.getId()), "user still exists after deck deletion")
+        );
     }
 
     @ParameterizedTest
