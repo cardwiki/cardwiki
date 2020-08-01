@@ -89,13 +89,13 @@ public class Deck {
         this.updatedAt = updatedAt;
     }
 
-    //public Set<Comment> getComments() {
-    //    return comments;
-    //}
+    public Set<Comment> getComments() {
+       return comments;
+    }
 
-    //public void setComments(Set<Comment> comments) {
-    //    this.comments = comments;
-    //}
+    public void setComments(Set<Comment> comments) {
+       this.comments = comments;
+    }
 
 
     public Set<Card> getCards() {

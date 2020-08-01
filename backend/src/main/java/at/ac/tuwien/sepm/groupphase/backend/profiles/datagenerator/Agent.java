@@ -109,6 +109,7 @@ public class Agent {
         comment.setCreatedBy(user);
         deck.setCreatedAt(LocalDateTime.of(2020, 1, 1, 1, 1));
         deck.setUpdatedAt(LocalDateTime.of(2020, 2, 1, 1, 1));
+        deck.getComments().add(comment);
         user.getComments().add(comment);
         beforeReturn(comment);
         return comment;

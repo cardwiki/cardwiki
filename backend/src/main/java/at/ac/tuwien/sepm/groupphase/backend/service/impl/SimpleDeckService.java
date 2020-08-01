@@ -154,11 +154,10 @@ public class SimpleDeckService implements DeckService {
     @Override
     public void delete(Long id) {
         LOGGER.debug("Delete deck with id {}", id);
-        try {
-            deckRepository.deleteById(id);
-        } catch (EmptyResultDataAccessException e) {
-            throw new DeckNotFoundException(String.format("Could not find card deck with id %d", id));
-        }
+        Deck deck = findOneOrThrow(id);
+        for (Category category : deck.getCategories())
+            category.getDecks().remove(deck);
+        deckRepository.deleteById(id);
 	}
 
     @Transactional
