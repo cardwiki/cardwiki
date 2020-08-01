@@ -5,7 +5,15 @@ import lombok.Data;
 
 @Data
 public class DeckProgressDto {
+    // total number of cards to learn
+    private int totalCount;
+
+    // cards without progress
     private int newCount;
+
+    // cards in learning mode
     private int learningCount;
-    private int toReviewCount;
+
+    // total number of cards which are due
+    private int dueCount;
 }

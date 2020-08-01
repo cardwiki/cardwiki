@@ -50,7 +50,7 @@ public class SimpleLearnService implements LearnService {
             throw new BadRequestException("deckId does not exist");
         }
 
-        return cardRepository.findNextCards(deckId, user.getId(), reverse, pageable);
+        return cardRepository.findNextCards(deckId, user.getId(), reverse, pageable).getContent();
     }
 
     private static final int[] LEARNING_STEPS = {1, 10}; // in minutes

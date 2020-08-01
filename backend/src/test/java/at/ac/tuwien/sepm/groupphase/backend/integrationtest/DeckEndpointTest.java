@@ -574,10 +574,10 @@ public class DeckEndpointTest extends TestDataGenerator {
         Card card2 = agent.createCardIn(deck);
         Card card3 = agent.createCardIn(deck);
         Card card4 = agent.createCardIn(deck);
-        agent.createProgress(card2, Progress.Status.LEARNING, false);
-        agent.createProgress(card3, Progress.Status.REVIEWING, false);
-        agent.createProgress(card4, Progress.Status.REVIEWING, false);
-        agent.createProgress(card4, Progress.Status.REVIEWING, true);
+        agent.createProgressNotDue(card2, Progress.Status.LEARNING, false);
+        agent.createProgressNotDue(card3, Progress.Status.REVIEWING, false);
+        agent.createProgressNotDue(card4, Progress.Status.REVIEWING, false);
+        agent.createProgressNotDue(card4, Progress.Status.REVIEWING, true);
 
         mvc.perform(get("/api/v1/decks/progress")
             .with(login(user.getAuthId())))
@@ -585,12 +585,14 @@ public class DeckEndpointTest extends TestDataGenerator {
             .andExpect(jsonPath("$.content", hasSize(1)))
             .andExpect(jsonPath("$.content[0].deckId").value(deck.getId()))
             .andExpect(jsonPath("$.content[0].deckName").value(deck.getName()))
+            .andExpect(jsonPath("$.content[0].normal.totalCount").value(4))
             .andExpect(jsonPath("$.content[0].normal.newCount").value(1))
             .andExpect(jsonPath("$.content[0].normal.learningCount").value(1))
-            .andExpect(jsonPath("$.content[0].normal.toReviewCount").value(2))
+            .andExpect(jsonPath("$.content[0].normal.dueCount").value(1))
+            .andExpect(jsonPath("$.content[0].reverse.totalCount").value(4))
             .andExpect(jsonPath("$.content[0].reverse.newCount").value(3))
             .andExpect(jsonPath("$.content[0].reverse.learningCount").value(0))
-            .andExpect(jsonPath("$.content[0].reverse.toReviewCount").value(1));
+            .andExpect(jsonPath("$.content[0].reverse.dueCount").value(3));
     }
 
     @Test
@@ -599,7 +601,7 @@ public class DeckEndpointTest extends TestDataGenerator {
         User user = agent.getUser();
         Deck deck = agent.createDeck();
         Card card = agent.createCardIn(deck);
-        agent.createProgress(card, Progress.Status.LEARNING, false);
+        agent.createProgressNotDue(card, Progress.Status.LEARNING, false);
 
         mvc.perform(get("/api/v1/decks/progress")
             .with(login(user.getAuthId())))
@@ -657,7 +659,7 @@ public class DeckEndpointTest extends TestDataGenerator {
         User user = agent.getUser();
         Deck deck = agent.createDeck();
         Card card = agent.createCardIn(deck);
-        agent.createProgress(card, Progress.Status.LEARNING, true);
+        agent.createProgressNotDue(card, Progress.Status.LEARNING, true);
 
         mvc.perform(delete("/api/v1/decks/{deckId}/progress", deck.getId())
             .queryParam("reverse", "true")

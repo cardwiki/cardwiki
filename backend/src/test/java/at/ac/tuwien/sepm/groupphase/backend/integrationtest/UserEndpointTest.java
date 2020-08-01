@@ -456,7 +456,7 @@ public class UserEndpointTest extends TestDataGenerator {
         revisionCreate.setMessage("created this card");
         Card card = agent.createCardIn(deck, revisionCreate);
 
-        Progress progress = agent.createProgress(card, Progress.Status.LEARNING, false);
+        Progress progress = agent.createProgressNotDue(card, Progress.Status.LEARNING, false);
 
         mvc.perform(get("/api/v1/users/{userId}/export", user.getId())
             .with(login(user.getAuthId())))

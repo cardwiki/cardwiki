@@ -44,7 +44,7 @@ public class ProgressRepositoryTest extends TestDataGenerator {
                 user.getId(),
                 false,
                 Pageable.unpaged()
-            ).size()
+            ).getTotalElements()
         );
     }
 
@@ -63,7 +63,7 @@ public class ProgressRepositoryTest extends TestDataGenerator {
                 user.getId(),
                 false,
                 Pageable.unpaged()
-            ).size()
+            ).getTotalElements()
         );
     }
 
@@ -82,7 +82,7 @@ public class ProgressRepositoryTest extends TestDataGenerator {
                 user.getId(),
                 false,
                 Pageable.unpaged()
-            ).size()
+            ).getTotalElements()
         );
     }
 
@@ -101,7 +101,7 @@ public class ProgressRepositoryTest extends TestDataGenerator {
                 user.getId(),
                 true,
                 Pageable.unpaged()
-            ).size()
+            ).getTotalElements()
         );
     }
 
@@ -120,7 +120,7 @@ public class ProgressRepositoryTest extends TestDataGenerator {
                 user.getId(),
                 false,
                 Pageable.unpaged()
-            ).size()
+            ).getTotalElements()
         );
     }
 
@@ -139,7 +139,7 @@ public class ProgressRepositoryTest extends TestDataGenerator {
                 user.getId(),
                 false,
                 Pageable.unpaged()
-            ).size()
+            ).getTotalElements()
         );
     }
 }
