@@ -48,12 +48,14 @@
         {{ progress.deckName }}
         <i *ngIf="progress.reverse" class="fas fa-undo ml-2"></i>
         <div class="float-right">
-          <span class="text-primary">{{ progress.newCount }} new</span>
-          &nbsp;
-          <span class="text-danger">{{ progress.learningCount }} learning</span>
-          &nbsp;
-          <span class="text-success">
-            {{ progress.toReviewCount }} to review
+          <span *ngIf="progress.newCount" class="text-primary px-1">
+            {{ progress.newCount }} new
+          </span>
+          <span *ngIf="progress.learningCount" class="text-danger px-1">
+            {{ progress.learningCount }} learning
+          </span>
+          <span class="px-1">
+            {{ progress.dueCount }} of {{ progress.totalCount }} cards are due
           </span>
           <button
             class="btn btn-outline-danger ml-2"

@@ -175,7 +175,7 @@ public class Agent {
         return deck;
     }
 
-    public Progress createProgress(Card card, Progress.Status status, boolean reverse) {
+    public Progress createProgressNotDue(Card card, Progress.Status status, boolean reverse) {
         Progress progress = new Progress();
         progress.setDue(LocalDateTime.now().plusDays(3L));
         progress.setEasinessFactor(5);

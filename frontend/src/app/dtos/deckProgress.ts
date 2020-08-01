@@ -1,7 +1,8 @@
 export class DeckProgress {
   constructor(
+    public totalCount: number,
     public newCount: number,
     public learningCount: number,
-    public toReviewCount: number
+    public dueCount: number
   ) {}
 }

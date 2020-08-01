@@ -92,7 +92,8 @@ describe('E2E Core functionalities', () => {
       .parent()
       .find('ul')
       .should('include.text', deckName)
-      .and('include.text', '1 learning');
+      .and('include.text', '1 learning')
+      .and('include.text', '0 of 1 cards are due');
 
     // Search for Decks
     cy.get('input[placeholder*="Find decks"]').type(`${deckName}{enter}`);

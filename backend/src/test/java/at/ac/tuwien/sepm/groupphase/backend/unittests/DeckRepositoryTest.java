@@ -144,10 +144,10 @@ public class DeckRepositoryTest extends TestDataGenerator {
         Card card2 = agent.createCardIn(deck);
         Card card3 = agent.createCardIn(deck);
         Card card4 = agent.createCardIn(deck);
-        agent.createProgress(card2, Progress.Status.LEARNING, false);
-        agent.createProgress(card3, Progress.Status.REVIEWING, false);
-        agent.createProgress(card4, Progress.Status.REVIEWING, false);
-        agent.createProgress(card4, Progress.Status.REVIEWING, true);
+        agent.createProgressNotDue(card2, Progress.Status.LEARNING, false);
+        agent.createProgressNotDue(card3, Progress.Status.REVIEWING, false);
+        agent.createProgressNotDue(card4, Progress.Status.REVIEWING, false);
+        agent.createProgressNotDue(card4, Progress.Status.REVIEWING, true);
 
         assertAll(
             () -> assertEquals(1, deckRepository.countProgressStatuses(user, deck, false, Progress.Status.LEARNING)),

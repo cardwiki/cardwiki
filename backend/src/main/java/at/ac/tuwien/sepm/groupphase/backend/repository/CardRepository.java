@@ -87,7 +87,15 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     @Query(nativeQuery = true,
         value = "SELECT *" + findNextCardsQuery + findNextCardsOrder,
         countQuery = "SELECT count(*)" + findNextCardsQuery)
-    List<Card> findNextCards(@Param("deckId") Long deckId, @Param("userId") Long userId, @Param("reverse") boolean reverse, Pageable pageable);
+    Page<Card> findNextCards(@Param("deckId") Long deckId, @Param("userId") Long userId, @Param("reverse") boolean reverse, Pageable pageable);
+
+    /**
+     * Number of currently due cards.
+     * Same as totalElements of {@link #findNextCards(Long, Long, boolean, Pageable)}
+     */
+    @Query(nativeQuery = true,
+        value = "SELECT count(*)" + findNextCardsQuery)
+    long dueCardsCount(@Param("deckId") Long deckId, @Param("userId") Long userId, @Param("reverse") boolean reverse);
 
     /**
      * Filter front texts by existing front texts in deck

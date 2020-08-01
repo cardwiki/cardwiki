@@ -191,13 +191,18 @@ public class SimpleDeckService implements DeckService {
      */
     @Transactional
     public DeckProgressDto getDeckProgress(Deck deck, User user, boolean reverse) {
+        int totalCount = deckRepository.countCards(deck);
+        int dueCount = (int) cardRepository.dueCardsCount(deck.getId(), user.getId(), reverse);
+        int learningCount = deckRepository.countProgressStatuses(user, deck, reverse, Progress.Status.LEARNING);
+        int reviewCount = deckRepository.countProgressStatuses(user, deck, reverse, Progress.Status.REVIEWING);
+        int newCount = totalCount - (learningCount + reviewCount);
+
         DeckProgressDto dto = new DeckProgressDto();
-        dto.setLearningCount(deckRepository.countProgressStatuses(user, deck, reverse, Progress.Status.LEARNING));
-        dto.setToReviewCount(deckRepository.countProgressStatuses(user, deck, reverse, Progress.Status.REVIEWING));
-        if (dto.getLearningCount() == 0 && dto.getToReviewCount() == 0)
-            return null;
-        dto.setNewCount(deckRepository.countCards(deck) - dto.getLearningCount() - dto.getToReviewCount());
-        return dto;
+        dto.setTotalCount(totalCount);
+        dto.setNewCount(newCount);
+        dto.setLearningCount(learningCount);
+        dto.setDueCount(dueCount);
+        return (newCount == totalCount) ? null : dto;
     }
 
     @Override
