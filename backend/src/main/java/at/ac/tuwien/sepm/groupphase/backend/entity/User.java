@@ -68,8 +68,6 @@ public class User {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "favoredBy")
     private Set<Deck> favorites = new HashSet<>();
 
-    private String theme;
-
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -223,14 +221,6 @@ public class User {
 
     public void setCategories(Set<Category> categories) {
         this.categories = categories;
-    }
-
-    public String getTheme() {
-        return theme;
-    }
-
-    public void setTheme(String theme) {
-        this.theme = theme;
     }
 
     @Override
