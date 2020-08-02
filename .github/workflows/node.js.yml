@@ -32,7 +32,6 @@ jobs:
       with:
         java-version: 11
     - run: npm ci
-    - run: cp src/environments/config{,.prod}.ts
     - run: npm run prettier
     - run: npm run lint
     - run: npm run build:prod

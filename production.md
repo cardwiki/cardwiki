@@ -20,7 +20,7 @@ XDG_RUNTIME_DIR=/run/user/$UID systemctl --user enable cardwiki
 
 To configure the backend upload `application-prod.yml` to `/home/cardwiki/` and configure your secrets.
 
-To configure the frontend copy `src/environments/config.ts` to `src/environments/config.prod.ts` and adjust the `backendBaseUri`.
+To configure the frontend adjust `backendBaseUri` in `src/environments/config.prod.ts`.
 
 Create your web server config, e.g. for NGINX:
 
