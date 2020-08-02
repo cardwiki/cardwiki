@@ -23,6 +23,7 @@ import { CardDiffComponent } from './components/card/card-diff/card-diff.compone
 import { CardHistoryComponent } from './components/card/card-history/card-history.component';
 import { DeckHistoryComponent } from './components/deck/deck-history/deck-history.component';
 import { CategorySearchComponent } from './components/category/category-search/category-search.component';
+import { SettingsComponent } from './components/settings/settings.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -67,6 +68,7 @@ const routes: Routes = [
     component: LearnDeckComponent,
   },
   { path: 'login', component: LoginComponent },
+  { path: 'settings', component: SettingsComponent },
   { path: 'search', component: SearchComponent },
   { path: 'users/:username/profile', component: ProfileComponent },
   { path: 'users', component: UserSearchComponent },

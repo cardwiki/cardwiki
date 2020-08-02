@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
@@ -52,11 +52,12 @@ import { WelcomeComponent } from './components/welcome/welcome.component';
 import { TitleComponent } from './components/title/title.component';
 import { CategorySearchComponent } from './components/category/category-search/category-search.component';
 import { CategoryPickerModalComponent } from './components/category/category-picker-modal/category-picker-modal.component';
-import { UiStyleToggleService } from './services/ui-style-toggle.service';
+import { SettingsComponent } from './components/settings/settings.component';
+import { ThemeService } from './services/theme.service';
 
-export function themeFactory(themeService: UiStyleToggleService): () => void {
-  return () => themeService.setThemeOnStart();
-}
+const themeFactory = (themeService: ThemeService) => {
+  return () => themeService.init();
+};
 
 @NgModule({
   declarations: [
@@ -106,6 +107,7 @@ export function themeFactory(themeService: UiStyleToggleService): () => void {
     TitleComponent,
     CategorySearchComponent,
     CategoryPickerModalComponent,
+    SettingsComponent,
   ],
   imports: [
     BrowserModule,
@@ -116,11 +118,10 @@ export function themeFactory(themeService: UiStyleToggleService): () => void {
     FormsModule,
   ],
   providers: [
-    UiStyleToggleService,
     {
       provide: APP_INITIALIZER,
       useFactory: themeFactory,
-      deps: [UiStyleToggleService],
+      deps: [ThemeService],
       multi: true,
     },
     httpInterceptorProviders,
