@@ -40,7 +40,6 @@ public class Agent {
         user.setEnabled(true);
         user.setAdmin(false);
         user.setDeleted(false);
-        user.setTheme("LIGHT");
         return user;
     }
 

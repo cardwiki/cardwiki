@@ -176,15 +176,6 @@ export class UserService {
       );
   }
 
-  setTheme(userid: number, theme: string): Observable<UserProfile> {
-    console.log('set theme to', theme, 'for user', userid);
-    return this.httpClient
-      .patch<UserProfile>(`${this.userBaseUri}/${userid}`, { theme: theme })
-      .pipe(
-        catchError(this.errorHandler.handleError('Could not set User theme'))
-      );
-  }
-
   export(userId: number): Observable<Blob> {
     console.log('export user data', userId);
     return this.httpClient

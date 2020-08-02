@@ -1,7 +1,4 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { AuthService } from './auth.service';
-import { UserService } from './user.service';
 import * as $ from 'jquery';
 
 export enum ThemeMode {
@@ -18,81 +15,42 @@ export class UiStyleToggleService {
   private readonly LIGHT_THEME_VALUE = 'LIGHT';
   private readonly DARK_THEME_CLASS_NAME = 'theme-dark';
 
-  private darkThemeSelected = true;
-  public theme$ = new BehaviorSubject<ThemeMode>(ThemeMode.LIGHT);
-  private username: string;
-
-  constructor(
-    private authService: AuthService,
-    private userService: UserService
-  ) {}
-
-  private async getState(): Promise<string> {
-    if (this.authService.isLoggedIn()) {
-      return await this.userService
-        .getProfile(this.username)
-        .toPromise()
-        .then((profile) => {
-          console.log(profile);
-          return profile.theme;
-        });
-    } else {
-      return localStorage.getItem(this.THEME_KEY);
-    }
+  private getState(): string {
+    return localStorage.getItem(this.THEME_KEY);
   }
 
   private setState(theme: string) {
     localStorage.setItem(this.THEME_KEY, theme);
-    if (this.authService.isLoggedIn()) {
-      const userid = this.authService.getUserId();
-      this.userService.setTheme(userid, theme).subscribe((response) => {
-        console.log(response);
-      });
-    }
   }
 
   public setThemeOnStart(): void {
-    if (this.authService.isLoggedIn()) {
-      this.username = this.authService.getUserName();
+    $('html').addClass('animate-colors-transition');
+    if (this.isDarkThemeSelected()) {
+      this.setDarkTheme();
+    } else {
+      this.setLightTheme();
     }
-    this.isDarkThemeSelected().then((result) => {
-      if (result) {
-        this.setDarkTheme();
-      } else {
-        this.setLightTheme();
-      }
-      setTimeout(() => {
-        $('html').addClass('animate-colors-transition');
-      }, 500);
-    });
   }
 
   public toggle(): void {
-    if (this.darkThemeSelected) {
+    if (this.isDarkThemeSelected()) {
       this.setLightTheme();
     } else {
       this.setDarkTheme();
     }
   }
 
-  private isDarkThemeSelected(): Promise<boolean> {
-    return this.getState().then((theme) => {
-      this.darkThemeSelected = theme === this.DARK_THEME_VALUE;
-      return this.darkThemeSelected;
-    });
+  private isDarkThemeSelected(): boolean {
+    return this.getState() === this.DARK_THEME_VALUE;
   }
 
   private setLightTheme() {
     this.setState(this.LIGHT_THEME_VALUE);
     $('html').removeClass(this.DARK_THEME_CLASS_NAME);
-    this.darkThemeSelected = false;
-    this.theme$.next(ThemeMode.LIGHT);
   }
 
   private setDarkTheme() {
     this.setState(this.DARK_THEME_VALUE);
     $('html').addClass(this.DARK_THEME_CLASS_NAME);
-    this.darkThemeSelected = true;
-    this.theme$.next(ThemeMode.DARK);
   }
 }

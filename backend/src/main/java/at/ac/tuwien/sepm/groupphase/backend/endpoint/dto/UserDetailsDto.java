@@ -22,6 +22,4 @@ public class UserDetailsDto {
     private boolean isEnabled;
 
     private boolean isDeleted;
-
-    private String theme;
 }
