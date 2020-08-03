@@ -15,8 +15,10 @@
     </div>
   </div>
 </form>
-
-<ul class="list-group mt-4">
+<div *ngIf="page && !decks.length" class="mt-2">
+  No decks found.
+</div>
+<ul *ngIf="decks.length" class="list-group mt-4">
   <a
     *ngFor="let deck of decks"
     routerLink="/decks/{{ deck.id }}"
