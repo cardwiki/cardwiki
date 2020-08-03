@@ -1,4 +1,4 @@
-<form (ngSubmit)="onSubmit()" #searchForm="ngForm">
+<form (ngSubmit)="onSubmit()" #searchForm="ngForm" class="mb-4">
   <div class="input-group" role="group">
     <input
       type="text"
@@ -7,6 +7,7 @@
       name="deckName"
       [(ngModel)]="newQueryParams.name"
       placeholder="Find decks"
+      aria-label="Find decks"
     />
     <div class="input-group-append">
       <button type="submit" class="btn btn-outline-dark" [disabled]="loading">
@@ -15,10 +16,12 @@
     </div>
   </div>
 </form>
-<div *ngIf="page && !decks.length" class="mt-2">
+
+<div *ngIf="page && !decks.length">
   No decks found.
 </div>
-<ul *ngIf="decks.length" class="list-group mt-4">
+
+<ul *ngIf="decks.length" class="list-group">
   <a
     *ngFor="let deck of decks"
     routerLink="/decks/{{ deck.id }}"
@@ -43,16 +46,12 @@
     </button>
   </a>
 </ul>
+
 <div *ngIf="loading" class="spinner-grow text-primary" role="status">
   <span class="sr-only">Loading...</span>
 </div>
-<div class="my-4">
-  <button
-    *ngIf="page && !page.last"
-    class="btn btn-secondary"
-    (click)="loadMore()"
-    [disabled]="loading"
-  >
+<div *ngIf="!loading && page && !page.last" class="mt-4">
+  <button class="btn btn-secondary" (click)="loadMore()">
     Load more
   </button>
 </div>
