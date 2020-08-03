@@ -17,6 +17,7 @@ export class UserSearchComponent implements OnInit {
   searchTerm = '';
   page: Page<UserProfile>;
   users: UserProfile[] = [];
+  loading: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -52,6 +53,7 @@ export class UserSearchComponent implements OnInit {
   }
 
   loadUsers(): void {
+    this.loading = true;
     const nextPage = this.page ? this.page.pageable.pageNumber + 1 : 0;
     this.userService
       .searchUsers(
@@ -61,7 +63,8 @@ export class UserSearchComponent implements OnInit {
       .subscribe((userPage) => {
         this.page = userPage;
         this.users.push(...userPage.content);
-      });
+      })
+      .add(() => (this.loading = false));
   }
 
   grantAdminRights(event: Event, user: UserProfile): void {

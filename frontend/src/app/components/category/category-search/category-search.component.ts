@@ -17,6 +17,7 @@ export class CategorySearchComponent implements OnInit {
   searchTerm = '';
   page: Page<CategorySimple>;
   categories: CategorySimple[] = [];
+  loading: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -52,13 +53,15 @@ export class CategorySearchComponent implements OnInit {
   }
 
   loadCategories(): void {
+    this.loading = true;
     const nextPage = this.page ? this.page.pageable.pageNumber + 1 : 0;
     this.categoryService
       .searchByName(this.searchTerm, new Pageable(nextPage, this.limit))
       .subscribe((categoryPage) => {
         this.page = categoryPage;
         this.categories.push(...categoryPage.content);
-      });
+      })
+      .add(() => (this.loading = false));
   }
 
   deleteCategory(event: Event, category: CategorySimple): void {
