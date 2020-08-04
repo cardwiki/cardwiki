@@ -1,5 +1,7 @@
 <nav class="navbar navbar-expand-md navbar-light bg-light">
-  <a class="navbar-brand ml-lg-5" routerLink="/">CardWiki</a>
+  <a class="navbar-brand ml-lg-5" routerLink="/" routerLinkActive="active">
+    CardWiki
+  </a>
   <button
     class="navbar-toggler ml-5"
     type="button"
@@ -15,13 +17,19 @@
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto flex-grow-1">
       <li class="nav-item">
-        <a class="nav-link" routerLink="/categories">Categories</a>
+        <a class="nav-link" routerLink="/categories" routerLinkActive="active">
+          Categories
+        </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" routerLink="/search">Decks</a>
+        <a class="nav-link" routerLink="/search" routerLinkActive="active">
+          Decks
+        </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" routerLink="/users">Users</a>
+        <a class="nav-link" routerLink="/users" routerLinkActive="active">
+          Users
+        </a>
       </li>
       <li class="nav-item" *appUserRole="'USER'">
         <a class="nav-link" (click)="openDeckModal(); (false)" href="#">
@@ -51,7 +59,7 @@
     <ul class="navbar-nav flex-grow-1 ml-3">
       <li class="nav-item" *appUserRole="'USER'">
         <div class="container">
-          <a class="nav-link" routerLink="/clipboard">
+          <a class="nav-link" routerLink="/clipboard" routerLinkActive="active">
             Clipboard
             <span class="badge badge-secondary align-middle">
               {{ clipboardSize }}
@@ -97,7 +105,12 @@
         </div>
       </li>
       <li class="nav-item">
-        <a class="nav-link" routerLink="/settings" aria-label="Open settings">
+        <a
+          class="nav-link"
+          routerLink="/settings"
+          routerLinkActive="active"
+          aria-label="Open settings"
+        >
           <i class="fas fa-cog" aria-hidden="true" title="Open settings"></i>
         </a>
       </li>
