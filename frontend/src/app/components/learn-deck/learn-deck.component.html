@@ -19,10 +19,10 @@
       ></div>
       <div class="scene text-center" (click)="onFlip()">
         <div class="flip-card" [ngClass]="flipped ? 'flipped' : ''">
-          <div class="flip-card-face please-flip">
+          <div *ngIf="!flipped" class="flip-card-face">
             flip backside by clicking here or pressing spacebar
           </div>
-          <div class="flip-card-face flip-card-face-back">
+          <div *ngIf="flipped" class="flip-card-face flip-card-face-back">
             <img
               class="img-fluid img-thumbnail img-back my-3"
               *ngIf="card.imageBackUrl"
