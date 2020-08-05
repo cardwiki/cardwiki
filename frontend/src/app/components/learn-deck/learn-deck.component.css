@@ -44,9 +44,6 @@
   transition: transform 1s;
   transform: rotateX(180deg);
 }
-.flipped .please-flip {
-  display: none;
-}
 
 .img-front {
   max-height: 180px;
