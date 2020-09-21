@@ -54,6 +54,7 @@ import { CategorySearchComponent } from './components/category/category-search/c
 import { CategoryPickerModalComponent } from './components/category/category-picker-modal/category-picker-modal.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import { ThemeService } from './services/theme.service';
+import { CardDetailsComponent } from './components/card/card-details/card-details.component';
 
 const themeFactory = (themeService: ThemeService) => {
   return () => themeService.init();
@@ -108,6 +109,7 @@ const themeFactory = (themeService: ThemeService) => {
     CategorySearchComponent,
     CategoryPickerModalComponent,
     SettingsComponent,
+    CardDetailsComponent,
   ],
   imports: [
     BrowserModule,

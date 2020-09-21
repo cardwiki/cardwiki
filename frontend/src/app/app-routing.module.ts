@@ -19,11 +19,11 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { UserSearchComponent } from './components/user-search/user-search.component';
 import { LearnDeckComponent } from './components/learn-deck/learn-deck.component';
 import { ClipboardViewComponent } from './components/clipboard/clipboard-view/clipboard-view.component';
-import { CardDiffComponent } from './components/card/card-diff/card-diff.component';
 import { CardHistoryComponent } from './components/card/card-history/card-history.component';
 import { DeckHistoryComponent } from './components/deck/deck-history/deck-history.component';
 import { CategorySearchComponent } from './components/category/category-search/category-search.component';
 import { SettingsComponent } from './components/settings/settings.component';
+import { CardDetailsComponent } from './components/card/card-details/card-details.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -52,7 +52,7 @@ const routes: Routes = [
   },
   { path: 'decks/:id/preview', component: DeckPreviewComponent },
   { path: 'decks/:id/history', component: DeckHistoryComponent },
-  { path: 'decks/:deckId/cards/:cardId', component: CardDiffComponent },
+  { path: 'decks/:deckId/cards/:cardId', component: CardDetailsComponent },
   {
     path: 'decks/:deckId/cards/:cardId/edit',
     canActivate: [AuthGuard],

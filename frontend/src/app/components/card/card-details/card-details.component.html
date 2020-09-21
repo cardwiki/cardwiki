@@ -1,0 +1,22 @@
+<div class="container">
+  <div class="row">
+    <a
+      routerLink="/decks/{{ deckId }}/cards/{{ cardId }}/history"
+      class="btn btn-light float-left mr-1"
+    >
+      <i class="fas fa-arrow-left"></i>
+      View Card History
+    </a>
+  </div>
+  <app-card-diff
+    *ngIf="showDiff"
+    [old]="cardRevisionOld"
+    [new]="cardRevisionNew"
+  ></app-card-diff>
+  <div *ngIf="showRevision">
+    <h2>Front Side</h2>
+    <app-card-view [card]="cardRevision" side="front"></app-card-view>
+    <h2>Back Side</h2>
+    <app-card-view [card]="cardRevision" side="back"></app-card-view>
+  </div>
+</div>
