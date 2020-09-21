@@ -1,10 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CardService } from '../../../services/card.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Location } from '@angular/common';
+import { Router } from '@angular/router';
 import { diff_match_patch } from 'diff-match-patch';
 import { RevisionDetailed } from '../../../dtos/revisionDetailed';
-import { CardContent } from '../../../dtos/cardContent';
 import { CardUpdate } from '../../../dtos/cardUpdate';
 
 @Component({
@@ -13,94 +11,43 @@ import { CardUpdate } from '../../../dtos/cardUpdate';
   styleUrls: ['./card-diff.component.css'],
 })
 export class CardDiffComponent implements OnInit {
-  public cardRevisionOld: RevisionDetailed;
-  public cardRevisionNew: RevisionDetailed;
-  public cardId: number;
-  public deckId: number;
-  private revisionIdOld: number;
-  private revisionIdNew: number;
-  public cardDiff: CardContent;
+  @Input() old: RevisionDetailed;
+  @Input() new: RevisionDetailed;
 
-  constructor(
-    private cardService: CardService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private location: Location
-  ) {}
+  public cardDiffHtml: { front: string; back: string };
+
+  constructor(private cardService: CardService, private router: Router) {}
 
   ngOnInit(): void {
-    this.cardId = Number(this.route.snapshot.paramMap.get('cardId'));
-    this.deckId = Number(this.route.snapshot.paramMap.get('deckId'));
-    this.route.queryParams.subscribe((params) => {
-      this.revisionIdOld = params['revision'];
-      this.revisionIdNew = params['diff'];
-    });
-    this.fetchRevision();
+    const dmp = new diff_match_patch();
+    const diffFront = dmp.diff_main(this.old.textFront, this.new.textFront);
+    const diffBack = dmp.diff_main(this.old.textBack, this.new.textBack);
+    dmp.diff_cleanupSemantic(diffFront);
+    dmp.diff_cleanupSemantic(diffBack);
+    this.cardDiffHtml = {
+      front: dmp.diff_prettyHtml(diffFront),
+      back: dmp.diff_prettyHtml(diffBack),
+    };
+    console.log(this.cardDiffHtml);
   }
 
-  fetchRevision(): void {
-    console.log(
-      'CardRevisionComponent.fetchRevision',
-      this.cardRevisionOld,
-      this.cardRevisionOld
+  revert(): void {
+    const cardUpdate: CardUpdate = new CardUpdate(
+      this.old.textFront,
+      this.old.textBack,
+      this.old.imageFront,
+      this.old.imageBack,
+      'Revert to ' + this.old.message
     );
-    this.cardService
-      .fetchRevisionsById(
-        this.revisionIdNew
-          ? [this.revisionIdOld, this.revisionIdNew]
-          : [this.revisionIdOld]
-      )
-      .subscribe((cardRevisions) => {
-        console.log('fetched revisions', cardRevisions);
-        this.cardRevisionOld = cardRevisions[this.revisionIdOld];
-        this.cardRevisionNew = cardRevisions[this.revisionIdNew];
-        if (this.cardRevisionOld.cardId !== this.cardId) {
-          this.location.back();
-        }
-        if (this.revisionIdNew) {
-          if (this.cardRevisionNew.cardId !== this.cardId) {
-            this.location.back();
-          } else {
-            const dmp = new diff_match_patch();
-            const diffFront = dmp.diff_main(
-              this.cardRevisionOld.textFront,
-              this.cardRevisionNew.textFront
-            );
-            const diffBack = dmp.diff_main(
-              this.cardRevisionOld.textBack,
-              this.cardRevisionNew.textBack
-            );
-            dmp.diff_cleanupSemantic(diffFront);
-            dmp.diff_cleanupSemantic(diffBack);
-            this.cardDiff = new CardContent(
-              dmp.diff_prettyHtml(diffFront),
-              dmp.diff_prettyHtml(diffBack),
-              null,
-              null
-            );
-          }
-        }
-      });
-  }
 
-  undo(): void {
-    const card: CardUpdate = new CardUpdate(
-      this.cardRevisionOld.textFront,
-      this.cardRevisionOld.textBack,
-      this.cardRevisionOld.imageFront,
-      this.cardRevisionOld.imageBack,
-      'Revert to ' + this.cardRevisionOld.message
-    );
-    this.cardService.editCard(this.cardId, card).subscribe((simpleCard) => {
-      if (simpleCard.id === this.cardId) {
-        this.router.navigate([
-          'decks',
-          this.deckId,
-          'cards',
-          this.cardId,
-          'history',
-        ]);
-      }
+    this.cardService.editCard(this.new.id, cardUpdate).subscribe(() => {
+      this.router.navigate([
+        'decks',
+        this.old.deck.id,
+        'cards',
+        this.new.id,
+        'history',
+      ]);
     });
   }
 }
