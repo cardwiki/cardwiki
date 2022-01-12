@@ -40,7 +40,7 @@
     "jwt-decode": "2.2.0",
     "katex": "^0.11.1",
     "lodash": "4.17.19",
-    "markdown-it": "^10.0.0",
+    "markdown-it": "^12.3.2",
     "markdown-it-texmath": "^0.6.7",
     "rxjs": "6.5.5",
     "tslib": "1.11.1",
