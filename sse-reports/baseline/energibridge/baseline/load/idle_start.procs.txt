@@ -1,0 +1,14 @@
+
+Name            CPU_s
+----            -----
+servicehost      17,6
+svchost          14,2
+PSExpressCore       9
+System            8,3
+dwm               3,4
+MsMpEng           2,4
+WindowsTerminal   2,3
+MoUsoCoreWorker     2
+
+
+

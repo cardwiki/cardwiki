@@ -1,0 +1,14 @@
+
+Name          CPU_s
+----          -----
+servicehost    16,9
+svchost        15,5
+PSExpressCore   9,1
+System          6,4
+MsMpEng         2,3
+mysqld          1,4
+GlideXService   1,2
+dwm               1
+
+
+

@@ -1,0 +1,14 @@
+
+Name            CPU_s
+----            -----
+servicehost      18,5
+svchost          15,7
+PSExpressCore     8,8
+System            8,3
+MsMpEng           4,1
+dwm                 3
+WindowsTerminal   1,6
+mysqld            1,6
+
+
+

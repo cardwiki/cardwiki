@@ -1,0 +1,12 @@
+date: 2026-11-03T13:43:51.8044122+01:00
+checkout commit: 7f3462b10b868990cb518d2448826aff041101b9
+branch: feature/energibridge-baseline
+cpu: AMD Ryzen 5 7520U with Radeon Graphics         
+os: Microsoft Windows 11 Home 10.0.26300
+power scheme: GUID de plan de energía: 381b4222-f694-41f0-9685-ff5bb260df2e  (Equilibrado)
+energibridge: energibridge 0.0.7
+energibridge sampling interval: 1000 ms (default 200 ms crashed under load)
+quality control: a measurement is repeated (max 3 attempts) if any 30 s window exceeds 5.5 W; rejected attempts are kept in rejected/
+java: openjdk version "11.0.32.1" 2026-08-18
+plan: load_test.jmx -Jusers=20 -Jramp_up=10 -Jduration=300 think_ms=500 search=Haupt deck_id=1
+runs: 10, cool-down 30 s, idle 310 s at start and end, smoke=False

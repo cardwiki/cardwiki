@@ -1,0 +1,14 @@
+
+Name            CPU_s
+----            -----
+java             31,2
+servicehost      16,4
+svchost          15,6
+dwm                10
+PSExpressCore     8,9
+System            8,4
+WindowsTerminal   5,2
+MsMpEng           1,9
+
+
+
